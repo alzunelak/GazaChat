@@ -2,7 +2,7 @@
   "name": "offline-chat-app",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://your-github-username.github.io/your-repo-name",
+  "homepage": "https://alzunelak.github.io/ChatApp/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
