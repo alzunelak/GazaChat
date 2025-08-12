@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/ChatApp/', // Ensure this matches your repository name
+  base: '/ChatApp/', 
 });
