@@ -10,13 +10,13 @@
 </head>
 <body>
 
-  <!-- Screen 1: Splash Logo -->
+  <!-- Screen 1: Splash -->
   <div id="screen1" class="screen active">
     <img src="OIP.jpg" alt="ChatApp Logo" class="logo" />
     <h1>Welcome to ChatApp</h1>
   </div>
 
-  <!-- Screen 2: Enter Your Name -->
+  <!-- Screen 2: Enter Name -->
   <div id="screen2" class="screen hidden">
     <h2>Enter Your Name</h2>
     <input type="text" id="usernameInput" placeholder="Your name">
@@ -26,11 +26,17 @@
   <!-- Screen 3: Find Friend -->
   <div id="screen3" class="screen hidden">
     <h2>Find Your Friend</h2>
-    <input type="text" id="friendNameInput" placeholder="Friend's username">
-    <p>OR scan their QR code:</p>
-    <div id="reader" style="width:300px;margin:auto;"></div>
-    <br>
-    <button id="startChatBtn">Start Chat</button>
+    <label>Your Name</label>
+    <input type="text" id="yourNameField" readonly />
+    <button id="addFriendBtn">+</button>
+
+    <div id="friendOptions" class="hidden">
+      <button id="scanQRBtn">Scan Friend QR</button>
+      <input type="text" id="friendNameInput" placeholder="Friend's username">
+    </div>
+
+    <button id="startChatBtn" class="hidden">Start Chat</button>
+    <div id="reader" style="width:300px;margin:auto; display:none;"></div>
 
     <h3>Your QR Code</h3>
     <div id="qrcode"></div>
