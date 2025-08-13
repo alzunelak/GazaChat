@@ -25,6 +25,25 @@ body {
   margin: auto;
 }
 
+#friendOptions {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#friendOptions.hidden {
+  display: none;
+}
+
+#startChatBtn.hidden {
+  display: none;
+}
+
+#reader {
+  margin-top: 10px;
+}
+
 #chat-box {
   height: 300px;
   border: 1px solid #ccc;
@@ -37,15 +56,23 @@ body {
 }
 
 .message {
-  background-color: #e1ffc7;
   padding: 5px 10px;
   margin: 5px 0;
   border-radius: 10px;
   max-width: 70%;
-  align-self: flex-start;
   opacity: 0;
   transform: translateY(20px);
   animation: slide-in 0.5s forwards;
+}
+
+.message.me {
+  background-color: #daf8ff;
+  align-self: flex-end;
+}
+
+.message.friend {
+  background-color: #e1ffc7;
+  align-self: flex-start;
 }
 
 @keyframes slide-in {
