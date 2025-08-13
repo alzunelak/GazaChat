@@ -5,12 +5,43 @@
   <title>Real ChatApp</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script src="qrcode.min.js"></script>
+  <script src="html5-qrcode.min.js"></script>
 </head>
 <body>
-  <h2>Chat Room</h2>
-  <div id="chat-box"></div>
-  <input id="message-input" placeholder="Type a message">
-  <button id="send-btn">Send</button>
+
+  <!-- Screen 1: Logo -->
+  <div id="screen1" class="screen active">
+    <img src="logo.png" alt="ChatApp Logo" class="logo">
+    <button id="continueBtn">Continue</button>
+  </div>
+
+  <!-- Screen 2: Enter Your Name -->
+  <div id="screen2" class="screen hidden">
+    <h2>Enter Your Name</h2>
+    <input type="text" id="usernameInput" placeholder="Your name">
+    <button id="setNameBtn">Next</button>
+  </div>
+
+  <!-- Screen 3: Find Friend -->
+  <div id="screen3" class="screen hidden">
+    <h2>Find Your Friend</h2>
+    <input type="text" id="friendNameInput" placeholder="Friend's username">
+    <p>OR scan their QR code:</p>
+    <div id="reader" style="width:300px;margin:auto;"></div>
+    <br>
+    <button id="startChatBtn">Start Chat</button>
+
+    <h3>Your QR Code</h3>
+    <div id="qrcode"></div>
+  </div>
+
+  <!-- Screen 4: Chat -->
+  <div id="screen4" class="screen hidden">
+    <div id="chat-box"></div>
+    <input id="message-input" placeholder="Type a message">
+    <button id="send-btn">Send</button>
+  </div>
 
   <script src="main.js"></script>
 </body>
