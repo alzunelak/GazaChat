@@ -5,54 +5,75 @@ document.addEventListener("DOMContentLoaded", () => {
     const screen4 = document.getElementById("screen4");
 
     const setNameBtn = document.getElementById("setNameBtn");
+    const addFriendBtn = document.getElementById("addFriendBtn");
+    const scanQRBtn = document.getElementById("scanQRBtn");
     const startChatBtn = document.getElementById("startChatBtn");
     const sendBtn = document.getElementById("send-btn");
 
     const usernameInput = document.getElementById("usernameInput");
+    const yourNameField = document.getElementById("yourNameField");
     const friendNameInput = document.getElementById("friendNameInput");
-    const messageInput = document.getElementById("message-input");
     const chatBox = document.getElementById("chat-box");
+    const messageInput = document.getElementById("message-input");
 
     let username = "";
     let friendName = "";
 
-    // --- Splash Screen Auto Fade ---
+    // Splash screen
     setTimeout(() => {
         screen1.classList.add("fade-out");
         setTimeout(() => {
             screen1.classList.add("hidden");
             screen2.classList.remove("hidden");
-        }, 1000); // match CSS transition
+        }, 1000);
     }, 3000);
 
-    // --- Enter Your Name ---
+    // Enter name
     setNameBtn.addEventListener("click", () => {
-        if (usernameInput.value.trim() === "") {
-            alert("Please enter your name.");
-            return;
-        }
+        if (usernameInput.value.trim() === "") return alert("Enter your name");
         username = usernameInput.value.trim();
         screen2.classList.add("fade-out");
         setTimeout(() => {
             screen2.classList.add("hidden");
             screen3.classList.remove("hidden");
-
-            // Generate QR code
-            const qrCodeDiv = document.getElementById("qrcode");
-            qrCodeDiv.innerHTML = "";
-            new QRCode(qrCodeDiv, username);
-
-            // Optional: start QR code scanner here
+            yourNameField.value = username;
+            new QRCode(document.getElementById("qrcode"), username);
         }, 500);
     });
 
-    // --- Find Friend & Start Chat ---
-    startChatBtn.addEventListener("click", () => {
-        if (friendNameInput.value.trim() === "") {
-            alert("Please enter your friend's username or scan their QR.");
-            return;
+    // Show friend options
+    addFriendBtn.addEventListener("click", () => {
+        document.getElementById("friendOptions").classList.remove("hidden");
+    });
+
+    // QR Scanner
+    const html5QrcodeScanner = new Html5Qrcode("reader");
+    scanQRBtn.addEventListener("click", () => {
+        document.getElementById("reader").style.display = "block";
+        function onScanSuccess(decodedText) {
+            friendNameInput.value = decodedText;
+            friendName = decodedText;
+            startChatBtn.classList.remove("hidden");
+            html5QrcodeScanner.stop().then(() => {
+                document.getElementById("reader").style.display = "none";
+            });
         }
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras && cameras.length) {
+                html5QrcodeScanner.start(cameras[0].id, { fps:10, qrbox:250 }, onScanSuccess);
+            }
+        });
+    });
+
+    // Manual friend input
+    friendNameInput.addEventListener("input", () => {
+        startChatBtn.classList.toggle("hidden", friendNameInput.value.trim() === "");
+    });
+
+    // Start chat
+    startChatBtn.addEventListener("click", () => {
         friendName = friendNameInput.value.trim();
+        if (!friendName) return alert("Enter friend's username or scan QR");
         screen3.classList.add("fade-out");
         setTimeout(() => {
             screen3.classList.add("hidden");
@@ -60,19 +81,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 500);
     });
 
-    // --- Send Messages ---
+    // Chat messages
     sendBtn.addEventListener("click", () => {
-        const message = messageInput.value.trim();
-        if (message === "") return;
-
-        const msgElement = document.createElement("div");
-        msgElement.classList.add("message");
-        msgElement.textContent = `${username}: ${message}`;
-        chatBox.appendChild(msgElement);
-
-        // Scroll to bottom
+        const msg = messageInput.value.trim();
+        if (!msg) return;
+        const msgEl = document.createElement("div");
+        msgEl.classList.add("message","me");
+        msgEl.textContent = `${username}: ${msg}`;
+        chatBox.appendChild(msgEl);
         chatBox.scrollTop = chatBox.scrollHeight;
-
         messageInput.value = "";
     });
 });
