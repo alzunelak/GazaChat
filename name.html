@@ -1,39 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Enter Your Name - ChatApp</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body class="splash">
-  <main class="centered">
-    <h2>Set Up Your Profile</h2>
-    <input type="text" id="nameInput" placeholder="Enter your name" required style="margin-bottom:10px; padding:8px; width:100%;">
-    <input type="file" id="imageInput" accept="image/*" style="margin-bottom:10px;">
-    <button class="btn primary wide" onclick="saveUserData()">Continue</button>
-  </main>
-
-  <script>
-  function saveUserData() {
-    const name = document.getElementById("nameInput").value.trim();
-    const file = document.getElementById("imageInput").files[0];
-
-    if (name) {
-      localStorage.setItem("userName", name);
-    }
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        localStorage.setItem("userImage", e.target.result);
-        window.location.href = "home.html";
-      };
-      reader.readAsDataURL(file);
-    } else {
-      window.location.href = "home.html";
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enter Name - ChatApp</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
   }
-  </script>
+  .input-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 90%;
+    max-width: 400px;
+  }
+  .input-container input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  .input-container input[type="file"] {
+    padding: 5px;
+  }
+  .input-container button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .input-container button:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+
+<div class="input-container">
+  <input type="text" id="nameInput" placeholder="Enter your name" required>
+  <input type="file" id="picInput" accept="image/*">
+  <button onclick="saveName()">Continue</button>
+</div>
+
+<script>
+function saveName() {
+  const name = document.getElementById('nameInput').value.trim();
+  const file = document.getElementById('picInput').files[0];
+
+  if(!name) {
+    alert("Please enter your name");
+    return;
+  }
+
+  // Save name
+  localStorage.setItem('userName', name);
+
+  // Save picture if uploaded
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      localStorage.setItem('profilePic', e.target.result);
+      // Go to home page
+      window.location.href = 'home.html';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    localStorage.removeItem('profilePic');
+    window.location.href = 'home.html';
+  }
+}
+</script>
+
 </body>
 </html>
