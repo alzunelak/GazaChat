@@ -1,19 +1,20 @@
+// Screens
 const s1 = document.getElementById('screen1');
 const s2 = document.getElementById('screen2');
 const s3 = document.getElementById('screen3');
 const s4 = document.getElementById('screen4');
 
+// Elements
 const saveProfileBtn = document.getElementById('saveProfileBtn');
 const scanQRBtn = document.getElementById('scanQRBtn');
-const friendsUl = document.getElementById('friendsUl');
 const startChatBtn = document.getElementById('startChatBtn');
+const friendsUl = document.getElementById('friendsUl');
 const scannerPopup = document.getElementById('scannerPopup');
 
-// Auto-transition from splash to profile after 1 second
+// Auto transition splash -> profile
 window.addEventListener('load', () => {
   setTimeout(() => {
-    s1.classList.remove('active');
-    s1.classList.add('hidden');
+    s1.classList.remove('active'); s1.classList.add('hidden');
     s2.classList.remove('hidden');
   }, 1000);
 });
@@ -21,44 +22,43 @@ window.addEventListener('load', () => {
 // Profile -> Home
 saveProfileBtn.addEventListener('click', async () => {
   const name = document.getElementById('usernameInput').value.trim();
-  const picFile = document.getElementById('profilePicInput').files[0];
   if(!name){ alert("Please enter your name."); return; }
 
-  localStorage.setItem('chatName', name);
-
+  const picFile = document.getElementById('profilePicInput').files[0];
   if(picFile){
     const reader = new FileReader();
-    reader.onload = async () => {
+    reader.onload = () => {
       localStorage.setItem('chatPic', reader.result);
-      await setupProfileKeys(name);
+      localStorage.setItem('chatName', name);
       loadHome();
     };
     reader.readAsDataURL(picFile);
   } else {
-    await setupProfileKeys(name);
+    localStorage.setItem('chatName', name);
     loadHome();
   }
+
   s2.classList.add('hidden'); s3.classList.remove('hidden');
 });
 
-// ECDH + QR placeholder
-async function setupProfileKeys(username){
-  const payloadStr = JSON.stringify({u: username, k:"PUBLIC_KEY"});
-  const qrContainer = document.getElementById('qrcode'); qrContainer.innerHTML='';
-  new QRCode(qrContainer, payloadStr);
-}
-
+// Load home screen
 function loadHome(){
   const name = localStorage.getItem('chatName') || 'User';
   const pic = localStorage.getItem('chatPic') || 'default-profile.png';
   document.getElementById('displayName').textContent = name;
   document.getElementById('userPic').src = pic;
+
+  const qrContainer = document.getElementById('qrcode'); qrContainer.innerHTML='';
+  new QRCode(qrContainer, JSON.stringify({u: name}));
 }
 
-// Chat messages
-startChatBtn.addEventListener('click', () => { s3.classList.add('hidden'); s4.classList.remove('hidden'); });
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
+// Start chat
+startChatBtn.addEventListener('click', () => {
+  s3.classList.add('hidden'); s4.classList.remove('hidden');
+});
 
+// Send message
+document.getElementById('sendBtn').addEventListener('click', sendMessage);
 function sendMessage(){
   const msg = document.getElementById('messageInput').value.trim();
   if(!msg) return;
@@ -68,7 +68,7 @@ function sendMessage(){
   document.getElementById('messageInput').value='';
 }
 
-// Incoming messages
+// Receive message (demo)
 function onIncomingMessage(text, fromName){
   const box = document.getElementById('chatBox');
   const p = document.createElement('div'); p.className='bubble friend'; p.textContent=`${fromName}: ${text}`;
@@ -83,8 +83,7 @@ scanQRBtn.addEventListener('click', ()=>{
     async decodedText=>{
       await qrScanner.stop();
       scannerPopup.classList.add('hidden');
-      const friendName = decodedText;
-      const li=document.createElement('li'); li.textContent=friendName; friendsUl.appendChild(li);
+      const li=document.createElement('li'); li.textContent=decodedText; friendsUl.appendChild(li);
       startChatBtn.classList.remove('hidden');
     },
     err=>console.log(err)
