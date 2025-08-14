@@ -3,46 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Chat - ChatApp</title>
+<title>Group</title>
 <style>
-  :root{--accent:#4CAF50;--bg:#f5f5f5;--card:#fff}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#333}
-  header{background:var(--card);padding:14px;font-size:20px;font-weight:bold;
-         box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center}
-  header a{color:var(--accent);text-decoration:none;margin-right:10px;font-size:16px}
-  main{padding:12px}
-  .group-item{background:var(--card);padding:12px;margin-bottom:10px;border-radius:8px;
-              display:flex;align-items:center;gap:10px;cursor:pointer;
-              box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  .group-item img{width:40px;height:40px;border-radius:50%}
-  .group-item:hover{background:#f0f0f0}
+body{ display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:Arial,sans-serif; background:#f5f5f5;}
+button{padding:15px 20px; margin:10px; font-size:18px; border:none; border-radius:8px; cursor:pointer; background:#4CAF50; color:#fff;}
 </style>
 </head>
 <body>
-  <header>
-    <a href="home.html">← Back</a> Group Chats
-  </header>
-  <main id="groupList">
-    <!-- Groups will load here -->
-  </main>
 
-<script>
-// Example group data (can be replaced with real data later)
-const groups = [
-  { name: "Family Group", img: "friend.png" },
-  { name: "Work Team", img: "friend.png" },
-  { name: "Friends Hangout", img: "friend.png" }
-];
+<h2>Group Page</h2>
+<button onclick="alert('Open Group Chat!')">Start Group Chat</button>
+<button onclick="window.location.href='home.html'">Back Home</button>
 
-const groupList = document.getElementById("groupList");
-
-groups.forEach(g => {
-  const div = document.createElement("div");
-  div.className = "group-item";
-  div.innerHTML = `<img src="${g.img}" alt=""><div>${g.name}</div>`;
-  div.onclick = () => alert("Open group: " + g.name); // Replace with actual navigation
-  groupList.appendChild(div);
-});
-</script>
 </body>
 </html>
