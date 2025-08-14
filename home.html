@@ -58,23 +58,24 @@ body{ font-family:Arial,sans-serif; margin:0; display:flex; flex-direction:colum
 <div id="qr-reader" style="display:none;"></div>
 
 <script>
-// Load profile
-const name = localStorage.getItem('chatapp_username');
-const photo = localStorage.getItem('chatapp_userphoto');
+// --- Load profile ---
+const profileNameEl = document.getElementById('profileName');
+const profilePhotoEl = document.getElementById('profilePhoto');
+let name = localStorage.getItem('chatapp_username');
+let photo = localStorage.getItem('chatapp_userphoto');
 if(!name || !photo){ window.location.href='name.html'; }
-document.getElementById('profileName').textContent = name;
-document.getElementById('profilePhoto').src = photo;
+profileNameEl.textContent = name;
+profilePhotoEl.src = photo;
 
 // Change profile photo
-document.getElementById('profilePhoto').addEventListener('click', ()=>{
+profilePhotoEl.addEventListener('click', ()=>{
   const fileInput = document.createElement('input');
-  fileInput.type='file';
-  fileInput.accept='image/*';
+  fileInput.type='file'; fileInput.accept='image/*';
   fileInput.onchange = e=>{
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = evt=>{
-      document.getElementById('profilePhoto').src = evt.target.result;
+      profilePhotoEl.src = evt.target.result;
       localStorage.setItem('chatapp_userphoto', evt.target.result);
     }
     reader.readAsDataURL(file);
@@ -82,7 +83,7 @@ document.getElementById('profilePhoto').addEventListener('click', ()=>{
   fileInput.click();
 });
 
-// Friends
+// --- Friends ---
 const friendsList = document.getElementById('friendsList');
 function getSavedFriends(){ return JSON.parse(localStorage.getItem('chatapp_friends')||'[]'); }
 function saveFriends(f){ localStorage.setItem('chatapp_friends', JSON.stringify(f)); }
@@ -106,16 +107,15 @@ function addFriend(name){
 }
 renderFriends();
 
-// FAB popup
+// --- FAB popup ---
 const fab = document.getElementById('fab');
 const popupMenu = document.getElementById('popupMenu');
 fab.addEventListener('click', ()=>popupMenu.style.display = popupMenu.style.display==='flex'?'none':'flex');
 
-// Popup buttons
-document.getElementById('myCodeBtn').addEventListener('click', ()=>alert("My QR Code"));
+// --- Popup buttons ---
+document.getElementById('myCodeBtn').addEventListener('click', ()=>alert("My QR Code!"));
 document.getElementById('scanCodeBtn').addEventListener('click', ()=>{
-  const qrDiv = document.getElementById('qr-reader');
-  qrDiv.style.display='block';
+  const qrDiv = document.getElementById('qr-reader'); qrDiv.style.display='block';
   const scanner = new Html5Qrcode("qr-reader");
   scanner.start({facingMode:"environment"}, {fps:10, qrbox:250},
     decodedText=>{ addFriend(decodedText); scanner.stop(); qrDiv.style.display='none'; },
@@ -131,7 +131,7 @@ document.getElementById('videoPhotoBtn').addEventListener('click', ()=>{
   navigator.mediaDevices.getUserMedia({video:true}).then(s=>video.srcObject=s).catch(err=>alert(err));
 });
 
-// Chat / Group / Call
+// --- Chat / Group / Call ---
 document.getElementById('chatBtn').addEventListener('click', ()=>window.location.href='chat.html');
 document.getElementById('groupBtn').addEventListener('click', ()=>window.location.href='group.html');
 document.getElementById('callBtn').addEventListener('click', ()=>window.location.href='call.html');
