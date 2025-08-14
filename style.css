@@ -1,138 +1,60 @@
-/* ========================
-   General Styles
-======================== */
 html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
   font-family: Arial, sans-serif;
-  background-color: #fff !important; /* force white everywhere */
+  background-color: #fff !important;
   color: #000;
 }
 
-/* ========================
-   Screen Layout
-======================== */
 .screen {
   display: none;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+  width: 100vw; height: 100vh;
   background-color: #fff !important;
 }
 .screen.active { display: flex; }
 .screen.hidden { display: none; }
 
-/* ========================
-   Splash Screen Logo
-======================== */
 #screen1 .logo {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* fill screen without distortion */
-  filter: brightness(1.2) !important; /* optional: brighten image */
-  opacity: 1 !important;
+  object-fit: cover;
+  filter: brightness(1.2);
+  opacity: 1;
 }
 
-/* ========================
-   Profile Setup
-======================== */
 #screen2 h2 { margin-bottom: 20px; }
 #screen2 input {
-  margin: 10px 0;
-  padding: 10px;
-  width: 80%;
-  max-width: 300px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  margin: 10px 0; padding: 10px;
+  width: 80%; max-width: 300px;
+  font-size: 16px; border: 1px solid #ccc; border-radius: 5px;
 }
 
-/* ========================
-   Buttons
-======================== */
 .primary-btn {
-  padding: 12px 30px;
-  font-size: 18px;
-  border: none;
-  border-radius: 8px;
-  background-color: #007bff;
-  color: #fff;
+  padding: 12px 30px; font-size: 18px;
+  border: none; border-radius: 8px;
+  background-color: #007bff; color: #fff;
   cursor: pointer;
 }
 .primary-btn:active { background-color: #0056b3; }
 
-/* ========================
-   Home Screen
-======================== */
-.profile-header { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  margin: 10px; 
-}
+.profile-header { display: flex; align-items: center; gap: 10px; margin: 10px; }
 .profile-pic { width: 50px; height: 50px; border-radius: 50%; }
-#friendsUl { list-style: none; padding: 0; width: 90%; max-width: 400px; margin-top: 10px; }
 
-/* ========================
-   Chat Screen
-======================== */
-.chat-box { 
-  width: 90%; 
-  max-width: 400px; 
-  height: 400px; 
-  overflow-y: auto; 
-  border: 1px solid #ccc; 
-  padding: 5px;
-  display: flex; 
-  flex-direction: column; 
-  gap: 5px;
+.chat-box { width: 90%; max-width: 400px; height: 400px;
+  overflow-y: auto; border: 1px solid #ccc; padding: 5px;
+  display: flex; flex-direction: column; gap: 5px;
 }
-.bubble {
-  padding: 8px 12px;
-  border-radius: 20px;
-  max-width: 70%;
-  word-wrap: break-word;
-}
-.bubble.you { 
-  background-color: #007bff; 
-  color: white; 
-  align-self: flex-end; 
-  border-bottom-right-radius: 0; 
-}
-.bubble.friend { 
-  background-color: #e0e0e0; 
-  color: black; 
-  align-self: flex-start; 
-  border-bottom-left-radius: 0; 
-}
+.bubble { padding: 8px 12px; border-radius: 20px; max-width: 70%; word-wrap: break-word; }
+.bubble.you { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+.bubble.friend { background-color: #e0e0e0; color: black; align-self: flex-start; border-bottom-left-radius: 0; }
 
-/* ========================
-   QR Scanner Popup
-======================== */
-.popup {
-  position: fixed; 
-  top: 0; left: 0;
-  width: 100%; 
-  height: 100%;
-  background: rgba(0,0,0,0.95);
-  display: flex; 
-  justify-content: center; 
-  align-items: center;
-  z-index: 1000;
-}
-#reader { 
-  width: 90%; 
-  max-width: 400px; 
-  aspect-ratio: 1/1; 
-}
+.popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+#reader { width: 90%; max-width: 400px; aspect-ratio: 1/1; }
 
-/* ========================
-   Force Light Mode
-======================== */
 @media (prefers-color-scheme: dark) {
   html, body, .screen { background-color: #fff !important; color: #000; }
 }
