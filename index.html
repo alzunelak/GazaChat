@@ -3,135 +3,245 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Onboarding Flow</title>
+<title>Chat App</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f9f9f9;
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; }
+
+  /* Logo */
+  .logo {
+    width:100%;
+    text-align:center;
+    padding:10px 0;
+    background:#25d366;
+    color:#fff;
+    font-size:24px;
+    font-weight:bold;
   }
 
-  .screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
+  /* Top Bar */
+  .top-bar {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 15px;
+    border-bottom:1px solid #ccc;
+    position: sticky;
+    top:0;
+    background:#fff;
+    z-index:10;
   }
 
-  .active {
-    display: flex;
+  .top-bar .left { font-weight:bold; font-size:18px; }
+
+  .top-bar .icons img {
+    width:24px;
+    height:24px;
+    margin-left:15px;
+    cursor:pointer;
   }
 
-  .logo, .profile-icon, .friend-icon {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 20px;
-    border: 2px solid #007bff;
+  /* Main Content */
+  .main {
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    align-items:center;
+    min-height:70vh;
+    text-align:center;
+    padding:20px;
+    font-size:16px;
+    color:#333;
   }
 
-  input[type="text"], input[type="file"] {
-    width: 90%;
-    padding: 12px;
-    font-size: 18px;
-    margin-bottom: 15px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    text-align: center;
+  /* Floating Button */
+  .fab {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width:60px;
+    height:60px;
+    background:#25d366;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    box-shadow:0 4px 6px rgba(0,0,0,0.3);
+    font-size:30px;
+    color:#fff;
   }
 
-  button {
-    width: 90%;
-    padding: 12px;
-    font-size: 18px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(to right, #007bff, #00c6ff);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
+  .fab-menu {
+    display:none;
+    flex-direction:column;
+    position: fixed;
+    bottom: 140px;
+    right: 20px;
+    background:#fff;
+    border-radius:10px;
+    box-shadow:0 4px 6px rgba(0,0,0,0.3);
+    overflow:hidden;
   }
 
-  #displayProfile img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    border: 3px solid #007bff;
+  .fab-menu button {
+    padding:10px 20px;
+    border:none;
+    background:none;
+    text-align:left;
+    cursor:pointer;
+    font-size:16px;
   }
 
-  #displayName {
-    font-size: 22px;
-    font-weight: bold;
-    color: #333;
+  .fab-menu button:hover { background:#f0f0f0; }
+
+  /* QR display modal */
+  #qrModal, #scannerModal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
   }
 
+  #qrModalContent, #scannerContent {
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+    max-width:90%;
+    width:300px;
+  }
+
+  /* Full screen scanner on mobile */
+  #scannerContent { width:100%; height:100%; border-radius:0; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+
+  #reader { width:100%; height:100%; }
+
+  #qrCode { margin:auto; }
+
+  button { cursor:pointer; padding:10px 15px; margin-top:10px; border:none; border-radius:5px; background:#25d366; color:#fff; font-size:16px; }
 </style>
 </head>
 <body>
 
-<!-- Step 1: Logo -->
-<div id="logoScreen" class="screen active">
-  <img src="https://via.placeholder.com/120?text=Logo" class="logo" alt="Logo">
+<!-- Logo -->
+<div class="logo">ChatApp Logo</div>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="left" id="usernameDisplay">Your Name</div>
+  <div class="icons">
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/camera.png" id="topCamera" title="Show QR Code">
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/search.png" id="topSearch" title="Search Friend">
+  </div>
 </div>
 
-<!-- Step 2: Profile setup -->
-<div id="profileScreen" class="screen">
-  <img id="profileIcon" class="profile-icon" src="https://via.placeholder.com/120?text=Icon" alt="Profile Icon">
-  <input type="file" id="photoInput" accept="image/*"><br>
-  <input type="text" id="nameInput" placeholder="Enter your name"><br>
-  <button onclick="goToSearch()">Get Started</button>
+<!-- Main Content -->
+<div class="main" id="mainContent">
+  <p>No messages yet <br> Add friends to start conversation</p>
+  <div id="friendsList"></div>
 </div>
 
-<!-- Step 3: Search Friends -->
-<div id="searchScreen" class="screen">
-  <h2>Search Friends</h2>
-  <p>This is the friend search screen (implement later).</p>
+<!-- Floating Add Button -->
+<div class="fab" id="fab">+</div>
+<div class="fab-menu" id="fabMenu">
+  <button id="scanQRBtn">Scan QR Code</button>
+  <button id="searchFriendBtn">Search Friend</button>
 </div>
 
+<!-- QR Code Modal -->
+<div id="qrModal">
+  <div id="qrModalContent">
+    <h3>Your QR Code</h3>
+    <canvas id="qrCode"></canvas>
+    <button onclick="closeQR()">Close</button>
+  </div>
+</div>
+
+<!-- QR Scanner Modal -->
+<div id="scannerModal">
+  <div id="scannerContent">
+    <h3 style="color:white;">Scan Friend's QR Code</h3>
+    <div id="reader"></div>
+    <button onclick="closeScanner()">Close</button>
+  </div>
+</div>
+
+<!-- JS Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
 <script>
-  // Step 1: show logo for 2 seconds then go to profile
-  setTimeout(() => {
-    document.getElementById('logoScreen').classList.remove('active');
-    document.getElementById('profileScreen').classList.add('active');
-  }, 2000);
+  const fab = document.getElementById('fab');
+  const fabMenu = document.getElementById('fabMenu');
+  const scanQRBtn = document.getElementById('scanQRBtn');
+  const searchFriendBtn = document.getElementById('searchFriendBtn');
+  const qrModal = document.getElementById('qrModal');
+  const qrCodeCanvas = document.getElementById('qrCode');
+  const scannerModal = document.getElementById('scannerModal');
+  const usernameDisplay = document.getElementById('usernameDisplay');
+  const friendsList = document.getElementById('friendsList');
 
-  function goToSearch() {
-    const name = document.getElementById('nameInput').value;
-    const photoInput = document.getElementById('photoInput');
-    const profileIcon = document.getElementById('profileIcon');
+  const username = "JohnDoe123";
+  usernameDisplay.textContent = username;
 
-    if (!name) {
-      alert("Please enter your name.");
-      return;
-    }
+  // Generate user's QR code
+  QRCode.toCanvas(qrCodeCanvas, username, { width:200 }, function (error) {
+    if (error) console.error(error)
+  });
 
-    // Save profile picture (optional)
-    if (photoInput.files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        profileIcon.src = e.target.result;
-        showSearchScreen();
-      }
-      reader.readAsDataURL(photoInput.files[0]);
-    } else {
-      showSearchScreen();
-    }
+  // Toggle FAB menu
+  fab.addEventListener('click', () => {
+    fabMenu.style.display = fabMenu.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  // Show QR code
+  document.getElementById('topCamera').addEventListener('click', () => { qrModal.style.display = 'flex'; });
+
+  // Search Friend placeholder
+  searchFriendBtn.addEventListener('click', () => { alert("Search friend functionality."); fabMenu.style.display = 'none'; });
+  document.getElementById('topSearch').addEventListener('click', () => { alert("Search friend functionality."); });
+
+  function closeQR() { qrModal.style.display = 'none'; }
+
+  let html5QrCode;
+  let scannedFriends = new Set();
+
+  function openScanner() {
+    scannerModal.style.display = 'flex';
+    fabMenu.style.display = 'none';
+    html5QrCode = new Html5Qrcode("reader");
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width:250, height:250 } },
+      (decodedText) => {
+        if (!scannedFriends.has(decodedText)) {
+          scannedFriends.add(decodedText);
+          addFriend(decodedText);
+        }
+        // Continuous scanning, don't stop
+      },
+      (errorMessage) => { /*console.warn(errorMessage);*/ }
+    ).catch(err => console.error(err));
   }
 
-  function showSearchScreen() {
-    document.getElementById('profileScreen').classList.remove('active');
-    document.getElementById('searchScreen').classList.add('active');
+  function closeScanner() {
+    scannerModal.style.display = 'none';
+    if (html5QrCode) html5QrCode.stop().catch(err=>console.error(err));
+  }
+
+  function addFriend(friendName) {
+    const friendDiv = document.createElement('div');
+    friendDiv.textContent = friendName;
+    friendDiv.style.padding = "10px";
+    friendDiv.style.marginTop = "5px";
+    friendDiv.style.background = "#f0f0f0";
+    friendDiv.style.borderRadius = "5px";
+    friendsList.appendChild(friendDiv);
   }
 </script>
-
 </body>
 </html>
