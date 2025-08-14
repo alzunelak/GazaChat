@@ -1,3 +1,9 @@
+data class Group(
+    val id: String = UUID.randomUUID().toString(),
+    val name: String,
+    val memberIds: List<String> // Friend.id list
+)
+
 package com.example.chatbt.data
 
 import java.util.UUID
