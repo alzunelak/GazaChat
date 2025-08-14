@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Search Friend — ChatApp</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar sticky">
+    <button class="icon-btn" onclick="history.back()">◀</button>
+    <div class="title">Search by Username</div>
+    <div style="width:36px"></div>
+  </header>
+
+  <main class="page pad">
+    <label class="field">
+      <span>Friend's username</span>
+      <input id="friendInput" type="text" placeholder="e.g. alice_123">
+    </label>
+    <button id="saveFriendBtn" class="btn primary wide">Add friend & Start Chat</button>
+  </main>
+</body>
+</html>
