@@ -1,23 +1,19 @@
-// Mobile-friendly buttons
 const s1 = document.getElementById('screen1');
 const s2 = document.getElementById('screen2');
 const s3 = document.getElementById('screen3');
 const s4 = document.getElementById('screen4');
 
-const continueBtn = document.getElementById('continueBtn');
 const saveProfileBtn = document.getElementById('saveProfileBtn');
 const scanQRBtn = document.getElementById('scanQRBtn');
 const friendsUl = document.getElementById('friendsUl');
 const startChatBtn = document.getElementById('startChatBtn');
 const scannerPopup = document.getElementById('scannerPopup');
 
-// Handle mobile click + touch
-function goToProfile() {
+// Auto-go from logo to profile
+setTimeout(() => {
   s1.classList.add('hidden');
   s2.classList.remove('hidden');
-}
-continueBtn.addEventListener('click', goToProfile);
-continueBtn.addEventListener('touchend', (e)=>{ e.preventDefault(); goToProfile(); });
+}, 1000); // 1 second delay
 
 // Profile -> Home
 saveProfileBtn.addEventListener('click', async () => {
@@ -41,9 +37,9 @@ saveProfileBtn.addEventListener('click', async () => {
   s2.classList.add('hidden'); s3.classList.remove('hidden');
 });
 
-// ECDH + QR functions placeholders
+// ECDH + QR placeholders
 async function setupProfileKeys(username){
-  const payloadStr = JSON.stringify({u: username, k:"PUBLIC_KEY"}); // replace with real createProfileAndQr
+  const payloadStr = JSON.stringify({u: username, k:"PUBLIC_KEY"});
   const qrContainer = document.getElementById('qrcode'); qrContainer.innerHTML='';
   new QRCode(qrContainer, payloadStr);
 }
@@ -75,7 +71,7 @@ function onIncomingMessage(text, fromName){
   box.appendChild(p); box.scrollTop=box.scrollHeight;
 }
 
-// QR scanner example
+// QR scanner
 scanQRBtn.addEventListener('click', ()=>{
   scannerPopup.classList.remove('hidden');
   const qrScanner = new Html5Qrcode("reader");
@@ -83,8 +79,7 @@ scanQRBtn.addEventListener('click', ()=>{
     async decodedText=>{
       await qrScanner.stop();
       scannerPopup.classList.add('hidden');
-      // Handle friend
-      const friendName = decodedText; // placeholder
+      const friendName = decodedText;
       const li=document.createElement('li'); li.textContent=friendName; friendsUl.appendChild(li);
       startChatBtn.classList.remove('hidden');
     },
