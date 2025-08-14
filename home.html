@@ -27,7 +27,6 @@
 </head>
 <body>
 
-<!-- Profile Section -->
 <div class="profile-section">
   <div class="profile-info">
     <img id="profilePhoto" src="default-profile.png" alt="Profile Picture">
@@ -36,16 +35,13 @@
   <div class="three-dot">⋮</div>
 </div>
 
-<!-- Middle Section -->
 <div class="middle-section">
   No messages yet, add friends
   <div class="friends-list" id="friendsList"></div>
 </div>
 
-<!-- Floating + Button -->
 <div class="fab" id="fab">+</div>
 
-<!-- Popup Menu -->
 <div class="popup-menu" id="popupMenu">
   <button id="myCodeBtn">My Code</button>
   <button id="scanCodeBtn">Scan Code</button>
@@ -53,23 +49,22 @@
   <button id="videoPhotoBtn">Take Video & Photo</button>
 </div>
 
-<!-- Bottom Chat / Group / Call -->
 <div class="chat-group-call">
   <button id="chatBtn">Chat</button>
   <button id="groupBtn">Group</button>
   <button id="callBtn">Call</button>
 </div>
 
-<!-- QR Reader -->
 <div id="qr-reader" style="display:none;"></div>
 
 <script>
 const profileNameEl = document.getElementById('profileName');
 const profilePhotoEl = document.getElementById('profilePhoto');
 
-// Redirect to name.html if profile missing
-const name = localStorage.getItem('chatapp_username');
-const photo = localStorage.getItem('chatapp_userphoto');
+// Redirect to name.html if profile not set
+let name = localStorage.getItem('chatapp_username');
+let photo = localStorage.getItem('chatapp_userphoto');
+
 if(!name || !photo){
   window.location.href = "name.html";
 } else {
@@ -77,7 +72,7 @@ if(!name || !photo){
   profilePhotoEl.src = photo;
 }
 
-// Update profile photo
+// Allow changing profile photo
 profilePhotoEl.addEventListener('click', ()=>{
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
@@ -94,38 +89,31 @@ profilePhotoEl.addEventListener('click', ()=>{
   fileInput.click();
 });
 
-// --- Friends Management ---
+// --- Friends & FAB ---
 const fab = document.getElementById('fab');
 const popupMenu = document.getElementById('popupMenu');
 const friendsList = document.getElementById('friendsList');
 let html5QrcodeScanner;
 
-fab.addEventListener('click', () => {
+fab.addEventListener('click', ()=> {
   popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
 });
 
-function getSavedFriends() {
-  const saved = localStorage.getItem('chatapp_friends');
-  return saved ? JSON.parse(saved) : [];
+function getSavedFriends(){ 
+  return JSON.parse(localStorage.getItem('chatapp_friends') || "[]"); 
 }
-
-function saveFriends(friends){
-  localStorage.setItem('chatapp_friends', JSON.stringify(friends));
-}
-
-function renderFriends(){
-  friendsList.innerHTML = '';
-  const friends = getSavedFriends();
-  friends.forEach(name=>{
-    const friendDiv = document.createElement('div');
-    friendDiv.className = 'friend';
-    friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
-    friendsList.appendChild(friendDiv);
+function saveFriends(friends){ localStorage.setItem('chatapp_friends', JSON.stringify(friends)); }
+function renderFriends(){ 
+  friendsList.innerHTML = ''; 
+  getSavedFriends().forEach(f=> {
+    const div = document.createElement('div');
+    div.className = 'friend';
+    div.innerHTML = `<img src="friend.png" alt="Friend"> ${f}`;
+    friendsList.appendChild(div);
   });
 }
-
-function addFriend(name){
-  if(!name) return;
+function addFriend(name){ 
+  if(!name) return; 
   const friends = getSavedFriends();
   if(!friends.includes(name)){
     friends.push(name);
@@ -133,44 +121,34 @@ function addFriend(name){
     renderFriends();
   }
 }
-
-// Load friends on page load
 renderFriends();
 
-// --- Popup Menu Buttons ---
+// --- Popup Buttons ---
 document.getElementById('myCodeBtn').addEventListener('click', ()=> alert("Show my QR code!"));
 document.getElementById('scanCodeBtn').addEventListener('click', ()=>{
   const qrReaderDiv = document.getElementById('qr-reader');
-  qrReaderDiv.style.display = 'block';
+  qrReaderDiv.style.display='block';
   html5QrcodeScanner = new Html5Qrcode("qr-reader");
   html5QrcodeScanner.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    decodedText => { addFriend(decodedText); html5QrcodeScanner.stop(); qrReaderDiv.style.display='none'; },
-    errorMessage => {}
-  ).catch(err => alert("Unable to start QR scanner: " + err));
+    {facingMode:"environment"}, {fps:10, qrbox:250},
+    decodedText=>{ addFriend(decodedText); html5QrcodeScanner.stop(); qrReaderDiv.style.display='none'; },
+    errorMessage=>{}
+  ).catch(err=>alert(err));
 });
-
 document.getElementById('searchFriendBtn').addEventListener('click', ()=>{
-  const friendName = prompt("Enter friend's name:");
-  if(friendName) addFriend(friendName);
+  const friend = prompt("Enter friend's name:"); if(friend) addFriend(friend);
 });
-
 document.getElementById('videoPhotoBtn').addEventListener('click', ()=>{
-  const video = document.createElement('video');
-  video.style.width='100%';
-  video.style.height='100%';
-  video.autoplay = true;
+  const video = document.createElement('video'); video.style.width='100%'; video.style.height='100%'; video.autoplay=true;
   document.body.appendChild(video);
-  navigator.mediaDevices.getUserMedia({video:true})
-    .then(stream => video.srcObject = stream)
-    .catch(err => alert("Camera error: "+err));
+  navigator.mediaDevices.getUserMedia({video:true}).then(s=>video.srcObject=s).catch(err=>alert(err));
 });
 
-// Chat / Group / Call
+// --- Chat / Group / Call ---
 document.getElementById('chatBtn').addEventListener('click', ()=> window.location.href='chat.html');
 document.getElementById('groupBtn').addEventListener('click', ()=> window.location.href='group.html');
 document.getElementById('callBtn').addEventListener('click', ()=> window.location.href='call.html');
 </script>
+
 </body>
 </html>
