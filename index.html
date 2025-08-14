@@ -1,58 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bluetooth ChatApp</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="qrcode.min.js"></script>
-  <script src="html5-qrcode.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px 20px;
+    background: #fff;
+  }
+
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 2px solid #ccc;
+  }
+
+  input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  #displayName {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+</style>
 </head>
 <body>
 
-  <!-- Splash Screen -->
-  <div id="screen1" class="screen active">
-    <img src="https://github.com/alzunelak/ChatApp/blob/main/OIP.jpg?raw=true" 
-         alt="ChatApp Logo" class="logo">
-  </div>
+<img id="profilePic" class="profile-pic" src="https://via.placeholder.com/150" alt="Profile Picture"><br>
+<input type="file" id="photoInput" accept="image/*"><br>
+<input type="text" id="nameInput" placeholder="Enter your name"><br>
+<button onclick="saveProfile()">Get Started</button>
 
-  <!-- Profile Setup -->
-  <div id="screen2" class="screen hidden">
-    <h2>Set Up Your Profile</h2>
-    <input type="file" id="profilePicInput" accept="image/*">
-    <input type="text" id="usernameInput" placeholder="Enter your name">
-    <button id="saveProfileBtn" class="primary-btn">Continue</button>
-  </div>
+<div id="displayProfile" style="margin-top: 30px; display:none;">
+  <img id="finalPic" class="profile-pic" src="" alt="Profile Picture"><br>
+  <div id="displayName"></div>
+</div>
 
-  <!-- Home Screen -->
-  <div id="screen3" class="screen hidden">
-    <div class="profile-header">
-      <img id="userPic" class="profile-pic" src="default-profile.png" alt="Profile">
-      <div>
-        <h3 id="displayName"></h3>
-      </div>
-    </div>
+<script>
+function saveProfile() {
+  const name = document.getElementById('nameInput').value;
+  const photoInput = document.getElementById('photoInput');
+  const displayProfile = document.getElementById('displayProfile');
+  const displayName = document.getElementById('displayName');
+  const finalPic = document.getElementById('finalPic');
 
-    <h4>Your QR Code</h4>
-    <div id="qrcode"></div>
+  if (name && photoInput.files.length > 0) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      finalPic.src = e.target.result;
+      displayName.textContent = name;
+      displayProfile.style.display = 'block';
+    }
+    reader.readAsDataURL(photoInput.files[0]);
+  } else {
+    alert("Please enter your name and choose a photo.");
+  }
+}
+</script>
 
-    <button id="scanQRBtn" class="primary-btn">Scan Friend's QR</button>
-
-    <div id="friendsList">
-      <h4>Friends</h4>
-      <ul id="friendsUl"></ul>
-    </div>
-
-    <button id="startChatBtn" class="primary-btn hidden">Start Chat</button>
-  </div>
-
-  <!-- Chat Screen -->
-  <div id="screen4" class="screen hidden">
-    <div id="chatBox" class="chat-box"></div>
-    <input type="text" id="messageInput" placeholder="Type a message">
-    <button id="sendBtn" class="primary-btn">Send</button>
-  </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
