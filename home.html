@@ -3,80 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home — ChatApp</title>
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-<link rel="stylesheet" href="style.css">
+<title>ChatApp Home</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
-.top-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #ccc; background:#fff; position:sticky; top:0; z-index:10; }
-.top-bar .left { display:flex; align-items:center; font-weight:bold; font-size:18px; }
-.top-bar img.profile-pic { width:35px; height:35px; border-radius:50%; margin-right:10px; border:1px solid #ccc; object-fit:cover; }
-.main { flex:1; padding:10px 15px; overflow-y:auto; }
-#noMsgText { text-align:center; margin-top:30px; font-size:16px; color:#333; }
-.friends-list .friend { display:flex; align-items:center; background:#f5f5f5; padding:10px; margin-bottom:10px; border-radius:8px; cursor:pointer; }
-.friends-list .friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover; }
-.fab { position: fixed; bottom: 70px; right: 20px; width:60px; height:60px; background:#25d366; border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer; color:#fff; font-size:30px; box-shadow:0 4px 6px rgba(0,0,0,0.3); z-index:50; }
-.fab-menu { display:none; flex-direction:column; position:fixed; bottom:140px; right:20px; background:#fff; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,0.3); overflow:hidden; z-index:50; }
-.fab-menu button { padding:10px 20px; border:none; text-align:left; cursor:pointer; background:none; font-size:16px; }
-.fab-menu button:hover { background:#f0f0f0; }
-.bottom-buttons { display:flex; justify-content:center; gap:15px; margin-top:20px; flex-wrap:wrap; }
-.bottom-buttons button { padding:10px 20px; border:none; border-radius:5px; background:#25d366; color:#fff; font-size:16px; cursor:pointer; }
-#qrModal, #cameraModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:100; flex-direction:column; }
-#qrModalContent, #cameraModalContent { background:#fff; padding:20px; border-radius:10px; text-align:center; max-width:90%; width:400px; }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* Top profile section */
+  .profile-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .profile-info {
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-info img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+
+  .profile-info .name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .three-dot {
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  /* Middle section */
+  .middle-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #666;
+    flex-direction: column;
+  }
+
+  /* Floating + button */
+  .fab {
+    position: fixed;
+    bottom: 100px; /* above chat/group/call buttons */
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    z-index: 100;
+  }
+
+  /* Popup menu */
+  .popup-menu {
+    position: fixed;
+    bottom: 170px; /* above FAB */
+    right: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 99;
+  }
+
+  .popup-menu button {
+    padding: 15px 20px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+  }
+
+  .popup-menu button:hover {
+    background-color: #f0f0f0;
+  }
+
+  /* Chat / Group / Call section */
+  .chat-group-call {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  }
+
+  .chat-group-call button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: #fff;
+  }
+
 </style>
 </head>
 <body>
 
-<div class="top-bar">
-  <div class="left">
-    <img id="userPic" class="profile-pic" src="" alt="Profile">
-    <span id="usernameDisplay">Your Name</span>
+<!-- Top Profile Section -->
+<div class="profile-section">
+  <div class="profile-info">
+    <img src="profile.jpg" alt="Profile Picture">
+    <div class="name">Mimah Suleiman</div>
   </div>
-  <div class="icons">
-    <img src="https://img.icons8.com/ios-glyphs/30/000000/menu-2.png" title="Menu">
-  </div>
+  <div class="three-dot">⋮</div>
 </div>
 
-<div class="main">
-  <p id="noMsgText">No messages yet <br> Add friends to start conversation</p>
-  <div class="friends-list" id="friendsList"></div>
-
-  <div class="bottom-buttons">
-    <button onclick="location.href='chat.html'">Chats</button>
-    <button onclick="location.href='group.html'">Group</button>
-    <button onclick="location.href='call.html'">Call</button>
-  </div>
+<!-- Middle Section -->
+<div class="middle-section">
+  No messages yet, add friends
 </div>
 
+<!-- Floating + Button -->
 <div class="fab" id="fab">+</div>
-<div class="fab-menu" id="fabMenu">
+
+<!-- Popup Menu -->
+<div class="popup-menu" id="popupMenu">
   <button id="myCodeBtn">My Code</button>
-  <button id="scanQRBtn">Scan Friend QR</button>
+  <button id="scanCodeBtn">Scan Code</button>
   <button id="searchFriendBtn">Search Friend</button>
-  <button id="cameraBtn">Take Video / Photo</button>
+  <button id="videoPhotoBtn">Take Video & Photo</button>
 </div>
 
-<div id="qrModal">
-  <div id="qrModalContent">
-    <h3>Your QR Code</h3>
-    <canvas id="qrCode"></canvas>
-    <button onclick="closeQR()">Close</button>
-  </div>
+<!-- Chat / Group / Call Section (Bottom) -->
+<div class="chat-group-call">
+  <button id="chatBtn">Chat</button>
+  <button id="groupBtn">Group</button>
+  <button id="callBtn">Call</button>
 </div>
 
-<div id="cameraModal">
-  <video id="cameraVideo" autoplay style="width:100%; border-radius:10px; margin-top:10px;"></video>
-  <div style="margin-top:10px;">
-    <button id="takePhotoBtn">Take Photo</button>
-    <button id="startVideoBtn">Start Recording</button>
-    <button id="stopVideoBtn">Stop Recording</button>
-  </div>
-  <canvas id="photoCanvas" style="display:none; margin-top:10px;"></canvas>
-  <video id="recordedVideo" controls style="display:none; width:100%; margin-top:10px;"></video>
-  <button onclick="closeCamera()" style="margin-top:10px;">Close</button>
-</div>
+<script>
+  const fab = document.getElementById('fab');
+  const popupMenu = document.getElementById('popupMenu');
 
-<script src="home.js"></script>
+  fab.addEventListener('click', () => {
+    popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  document.getElementById('myCodeBtn').addEventListener('click', () => {
+    alert("Show my QR code!");
+  });
+
+  document.getElementById('scanCodeBtn').addEventListener('click', () => {
+    openCamera();
+  });
+
+  document.getElementById('searchFriendBtn').addEventListener('click', () => {
+    alert("Search friend by username!");
+  });
+
+  document.getElementById('videoPhotoBtn').addEventListener('click', () => {
+    openCamera();
+  });
+
+  document.getElementById('chatBtn').addEventListener('click', () => {
+    alert("Open chat!");
+  });
+
+  document.getElementById('groupBtn').addEventListener('click', () => {
+    window.location.href = 'group.html'; // Navigate to group page
+  });
+
+  document.getElementById('callBtn').addEventListener('click', () => {
+    window.location.href = 'call.html'; // Navigate to call page
+  });
+
+  function openCamera() {
+    const video = document.createElement('video');
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.autoplay = true;
+    document.body.appendChild(video);
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        alert("Camera opened! Press ESC or close tab to stop.");
+      })
+      .catch(err => {
+        alert("Error accessing camera: " + err);
+      });
+  }
+</script>
 
 </body>
 </html>
