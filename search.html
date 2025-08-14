@@ -1,25 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Search Friend — ChatApp</title>
-<link rel="stylesheet" href="style.css">
-<script src="app.js" defer></script>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #ccc; background:#fff; position:sticky; top:0; z-index:10; }
+.topbar .title { font-weight:bold; font-size:18px; }
+.topbar button { font-size:18px; padding:5px 10px; }
+.main { flex:1; padding:20px; display:flex; flex-direction:column; gap:15px; }
+input { padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc; width:100%; }
+button { padding:10px; font-size:16px; border:none; border-radius:5px; background:#25d366; color:#fff; cursor:pointer; }
+</style>
 </head>
 <body>
-  <header class="topbar sticky">
-    <button class="icon-btn" onclick="history.back()">◀</button>
-    <div class="title">Search by Username</div>
-    <div style="width:36px"></div>
-  </header>
 
-  <main class="page pad">
-    <label class="field">
-      <span>Friend's username</span>
-      <input id="friendInput" type="text" placeholder="e.g. alice_123">
-    </label>
-    <button id="saveFriendBtn" class="btn primary wide">Add friend & Start Chat</button>
-  </main>
+<header class="topbar sticky">
+  <button onclick="history.back()">◀</button>
+  <div class="title">Search by Username</div>
+  <div style="width:36px"></div>
+</header>
+
+<main class="main">
+  <label>
+    <span>Friend's username</span>
+    <input id="friendInput" type="text" placeholder="e.g. alice_123">
+  </label>
+  <button id="saveFriendBtn">Add Friend & Start Chat</button>
+</main>
+
+<script>
+// Save friend and redirect to chat
+document.getElementById('saveFriendBtn').addEventListener('click', () => {
+  const input = document.getElementById('friendInput');
+  const friendName = input.value.trim();
+  if(!friendName) return alert("Enter a username");
+
+  // Save to friends list
+  let friends = JSON.parse(localStorage.getItem('friendsList') || "[]");
+  if(!friends.includes(friendName)){
+    friends.push(friendName);
+    localStorage.setItem('friendsList', JSON.stringify(friends));
+  }
+
+  // Initialize empty chat if doesn't exist
+  let chats = JSON.parse(localStorage.getItem('chat_' + friendName) || "[]");
+  localStorage.setItem('chat_' + friendName, JSON.stringify(chats));
+
+  // Set as new friend to update home
+  localStorage.setItem('newFriend', friendName);
+
+  // Redirect to chat page
+  localStorage.setItem('currentFriend', friendName);
+  window.location.href = 'chat.html';
+});
+</script>
+
 </body>
 </html>
