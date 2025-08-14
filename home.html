@@ -5,37 +5,156 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChatApp Home</title>
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  body { font-family: Arial,sans-serif; margin:0; background:#f5f5f5; display:flex; flex-direction:column; height:100vh;}
-  .profile-section{display:flex; align-items:center; justify-content:space-between; padding:20px; background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-  .profile-info{display:flex; align-items:center;}
-  .profile-info img{width:60px; height:60px; border-radius:50%; margin-right:15px;}
-  .profile-info .name{font-size:20px; font-weight:bold;}
-  .three-dot{font-size:24px; cursor:pointer;}
-  .middle-section{flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; font-size:18px; color:#666;}
-  .friends-list{margin-top:20px; width:80%;}
-  .friend{background:#fff; padding:10px; margin-bottom:10px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; cursor:pointer;}
-  .friend img{width:40px; height:40px; border-radius:50%; margin-right:10px;}
-  .fab{position:fixed; bottom:100px; right:30px; width:60px; height:60px; background:#4CAF50; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:36px; color:#fff; cursor:pointer; box-shadow:0 3px 6px rgba(0,0,0,0.2); z-index:100;}
-  .popup-menu{position:fixed; bottom:170px; right:30px; background:#fff; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.2); display:none; flex-direction:column; overflow:hidden; z-index:99;}
-  .popup-menu button{padding:15px 20px; border:none; background:none; text-align:left; cursor:pointer; font-size:16px; width:200px;}
-  .popup-menu button:hover{background:#f0f0f0;}
-  .chat-group-call{display:flex; justify-content:space-around; padding:15px; background:#fff; box-shadow:0 -2px 5px rgba(0,0,0,0.1);}
-  .chat-group-call button{padding:10px 15px; font-size:16px; border:none; border-radius:8px; cursor:pointer; background:#4CAF50; color:#fff;}
-  #qr-reader{width:100%; max-width:400px; margin-top:20px; display:none;}
-  .chat-window{background:#fff; padding:12px; margin:15px; border-radius:10px; height:200px; overflow-y:auto; display:none;}
-  #composerDiv{display:none; flex-direction: row; gap:10px; padding:10px; margin:0 15px 15px 15px;}
-  #myQrPopup{display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.3); z-index:300; text-align:center;}
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .profile-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .profile-info {
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-info img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+
+  .profile-info .name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .three-dot {
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .middle-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #666;
+  }
+
+  .friends-list {
+    margin-top: 20px;
+    width: 80%;
+  }
+
+  .friend {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+  }
+
+  .friend img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  .fab {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    z-index: 100;
+  }
+
+  .popup-menu {
+    position: fixed;
+    bottom: 170px;
+    right: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 99;
+  }
+
+  .popup-menu button {
+    padding: 15px 20px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+  }
+
+  .popup-menu button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .chat-group-call {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  }
+
+  .chat-group-call button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: #fff;
+  }
+
+  #qr-reader {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+  }
+
 </style>
 </head>
 <body>
 
 <div class="profile-section">
   <div class="profile-info">
-    <img id="profileImage" src="profile.jpg" alt="Profile Picture">
-    <div id="profileName" class="name">Mimah Suleiman</div>
+    <img src="profile.jpg" alt="Profile Picture">
+    <div class="name">Mimah Suleiman</div>
   </div>
   <div class="three-dot">⋮</div>
 </div>
@@ -60,148 +179,75 @@
   <button id="callBtn">Call</button>
 </div>
 
-<div id="qr-reader"></div>
-
-<div id="composerDiv">
-  <input type="text" id="msgInput" placeholder="Type a message..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #ddd;">
-  <button id="sendBtn" style="background:#4CAF50;color:#fff;border:none;padding:10px 15px;border-radius:8px;cursor:pointer;">Send</button>
-</div>
-
-<!-- My QR Code Popup -->
-<div id="myQrPopup">
-  <div id="myQrCode"></div>
-  <button id="closeQrBtn" style="margin-top:15px; padding:10px 20px; border:none; border-radius:8px; background:#f44336; color:#fff; cursor:pointer;">Close</button>
-</div>
+<!-- QR Reader -->
+<div id="qr-reader" style="display:none;"></div>
 
 <script>
-  const profileName = document.getElementById('profileName');
-  const profileImage = document.getElementById('profileImage');
-  const savedName = localStorage.getItem('userName');
-  const savedPic = localStorage.getItem('profilePic');
-  const friendsKey = 'chatapp_friends';
   const fab = document.getElementById('fab');
   const popupMenu = document.getElementById('popupMenu');
   const friendsList = document.getElementById('friendsList');
-  const qrReaderDiv = document.getElementById('qr-reader');
-  const chatWindow = document.querySelector('.chat-window');
-  const composerDiv = document.getElementById('composerDiv');
-  const msgInput = document.getElementById('msgInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const myQrPopup = document.getElementById('myQrPopup');
-  const myQrCodeDiv = document.getElementById('myQrCode');
-  const closeQrBtn = document.getElementById('closeQrBtn');
-
   let html5QrcodeScanner;
-  let activeFriend = null;
-
-  // Set profile info
-  if(savedName) profileName.textContent = savedName;
-  if(savedPic) profileImage.src = savedPic;
-  else profileImage.src = 'default-icon.png';
-
-  // Load existing friends
-  let friends = JSON.parse(localStorage.getItem(friendsKey)) || [];
-  friends.forEach(f => renderFriend(f));
 
   fab.addEventListener('click', () => {
     popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
   });
 
   document.getElementById('myCodeBtn').addEventListener('click', () => {
-    myQrPopup.style.display = 'block';
-    myQrCodeDiv.innerHTML = '';
-    const userName = profileName.textContent || 'ChatAppUser';
-    new QRCode(myQrCodeDiv, { text: userName, width:200, height:200 });
+    alert("Show my QR code!");
   });
 
-  closeQrBtn.addEventListener('click', ()=> myQrPopup.style.display='none');
-
-  document.getElementById('scanCodeBtn').addEventListener('click', startQRScanner);
-  document.getElementById('searchFriendBtn').addEventListener('click', ()=> {
-    const name = prompt("Enter friend's name:");
-    if(name) addFriend(name);
+  document.getElementById('scanCodeBtn').addEventListener('click', () => {
+    startQRScanner();
   });
-  document.getElementById('videoPhotoBtn').addEventListener('click', openCamera);
-  document.getElementById('chatBtn').addEventListener('click', ()=> alert("Open chat!"));
-  document.getElementById('groupBtn').addEventListener('click', ()=> window.location.href='group.html');
-  document.getElementById('callBtn').addEventListener('click', ()=> window.location.href='call.html');
+
+  document.getElementById('searchFriendBtn').addEventListener('click', () => {
+    const friendName = prompt("Enter friend's name to add:");
+    if(friendName) addFriend(friendName);
+  });
+
+  document.getElementById('videoPhotoBtn').addEventListener('click', () => {
+    openCamera();
+  });
+
+  document.getElementById('chatBtn').addEventListener('click', () => alert("Open chat!"));
+  document.getElementById('groupBtn').addEventListener('click', () => window.location.href='group.html');
+  document.getElementById('callBtn').addEventListener('click', () => window.location.href='call.html');
 
   function openCamera() {
     const video = document.createElement('video');
-    video.style.width='100%'; video.style.height='100%'; video.autoplay=true;
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.autoplay = true;
     document.body.appendChild(video);
-    navigator.mediaDevices.getUserMedia({video:true})
-      .then(stream => video.srcObject = stream)
-      .catch(err => alert("Error accessing camera: "+err));
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; })
+      .catch(err => { alert("Error accessing camera: " + err); });
   }
 
   function startQRScanner() {
-    qrReaderDiv.style.display='block';
+    const qrReaderDiv = document.getElementById('qr-reader');
+    qrReaderDiv.style.display = 'block';
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
-    html5QrcodeScanner.start({facingMode:"environment"}, {fps:10, qrbox:250},
-      decodedText => { addFriend(decodedText); html5QrcodeScanner.stop(); qrReaderDiv.style.display='none'; },
-      errorMessage => {}
-    ).catch(err => alert("Unable to start QR scanner: "+err));
+
+    html5QrcodeScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        addFriend(decodedText);
+        html5QrcodeScanner.stop();
+        qrReaderDiv.style.display = 'none';
+      },
+      (errorMessage) => {}
+    ).catch(err => { alert("Unable to start QR scanner: " + err); });
   }
 
   function addFriend(name) {
-    if(friends.includes(name)) return;
-    friends.push(name);
-    localStorage.setItem(friendsKey, JSON.stringify(friends));
-    renderFriend(name);
+    const friendDiv = document.createElement('div');
+    friendDiv.className = 'friend';
+    friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
+    friendsList.appendChild(friendDiv);
   }
-
-  function renderFriend(name) {
-    const div = document.createElement('div');
-    const pic = localStorage.getItem('friendPic_'+name) || 'friend.png';
-    div.className='friend';
-    div.innerHTML=`<img src="${pic}" alt="Friend"> ${name}`;
-    div.onclick=()=>openChat(name);
-    friendsList.appendChild(div);
-  }
-
-  function openChat(name) {
-    activeFriend=name;
-    chatWindow.style.display='block';
-    composerDiv.style.display='flex';
-    renderChat();
-  }
-
-  function renderChat() {
-    if(!activeFriend) return;
-    chatWindow.innerHTML='';
-    const chatKey='chatapp_chat_'+activeFriend;
-    const messages=JSON.parse(localStorage.getItem(chatKey))||[];
-    messages.forEach(m=>{
-      const div=document.createElement('div');
-      div.textContent=m.from+': '+m.text;
-      div.style.margin='5px 0'; div.style.padding='6px 10px'; div.style.borderRadius='8px';
-      div.style.background=m.from==='me'?'#4CAF50':'#eee';
-      div.style.color=m.from==='me'?'#fff':'#000';
-      chatWindow.appendChild(div);
-    });
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  }
-
-  function sendMessage() {
-    if(!activeFriend) return;
-    const text = msgInput.value.trim(); if(!text) return;
-    const chatKey='chatapp_chat_'+activeFriend;
-    const messages=JSON.parse(localStorage.getItem(chatKey))||[];
-    messages.push({from:'me', text});
-    localStorage.setItem(chatKey, JSON.stringify(messages));
-    msgInput.value=''; renderChat();
-    // optional auto-reply
-    setTimeout(()=>{
-      const msgs=JSON.parse(localStorage.getItem(chatKey))||[];
-      msgs.push({from:'them', text:'Got it!'});
-      localStorage.setItem(chatKey, JSON.stringify(msgs));
-      renderChat();
-    },700);
-  }
-
-  sendBtn.addEventListener('click', sendMessage);
-  msgInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendMessage(); });
 </script>
 
 </body>
