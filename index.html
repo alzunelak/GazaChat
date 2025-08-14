@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bluetooth ChatApp</title>
+<title>ChatApp</title>
 <link rel="stylesheet" href="style.css">
 <script src="qrcode.min.js"></script>
 <script src="html5-qrcode.min.js"></script>
 </head>
 <body>
 
-<!-- Screen 1: Full-screen Splash / Logo -->
+<!-- Splash Screen -->
 <div id="screen1" class="screen active">
   <img src="images/OIP.jpg" alt="ChatApp Logo" class="logo">
 </div>
 
-<!-- Screen 2: Enter Name + Picture -->
+<!-- Profile Setup -->
 <div id="screen2" class="screen hidden">
   <h2>Set Up Your Profile</h2>
   <input type="file" id="profilePicInput" accept="image/*">
@@ -23,7 +23,7 @@
   <button id="saveProfileBtn" class="primary-btn">Continue</button>
 </div>
 
-<!-- Screen 3: Home -->
+<!-- Home Screen -->
 <div id="screen3" class="screen hidden">
   <div class="profile-header">
     <img id="userPic" class="profile-pic" src="default-profile.png" alt="Profile">
@@ -40,14 +40,14 @@
   <button id="startChatBtn" class="primary-btn hidden">Start Chat</button>
 </div>
 
-<!-- Screen 4: Chat -->
+<!-- Chat Screen -->
 <div id="screen4" class="screen hidden">
   <div id="chatBox" class="chat-box"></div>
   <input type="text" id="messageInput" placeholder="Type a message">
   <button id="sendBtn" class="primary-btn">Send</button>
 </div>
 
-<!-- QR Scanner Fullscreen -->
+<!-- QR Scanner Popup -->
 <div id="scannerPopup" class="popup hidden">
   <div id="reader"></div>
 </div>
