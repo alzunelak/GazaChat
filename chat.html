@@ -1,32 +1,193 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Chat — ChatApp</title>
-<link rel="stylesheet" href="style.css">
-<script src="app.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat App</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    background:#fff;
+  }
+  .top-bar {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 15px;
+    border-bottom:1px solid #ccc;
+    position: sticky;
+    top:0;
+    background:#fff;
+    z-index:10;
+  }
+  .top-bar .left {
+    font-weight:bold;
+    font-size:18px;
+    display:flex;
+    align-items:center;
+  }
+  .top-bar img.profile-pic {
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    margin-right:10px;
+    border:1px solid #ccc;
+    object-fit:cover;
+  }
+  .top-bar .icons img {
+    width:24px;
+    height:24px;
+    margin-left:15px;
+    cursor:pointer;
+  }
+  .main {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    height:80vh;
+    text-align:center;
+    padding:20px;
+    font-size:16px;
+    color:#333;
+  }
+  .fab {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width:60px;
+    height:60px;
+    background:#25d366;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    box-shadow:0 4px 6px rgba(0,0,0,0.3);
+    font-size:30px;
+    color:#fff;
+  }
+  .fab-menu {
+    display:none;
+    flex-direction:column;
+    position: fixed;
+    bottom: 140px;
+    right: 20px;
+    background:#fff;
+    border-radius:10px;
+    box-shadow:0 4px 6px rgba(0,0,0,0.3);
+    overflow:hidden;
+  }
+  .fab-menu button {
+    padding:10px 20px;
+    border:none;
+    background:none;
+    text-align:left;
+    cursor:pointer;
+    font-size:16px;
+  }
+  .fab-menu button:hover {
+    background:#f0f0f0;
+  }
+  #qrModal {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:center;
+  }
+  #qrModalContent {
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+  }
+</style>
 </head>
 <body>
-  <header class="topbar sticky">
-    <button class="icon-btn" onclick="location.href='home.html'">◀</button>
-    <div class="top-left">
-      <div id="chatFriendAvatar" class="avatar small placeholder"></div>
-      <div>
-        <div class="title sm">Chat with</div>
-        <div id="chatFriendName" class="subtitle">Friend</div>
-      </div>
-    </div>
-    <div style="width:36px"></div>
-  </header>
 
-  <main class="chat-area">
-    <div id="messages" class="messages"></div>
-  </main>
+<div class="top-bar">
+  <div class="left">
+    <img id="userPic" class="profile-pic" src="" alt="Profile">
+    <span id="usernameDisplay">Your Name</span>
+  </div>
+  <div class="icons">
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/camera.png" id="topCamera" title="Scan QR">
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/search.png" id="topSearch" title="Search Friend">
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/menu-2.png" title="Menu">
+  </div>
+</div>
 
-  <footer class="composer">
-    <input id="msgInput" type="text" placeholder="Type a message…">
-    <button id="sendBtn" class="btn primary">Send</button>
-  </footer>
+<div class="main" id="mainContent">
+  <p>no msg yet <br> add friends to start conversation</p>
+</div>
+
+<div class="fab" id="fab">+</div>
+<div class="fab-menu" id="fabMenu">
+  <button id="scanQRBtn">Scan QR Code</button>
+  <button id="searchFriendBtn">Search Friend</button>
+</div>
+
+<div id="qrModal">
+  <div id="qrModalContent">
+    <h3>Your QR Code</h3>
+    <div id="qrCode"></div>
+    <button onclick="closeQR()">Close</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script>
+  const fab = document.getElementById('fab');
+  const fabMenu = document.getElementById('fabMenu');
+  const qrModal = document.getElementById('qrModal');
+  const qrCodeDiv = document.getElementById('qrCode');
+  const usernameDisplay = document.getElementById('usernameDisplay');
+  const userPic = document.getElementById('userPic');
+
+  // Load stored profile data
+  const storedName = localStorage.getItem('profileName') || "Your Name";
+  const storedPic = localStorage.getItem('profilePic') || "https://via.placeholder.com/150";
+  usernameDisplay.textContent = storedName;
+  userPic.src = storedPic;
+
+  // Generate QR code with username
+  QRCode.toCanvas(qrCodeDiv, storedName, { width:200 }, function (error) {
+    if (error) console.error(error)
+  });
+
+  fab.addEventListener('click', () => {
+    fabMenu.style.display = fabMenu.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  document.getElementById('scanQRBtn').addEventListener('click', () => {
+    alert("Open camera to scan friend's QR code.");
+    fabMenu.style.display = 'none';
+  });
+
+  document.getElementById('searchFriendBtn').addEventListener('click', () => {
+    alert("Search friend screen coming soon.");
+    fabMenu.style.display = 'none';
+  });
+
+  document.getElementById('topCamera').addEventListener('click', () => {
+    qrModal.style.display = 'flex';
+  });
+
+  document.getElementById('topSearch').addEventListener('click', () => {
+    alert("Search friend screen coming soon.");
+  });
+
+  function closeQR() {
+    qrModal.style.display = 'none';
+  }
+</script>
+
 </body>
 </html>
