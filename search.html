@@ -1,53 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Search Friend — ChatApp</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Search - ChatApp</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
-.topbar { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #ccc; background:#fff; position:sticky; top:0; z-index:10; }
-.topbar .title { font-weight:bold; font-size:18px; }
-.topbar button { font-size:18px; padding:5px 10px; }
-.main { flex:1; padding:20px; display:flex; flex-direction:column; gap:15px; }
-input { padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc; width:100%; }
-button { padding:10px; font-size:16px; border:none; border-radius:5px; background:#25d366; color:#fff; cursor:pointer; }
+  :root{--accent:#4CAF50;--bg:#f5f5f5;--card:#fff}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);display:flex;flex-direction:column;min-height:100vh}
+  header{padding:14px;background:var(--card);display:flex;gap:12px;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  header a{color:var(--accent);text-decoration:none}
+  .wrap{padding:18px;flex:1}
+  .search-box{display:flex;gap:8px;max-width:700px;margin:0 auto}
+  .search-box input{flex:1;padding:10px;border-radius:8px;border:1px solid #ddd}
+  .search-box button{padding:10px 12px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .results{max-width:700px;margin:18px auto}
+  .result-item{display:flex;align-items:center;gap:12px;padding:10px;background:var(--card);border-radius:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .result-item img{width:44px;height:44px;border-radius:50%}
+  .small{font-size:13px;color:#666}
 </style>
 </head>
 <body>
 
-<header class="topbar sticky">
-  <button onclick="history.back()">◀</button>
-  <div class="title">Search by Username</div>
-  <div style="width:36px"></div>
+<header>
+  <a href="home.html">&larr; Home</a>
+  <div style="margin-left:10px;font-weight:700">Search & Add Friends</div>
 </header>
 
-<main class="main">
-  <label>
-    <span>Friend's username</span>
-    <input id="friendInput" type="text" placeholder="e.g. alice_123">
-  </label>
-  <button id="saveFriendBtn">Add Friend & Start Chat</button>
-</main>
+<div class="wrap">
+  <div class="search-box">
+    <input id="searchInput" placeholder="Search friends by name or add new..." />
+    <button id="searchBtn">Search / Add</button>
+  </div>
+
+  <div class="results" id="results"></div>
+
+  <div style="max-width:700px;margin:30px auto;text-align:center" class="small">
+    Tip: You can also add friends by scanning QR from Home &rarr; + &rarr; Scan Code.
+  </div>
+</div>
 
 <script>
-document.getElementById('saveFriendBtn').addEventListener('click', () => {
-  const input = document.getElementById('friendInput');
-  const friendName = input.value.trim();
-  if(!friendName) return alert("Enter a username");
+/*
+  Search page:
+  - Reads friends from "chatapp_friends"
+  - Search filters names
+  - If no match, shows option to create/add
+  - Clicking add saves to storage
+*/
 
-  let friends = JSON.parse(localStorage.getItem('friendsList') || "[]");
-  if(!friends.includes(friendName)){
-    friends.push(friendName);
-    localStorage.setItem('friendsList', JSON.stringify(friends));
+const friendsKey = 'chatapp_friends';
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const resultsDiv = document.getElementById('results');
+
+function getFriends(){ const raw = localStorage.getItem(friendsKey); return raw ? JSON.parse(raw) : []; }
+function saveFriends(arr){ localStorage.setItem(friendsKey, JSON.stringify(arr)); }
+
+function renderResults(list){
+  resultsDiv.innerHTML = '';
+  if(list.length===0){
+    resultsDiv.innerHTML = '<div class="small">No results</div>';
+    return;
   }
+  list.forEach(name=>{
+    const el = document.createElement('div');
+    el.className = 'result-item';
+    el.innerHTML = `<img src="friend.png" alt=""><div style="flex:1"><div>${name}</div><div class="small">Tap to start chat</div></div>
+      <div><button data-name="${name}" class="openBtn">Open Chat</button></div>`;
+    resultsDiv.appendChild(el);
+  });
+  // attach handlers
+  document.querySelectorAll('.openBtn').forEach(b=>{
+    b.onclick = ()=> { const n = b.dataset.name; location.href = `chat.html?open=${encodeURIComponent(n)}`; };
+  });
+}
 
-  let chats = JSON.parse(localStorage.getItem('chat_' + friendName) || "[]");
-  localStorage.setItem('chat_' + friendName, JSON.stringify(chats));
+function doSearch(){
+  const q = searchInput.value.trim();
+  if(!q){
+    renderResults(getFriends());
+    return;
+  }
+  const friends = getFriends();
+  const matches = friends.filter(f=> f.toLowerCase().includes(q.toLowerCase()));
+  if(matches.length>0){
+    renderResults(matches);
+  } else {
+    resultsDiv.innerHTML = `
+      <div class="result-item">
+        <img src="friend.png" alt="">
+        <div style="flex:1">
+          <div><strong>${q}</strong></div>
+          <div class="small">No exact match. Add as new friend?</div>
+        </div>
+        <div><button id="addNewBtn">Add</button></div>
+      </div>
+    `;
+    document.getElementById('addNewBtn').onclick = ()=> {
+      friends.push(q);
+      saveFriends(friends);
+      alert('Friend added: ' + q);
+      location.href = 'chat.html?open=' + encodeURIComponent(q);
+    };
+  }
+}
 
-  localStorage.setItem('currentFriend', friendName);
-  window.location.href = 'chat.html';
-});
+// initial render: show all friends
+const friends = getFriends();
+if(friends.length>0) renderResults(friends);
+else resultsDiv.innerHTML = '<div class="small">No friends yet. Use the + button on Home to add.</div>';
+
+searchBtn.addEventListener('click', doSearch);
+searchInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doSearch(); });
 </script>
 
 </body>
