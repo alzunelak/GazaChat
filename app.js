@@ -9,11 +9,14 @@ const friendsUl = document.getElementById('friendsUl');
 const startChatBtn = document.getElementById('startChatBtn');
 const scannerPopup = document.getElementById('scannerPopup');
 
-// Auto-go from logo to profile
-setTimeout(() => {
-  s1.classList.add('hidden');
-  s2.classList.remove('hidden');
-}, 1000); // 1 second delay
+// Auto-transition from logo to profile after 1s
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    s1.classList.remove('active');
+    s1.classList.add('hidden');
+    s2.classList.remove('hidden');
+  }, 1000);
+});
 
 // Profile -> Home
 saveProfileBtn.addEventListener('click', async () => {
