@@ -4,29 +4,30 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: Arial, sans-serif;
+  background-color: #fff; /* full bright background */
+  color: #000;
 }
 
-/* Screen full size */
+/* Full screen container */
 .screen {
   display: none;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 100%;
-  width: 100%;
-  background: #fff;
+  width: 100vw;
+  height: 100vh;
+  background: #fff; /* ensures bright screen */
 }
 .screen.active { display: flex; }
 .screen.hidden { display: none; }
 
-/* Logo */
+/* Logo fills entire screen */
 .logo {
-  width: 150px;
-  max-width: 60%;
-  height: auto;
-  filter: none !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* cover whole screen */
+  filter: brightness(1) !important; /* ensure fully bright */
   opacity: 1 !important;
-  z-index: 10;
 }
 
 /* Buttons */
@@ -40,6 +41,16 @@ html, body {
   cursor: pointer;
 }
 .primary-btn:active { background-color: #0056b3; }
+
+/* Profile screen inputs */
+#screen2 h2 { margin-bottom: 20px; }
+#screen2 input {
+  margin: 10px 0;
+  padding: 10px;
+  width: 80%;
+  max-width: 300px;
+  font-size: 16px;
+}
 
 /* Profile / Home */
 .profile-header { display: flex; align-items: center; gap: 10px; margin: 10px; }
@@ -70,7 +81,10 @@ html, body {
 }
 #reader { width: 90%; max-width: 400px; aspect-ratio: 1/1; }
 
-/* Force light mode for logo screen */
+/* Force light mode */
 @media (prefers-color-scheme: dark) {
-  #screen1 { background-color: #fff; }
+  html, body, .screen {
+    background-color: #fff;
+    color: #000;
+  }
 }
