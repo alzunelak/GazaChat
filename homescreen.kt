@@ -48,11 +48,14 @@ fun HomeScreen(onScan:()->Unit, onSearch:()->Unit, onMyQr:()->Unit, onChat:()->U
 
         // Bottom menu simulation
         Spacer(Modifier.weight(1f))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-            Button(onClick = onChat) { Text("Chats") }
-            Button(onClick = { /* TODO groups */ }) { Text("Groups") }
-            Button(onClick = onMyQr) { Text("My QR") }
-            Button(onClick = { /* TODO calls */ }) { Text("Calls") }
-        }
+       fun HomeScreen(
+  onScan:()->Unit,
+  onSearch:()->Unit,
+  onMyQr:()->Unit,
+  onChat:()->Unit,
+  onGroups:()->Unit,
+  onCalls:()->Unit
+)
+
     }
 }
