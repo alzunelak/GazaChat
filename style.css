@@ -16,20 +16,25 @@ body {
 .screen.active { display: flex; }
 
 .logo-container {
+  position: relative;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* push content to the bottom */
+  justify-content: center;
   align-items: center;
-  height: 100vh; /* full screen */
-  padding-bottom: 50px; /* space from bottom */
 }
-
 
 .logo {
   width: 150px;
   max-width: 60%;
-  margin-bottom: 20px;
 }
+
+#continueBtn {
+  position: absolute;
+  bottom: 50px; /* distance from bottom */
+  width: 200px;
+  padding: 12px 0;
+}
+
 
 .primary-btn {
   padding: 12px 25px;
