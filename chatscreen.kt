@@ -74,15 +74,19 @@ LaunchedEffect(Unit) {
             OutlinedTextField(value = input, onValueChange = { input = it }, modifier = Modifier.weight(1f))
             Spacer(Modifier.width(8.dp))
             Button(onClick = {
-                val text = input.trim()
-                if (text.isEmpty()) return@Button
-                val key = sessionKey ?: return@Button
-                val enc = Crypto.encryptAesGcm(key, text.encodeToByteArray())
-                val framed = BtMessageCodec.frame(enc)
-                service?.send(framed)
-                messages = messages + Message(fromMe=true, text=text)
-                input = ""
-            }) { Text("Send") }
+    val text = input.trim()
+    if (text.isEmpty()) return@Button
+    val key = sessionKey
+    if (key == null) {
+        messages = messages + Message(fromMe=false, text="(No shared key. Scan QR to exchange keys.)")
+        return@Button
+    }
+    val enc = com.example.chatbt.crypto.Crypto.encryptAesGcm(key, text.encodeToByteArray())
+    service?.send(enc)
+    messages = messages + Message(fromMe=true, text=text)
+    input = ""
+}) { Text("Send") }
+
         }
     }
 }
