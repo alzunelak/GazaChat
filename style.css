@@ -18,9 +18,12 @@ body {
 .logo-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end; /* push content to the bottom */
   align-items: center;
+  height: 100vh; /* full screen */
+  padding-bottom: 50px; /* space from bottom */
 }
+
 
 .logo {
   width: 150px;
