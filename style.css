@@ -1,38 +1,25 @@
-/* Reset & Mobile Touch Fix */
 html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
   height: 100%;
-  touch-action: manipulation;
-  -webkit-user-select: none;
-  user-select: none;
   font-family: Arial, sans-serif;
 }
 
+/* Screen full size */
 .screen {
   display: none;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   height: 100%;
   width: 100%;
-  opacity: 1;
-  transition: opacity 0.5s ease;
 }
 .screen.active { display: flex; }
-.screen.hidden { opacity: 0; pointer-events: none; }
+.screen.hidden { display: none; }
 
 /* Logo */
-.logo-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.logo {
-  width: 150px;
-  max-width: 60%;
-  margin-bottom: 40px;
-}
+.logo { width: 150px; max-width: 60%; height: auto; }
 
 /* Buttons */
 .primary-btn {
@@ -43,20 +30,14 @@ html, body {
   background-color: #007bff;
   color: #fff;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
 .primary-btn:active { background-color: #0056b3; }
 
 /* Profile / Home */
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 10px;
-}
+.profile-header { display: flex; align-items: center; gap: 10px; margin: 10px; }
 .profile-pic { width: 50px; height: 50px; border-radius: 50%; }
 
-/* Chat */
+/* Chat bubbles */
 .chat-box { 
   width: 90%; max-width: 400px; height: 400px; 
   overflow-y: auto; border: 1px solid #ccc; padding: 5px;
