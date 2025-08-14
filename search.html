@@ -3,116 +3,183 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Search - ChatApp</title>
+<title>Chat - ChatApp</title>
 <style>
   :root{--accent:#4CAF50;--bg:#f5f5f5;--card:#fff}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);display:flex;flex-direction:column;min-height:100vh}
-  header{padding:14px;background:var(--card);display:flex;gap:12px;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-  header a{color:var(--accent);text-decoration:none}
-  .wrap{padding:18px;flex:1}
-  .search-box{display:flex;gap:8px;max-width:700px;margin:0 auto}
-  .search-box input{flex:1;padding:10px;border-radius:8px;border:1px solid #ddd}
-  .search-box button{padding:10px 12px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
-  .results{max-width:700px;margin:18px auto}
-  .result-item{display:flex;align-items:center;gap:12px;padding:10px;background:var(--card);border-radius:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  .result-item img{width:44px;height:44px;border-radius:50%}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);height:100vh;display:flex;flex-direction:column}
+  .top{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .top img{width:44px;height:44px;border-radius:50%}
+  .top .title{font-weight:700}
+  .content{flex:1;display:flex;height:calc(100vh - 160px)}
+  .friends-col{width:32%;min-width:220px;background:var(--card);padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:auto}
+  .friend-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer}
+  .friend-item:hover{background:#f0f0f0}
+  .friend-item img{width:40px;height:40px;border-radius:50%}
+  .chat-col{flex:1;display:flex;flex-direction:column;padding:12px}
+  .chat-window{flex:1;background:var(--card);padding:12px;border-radius:10px;overflow:auto;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .msg{max-width:70%;margin:8px 0;padding:8px 10px;border-radius:10px;line-height:1.2}
+  .msg.me{background:var(--accent);color:#fff;margin-left:auto;border-bottom-right-radius:2px}
+  .msg.them{background:#eee;color:#222;border-bottom-left-radius:2px}
+  .composer{display:flex;gap:8px;margin-top:10px}
+  .composer input{flex:1;padding:10px;border-radius:8px;border:1px solid #ddd}
+  .composer button{padding:10px 14px;border:none;background:var(--accent);color:#fff;border-radius:8px;cursor:pointer}
+  .no-selection{flex:1;display:flex;align-items:center;justify-content:center;color:#666}
+  .bottom-bar{display:flex;gap:8px;padding:12px;background:var(--card);box-shadow:0 -1px 3px rgba(0,0,0,.06);align-items:center;justify-content:space-between}
+  .nav-links a{margin-right:8px;color:var(--accent);text-decoration:none}
   .small{font-size:13px;color:#666}
 </style>
 </head>
 <body>
 
-<header>
-  <a href="home.html">&larr; Home</a>
-  <div style="margin-left:10px;font-weight:700">Search & Add Friends</div>
+<header class="top">
+  <a href="home.html" style="text-decoration:none;color:inherit">
+    <img src="profile.jpg" alt="You">
+  </a>
+  <div>
+    <div class="title">Chats</div>
+    <div class="small">Tap a friend to open chat</div>
+  </div>
+  <div style="margin-left:auto" class="nav-links">
+    <a href="search.html">Search</a>
+    <a href="group.html">Group</a>
+  </div>
 </header>
 
-<div class="wrap">
-  <div class="search-box">
-    <input id="searchInput" placeholder="Search friends by name or add new..." />
-    <button id="searchBtn">Search / Add</button>
-  </div>
+<div class="content">
+  <aside class="friends-col" id="friendsCol">
+    <!-- friend items -->
+  </aside>
 
-  <div class="results" id="results"></div>
+  <main class="chat-col">
+    <div id="chatWindowArea" class="chat-window no-selection">
+      Select a friend to open chat
+    </div>
 
-  <div style="max-width:700px;margin:30px auto;text-align:center" class="small">
-    Tip: You can also add friends by scanning QR from Home &rarr; + &rarr; Scan Code.
-  </div>
+    <div class="composer" id="composer" style="display:none">
+      <input id="messageInput" placeholder="Type a message..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </main>
 </div>
+
+<footer class="bottom-bar">
+  <div class="small">Logged as: <strong>Mimah Suleiman</strong></div>
+  <div>
+    <a href="home.html">Home</a> •
+    <a href="call.html">Call</a>
+  </div>
+</footer>
 
 <script>
 /*
-  Search page:
-  - Reads friends from "chatapp_friends"
-  - Search filters names
-  - If no match, shows option to create/add
-  - Clicking add saves to storage
+  Simple chat page that:
+  - Loads friends from localStorage key: "chatapp_friends" (array of names)
+  - Chats stored per friend under key: "chatapp_chat_<name>" (array of {from:'me'|'them', text, ts})
+  - Clicking a friend loads messages and shows composer
+  - Send message stores it and renders
 */
 
 const friendsKey = 'chatapp_friends';
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
-const resultsDiv = document.getElementById('results');
+const friendsCol = document.getElementById('friendsCol');
+const chatWindowArea = document.getElementById('chatWindowArea');
+const composer = document.getElementById('composer');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
 
-function getFriends(){ const raw = localStorage.getItem(friendsKey); return raw ? JSON.parse(raw) : []; }
-function saveFriends(arr){ localStorage.setItem(friendsKey, JSON.stringify(arr)); }
+let friends = [];
+let activeFriend = null;
 
-function renderResults(list){
-  resultsDiv.innerHTML = '';
-  if(list.length===0){
-    resultsDiv.innerHTML = '<div class="small">No results</div>';
+function loadFriends(){
+  const raw = localStorage.getItem(friendsKey);
+  friends = raw ? JSON.parse(raw) : [];
+  renderFriends();
+}
+
+function saveFriends(){ localStorage.setItem(friendsKey, JSON.stringify(friends)) }
+
+function renderFriends(){
+  friendsCol.innerHTML = '';
+  if(friends.length===0){
+    friendsCol.innerHTML = '<div class="small">No friends yet. Add from Home or Search page.</div>';
     return;
   }
-  list.forEach(name=>{
+  friends.forEach(name=>{
     const el = document.createElement('div');
-    el.className = 'result-item';
-    el.innerHTML = `<img src="friend.png" alt=""><div style="flex:1"><div>${name}</div><div class="small">Tap to start chat</div></div>
-      <div><button data-name="${name}" class="openBtn">Open Chat</button></div>`;
-    resultsDiv.appendChild(el);
-  });
-  // attach handlers
-  document.querySelectorAll('.openBtn').forEach(b=>{
-    b.onclick = ()=> { const n = b.dataset.name; location.href = `chat.html?open=${encodeURIComponent(n)}`; };
+    el.className = 'friend-item';
+    el.innerHTML = `<img src="friend.png" alt=""><div>${name}</div>`;
+    el.onclick = ()=> openChat(name);
+    friendsCol.appendChild(el);
   });
 }
 
-function doSearch(){
-  const q = searchInput.value.trim();
-  if(!q){
-    renderResults(getFriends());
+function chatKey(name){ return 'chatapp_chat_' + name; }
+
+function loadChat(name){
+  const raw = localStorage.getItem(chatKey(name));
+  return raw ? JSON.parse(raw) : [];
+}
+
+function saveChat(name, arr){ localStorage.setItem(chatKey(name), JSON.stringify(arr)); }
+
+function openChat(name){
+  activeFriend = name;
+  composer.style.display = 'flex';
+  renderChat();
+}
+
+function renderChat(){
+  if(!activeFriend){
+    chatWindowArea.innerHTML = 'Select a friend to open chat';
+    chatWindowArea.classList.add('no-selection');
+    composer.style.display = 'none';
     return;
   }
-  const friends = getFriends();
-  const matches = friends.filter(f=> f.toLowerCase().includes(q.toLowerCase()));
-  if(matches.length>0){
-    renderResults(matches);
-  } else {
-    resultsDiv.innerHTML = `
-      <div class="result-item">
-        <img src="friend.png" alt="">
-        <div style="flex:1">
-          <div><strong>${q}</strong></div>
-          <div class="small">No exact match. Add as new friend?</div>
-        </div>
-        <div><button id="addNewBtn">Add</button></div>
-      </div>
-    `;
-    document.getElementById('addNewBtn').onclick = ()=> {
-      friends.push(q);
-      saveFriends(friends);
-      alert('Friend added: ' + q);
-      location.href = 'chat.html?open=' + encodeURIComponent(q);
-    };
-  }
+  chatWindowArea.classList.remove('no-selection');
+  const messages = loadChat(activeFriend);
+  chatWindowArea.innerHTML = '';
+  messages.forEach(m=>{
+    const d = document.createElement('div');
+    d.className = 'msg ' + (m.from === 'me' ? 'me' : 'them');
+    d.textContent = m.text;
+    chatWindowArea.appendChild(d);
+  });
+  // scroll to bottom
+  chatWindowArea.scrollTop = chatWindowArea.scrollHeight;
 }
 
-// initial render: show all friends
-const friends = getFriends();
-if(friends.length>0) renderResults(friends);
-else resultsDiv.innerHTML = '<div class="small">No friends yet. Use the + button on Home to add.</div>';
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
 
-searchBtn.addEventListener('click', doSearch);
-searchInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doSearch(); });
+function sendMessage(){
+  const txt = messageInput.value.trim();
+  if(!txt || !activeFriend) return;
+  const arr = loadChat(activeFriend);
+  arr.push({from:'me', text:txt, ts:Date.now()});
+  saveChat(activeFriend, arr);
+  messageInput.value = '';
+  renderChat();
+  // optional: simulate reply
+  setTimeout(()=>{
+    const arr2 = loadChat(activeFriend);
+    arr2.push({from:'them', text:'Thanks! (auto reply)', ts:Date.now()});
+    saveChat(activeFriend, arr2);
+    renderChat();
+  }, 700);
+}
+
+// initial load
+loadFriends();
+renderChat();
+
+// If user navigated to chat.html with a friend reference (e.g., ?open=Name)
+(function checkOpenParam(){
+  const params = new URLSearchParams(location.search);
+  const open = params.get('open');
+  if(open){
+    if(!friends.includes(open)){ friends.push(open); saveFriends(); renderFriends(); }
+    openChat(open);
+  }
+})();
 </script>
-
 </body>
 </html>
