@@ -27,13 +27,14 @@
   .profile-info {
     display: flex;
     align-items: center;
+    gap: 15px;
   }
 
   .profile-info img {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    margin-right: 15px;
+    cursor: pointer;
   }
 
   .profile-info .name {
@@ -146,26 +147,29 @@
     max-width: 400px;
     margin-top: 20px;
   }
-
 </style>
 </head>
 <body>
 
+<!-- Profile Section -->
 <div class="profile-section">
   <div class="profile-info">
-    <img src="profile.jpg" alt="Profile Picture">
-    <div class="name">Mimah Suleiman</div>
+    <img id="profilePhoto" src="default-profile.png" alt="Profile Picture">
+    <div class="name" id="profileName"></div>
   </div>
   <div class="three-dot">⋮</div>
 </div>
 
+<!-- Middle Section -->
 <div class="middle-section">
   No messages yet, add friends
   <div class="friends-list" id="friendsList"></div>
 </div>
 
+<!-- Floating + Button -->
 <div class="fab" id="fab">+</div>
 
+<!-- Popup Menu -->
 <div class="popup-menu" id="popupMenu">
   <button id="myCodeBtn">My Code</button>
   <button id="scanCodeBtn">Scan Code</button>
@@ -173,6 +177,7 @@
   <button id="videoPhotoBtn">Take Video & Photo</button>
 </div>
 
+<!-- Bottom Chat / Group / Call -->
 <div class="chat-group-call">
   <button id="chatBtn">Chat</button>
   <button id="groupBtn">Group</button>
@@ -183,6 +188,42 @@
 <div id="qr-reader" style="display:none;"></div>
 
 <script>
+  // Dynamic Profile Info
+  let userName = localStorage.getItem('chatapp_username');
+  let userPhoto = localStorage.getItem('chatapp_userphoto');
+
+  if(!userName){
+    userName = prompt("Enter your name:") || "User";
+    localStorage.setItem('chatapp_username', userName);
+  }
+
+  if(!userPhoto){
+    userPhoto = "default-profile.png";
+    localStorage.setItem('chatapp_userphoto', userPhoto);
+  }
+
+  document.getElementById('profileName').textContent = userName;
+  document.getElementById('profilePhoto').src = userPhoto;
+
+  // Click photo to upload new
+  document.getElementById('profilePhoto').addEventListener('click', ()=>{
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = e => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        userPhoto = evt.target.result;
+        document.getElementById('profilePhoto').src = userPhoto;
+        localStorage.setItem('chatapp_userphoto', userPhoto);
+      }
+      reader.readAsDataURL(file);
+    }
+    fileInput.click();
+  });
+
+  // Friends
   const fab = document.getElementById('fab');
   const popupMenu = document.getElementById('popupMenu');
   const friendsList = document.getElementById('friendsList');
@@ -192,28 +233,31 @@
     popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
   });
 
-  document.getElementById('myCodeBtn').addEventListener('click', () => {
-    alert("Show my QR code!");
+  function addFriend(name){
+    const friendDiv = document.createElement('div');
+    friendDiv.className = 'friend';
+    friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
+    friendsList.appendChild(friendDiv);
+  }
+
+  document.getElementById('myCodeBtn').addEventListener('click', ()=>{
+    alert("Show my QR code for others to scan!");
   });
 
-  document.getElementById('scanCodeBtn').addEventListener('click', () => {
-    startQRScanner();
-  });
+  document.getElementById('scanCodeBtn').addEventListener('click', startQRScanner);
 
-  document.getElementById('searchFriendBtn').addEventListener('click', () => {
+  document.getElementById('searchFriendBtn').addEventListener('click', ()=>{
     const friendName = prompt("Enter friend's name to add:");
     if(friendName) addFriend(friendName);
   });
 
-  document.getElementById('videoPhotoBtn').addEventListener('click', () => {
-    openCamera();
-  });
+  document.getElementById('videoPhotoBtn').addEventListener('click', openCamera);
 
-  document.getElementById('chatBtn').addEventListener('click', () => alert("Open chat!"));
-  document.getElementById('groupBtn').addEventListener('click', () => window.location.href='group.html');
-  document.getElementById('callBtn').addEventListener('click', () => window.location.href='call.html');
+  document.getElementById('chatBtn').addEventListener('click', ()=> window.location.href='chat.html');
+  document.getElementById('groupBtn').addEventListener('click', ()=> window.location.href='group.html');
+  document.getElementById('callBtn').addEventListener('click', ()=> window.location.href='call.html');
 
-  function openCamera() {
+  function openCamera(){
     const video = document.createElement('video');
     video.style.width = '100%';
     video.style.height = '100%';
@@ -221,11 +265,11 @@
     document.body.appendChild(video);
 
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => { video.srcObject = stream; })
-      .catch(err => { alert("Error accessing camera: " + err); });
+      .then(stream => video.srcObject = stream)
+      .catch(err => alert("Error accessing camera: " + err));
   }
 
-  function startQRScanner() {
+  function startQRScanner(){
     const qrReaderDiv = document.getElementById('qr-reader');
     qrReaderDiv.style.display = 'block';
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
@@ -233,20 +277,13 @@
     html5QrcodeScanner.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: 250 },
-      (decodedText) => {
+      decodedText => {
         addFriend(decodedText);
         html5QrcodeScanner.stop();
         qrReaderDiv.style.display = 'none';
       },
-      (errorMessage) => {}
-    ).catch(err => { alert("Unable to start QR scanner: " + err); });
-  }
-
-  function addFriend(name) {
-    const friendDiv = document.createElement('div');
-    friendDiv.className = 'friend';
-    friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
-    friendsList.appendChild(friendDiv);
+      errorMessage => {}
+    ).catch(err => alert("Unable to start QR scanner: " + err));
   }
 </script>
 
