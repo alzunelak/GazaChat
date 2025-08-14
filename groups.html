@@ -3,25 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Chat — ChatApp</title>
+<title>Group Chat - ChatApp</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; display:flex; flex-direction:column; min-height:100vh; }
-.top-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #ccc; background:#fff; position:sticky; top:0; }
-.top-bar .left { font-weight:bold; font-size:18px; }
-.top-bar button { font-size:18px; padding:5px 10px; cursor:pointer; }
-.main { flex:1; display:flex; justify-content:center; align-items:center; text-align:center; font-size:18px; }
+  :root{--accent:#4CAF50;--bg:#f5f5f5;--card:#fff}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#333}
+  header{background:var(--card);padding:14px;font-size:20px;font-weight:bold;
+         box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center}
+  header a{color:var(--accent);text-decoration:none;margin-right:10px;font-size:16px}
+  main{padding:12px}
+  .group-item{background:var(--card);padding:12px;margin-bottom:10px;border-radius:8px;
+              display:flex;align-items:center;gap:10px;cursor:pointer;
+              box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .group-item img{width:40px;height:40px;border-radius:50%}
+  .group-item:hover{background:#f0f0f0}
 </style>
 </head>
 <body>
+  <header>
+    <a href="home.html">← Back</a> Group Chats
+  </header>
+  <main id="groupList">
+    <!-- Groups will load here -->
+  </main>
 
-<div class="top-bar">
-  <div class="left">Group Chat</div>
-  <button onclick="history.back()">◀</button>
-</div>
+<script>
+// Example group data (can be replaced with real data later)
+const groups = [
+  { name: "Family Group", img: "friend.png" },
+  { name: "Work Team", img: "friend.png" },
+  { name: "Friends Hangout", img: "friend.png" }
+];
 
-<div class="main">
-  <p>No group chats yet.<br>Coming soon...</p>
-</div>
+const groupList = document.getElementById("groupList");
 
+groups.forEach(g => {
+  const div = document.createElement("div");
+  div.className = "group-item";
+  div.innerHTML = `<img src="${g.img}" alt=""><div>${g.name}</div>`;
+  div.onclick = () => alert("Open group: " + g.name); // Replace with actual navigation
+  groupList.appendChild(div);
+});
+</script>
 </body>
 </html>
