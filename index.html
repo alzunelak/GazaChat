@@ -1,54 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Real ChatApp</title>
+  <title>Bluetooth ChatApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
   <script src="qrcode.min.js"></script>
   <script src="html5-qrcode.min.js"></script>
 </head>
 <body>
 
-  <!-- Screen 1: Splash -->
+  <!-- Screen 1: Splash / Logo -->
   <div id="screen1" class="screen active">
-    <img src="OIP.jpg" alt="ChatApp Logo" class="logo" />
-    <h1>Welcome to ChatApp</h1>
+    <img src="images/OIP.jpg" alt="ChatApp Logo" class="logo">
+    <button id="continueBtn" class="primary-btn">Continue</button>
   </div>
 
-  <!-- Screen 2: Enter Name -->
+  <!-- Screen 2: Enter Name + Picture -->
   <div id="screen2" class="screen hidden">
-    <h2>Enter Your Name</h2>
-    <input type="text" id="usernameInput" placeholder="Your name">
-    <button id="setNameBtn">Next</button>
+    <h2>Set Up Your Profile</h2>
+    <input type="file" id="profilePicInput" accept="image/*">
+    <input type="text" id="usernameInput" placeholder="Enter your name">
+    <button id="saveProfileBtn" class="primary-btn">Continue</button>
   </div>
 
-  <!-- Screen 3: Find Friend -->
+  <!-- Screen 3: Home -->
   <div id="screen3" class="screen hidden">
-    <h2>Find Your Friend</h2>
-    <label>Your Name</label>
-    <input type="text" id="yourNameField" readonly />
-    <button id="addFriendBtn">+</button>
-
-    <div id="friendOptions" class="hidden">
-      <button id="scanQRBtn">Scan Friend QR</button>
-      <input type="text" id="friendNameInput" placeholder="Friend's username">
+    <div class="profile-header">
+      <img id="userPic" class="profile-pic" src="default-profile.png" alt="Profile">
+      <div>
+        <h3 id="displayName"></h3>
+      </div>
+      <div class="top-icons">
+        <button id="callBtn">📞</button>
+        <button id="groupBtn">👥</button>
+        <button id="searchBtn">🔍</button>
+      </div>
     </div>
 
-    <button id="startChatBtn" class="hidden">Start Chat</button>
-    <div id="reader" style="width:300px;margin:auto; display:none;"></div>
-
-    <h3>Your QR Code</h3>
+    <h4>Your QR Code</h4>
     <div id="qrcode"></div>
+
+    <button id="scanQRBtn" class="primary-btn">Scan Friend's QR</button>
+
+    <div id="friendsList">
+      <h4>Friends</h4>
+      <ul id="friendsUl"></ul>
+    </div>
+
+    <button id="startChatBtn" class="primary-btn hidden">Start Chat</button>
   </div>
 
   <!-- Screen 4: Chat -->
   <div id="screen4" class="screen hidden">
-    <div id="chat-box"></div>
-    <input id="message-input" placeholder="Type a message">
-    <button id="send-btn">Send</button>
+    <div id="chatBox" class="chat-box"></div>
+    <input type="text" id="messageInput" placeholder="Type a message">
+    <button id="sendBtn">Send</button>
   </div>
 
-  <script src="main.js" defer></script>
+  <!-- QR Scanner Popup -->
+  <div id="scannerPopup" class="popup hidden">
+    <div id="reader" style="width:300px;margin:auto;"></div>
+    <button id="closeScannerBtn">Close</button>
+  </div>
+
+  <script>
+    // Screen navigation
+    const s1 = document.getElementById('screen1');
+    const s2 = document.getElementById('screen2');
+    const s3 = document.getElementById('screen3');
+    const s4 = document.getElementById('screen4');
+
+    const continueBtn = document.getElementById('continueBtn');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+    continueBtn.addEventListener('click', () => {
+      s1.classList.add('hidden');
+      s2.classList.remove('hidden');
+    });
+
+    saveProfileBtn.addEventListener('click', () => {
+      const name = document.getElementById('usernameInput').value.trim();
+      const picFile = document.getElementById('profilePicInput').files[0];
+
+      if (!name) {
+        alert("Please enter your name.");
+        return;
+      }
+
+      localStorage.setItem('chatName', name);
+
+      if (picFile) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          localStorage.setItem('chatPic', reader.result);
+          loadHome();
+        };
+        reader.readAsDataURL(picFile);
+      } else {
+        loadHome();
+      }
+
+      s2.classList.add('hidden');
+      s3.classList.remove('hidden');
+    });
+
+    function loadHome() {
+      const name = localStorage.getItem('chatName') || 'User';
+      const pic = localStorage.getItem('chatPic') || 'default-profile.png';
+      document.getElementById('displayName').textContent = name;
+      document.getElementById('userPic').src = pic;
+
+      // Generate QR
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: name,
+        width: 128,
+        height: 128
+      });
+    }
+
+    // Chat
+    document.getElementById('startChatBtn').addEventListener('click', () => {
+      s3.classList.add('hidden');
+      s4.classList.remove('hidden');
+    });
+
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      const msg = document.getElementById('messageInput').value.trim();
+      if (msg) {
+        const box = document.getElementById('chatBox');
+        const p = document.createElement('p');
+        p.textContent = "You: " + msg;
+        box.appendChild(p);
+        document.getElementById('messageInput').value = '';
+      }
+    });
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .screen.hidden { display: none; }
+    .logo { width: 150px; margin-top: 50px; }
+    .primary-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+    }
+    .profile-pic { width: 50px; height: 50px; border-radius: 50%; }
+    .top-icons button { margin-left: 5px; }
+    .chat-box { height: 300px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px; padding: 5px; }
+    .popup {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+  </style>
+
 </body>
 </html>
