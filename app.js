@@ -1,5 +1,5 @@
 /* ===== Web Bluetooth + ECDH + AES-GCM ===== */
-// Keep all your existing functions:
+// Keep all your existing crypto and BLE functions:
 // generateECKeyPair(), exportPublicJwk(), importPeerPublicKey(),
 // deriveAesKey(), encryptMessage(), decryptMessage(),
 // createProfileAndQr(), handleScannedQrPayload(),
@@ -19,16 +19,14 @@ const startChatBtn = document.getElementById('startChatBtn');
 const scannerPopup = document.getElementById('scannerPopup');
 
 // Logo -> Profile
-const goToProfile = () => {
+continueBtn.addEventListener('click', () => {
   s1.classList.add('hidden');
   s2.classList.remove('hidden');
   document.getElementById('usernameInput').focus();
-};
-continueBtn.addEventListener('click', goToProfile);
-continueBtn.addEventListener('touchstart', goToProfile);
+});
 
 // Profile -> Home
-const saveProfile = async () => {
+saveProfileBtn.addEventListener('click', async () => {
   const name = document.getElementById('usernameInput').value.trim();
   const picFile = document.getElementById('profilePicInput').files[0];
   if (!name) return alert("Please enter your name.");
@@ -50,9 +48,7 @@ const saveProfile = async () => {
 
   s2.classList.add('hidden');
   s3.classList.remove('hidden');
-};
-saveProfileBtn.addEventListener('click', saveProfile);
-saveProfileBtn.addEventListener('touchstart', saveProfile);
+});
 
 // Initialize ECDH keys and render QR
 async function setupProfileKeys(username) {
