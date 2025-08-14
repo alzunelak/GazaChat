@@ -5,6 +5,30 @@ import android.util.Base64
 import org.json.JSONArray
 import org.json.JSONObject
 
+private const val KEY_GROUPS = "groups"
+
+fun saveGroup(ctx: Context, g: Group) {
+    val arr = JSONArray(ctx.getSharedPreferences(PREF,0).getString(KEY_GROUPS, "[]"))
+    val o = JSONObject().apply {
+        put("id", g.id)
+        put("name", g.name)
+        put("memberIds", JSONArray(g.memberIds))
+    }
+    arr.put(o)
+    ctx.getSharedPreferences(PREF,0).edit().putString(KEY_GROUPS, arr.toString()).apply()
+}
+
+fun listGroups(ctx: Context): List<Group> {
+    val arr = JSONArray(ctx.getSharedPreferences(PREF,0).getString(KEY_GROUPS, "[]"))
+    return List(arr.length()) { i ->
+        val o = arr.getJSONObject(i)
+        val idsArr = o.getJSONArray("memberIds")
+        val ids = List(idsArr.length()) { j -> idsArr.getString(j) }
+        Group(o.getString("id"), o.getString("name"), ids)
+    }
+}
+
+
 object Store {
     private const val PREF = "chatbt_prefs"
     private const val KEY_PROFILE = "profile"
