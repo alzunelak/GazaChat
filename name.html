@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Set Profile</title>
 <style>
-  body { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; font-family:Arial,sans-serif; background:#f5f5f5; }
-  input, button { padding:10px; margin:10px; font-size:16px; }
-  img { width:100px; height:100px; border-radius:50%; margin-bottom:15px; cursor:pointer; }
+body { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; font-family:Arial,sans-serif; background:#f5f5f5; }
+input, button { padding:10px; margin:10px; font-size:16px; }
+img { width:100px; height:100px; border-radius:50%; margin-bottom:15px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -24,14 +24,12 @@ const saveBtn = document.getElementById('saveBtn');
 // Upload new photo
 profilePhotoEl.addEventListener('click', ()=>{
   const fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.accept = 'image/*';
-  fileInput.onchange = e => {
+  fileInput.type='file';
+  fileInput.accept='image/*';
+  fileInput.onchange = e=>{
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onload = function(evt){
-      profilePhotoEl.src = evt.target.result;
-    }
+    reader.onload = evt => profilePhotoEl.src = evt.target.result;
     reader.readAsDataURL(file);
   }
   fileInput.click();
@@ -39,13 +37,10 @@ profilePhotoEl.addEventListener('click', ()=>{
 
 saveBtn.addEventListener('click', ()=>{
   const name = nameInput.value.trim();
-  if(!name){
-    alert("Please enter your name!");
-    return;
-  }
+  if(!name){ alert("Please enter your name!"); return; }
   localStorage.setItem('chatapp_username', name);
   localStorage.setItem('chatapp_userphoto', profilePhotoEl.src);
-  window.location.href = "home.html";
+  window.location.href = 'home.html';
 });
 </script>
 
