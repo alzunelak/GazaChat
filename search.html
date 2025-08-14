@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Search Friend — ChatApp</title>
 <style>
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
@@ -31,27 +31,20 @@ button { padding:10px; font-size:16px; border:none; border-radius:5px; backgroun
 </main>
 
 <script>
-// Save friend and redirect to chat
 document.getElementById('saveFriendBtn').addEventListener('click', () => {
   const input = document.getElementById('friendInput');
   const friendName = input.value.trim();
   if(!friendName) return alert("Enter a username");
 
-  // Save to friends list
   let friends = JSON.parse(localStorage.getItem('friendsList') || "[]");
   if(!friends.includes(friendName)){
     friends.push(friendName);
     localStorage.setItem('friendsList', JSON.stringify(friends));
   }
 
-  // Initialize empty chat if doesn't exist
   let chats = JSON.parse(localStorage.getItem('chat_' + friendName) || "[]");
   localStorage.setItem('chat_' + friendName, JSON.stringify(chats));
 
-  // Set as new friend to update home
-  localStorage.setItem('newFriend', friendName);
-
-  // Redirect to chat page
   localStorage.setItem('currentFriend', friendName);
   window.location.href = 'chat.html';
 });
