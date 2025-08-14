@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Chat — ChatApp</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar sticky">
+    <button class="icon-btn" onclick="location.href='home.html'">◀</button>
+    <div class="top-left">
+      <div id="chatFriendAvatar" class="avatar small placeholder"></div>
+      <div>
+        <div class="title sm">Chat with</div>
+        <div id="chatFriendName" class="subtitle">Friend</div>
+      </div>
+    </div>
+    <div style="width:36px"></div>
+  </header>
+
+  <main class="chat-area">
+    <div id="messages" class="messages"></div>
+  </main>
+
+  <footer class="composer">
+    <input id="msgInput" type="text" placeholder="Type a message…">
+    <button id="sendBtn" class="btn primary">Send</button>
+  </footer>
+</body>
+</html>
