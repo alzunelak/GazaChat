@@ -1,41 +1,47 @@
-body {
-  font-family: Arial, sans-serif;
+body, html {
   margin: 0;
   padding: 0;
-  text-align: center;
-  background: #f0f4f8;
+  height: 100%;
 }
 
 .screen {
   display: none;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; /* vertical centering */
   align-items: center;
-  height: 100vh;
+  height: 100%;
 }
-.screen.active { display: flex; }
 
-.logo-container {
-  position: relative;
-  height: 100vh;
+.screen.active {
   display: flex;
-  justify-content: center;
+}
+
+.logo-wrapper {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .logo {
   width: 150px;
   max-width: 60%;
+  margin-bottom: 40px; /* space between logo and button */
 }
 
 #continueBtn {
-  position: absolute;
-  bottom: 50px; /* distance from bottom */
-  width: 200px;
-  padding: 12px 0;
+  padding: 12px 30px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
 }
 
-
+#continueBtn:active {
+  background-color: #0056b3;
+}
 .primary-btn {
   padding: 12px 25px;
   margin-top: 15px;
