@@ -64,133 +64,113 @@
 <div id="qr-reader" style="display:none;"></div>
 
 <script>
-  // --- Profile Name & Photo ---
-  const profileNameEl = document.getElementById('profileName');
-  const profilePhotoEl = document.getElementById('profilePhoto');
+const profileNameEl = document.getElementById('profileName');
+const profilePhotoEl = document.getElementById('profilePhoto');
 
-  function loadProfile() {
-    let name = localStorage.getItem('chatapp_username');
-    let photo = localStorage.getItem('chatapp_userphoto');
+// Redirect to name.html if profile missing
+const name = localStorage.getItem('chatapp_username');
+const photo = localStorage.getItem('chatapp_userphoto');
+if(!name || !photo){
+  window.location.href = "name.html";
+} else {
+  profileNameEl.textContent = name;
+  profilePhotoEl.src = photo;
+}
 
-    if(!name){
-      name = prompt("Enter your name:") || "User";
-      localStorage.setItem('chatapp_username', name);
+// Update profile photo
+profilePhotoEl.addEventListener('click', ()=>{
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      profilePhotoEl.src = evt.target.result;
+      localStorage.setItem('chatapp_userphoto', evt.target.result);
     }
-
-    if(!photo){
-      photo = 'default-profile.png';
-      localStorage.setItem('chatapp_userphoto', photo);
-    }
-
-    profileNameEl.textContent = name;
-    profilePhotoEl.src = photo;
+    reader.readAsDataURL(file);
   }
+  fileInput.click();
+});
 
-  loadProfile();
+// --- Friends Management ---
+const fab = document.getElementById('fab');
+const popupMenu = document.getElementById('popupMenu');
+const friendsList = document.getElementById('friendsList');
+let html5QrcodeScanner;
 
-  // Upload new profile photo
-  profilePhotoEl.addEventListener('click', ()=>{
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.onchange = e => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function(evt){
-        profilePhotoEl.src = evt.target.result;
-        localStorage.setItem('chatapp_userphoto', evt.target.result);
-      }
-      reader.readAsDataURL(file);
-    }
-    fileInput.click();
+fab.addEventListener('click', () => {
+  popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
+});
+
+function getSavedFriends() {
+  const saved = localStorage.getItem('chatapp_friends');
+  return saved ? JSON.parse(saved) : [];
+}
+
+function saveFriends(friends){
+  localStorage.setItem('chatapp_friends', JSON.stringify(friends));
+}
+
+function renderFriends(){
+  friendsList.innerHTML = '';
+  const friends = getSavedFriends();
+  friends.forEach(name=>{
+    const friendDiv = document.createElement('div');
+    friendDiv.className = 'friend';
+    friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
+    friendsList.appendChild(friendDiv);
   });
+}
 
-  // --- Friends ---
-  const fab = document.getElementById('fab');
-  const popupMenu = document.getElementById('popupMenu');
-  const friendsList = document.getElementById('friendsList');
-  let html5QrcodeScanner;
-
-  fab.addEventListener('click', () => {
-    popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
-  });
-
-  function getSavedFriends() {
-    const saved = localStorage.getItem('chatapp_friends');
-    return saved ? JSON.parse(saved) : [];
+function addFriend(name){
+  if(!name) return;
+  const friends = getSavedFriends();
+  if(!friends.includes(name)){
+    friends.push(name);
+    saveFriends(friends);
+    renderFriends();
   }
+}
 
-  function saveFriends(friends){
-    localStorage.setItem('chatapp_friends', JSON.stringify(friends));
-  }
+// Load friends on page load
+renderFriends();
 
-  function renderFriends(){
-    friendsList.innerHTML = '';
-    const friends = getSavedFriends();
-    friends.forEach(name=>{
-      const friendDiv = document.createElement('div');
-      friendDiv.className = 'friend';
-      friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
-      friendsList.appendChild(friendDiv);
-    });
-  }
+// --- Popup Menu Buttons ---
+document.getElementById('myCodeBtn').addEventListener('click', ()=> alert("Show my QR code!"));
+document.getElementById('scanCodeBtn').addEventListener('click', ()=>{
+  const qrReaderDiv = document.getElementById('qr-reader');
+  qrReaderDiv.style.display = 'block';
+  html5QrcodeScanner = new Html5Qrcode("qr-reader");
+  html5QrcodeScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    decodedText => { addFriend(decodedText); html5QrcodeScanner.stop(); qrReaderDiv.style.display='none'; },
+    errorMessage => {}
+  ).catch(err => alert("Unable to start QR scanner: " + err));
+});
 
-  function addFriend(name){
-    if(!name) return;
-    const friends = getSavedFriends();
-    if(!friends.includes(name)){
-      friends.push(name);
-      saveFriends(friends);
-      renderFriends();
-    }
-  }
+document.getElementById('searchFriendBtn').addEventListener('click', ()=>{
+  const friendName = prompt("Enter friend's name:");
+  if(friendName) addFriend(friendName);
+});
 
-  renderFriends(); // Load saved friends on page load
+document.getElementById('videoPhotoBtn').addEventListener('click', ()=>{
+  const video = document.createElement('video');
+  video.style.width='100%';
+  video.style.height='100%';
+  video.autoplay = true;
+  document.body.appendChild(video);
+  navigator.mediaDevices.getUserMedia({video:true})
+    .then(stream => video.srcObject = stream)
+    .catch(err => alert("Camera error: "+err));
+});
 
-  // --- Popup Menu Buttons ---
-  document.getElementById('myCodeBtn').addEventListener('click', ()=>{
-    alert("Show my QR code for others to scan!");
-  });
-
-  document.getElementById('scanCodeBtn').addEventListener('click', ()=>{
-    const qrReaderDiv = document.getElementById('qr-reader');
-    qrReaderDiv.style.display = 'block';
-    html5QrcodeScanner = new Html5Qrcode("qr-reader");
-
-    html5QrcodeScanner.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      decodedText => {
-        addFriend(decodedText);
-        html5QrcodeScanner.stop();
-        qrReaderDiv.style.display = 'none';
-      },
-      errorMessage => {}
-    ).catch(err => alert("Unable to start QR scanner: " + err));
-  });
-
-  document.getElementById('searchFriendBtn').addEventListener('click', ()=>{
-    const friendName = prompt("Enter friend's name to add:");
-    if(friendName) addFriend(friendName);
-  });
-
-  document.getElementById('videoPhotoBtn').addEventListener('click', ()=>{
-    const video = document.createElement('video');
-    video.style.width = '100%';
-    video.style.height = '100%';
-    video.autoplay = true;
-    document.body.appendChild(video);
-
-    navigator.mediaDevices.getUserMedia({ video:true })
-      .then(stream => video.srcObject = stream)
-      .catch(err => alert("Error accessing camera: " + err));
-  });
-
-  // --- Chat / Group / Call Buttons ---
-  document.getElementById('chatBtn').addEventListener('click', ()=> window.location.href='chat.html');
-  document.getElementById('groupBtn').addEventListener('click', ()=> window.location.href='group.html');
-  document.getElementById('callBtn').addEventListener('click', ()=> window.location.href='call.html');
+// Chat / Group / Call
+document.getElementById('chatBtn').addEventListener('click', ()=> window.location.href='chat.html');
+document.getElementById('groupBtn').addEventListener('click', ()=> window.location.href='group.html');
+document.getElementById('callBtn').addEventListener('click', ()=> window.location.href='call.html');
 </script>
-
 </body>
 </html>
