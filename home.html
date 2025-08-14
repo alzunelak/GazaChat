@@ -3,103 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home</title>
+<title>Home — ChatApp</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-body { margin: 0; font-family: Arial, sans-serif; background: #f2f2f2; }
-header { background: #25d366; color: white; padding: 10px; text-align: center; }
-header img { width: 60px; height: 60px; border-radius: 50%; display: block; margin: 0 auto 5px; }
-.buttons { display: flex; justify-content: space-around; padding: 10px; background: white; }
-.buttons button { padding: 10px; background: #25d366; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
-.chat-list { padding: 10px; }
-.chat-item { background: white; padding: 10px; margin-bottom: 5px; border-radius: 5px; }
-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; border-top: 1px solid #ccc; }
-nav a { text-align: center; padding: 10px; flex: 1; color: #555; text-decoration: none; font-size: 14px; }
-nav a.active { color: #25d366; }
-/* Popup styles */
-.popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
-.popup-content { background: white; padding: 20px; border-radius: 10px; text-align: center; }
-.popup-content button { background: red; color: white; padding: 5px 10px; margin-top: 10px; border: none; border-radius: 5px; }
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
+.top-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #ccc; position: sticky; top:0; background:#fff; z-index:10; }
+.top-bar .left { display:flex; align-items:center; font-weight:bold; font-size:18px; }
+.top-bar img.profile-pic { width:35px; height:35px; border-radius:50%; margin-right:10px; border:1px solid #ccc; object-fit:cover; }
+.top-bar .icons img { width:24px; height:24px; margin-left:15px; cursor:pointer; }
+.main { flex:1; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; text-align:center; padding:20px; font-size:16px; color:#333; overflow-y:auto; }
+.friends-list { margin-top:20px; width:90%; }
+.friend { background:#f5f5f5; padding:10px; margin-bottom:10px; border-radius:8px; display:flex; align-items:center; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover; }
+.fab { position: fixed; bottom: 70px; right: 20px; width:60px; height:60px; background:#25d366; border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3); font-size:30px; color:#fff; }
+.fab-menu { display:none; flex-direction:column; position: fixed; bottom: 140px; right: 20px; background:#fff; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,0.3); overflow:hidden; z-index:50; }
+.fab-menu button { padding:10px 20px; border:none; background:none; text-align:left; cursor:pointer; font-size:16px; }
+.fab-menu button:hover { background:#f0f0f0; }
+#qrModal, #cameraModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; justify-content:center; align-items:center; flex-direction:column; background:rgba(0,0,0,0.6); z-index:100; }
+#qrModalContent, #cameraModalContent { background:#fff; padding:20px; border-radius:10px; text-align:center; }
+#qr-reader { width:100%; max-width:400px; margin-top:20px; display:none; }
+button { cursor:pointer; }
+.bottom-buttons { display:flex; justify-content:center; gap:15px; margin-top:20px; flex-wrap:wrap; }
+.bottom-buttons button { padding:10px 20px; border:none; border-radius:5px; background:#25d366; color:#fff; font-size:16px; }
 </style>
 </head>
 <body>
 
-<header>
-  <img id="profile-pic" src="default-profile.png" alt="Profile">
-  <h2 id="username-display">My Name</h2>
-</header>
-
-<div class="buttons">
-  <button onclick="showMyCode()">My Code</button>
-  <button onclick="startScan()">Scan Code</button>
-  <button onclick="location.href='search.html'">Search Friend</button>
-</div>
-
-<div class="chat-list" id="chat-list">
-  <div class="chat-item">No chats yet. Add a friend to start chatting!</div>
-</div>
-
-<nav>
-  <a href="home.html" class="active">Chats</a>
-  <a href="groups.html">Groups</a>
-  <a href="calls.html">Calls</a>
-</nav>
-
-<!-- My Code Popup -->
-<div class="popup" id="myCodePopup">
-  <div class="popup-content">
-    <h3>My QR Code</h3>
-    <div id="qrcode"></div>
-    <button onclick="closeMyCode()">Close</button>
+<!-- Top Bar: Profile + Name + Three-dot -->
+<div class="top-bar">
+  <div class="left">
+    <img id="userPic" class="profile-pic" src="" alt="Profile">
+    <span id="usernameDisplay">Your Name</span>
+  </div>
+  <div class="icons">
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/menu-2.png" title="Menu">
   </div>
 </div>
 
-<!-- Scan Popup -->
-<div class="popup" id="scanPopup">
-  <div class="popup-content">
-    <h3>Scan Friend's QR</h3>
-    <div id="reader" style="width:250px"></div>
-    <button onclick="closeScan()">Close</button>
+<!-- Main Content -->
+<div class="main" id="mainContent">
+  <p id="noMsgText">No messages yet <br> Add friends to start conversation</p>
+  <div class="friends-list" id="friendsList"></div>
+  <div id="qr-reader"></div>
+
+  <!-- Buttons under main content -->
+  <div class="bottom-buttons">
+    <button onclick="location.href='chat.html'">Chats</button>
+    <button onclick="location.href='group.html'">Group</button>
+    <button onclick="location.href='call.html'">Call</button>
   </div>
 </div>
 
-<script>
-const username = localStorage.getItem("username") || "Guest";
-document.getElementById("username-display").innerText = username;
+<!-- Floating FAB -->
+<div class="fab" id="fab">+</div>
+<div class="fab-menu" id="fabMenu">
+  <button id="myCodeBtn">My Code</button>
+  <button id="scanQRBtn">Scan Friend QR</button>
+  <button id="searchFriendBtn">Search Friend</button>
+  <button id="cameraBtn">Take Video / Photo</button>
+</div>
 
-const profilePic = localStorage.getItem("profilePic") || "default-profile.png";
-document.getElementById("profile-pic").src = profilePic;
+<!-- QR Modal -->
+<div id="qrModal">
+  <div id="qrModalContent">
+    <h3>Your QR Code</h3>
+    <div id="qrCode"></div>
+    <button onclick="closeQR()">Close</button>
+  </div>
+</div>
 
-// My Code popup
-function showMyCode() {
-  document.getElementById("myCodePopup").style.display = "flex";
-  document.getElementById("qrcode").innerHTML = "";
-  new QRCode(document.getElementById("qrcode"), {
-    text: username,
-    width: 200,
-    height: 200
-  });
-}
-function closeMyCode() { document.getElementById("myCodePopup").style.display = "none"; }
+<!-- Camera Modal -->
+<div id="cameraModal">
+  <video id="cameraVideo" autoplay style="width:90%; max-width:400px; border-radius:10px; margin-top:20px;"></video>
+  <div style="margin-top:10px;">
+    <button id="takePhotoBtn">Take Photo</button>
+    <button id="startVideoBtn">Start Recording</button>
+    <button id="stopVideoBtn">Stop Recording</button>
+  </div>
+  <canvas id="photoCanvas" style="display:none; margin-top:10px;"></canvas>
+  <video id="recordedVideo" controls style="display:none; width:90%; max-width:400px; margin-top:10px;"></video>
+  <button onclick="closeCamera()" style="margin-top:10px;">Close</button>
+</div>
 
-// Scan Code
-function startScan() {
-  document.getElementById("scanPopup").style.display = "flex";
-  const html5QrCode = new Html5Qrcode("reader");
-  html5QrCode.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 200 },
-    qrCodeMessage => {
-      alert("Scanned: " + qrCodeMessage);
-      html5QrCode.stop();
-      document.getElementById("scanPopup").style.display = "none";
-    },
-    errorMessage => {}
-  );
-}
-function closeScan() { document.getElementById("scanPopup").style.display = "none"; }
-</script>
-
+<script src="home.js"></script>
 </body>
 </html>
