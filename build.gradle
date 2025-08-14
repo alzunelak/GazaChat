@@ -1,0 +1,8 @@
+buildscript {
+    ext {
+        compose_ui_version = '1.6.8'
+        kotlin_version = '1.9.24'
+    }
+    repositories { google(); mavenCentral() }
+    dependencies { classpath "com.android.tools.build:gradle:8.5.2" }
+}
