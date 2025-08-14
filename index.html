@@ -3,203 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat App</title>
+<title>Splash Screen</title>
 <style>
   body {
+    margin: 0;
+    padding: 0;
+    background: #25d366;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
     font-family: Arial, sans-serif;
-    margin:0;
-    padding:0;
-    background:#fff;
+    flex-direction: column;
   }
-
-  /* Top Bar */
-  .top-bar {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:10px 15px;
-    border-bottom:1px solid #ccc;
-    position: sticky;
-    top:0;
-    background:#fff;
-    z-index:10;
+  img {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
   }
-
-  .top-bar .left {
-    font-weight:bold;
-    font-size:18px;
+  h1 {
+    font-size: 32px;
   }
-
-  .top-bar .icons img {
-    width:24px;
-    height:24px;
-    margin-left:15px;
-    cursor:pointer;
-  }
-
-  /* Main Content */
-  .main {
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    height:80vh;
-    text-align:center;
-    padding:20px;
-    font-size:16px;
-    color:#333;
-  }
-
-  /* Floating Button */
-  .fab {
-    position: fixed;
-    bottom: 70px;
-    right: 20px;
-    width:60px;
-    height:60px;
-    background:#25d366;
-    border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    cursor:pointer;
-    box-shadow:0 4px 6px rgba(0,0,0,0.3);
-    font-size:30px;
-    color:#fff;
-  }
-
-  .fab-menu {
-    display:none;
-    flex-direction:column;
-    position: fixed;
-    bottom: 140px;
-    right: 20px;
-    background:#fff;
-    border-radius:10px;
-    box-shadow:0 4px 6px rgba(0,0,0,0.3);
-    overflow:hidden;
-  }
-
-  .fab-menu button {
-    padding:10px 20px;
-    border:none;
-    background:none;
-    text-align:left;
-    cursor:pointer;
-    font-size:16px;
-  }
-
-  .fab-menu button:hover {
-    background:#f0f0f0;
-  }
-
-  /* QR display modal */
-  #qrModal {
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.6);
-    justify-content:center;
-    align-items:center;
-  }
-
-  #qrModalContent {
-    background:#fff;
-    padding:20px;
-    border-radius:10px;
-    text-align:center;
-  }
-
 </style>
 </head>
 <body>
+  <img src="https://via.placeholder.com/150" alt="App Logo">
+  <h1>My Chat App</h1>
 
-<!-- Top Bar -->
-<div class="top-bar">
-  <div class="left" id="usernameDisplay">Your Name</div>
-  <div class="icons">
-    <img src="https://img.icons8.com/ios-glyphs/30/000000/camera.png" id="topCamera" title="Scan QR">
-    <img src="https://img.icons8.com/ios-glyphs/30/000000/search.png" id="topSearch" title="Search Friend">
-    <img src="https://img.icons8.com/ios-glyphs/30/000000/menu-2.png" title="Menu">
-  </div>
-</div>
-
-<!-- Main Content -->
-<div class="main" id="mainContent">
-  <p>no msg yet <br> add friends to start conversation</p>
-</div>
-
-<!-- Floating Add Button -->
-<div class="fab" id="fab">+</div>
-<div class="fab-menu" id="fabMenu">
-  <button id="scanQRBtn">Scan QR Code</button>
-  <button id="searchFriendBtn">Search Friend</button>
-</div>
-
-<!-- QR Code Modal -->
-<div id="qrModal">
-  <div id="qrModalContent">
-    <h3>Your QR Code</h3>
-    <div id="qrCode"></div>
-    <button onclick="closeQR()">Close</button>
-  </div>
-</div>
-
-<!-- JS Libraries for QR -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-<script>
-  const fab = document.getElementById('fab');
-  const fabMenu = document.getElementById('fabMenu');
-  const scanQRBtn = document.getElementById('scanQRBtn');
-  const searchFriendBtn = document.getElementById('searchFriendBtn');
-  const qrModal = document.getElementById('qrModal');
-  const qrCodeDiv = document.getElementById('qrCode');
-  const usernameDisplay = document.getElementById('usernameDisplay');
-
-  // Example username (in real app, get from login/profile)
-  const username = "JohnDoe123";
-  usernameDisplay.textContent = username;
-
-  // Generate user's QR code for sharing
-  QRCode.toCanvas(qrCodeDiv, username, { width:200 }, function (error) {
-    if (error) console.error(error)
-  });
-
-  // Toggle FAB menu
-  fab.addEventListener('click', () => {
-    fabMenu.style.display = fabMenu.style.display === 'flex' ? 'none' : 'flex';
-  });
-
-  // Scan QR Code
-  scanQRBtn.addEventListener('click', () => {
-    alert("Open camera to scan friend's QR code (to implement with real camera API).");
-    fabMenu.style.display = 'none';
-  });
-
-  // Search Friend
-  searchFriendBtn.addEventListener('click', () => {
-    alert("Open search friend screen (implement your search functionality here).");
-    fabMenu.style.display = 'none';
-  });
-
-  // Top camera icon click
-  document.getElementById('topCamera').addEventListener('click', () => {
-    qrModal.style.display = 'flex';
-  });
-
-  // Top search icon click
-  document.getElementById('topSearch').addEventListener('click', () => {
-    alert("Open search friend screen (implement your search functionality here).");
-  });
-
-  function closeQR() {
-    qrModal.style.display = 'none';
-  }
-
-</script>
-
+  <script>
+    // After 2 seconds, go to profile page
+    setTimeout(() => {
+      window.location.href = "profile.html";
+    }, 2000);
+  </script>
 </body>
 </html>
