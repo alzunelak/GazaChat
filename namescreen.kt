@@ -47,17 +47,20 @@ fun NameScreen(onDone: () -> Unit) {
         OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Your name") }, singleLine = true)
         Spacer(Modifier.height(12.dp))
         Button(onClick = {
-            if (name.text.isBlank()) return@Button
-            val kp = Crypto.generateKeyPair()
-            val profile = UserProfile(
-                username = name.text.trim(),
-                publicKeyPem = Crypto.publicKeyToPem(kp.public),
-                photoBase64 = photoBase64
-            )
-            // Save profile + also keep private key in memory for session (for demo: regenerate per restart)
-            // For production, store private key in Android Keystore.
-            Store.saveProfile(LocalContext.current, profile)
-            onDone()
-        }, modifier = Modifier.fillMaxWidth()) { Text("Continue") }
+    if (name.text.isBlank()) return@Button
+
+    // Ensure EC key in keystore
+    val kp = com.example.chatbt.crypto.CryptoKeystore.ensureKey()
+    val pubPem = com.example.chatbt.crypto.Crypto.publicKeyToPem(kp.public)
+
+    val profile = com.example.chatbt.data.UserProfile(
+        username = name.text.trim(),
+        publicKeyPem = pubPem,
+        photoBase64 = photoBase64
+    )
+    com.example.chatbt.data.Store.saveProfile(LocalContext.current, profile)
+    onDone()
+}, modifier = Modifier.fillMaxWidth()) { Text("Continue") }
+
     }
 }
