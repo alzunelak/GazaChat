@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat — ChatApp</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; height:100vh; }
+body { font-family: Arial, sans-serif; margin:0; padding:0; display:flex; flex-direction:column; height:100vh; }
 .top-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #ccc; background:#fff; position:sticky; top:0; z-index:10; }
 .top-bar .left { display:flex; align-items:center; font-weight:bold; font-size:18px; }
 .top-bar img.profile-pic { width:35px; height:35px; border-radius:50%; margin-right:10px; border:1px solid #ccc; object-fit:cover; }
-.top-bar .icons img, .top-bar button { width:24px; height:24px; margin-left:15px; cursor:pointer; font-size:18px; }
+.top-bar button { font-size:18px; padding:5px 10px; cursor:pointer; }
 .chat-container { flex:1; padding:10px 15px; display:flex; flex-direction:column; overflow-y:auto; }
 .message { margin-bottom:10px; max-width:80%; padding:8px 12px; border-radius:10px; word-wrap:break-word; }
 .message.sent { background:#25d366; color:#fff; align-self:flex-end; }
@@ -27,9 +27,7 @@ img.chat-img, video.chat-video { max-width:150px; border-radius:8px; margin-top:
     <img class="profile-pic" src="https://via.placeholder.com/50" alt="Friend">
     <span id="friendName">Friend</span>
   </div>
-  <div class="icons">
-    <button onclick="history.back()">◀</button>
-  </div>
+  <button onclick="history.back()">◀ Back</button>
 </div>
 
 <div class="chat-container" id="chatContainer"></div>
@@ -45,15 +43,12 @@ const chatContainer = document.getElementById('chatContainer');
 const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 
-// Get current friend
 const currentFriend = localStorage.getItem('currentFriend') || "Friend";
 friendNameEl.textContent = currentFriend;
 
-// Load chat history
 let chats = JSON.parse(localStorage.getItem('chat_' + currentFriend) || "[]");
 
-// Render all messages
-function renderChats() {
+function renderChats(){
   chatContainer.innerHTML = '';
   chats.forEach(msg => {
     const div = document.createElement('div');
@@ -62,14 +57,14 @@ function renderChats() {
     if(msg.image){
       const img = document.createElement('img');
       img.src = msg.image;
-      img.className = 'chat-img';
+      img.className='chat-img';
       div.appendChild(img);
     }
     if(msg.video){
-      const video = document.createElement('video');
-      video.src = msg.video;
-      video.controls = true;
-      video.className = 'chat-video';
+      const video=document.createElement('video');
+      video.src=msg.video;
+      video.controls=true;
+      video.className='chat-video';
       div.appendChild(video);
     }
     chatContainer.appendChild(div);
@@ -77,30 +72,24 @@ function renderChats() {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// Initial render
 renderChats();
 
-// Send text message
-sendBtn.addEventListener('click', () => {
+sendBtn.addEventListener('click', ()=>{
   const text = messageInput.value.trim();
   if(!text) return;
-  const msgObj = { type:'sent', text };
-  chats.push(msgObj);
+  chats.push({type:'sent', text});
   localStorage.setItem('chat_' + currentFriend, JSON.stringify(chats));
-  messageInput.value = '';
+  messageInput.value='';
   renderChats();
 
-  // Simulated reply
-  setTimeout(() => {
-    const reply = { type:'received', text:'Received: ' + text };
-    chats.push(reply);
+  setTimeout(()=>{
+    chats.push({type:'received', text:'Received: '+text});
     localStorage.setItem('chat_' + currentFriend, JSON.stringify(chats));
     renderChats();
   }, 1000);
 });
 
-// Listen for new media sent from home
-window.addEventListener('storage', (event) => {
+window.addEventListener('storage', (event)=>{
   if(event.key === 'chat_' + currentFriend){
     chats = JSON.parse(event.newValue || "[]");
     renderChats();
