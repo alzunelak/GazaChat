@@ -8,9 +8,13 @@ const saveProfileBtn = document.getElementById('saveProfileBtn');
 // Auto transition from splash -> profile setup
 window.addEventListener('load', () => {
   setTimeout(() => {
-    s1.classList.remove('active'); s1.classList.add('hidden');
-    s2.classList.remove('hidden');
-  }, 1000); // 1 second
+    s1.classList.add('fade-out'); // fade out
+    setTimeout(() => {
+      s1.classList.add('hidden'); 
+      s1.classList.remove('active');
+      s2.classList.remove('hidden'); // show profile setup
+    }, 1000); // match CSS fade duration
+  }, 2000); // keep splash visible for 2s
 });
 
 // Save profile and go to home
@@ -31,7 +35,8 @@ saveProfileBtn.addEventListener('click', () => {
     reader.readAsDataURL(picFile);
   } else { loadHome(); }
 
-  s2.classList.add('hidden'); s3.classList.remove('hidden');
+  s2.classList.add('hidden'); 
+  s3.classList.remove('hidden'); // show home screen
 });
 
 function loadHome() {
@@ -48,14 +53,18 @@ function loadHome() {
 
 // Chat messages as bubbles
 document.getElementById('startChatBtn').addEventListener('click', () => {
-  s3.classList.add('hidden'); s4.classList.remove('hidden');
+  s3.classList.add('hidden'); 
+  s4.classList.remove('hidden');
 });
 
 document.getElementById('sendBtn').addEventListener('click', () => {
   const msg = document.getElementById('messageInput').value.trim();
   if (!msg) return;
   const box = document.getElementById('chatBox');
-  const p = document.createElement('div'); p.className='bubble you'; p.textContent = msg;
-  box.appendChild(p); document.getElementById('messageInput').value = '';
+  const p = document.createElement('div'); 
+  p.className='bubble you'; 
+  p.textContent = msg;
+  box.appendChild(p); 
+  document.getElementById('messageInput').value = '';
   box.scrollTop = box.scrollHeight;
 });
