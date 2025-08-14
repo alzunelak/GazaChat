@@ -1,35 +1,37 @@
-body, html {
+/* Reset & Mobile Touch Fix */
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  touch-action: manipulation; /* make buttons clickable on mobile */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-family: Arial, sans-serif;
 }
 
 .screen {
   display: none;
   flex-direction: column;
-  justify-content: center; /* vertical centering */
+  justify-content: center;
   align-items: center;
   height: 100%;
+  width: 100%;
 }
+.screen.active { display: flex; }
 
-.screen.active {
-  display: flex;
-}
-
+/* Logo + Continue button */
 .logo-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
-
 .logo {
   width: 150px;
   max-width: 60%;
-  margin-bottom: 40px; /* space between logo and button */
+  margin-bottom: 40px;
 }
-
-#continueBtn {
+.primary-btn {
   padding: 12px 30px;
   font-size: 18px;
   border: none;
@@ -37,80 +39,40 @@ body, html {
   background-color: #007bff;
   color: #fff;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
+.primary-btn:active { background-color: #0056b3; }
 
-#continueBtn:active {
-  background-color: #0056b3;
-}
-.primary-btn {
-  padding: 12px 25px;
-  margin-top: 15px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  cursor: pointer;
-}
-.primary-btn:hover { background: #0056b3; }
-
+/* Profile / Home */
 .profile-header {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 10px;
 }
-
 .profile-pic { width: 50px; height: 50px; border-radius: 50%; }
 
+/* Chat */
 .chat-box { 
-  width: 90%; 
-  max-width: 400px; 
-  height: 400px; 
-  overflow-y: auto; 
-  border: 1px solid #ccc; 
-  margin-bottom: 10px; 
-  padding: 5px; 
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  width: 90%; max-width: 400px; height: 400px; 
+  overflow-y: auto; border: 1px solid #ccc; padding: 5px;
+  display: flex; flex-direction: column; gap: 5px;
 }
-
-.popup {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.95);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-#reader {
-  width: 90%;
-  max-width: 400px;
-  aspect-ratio: 1/1;
-}
-
-/* Chat bubbles */
 .bubble {
   padding: 8px 12px;
   border-radius: 20px;
   max-width: 70%;
   word-wrap: break-word;
 }
+.bubble.you { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+.bubble.friend { background-color: #e0e0e0; color: black; align-self: flex-start; border-bottom-left-radius: 0; }
 
-.bubble.you {
-  background-color: #007bff;
-  color: white;
-  align-self: flex-end;
-  border-bottom-right-radius: 0;
+/* QR Scanner popup */
+.popup {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
 }
-
-.bubble.friend {
-  background-color: #e0e0e0;
-  color: black;
-  align-self: flex-start;
-  border-bottom-left-radius: 0;
-}
+#reader { width: 90%; max-width: 400px; aspect-ratio: 1/1; }
