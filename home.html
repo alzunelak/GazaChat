@@ -88,7 +88,7 @@
 
   loadProfile();
 
-  // Click profile to upload new photo
+  // Upload new profile photo
   profilePhotoEl.addEventListener('click', ()=>{
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -115,14 +115,39 @@
     popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
   });
 
-  function addFriend(name){
-    if(!name) return;
-    const friendDiv = document.createElement('div');
-    friendDiv.className = 'friend';
-    friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
-    friendsList.appendChild(friendDiv);
+  function getSavedFriends() {
+    const saved = localStorage.getItem('chatapp_friends');
+    return saved ? JSON.parse(saved) : [];
   }
 
+  function saveFriends(friends){
+    localStorage.setItem('chatapp_friends', JSON.stringify(friends));
+  }
+
+  function renderFriends(){
+    friendsList.innerHTML = '';
+    const friends = getSavedFriends();
+    friends.forEach(name=>{
+      const friendDiv = document.createElement('div');
+      friendDiv.className = 'friend';
+      friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
+      friendsList.appendChild(friendDiv);
+    });
+  }
+
+  function addFriend(name){
+    if(!name) return;
+    const friends = getSavedFriends();
+    if(!friends.includes(name)){
+      friends.push(name);
+      saveFriends(friends);
+      renderFriends();
+    }
+  }
+
+  renderFriends(); // Load saved friends on page load
+
+  // --- Popup Menu Buttons ---
   document.getElementById('myCodeBtn').addEventListener('click', ()=>{
     alert("Show my QR code for others to scan!");
   });
@@ -161,6 +186,7 @@
       .catch(err => alert("Error accessing camera: " + err));
   });
 
+  // --- Chat / Group / Call Buttons ---
   document.getElementById('chatBtn').addEventListener('click', ()=> window.location.href='chat.html');
   document.getElementById('groupBtn').addEventListener('click', ()=> window.location.href='group.html');
   document.getElementById('callBtn').addEventListener('click', ()=> window.location.href='call.html');
