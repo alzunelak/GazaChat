@@ -9,7 +9,7 @@ const friendsUl = document.getElementById('friendsUl');
 const startChatBtn = document.getElementById('startChatBtn');
 const scannerPopup = document.getElementById('scannerPopup');
 
-// Auto-transition from logo to profile after 1 second
+// Auto-transition from splash to profile after 1 second
 window.addEventListener('load', () => {
   setTimeout(() => {
     s1.classList.remove('active');
@@ -22,7 +22,8 @@ window.addEventListener('load', () => {
 saveProfileBtn.addEventListener('click', async () => {
   const name = document.getElementById('usernameInput').value.trim();
   const picFile = document.getElementById('profilePicInput').files[0];
-  if(!name) return alert("Please enter your name.");
+  if(!name){ alert("Please enter your name."); return; }
+
   localStorage.setItem('chatName', name);
 
   if(picFile){
