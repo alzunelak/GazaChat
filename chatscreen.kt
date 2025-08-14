@@ -28,21 +28,36 @@ fun ChatScreen() {
     val btAdapter = (ctx.getSystemService(android.content.Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
     var sessionKey by remember { mutableStateOf<ByteArray?>(null) }
 
-    // For demo, start server; on the other phone, go to a picker and connect.
-    var service: BluetoothChatService? by remember { mutableStateOf(null) }
+   // inside LaunchedEffect(Unit)
+LaunchedEffect(Unit) {
+    val friendPubPem = friend?.publicKeyPem ?: ""
+    if (friendPubPem.isBlank()) {
+        // You added friend by username only — ask to scan QR to get their key
+        messages = messages + Message(fromMe=false, text="(Scan your friend’s QR to enable encrypted chat)")
+    } else {
+        val myPriv = com.example.chatbt.crypto.CryptoKeystore.privateKey()
+        val peerPub = com.example.chatbt.crypto.Crypto.pemToPublicKey(friendPubPem)
+        val secret = com.example.chatbt.crypto.Crypto.ecdhSecret(myPriv, peerPub)
+        sessionKey = com.example.chatbt.crypto.Crypto.deriveAesKey(secret)
+    }
 
-    LaunchedEffect(Unit) {
-        // Derive a session key (if both sides exchanged public keys, use them here)
-        // For demo we just keep a static key (NOT SECURE). Replace with ECDH using Crypto.ecdhSecret(...)
-        sessionKey = Crypto.deriveAesKey("demo-shared".toByteArray())
-        service = BluetoothChatService(
-            adapter = btAdapter,
-            onConnected = { /* show toast */ },
-            onMessage = { blob ->
-                val key = sessionKey ?: return@BluetoothChatService
-                val plain = try { Crypto.decryptAesGcm(key, blob) } catch (_:Throwable){ return@BluetoothChatService }
-                messages = messages + Message(fromMe=false, text = plain.decodeToString())
-            },
+    val svc = com.example.chatbt.bt.BtHub.ensureService(
+        ctx,
+        onConnected = { /* show something*/ },
+        onMessage = { framed ->
+            val key = sessionKey ?: return@ensureService
+            // framed already includes IV (encryptAesGcm output)
+            val plain = try { com.example.chatbt.crypto.Crypto.decryptAesGcm(key, framed) } catch (_:Throwable){ return@ensureService }
+            messages = messages + Message(fromMe=false, text = plain.decodeToString())
+        },
+        onError = { /* error */ }
+    )
+    service = svc
+
+    // One device should call startServer(); the other uses DevicePicker to connect.
+    svc.startServer()
+}
+
             onError = { /* show error */ }
         ).also { it.startServer() }
     }
