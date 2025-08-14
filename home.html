@@ -6,31 +6,10 @@
 <title>Home — ChatApp</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
-<style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
-.top-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; border-bottom:1px solid #ccc; position: sticky; top:0; background:#fff; z-index:10; }
-.top-bar .left { display:flex; align-items:center; font-weight:bold; font-size:18px; }
-.top-bar img.profile-pic { width:35px; height:35px; border-radius:50%; margin-right:10px; border:1px solid #ccc; object-fit:cover; }
-.top-bar .icons img { width:24px; height:24px; margin-left:15px; cursor:pointer; }
-.main { flex:1; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; text-align:center; padding:20px; font-size:16px; color:#333; overflow-y:auto; }
-.friends-list { margin-top:20px; width:90%; }
-.friend { background:#f5f5f5; padding:10px; margin-bottom:10px; border-radius:8px; display:flex; align-items:center; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover; }
-.fab { position: fixed; bottom: 70px; right: 20px; width:60px; height:60px; background:#25d366; border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3); font-size:30px; color:#fff; z-index:50; }
-.fab-menu { display:none; flex-direction:column; position: fixed; bottom: 140px; right: 20px; background:#fff; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,0.3); overflow:hidden; z-index:50; }
-.fab-menu button { padding:10px 20px; border:none; background:none; text-align:left; cursor:pointer; font-size:16px; }
-.fab-menu button:hover { background:#f0f0f0; }
-#qrModal, #cameraModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; justify-content:center; align-items:center; flex-direction:column; background:rgba(0,0,0,0.6); z-index:100; }
-#qrModalContent, #cameraModalContent { background:#fff; padding:20px; border-radius:10px; text-align:center; }
-#qr-reader { width:100%; max-width:400px; margin-top:20px; display:none; }
-button { cursor:pointer; }
-.bottom-buttons { display:flex; justify-content:center; gap:15px; margin-top:20px; flex-wrap:wrap; }
-.bottom-buttons button { padding:10px 20px; border:none; border-radius:5px; background:#25d366; color:#fff; font-size:16px; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Top Bar: Profile + Name + Three-dot -->
 <div class="top-bar">
   <div class="left">
     <img id="userPic" class="profile-pic" src="" alt="Profile">
@@ -41,13 +20,11 @@ button { cursor:pointer; }
   </div>
 </div>
 
-<!-- Main Content -->
 <div class="main" id="mainContent">
   <p id="noMsgText">No messages yet <br> Add friends to start conversation</p>
   <div class="friends-list" id="friendsList"></div>
   <div id="qr-reader"></div>
 
-  <!-- Buttons under main content -->
   <div class="bottom-buttons">
     <button onclick="location.href='chat.html'">Chats</button>
     <button onclick="location.href='group.html'">Group</button>
@@ -55,7 +32,6 @@ button { cursor:pointer; }
   </div>
 </div>
 
-<!-- Floating FAB -->
 <div class="fab" id="fab">+</div>
 <div class="fab-menu" id="fabMenu">
   <button id="myCodeBtn">My Code</button>
@@ -64,7 +40,6 @@ button { cursor:pointer; }
   <button id="cameraBtn">Take Video / Photo</button>
 </div>
 
-<!-- QR Modal -->
 <div id="qrModal">
   <div id="qrModalContent">
     <h3>Your QR Code</h3>
@@ -73,7 +48,6 @@ button { cursor:pointer; }
   </div>
 </div>
 
-<!-- Camera Modal -->
 <div id="cameraModal">
   <video id="cameraVideo" autoplay style="width:90%; max-width:400px; border-radius:10px; margin-top:20px;"></video>
   <div style="margin-top:10px;">
