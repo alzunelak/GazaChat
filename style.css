@@ -11,9 +11,9 @@ html, body {
 /* Screens */
 .screen {
   display: none;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
   width: 100vw;
   height: 100vh;
   background-color: #fff; /* white background */
