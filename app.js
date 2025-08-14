@@ -9,7 +9,7 @@ const friendsUl = document.getElementById('friendsUl');
 const startChatBtn = document.getElementById('startChatBtn');
 const scannerPopup = document.getElementById('scannerPopup');
 
-// Auto-transition from logo to profile after 1s
+// Auto-transition from logo to profile after 1 second
 window.addEventListener('load', () => {
   setTimeout(() => {
     s1.classList.remove('active');
@@ -40,7 +40,7 @@ saveProfileBtn.addEventListener('click', async () => {
   s2.classList.add('hidden'); s3.classList.remove('hidden');
 });
 
-// ECDH + QR placeholders
+// ECDH + QR placeholder
 async function setupProfileKeys(username){
   const payloadStr = JSON.stringify({u: username, k:"PUBLIC_KEY"});
   const qrContainer = document.getElementById('qrcode'); qrContainer.innerHTML='';
