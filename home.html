@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Home — ChatApp</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar sticky">
+    <div class="top-left">
+      <div id="topAvatar" class="avatar small placeholder"></div>
+      <div>
+        <div id="topName" class="title sm">You</div>
+        <div class="subtitle">Profile</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="scanIcon" title="Scan QR">📷</button>
+      <button class="icon-btn" id="searchIcon" title="Search friend">🔍</button>
+    </div>
+  </header>
+
+  <main class="page pad">
+    <section class="empty">
+      <p class="muted center">No chats yet. Add a friend to start.</p>
+    </section>
+
+    <div class="fab-wrap">
+      <button id="fab" class="fab">+</button>
+      <div id="fabOptions" class="fab-options hidden">
+        <button class="btn outline" id="fabScan">📷 Scan Friend QR</button>
+        <button class="btn outline" id="fabSearch">🔍 Search by Username</button>
+        <button class="btn outline" id="fabMyQr">🔖 My QR</button>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="tab active">Chats</button>
+      <button class="tab" id="groupsTab">Groups</button>
+      <button class="tab" id="myQrTab">My QR</button>
+      <button class="tab" id="callsTab">Calls</button>
+    </nav>
+  </main>
+</body>
+</html>
