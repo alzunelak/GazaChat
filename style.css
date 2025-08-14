@@ -1,60 +1,67 @@
 html, body {
-  margin: 0; padding: 0;
-  width: 100%; height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   font-family: Arial, sans-serif;
-  background-color: #fff !important;
-  color: #000;
+  background-color: #fff; /* bright white */
+  color: #000;           /* black text */
 }
 
+/* Screens */
 .screen {
   display: none;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 100vw; height: 100vh;
-  background-color: #fff !important;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff; /* white background */
 }
 .screen.active { display: flex; }
 .screen.hidden { display: none; }
 
+/* Splash logo */
 #screen1 .logo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(1.2);
-  opacity: 1;
 }
 
-#screen2 h2 { margin-bottom: 20px; }
+/* Profile setup */
+#screen2 h2 { margin-bottom: 20px; color: #000; }
 #screen2 input {
   margin: 10px 0; padding: 10px;
   width: 80%; max-width: 300px;
   font-size: 16px; border: 1px solid #ccc; border-radius: 5px;
+  color: #000; background-color: #fff;
 }
 
+/* Buttons */
 .primary-btn {
-  padding: 12px 30px; font-size: 18px;
-  border: none; border-radius: 8px;
-  background-color: #007bff; color: #fff;
+  padding: 12px 30px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: #fff;
   cursor: pointer;
 }
 .primary-btn:active { background-color: #0056b3; }
 
+/* Home screen */
 .profile-header { display: flex; align-items: center; gap: 10px; margin: 10px; }
 .profile-pic { width: 50px; height: 50px; border-radius: 50%; }
 
-.chat-box { width: 90%; max-width: 400px; height: 400px;
+/* Chat bubbles */
+.chat-box {
+  width: 90%; max-width: 400px; height: 400px;
   overflow-y: auto; border: 1px solid #ccc; padding: 5px;
   display: flex; flex-direction: column; gap: 5px;
+  background-color: #fff; color: #000;
 }
-.bubble { padding: 8px 12px; border-radius: 20px; max-width: 70%; word-wrap: break-word; }
+.bubble {
+  padding: 8px 12px; border-radius: 20px; max-width: 70%; word-wrap: break-word;
+}
 .bubble.you { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 0; }
 .bubble.friend { background-color: #e0e0e0; color: black; align-self: flex-start; border-bottom-left-radius: 0; }
-
-.popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-#reader { width: 90%; max-width: 400px; aspect-ratio: 1/1; }
-
-@media (prefers-color-scheme: dark) {
-  html, body, .screen { background-color: #fff !important; color: #000; }
-}
