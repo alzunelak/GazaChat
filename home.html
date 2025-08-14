@@ -4,147 +4,54 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChatApp Home</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background-color: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; display:flex; flex-direction:column; height:100vh; }
 
-  /* Top profile section */
-  .profile-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
+  .profile-section { display:flex; align-items:center; justify-content:space-between; padding:20px; background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  .profile-info { display:flex; align-items:center; }
+  .profile-info img { width:60px; height:60px; border-radius:50%; margin-right:15px; }
+  .profile-info .name { font-size:20px; font-weight:bold; }
+  .three-dot { font-size:24px; cursor:pointer; }
 
-  .profile-info {
-    display: flex;
-    align-items: center;
-  }
+  .middle-section { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; font-size:18px; color:#666; }
+  .friends-list { margin-top:20px; width:80%; }
+  .friend { background:#fff; padding:10px; margin-bottom:10px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; }
+  .friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; }
 
-  .profile-info img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin-right: 15px;
-  }
+  .fab { position:fixed; bottom:100px; right:30px; width:60px; height:60px; background:#4CAF50; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:36px; color:#fff; cursor:pointer; box-shadow:0 3px 6px rgba(0,0,0,0.2); z-index:100; }
 
-  .profile-info .name {
-    font-size: 20px;
-    font-weight: bold;
-  }
+  .popup-menu { position:fixed; bottom:170px; right:30px; background:#fff; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.2); display:none; flex-direction:column; overflow:hidden; z-index:99; }
+  .popup-menu button { padding:15px 20px; border:none; background:none; text-align:left; cursor:pointer; font-size:16px; width:200px; }
+  .popup-menu button:hover { background:#f0f0f0; }
 
-  .three-dot {
-    font-size: 24px;
-    cursor: pointer;
-  }
+  .chat-group-call { display:flex; justify-content:space-around; padding:15px; background:#fff; box-shadow:0 -2px 5px rgba(0,0,0,0.1); }
+  .chat-group-call button { padding:10px 15px; font-size:16px; border:none; border-radius:8px; cursor:pointer; background:#4CAF50; color:#fff; }
 
-  /* Middle section */
-  .middle-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    color: #666;
-    flex-direction: column;
-  }
-
-  /* Floating + button */
-  .fab {
-    position: fixed;
-    bottom: 100px; /* above chat/group/call buttons */
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: #4CAF50;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 36px;
-    color: #fff;
-    cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    z-index: 100;
-  }
-
-  /* Popup menu */
-  .popup-menu {
-    position: fixed;
-    bottom: 170px; /* above FAB */
-    right: 30px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 99;
-  }
-
-  .popup-menu button {
-    padding: 15px 20px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 16px;
-    width: 200px;
-  }
-
-  .popup-menu button:hover {
-    background-color: #f0f0f0;
-  }
-
-  /* Chat / Group / Call section */
-  .chat-group-call {
-    display: flex;
-    justify-content: space-around;
-    padding: 15px;
-    background-color: #fff;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-  }
-
-  .chat-group-call button {
-    padding: 10px 15px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: #fff;
-  }
-
+  #qr-reader { width:100%; max-width:400px; margin-top:20px; }
+  #myCodeModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:200; }
+  #myCodeContent { background:#fff; padding:20px; border-radius:10px; text-align:center; }
+  #myCodeContent button { margin-top:10px; padding:5px 10px; }
 </style>
 </head>
 <body>
 
-<!-- Top Profile Section -->
 <div class="profile-section">
   <div class="profile-info">
     <img src="profile.jpg" alt="Profile Picture">
-    <div class="name">Mimah Suleiman</div>
+    <div class="name" id="userName">Mimah Suleiman</div>
   </div>
   <div class="three-dot">⋮</div>
 </div>
 
-<!-- Middle Section -->
 <div class="middle-section">
   No messages yet, add friends
+  <div class="friends-list" id="friendsList"></div>
 </div>
 
-<!-- Floating + Button -->
 <div class="fab" id="fab">+</div>
 
-<!-- Popup Menu -->
 <div class="popup-menu" id="popupMenu">
   <button id="myCodeBtn">My Code</button>
   <button id="scanCodeBtn">Scan Code</button>
@@ -152,64 +59,95 @@
   <button id="videoPhotoBtn">Take Video & Photo</button>
 </div>
 
-<!-- Chat / Group / Call Section (Bottom) -->
 <div class="chat-group-call">
   <button id="chatBtn">Chat</button>
   <button id="groupBtn">Group</button>
   <button id="callBtn">Call</button>
 </div>
 
+<div id="qr-reader" style="display:none;"></div>
+
+<!-- My Code Modal -->
+<div id="myCodeModal">
+  <div id="myCodeContent">
+    <div id="myQRCode"></div>
+    <button id="closeMyCode">Close</button>
+  </div>
+</div>
+
 <script>
   const fab = document.getElementById('fab');
   const popupMenu = document.getElementById('popupMenu');
+  const friendsList = document.getElementById('friendsList');
+  const myCodeModal = document.getElementById('myCodeModal');
 
   fab.addEventListener('click', () => {
     popupMenu.style.display = popupMenu.style.display === 'flex' ? 'none' : 'flex';
   });
 
   document.getElementById('myCodeBtn').addEventListener('click', () => {
-    alert("Show my QR code!");
+    const userName = document.getElementById('userName').innerText;
+    document.getElementById('myQRCode').innerHTML = "";
+    new QRCode(document.getElementById('myQRCode'), {
+      text: userName,
+      width: 200,
+      height: 200
+    });
+    myCodeModal.style.display = 'flex';
+  });
+
+  document.getElementById('closeMyCode').addEventListener('click', () => {
+    myCodeModal.style.display = 'none';
   });
 
   document.getElementById('scanCodeBtn').addEventListener('click', () => {
-    openCamera();
+    startQRScanner();
   });
 
   document.getElementById('searchFriendBtn').addEventListener('click', () => {
-    alert("Search friend by username!");
+    const friendName = prompt("Enter friend's name to add:");
+    if(friendName) addFriend(friendName);
   });
 
-  document.getElementById('videoPhotoBtn').addEventListener('click', () => {
-    openCamera();
-  });
+  document.getElementById('videoPhotoBtn').addEventListener('click', () => openCamera());
 
-  document.getElementById('chatBtn').addEventListener('click', () => {
-    alert("Open chat!");
-  });
+  document.getElementById('chatBtn').addEventListener('click', () => alert("Open chat!"));
+  document.getElementById('groupBtn').addEventListener('click', () => window.location.href='group.html');
+  document.getElementById('callBtn').addEventListener('click', () => window.location.href='call.html');
 
-  document.getElementById('groupBtn').addEventListener('click', () => {
-    window.location.href = 'group.html'; // Navigate to group page
-  });
-
-  document.getElementById('callBtn').addEventListener('click', () => {
-    window.location.href = 'call.html'; // Navigate to call page
-  });
-
+  let html5QrcodeScanner;
   function openCamera() {
     const video = document.createElement('video');
     video.style.width = '100%';
     video.style.height = '100%';
     video.autoplay = true;
     document.body.appendChild(video);
-
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-        alert("Camera opened! Press ESC or close tab to stop.");
-      })
-      .catch(err => {
-        alert("Error accessing camera: " + err);
-      });
+      .then(stream => { video.srcObject = stream; })
+      .catch(err => { alert("Error accessing camera: " + err); });
+  }
+
+  function startQRScanner() {
+    const qrReaderDiv = document.getElementById('qr-reader');
+    qrReaderDiv.style.display = 'block';
+    html5QrcodeScanner = new Html5Qrcode("qr-reader");
+    html5QrcodeScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        addFriend(decodedText);
+        html5QrcodeScanner.stop();
+        qrReaderDiv.style.display = 'none';
+      },
+      (errorMessage) => {}
+    ).catch(err => { alert("Unable to start QR scanner: " + err); });
+  }
+
+  function addFriend(name) {
+    const friendDiv = document.createElement('div');
+    friendDiv.className = 'friend';
+    friendDiv.innerHTML = `<img src="friend.png" alt="Friend"> ${name}`;
+    friendsList.appendChild(friendDiv);
   }
 </script>
 
