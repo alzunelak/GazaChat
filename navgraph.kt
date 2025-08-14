@@ -7,6 +7,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatbt.ui.screens.*
 
+composable("home")   { HomeScreen(
+    onScan = { nav.navigate("scan") },
+    onSearch = { nav.navigate("search") },
+    onMyQr = { nav.navigate("myqr") },
+    onChat = { nav.navigate("devicepicker") }, // client picks device then goes to chat
+    onGroups = { nav.navigate("groups") },
+    onCalls = { nav.navigate("calls") }
+) }
+composable("devicepicker") { DevicePickerScreen(onConnected = { nav.navigate("chat") }) }
+composable("groups") { GroupsScreen() }
+composable("calls") { CallsScreen() }
+
+
 @Composable
 fun NavGraph() {
     val nav: NavHostController = rememberNavController()
