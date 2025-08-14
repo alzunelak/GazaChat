@@ -14,12 +14,20 @@ html, body {
   flex-direction: column;
   height: 100%;
   width: 100%;
+  background: #fff;
 }
 .screen.active { display: flex; }
 .screen.hidden { display: none; }
 
 /* Logo */
-.logo { width: 150px; max-width: 60%; height: auto; }
+.logo {
+  width: 150px;
+  max-width: 60%;
+  height: auto;
+  filter: none !important;
+  opacity: 1 !important;
+  z-index: 10;
+}
 
 /* Buttons */
 .primary-btn {
@@ -61,3 +69,8 @@ html, body {
   z-index: 1000;
 }
 #reader { width: 90%; max-width: 400px; aspect-ratio: 1/1; }
+
+/* Force light mode for logo screen */
+@media (prefers-color-scheme: dark) {
+  #screen1 { background-color: #fff; }
+}
