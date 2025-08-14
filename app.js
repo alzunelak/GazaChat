@@ -1,7 +1,7 @@
 const s1 = document.getElementById('screen1');
-const s2 = document.getElementById('screen2');
-const s3 = document.getElementById('screen3');
-const s4 = document.getElementById('screen4');
+const s2 = document.getElementById('screen2'); // Profile setup
+const s3 = document.getElementById('screen3'); // Home
+const s4 = document.getElementById('screen4'); // Chat
 
 const saveProfileBtn = document.getElementById('saveProfileBtn');
 
@@ -10,11 +10,14 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     s1.classList.add('fade-out'); // fade out
     setTimeout(() => {
-      s1.classList.add('hidden'); 
+      s1.classList.add('hidden');
       s1.classList.remove('active');
-      s2.classList.remove('hidden'); // show profile setup
+
+      // Show profile setup screen
+      s2.classList.remove('hidden');
+      s2.classList.add('active');
     }, 1000); // match CSS fade duration
-  }, 2000); // keep splash visible for 2s
+  }, 2000); // keep splash visible for 2 seconds
 });
 
 // Save profile and go to home
@@ -35,8 +38,10 @@ saveProfileBtn.addEventListener('click', () => {
     reader.readAsDataURL(picFile);
   } else { loadHome(); }
 
-  s2.classList.add('hidden'); 
-  s3.classList.remove('hidden'); // show home screen
+  s2.classList.add('hidden');
+  s2.classList.remove('active');
+  s3.classList.remove('hidden');
+  s3.classList.add('active');
 });
 
 function loadHome() {
@@ -45,7 +50,6 @@ function loadHome() {
   document.getElementById('displayName').textContent = name;
   document.getElementById('userPic').src = pic;
 
-  // Generate QR
   const qrContainer = document.getElementById('qrcode');
   qrContainer.innerHTML = '';
   new QRCode(qrContainer, { text: name, width: 128, height: 128 });
@@ -53,7 +57,7 @@ function loadHome() {
 
 // Chat messages as bubbles
 document.getElementById('startChatBtn').addEventListener('click', () => {
-  s3.classList.add('hidden'); 
+  s3.classList.add('hidden');
   s4.classList.remove('hidden');
 });
 
