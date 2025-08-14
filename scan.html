@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Scan Friend — ChatApp</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/html5-qrcode" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar sticky">
+    <button class="icon-btn" onclick="history.back()">◀</button>
+    <div class="title">Scan Friend's QR</div>
+    <div style="width:36px"></div>
+  </header>
+
+  <main class="page pad">
+    <div id="reader" class="qr-box">Starting camera…</div>
+    <p class="muted center">Point camera at friend’s QR (their username + key)</p>
+
+    <div id="scanResult" class="card hidden">
+      <div>Found friend: <strong id="foundFriend"></strong></div>
+      <button id="addFriendFromScan" class="btn primary wide">Add friend & go Home</button>
+    </div>
+  </main>
+</body>
+</html>
