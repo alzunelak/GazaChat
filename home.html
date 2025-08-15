@@ -10,11 +10,8 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 .profile { display:flex; align-items:center; }
 .profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; }
 .profile-name { font-weight:bold; font-size:16px; }
-.three-dots { font-size:24px; cursor:pointer; }
 .main-content { padding:20px; min-height:70vh; }
 .no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
-.tabs { display:flex; justify-content:space-around; padding:10px 0; background:#fff; position:fixed; bottom:0; width:100%; border-top:1px solid #ccc; }
-.tabs div { font-weight:bold; cursor:pointer; }
 .add-button-container { position:fixed; bottom:60px; right:20px; z-index:100; }
 #addBtn { width:60px; height:60px; border-radius:50%; font-size:32px; cursor:pointer; background-color:#4CAF50; color:white; border:none; }
 .popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:5px 0; text-align:left; min-width:140px; }
@@ -23,6 +20,8 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 #qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
 #qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
 .friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+.tabs { display:flex; justify-content:space-around; padding:10px 0; background:#fff; position:fixed; bottom:0; width:100%; border-top:1px solid #ccc; }
+.tabs div, .tabs a div { font-weight:bold; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -32,14 +31,10 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
     <img id="profilePic" src="default-profile.png" alt="Profile">
     <div class="profile-name" id="profileName">User</div>
   </div>
-  <div class="three-dots">&#8942;</div>
 </div>
 
 <div class="main-content" id="mainContent">
-  <div class="no-msg">
-    No messages yet<br>
-    Add a friend using the + button
-  </div>
+  <div class="no-msg">No messages yet<br>Add a friend using the + button</div>
 </div>
 
 <div id="qrContainer">
@@ -52,8 +47,8 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
   <button id="addBtn">+</button>
   <div id="popupOptions" class="popup-options">
     <a href="#" id="showQRCode">My Code</a>
-    <a href="scan.html">Scan Code</a>
-    <a href="search.html">Search Friend</a>
+    <a href="#" id="scanFriend">Scan Code</a>
+    <a href="#" id="searchFriend">Search Friend</a>
   </div>
 </div>
 
@@ -64,11 +59,13 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
 // Profile setup
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
   document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+  renderFriends();
 });
 
 // Floating + button
@@ -111,13 +108,7 @@ function addFriend(friendName){
   }
 }
 
-// Real-time updates using BroadcastChannel
-const channel = new BroadcastChannel('chatapp');
-channel.onmessage = (e) => {
-  if(e.data.type === 'addFriend') addFriend(e.data.friend);
-}
-
-// Render friends
+// Render friends (click -> chat)
 function renderFriends(){
   const mainContent = document.getElementById('mainContent');
   const friends = getFriends();
@@ -138,7 +129,37 @@ function renderFriends(){
   }
 }
 
-document.addEventListener('DOMContentLoaded', renderFriends);
+// Scan friend
+document.getElementById('scanFriend').addEventListener('click', e=>{
+  e.preventDefault();
+  const qrReaderDiv = document.createElement('div');
+  qrReaderDiv.id='qr-reader';
+  qrReaderDiv.style.position='fixed';
+  qrReaderDiv.style.top='50%';
+  qrReaderDiv.style.left='50%';
+  qrReaderDiv.style.transform='translate(-50%,-50%)';
+  qrReaderDiv.style.zIndex='300';
+  qrReaderDiv.style.background='#fff';
+  qrReaderDiv.style.padding='20px';
+  qrReaderDiv.style.borderRadius='12px';
+  document.body.appendChild(qrReaderDiv);
+  const html5QrCode = new Html5Qrcode("qr-reader");
+  html5QrCode.start({facingMode:"environment"}, {fps:10, qrbox:250},
+    decodedText=>{
+      addFriend(decodedText);
+      html5QrCode.stop();
+      qrReaderDiv.remove();
+    },
+    errorMessage=>{}
+  );
+});
+
+// Search friend
+document.getElementById('searchFriend').addEventListener('click', e=>{
+  e.preventDefault();
+  const f = prompt("Enter friend's name:");
+  if(f) addFriend(f);
+});
 </script>
 </body>
 </html>
