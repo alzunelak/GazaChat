@@ -142,7 +142,6 @@ document.addEventListener('click', e => {
 // QR Code popup
 const showQRCodeLink = document.getElementById('showQRCode');
 const qrContainer = document.getElementById('qrContainer');
-const noMsg = document.querySelector('.no-msg');
 const closeQR = document.getElementById('closeQR');
 let qrGenerated = false;
 const savedName = localStorage.getItem('username') || 'User';
@@ -150,86 +149,26 @@ const savedName = localStorage.getItem('username') || 'User';
 showQRCodeLink.addEventListener('click', e => {
   e.preventDefault();
   qrContainer.style.display = 'block';
-  noMsg.style.display = 'none';
   if (!qrGenerated) {
-    new QRious({ element: document.getElementById('userQRCode'), value: savedName, size:150, background:'white', foreground:'black', level:'H' });
+    new QRious({
+      element: document.getElementById('userQRCode'),
+      value: savedName,
+      size:150,
+      background:'white',
+      foreground:'black',
+      level:'H'
+    });
     qrGenerated = true;
   }
 });
 
 closeQR.addEventListener('click', () => {
   qrContainer.style.display = 'none';
-  noMsg.style.display = 'block';
 });
 
-// Load Chat content dynamically
-document.getElementById('tabChat').addEventListener('click', () => {
-  fetch('chat.html')
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('mainContent').innerHTML = html;
-    })
-    .catch(err => {
-      document.getElementById('mainContent').innerHTML = '<p>Error loading chat.</p>';
-      console.error(err);
-    });
-});
-</script>
-<script>
-// Function to add friend to the list
-function addFriendToList(friendName) {
-  let friends = JSON.parse(localStorage.getItem('friends') || '[]');
-  if (!friends.includes(friendName)) friends.push(friendName);
-  localStorage.setItem('friends', JSON.stringify(friends));
-  renderFriends();
-}
+// ====== FRIEND LIST FUNCTIONS ======
 
-// Function to display friends in main content
-function renderFriends() {
-  const main = document.getElementById('mainContent');
-  const friends = JSON.parse(localStorage.getItem('friends') || '[]');
-  main.innerHTML = ''; // clear previous content
-
-  if (friends.length === 0) {
-    main.innerHTML = `<div class="no-msg">
-      No messages yet<br>
-      Add a friend using the + button
-    </div>`;
-    return;
-  }
-
-  friends.forEach(f => {
-    const div = document.createElement('div');
-    div.innerText = f;
-    div.style.padding = '10px';
-    div.style.background = '#fff';
-    div.style.margin = '5px 0';
-    div.style.borderRadius = '8px';
-    div.style.cursor = 'pointer';
-    div.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-
-    div.addEventListener('click', () => {
-      localStorage.setItem('selectedFriend', f);
-      fetch('chat.html')
-        .then(r => r.text())
-        .then(html => main.innerHTML = html)
-        .then(() => {
-          // Re-run the chat script after loading chat.html
-          const script = document.createElement('script');
-          script.src = 'chat.js'; // if you use external chat.js
-          main.appendChild(script);
-        });
-    });
-
-    main.appendChild(div);
-  });
-}
-
-// Run on page load
-document.addEventListener('DOMContentLoaded', renderFriends);
-</script>
-  <script>
-// Load friends from localStorage or empty array
+// Get friends from localStorage
 function getFriends() {
   return JSON.parse(localStorage.getItem('friends')) || [];
 }
@@ -239,31 +178,39 @@ function saveFriends(friends) {
   localStorage.setItem('friends', JSON.stringify(friends));
 }
 
-// Render friends list
+// Render friends in the main content
 function renderFriends() {
   const friends = getFriends();
-  const mainContent = document.querySelector('.main-content');
-  mainContent.innerHTML = ''; // Clear previous content
+  const mainContent = document.getElementById('mainContent');
+  mainContent.innerHTML = '';
 
   if (friends.length === 0) {
-    // Show placeholder if no friends
-    mainContent.innerHTML = `<p>No message yet, add friend</p>`;
+    mainContent.innerHTML = `<div class="no-msg">
+      No messages yet<br>
+      Add a friend using the + button
+    </div>`;
   } else {
-    // Show all friends
     friends.forEach(friend => {
       const friendDiv = document.createElement('div');
-      friendDiv.className = 'friend';
       friendDiv.textContent = friend;
-      friendDiv.onclick = () => {
+      friendDiv.style.padding = '10px';
+      friendDiv.style.background = '#fff';
+      friendDiv.style.margin = '5px 0';
+      friendDiv.style.borderRadius = '8px';
+      friendDiv.style.cursor = 'pointer';
+      friendDiv.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+      friendDiv.addEventListener('click', () => {
         localStorage.setItem('currentChat', friend);
         window.location.href = 'chat.html';
-      };
+      });
+
       mainContent.appendChild(friendDiv);
     });
   }
 }
 
-// Add a new friend and refresh the list
+// Add a friend and update the list
 function addFriend(friendName) {
   const friends = getFriends();
   if (!friends.includes(friendName)) {
@@ -273,9 +220,10 @@ function addFriend(friendName) {
   renderFriends();
 }
 
-// Example: Call this after scan/search completes
-// addFriend("John Doe");
+// Load chat content dynamically from tab
+document.getElementById('tabChat').addEventListener('click', renderFriends);
 
+// Run when page loads
 document.addEventListener('DOMContentLoaded', renderFriends);
 </script>
 
