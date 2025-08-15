@@ -5,62 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile Setup</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 50px 20px;
-}
-.profile-pic-preview {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ccc;
-  margin-bottom: 20px;
-}
-input[type="text"], input[type="file"] {
-  width: 80%;
-  padding: 10px;
-  margin: 10px 0;
-  text-align: center;
-}
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
+body { margin:0; font-family:Arial,sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background:#25d366; flex-direction:column; color:white; }
+.profile-pic { width:150px; height:150px; border-radius:50%; object-fit:cover; border:2px solid #fff; margin-bottom:20px; }
+input[type=text], input[type=file] { width:80%; padding:10px; margin:10px 0; border-radius:5px; border:none; font-size:16px; text-align:center; }
+button { padding:10px 20px; font-size:16px; border:none; border-radius:5px; background:#fff; color:#25d366; cursor:pointer; }
 </style>
 </head>
 <body>
 
-<h2>Enter your profile info</h2>
-<img id="profilePicPreview" class="profile-pic-preview" src="https://via.placeholder.com/150" alt="Profile">
+<img id="profilePicPreview" class="profile-pic" src="https://via.placeholder.com/150" alt="Profile Picture"><br>
 <input type="file" id="photoInput" accept="image/*"><br>
 <input type="text" id="nameInput" placeholder="Enter your name"><br>
 <button onclick="saveProfile()">Get Started</button>
 
 <script>
-const profilePicPreview = document.getElementById("profilePicPreview");
-const photoInput = document.getElementById("photoInput");
+const photoInput = document.getElementById('photoInput');
+const profilePicPreview = document.getElementById('profilePicPreview');
+const nameInput = document.getElementById('nameInput');
 
-photoInput.addEventListener("change", () => {
-  if(photoInput.files.length > 0){
+photoInput.addEventListener('change', () => {
+  if(photoInput.files.length>0){
     const reader = new FileReader();
     reader.onload = e => profilePicPreview.src = e.target.result;
     reader.readAsDataURL(photoInput.files[0]);
   }
 });
 
-function saveProfile() {
-  const name = document.getElementById("nameInput").value.trim();
-  if(!name) { alert("Enter your name"); return; }
-
+function saveProfile(){
+  const name = nameInput.value.trim();
+  if(!name){ alert("Enter your name"); return; }
   localStorage.setItem("username", name);
   localStorage.setItem("profilePic", profilePicPreview.src);
-
-  window.location.href = "home.html";
+  if(!localStorage.getItem("userId")){
+    localStorage.setItem("userId", name + "_" + Math.floor(Math.random()*100000));
+  }
+  window.location.href="home.html";
 }
 </script>
 
