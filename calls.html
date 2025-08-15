@@ -3,17 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Call</title>
+<title>Calls - ChatApp</title>
 <style>
-body{ display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:Arial,sans-serif; background:#f5f5f5;}
-button{padding:15px 20px; margin:10px; font-size:18px; border:none; border-radius:8px; cursor:pointer; background:#4CAF50; color:#fff;}
+  :root{--accent:#4CAF50;--bg:#f5f5f5;--card:#fff}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#333}
+  header{background:var(--card);padding:14px;font-size:20px;font-weight:bold;
+         box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center}
+  header a{color:var(--accent);text-decoration:none;margin-right:10px;font-size:16px}
+  main{padding:12px}
+  .call-item{background:var(--card);padding:12px;margin-bottom:10px;border-radius:8px;
+             display:flex;align-items:center;gap:10px;
+             box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .call-item img{width:40px;height:40px;border-radius:50%}
+  .call-details{flex:1}
+  .call-name{font-weight:bold}
+  .call-time{font-size:12px;color:#666}
+  .call-action{color:var(--accent);cursor:pointer}
 </style>
 </head>
 <body>
+  <header>
+    <a href="home.html">← Back</a> Calls
+  </header>
+  <main id="callList">
+    <!-- Calls will load here -->
+  </main>
 
-<h2>Call Page</h2>
-<button onclick="alert('Start a Call!')">Start Call</button>
-<button onclick="window.location.href='home.html'">Back Home</button>
+<script>
+// Example call history (can be replaced with real data later)
+const calls = [
+  { name: "John Doe", time: "Today, 9:45 AM", img: "friend.png" },
+  { name: "Jane Smith", time: "Yesterday, 5:20 PM", img: "friend.png" }
+];
 
+const callList = document.getElementById("callList");
+
+calls.forEach(c => {
+  const div = document.createElement("div");
+  div.className = "call-item";
+  div.innerHTML = `
+    <img src="${c.img}" alt="">
+    <div class="call-details">
+      <div class="call-name">${c.name}</div>
+      <div class="call-time">${c.time}</div>
+    </div>
+    <div class="call-action" onclick="alert('Calling ${c.name}...')">📞</div>
+  `;
+  callList.appendChild(div);
+});
+</script>
 </body>
 </html>
