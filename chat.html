@@ -1,185 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Chat - ChatApp</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat</title>
 <style>
-  :root{--accent:#4CAF50;--bg:#f5f5f5;--card:#fff}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);height:100vh;display:flex;flex-direction:column}
-  .top{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .top img{width:44px;height:44px;border-radius:50%}
-  .top .title{font-weight:700}
-  .content{flex:1;display:flex;height:calc(100vh - 160px)}
-  .friends-col{width:32%;min-width:220px;background:var(--card);padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:auto}
-  .friend-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer}
-  .friend-item:hover{background:#f0f0f0}
-  .friend-item img{width:40px;height:40px;border-radius:50%}
-  .chat-col{flex:1;display:flex;flex-direction:column;padding:12px}
-  .chat-window{flex:1;background:var(--card);padding:12px;border-radius:10px;overflow:auto;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  .msg{max-width:70%;margin:8px 0;padding:8px 10px;border-radius:10px;line-height:1.2}
-  .msg.me{background:var(--accent);color:#fff;margin-left:auto;border-bottom-right-radius:2px}
-  .msg.them{background:#eee;color:#222;border-bottom-left-radius:2px}
-  .composer{display:flex;gap:8px;margin-top:10px}
-  .composer input{flex:1;padding:10px;border-radius:8px;border:1px solid #ddd}
-  .composer button{padding:10px 14px;border:none;background:var(--accent);color:#fff;border-radius:8px;cursor:pointer}
-  .no-selection{flex:1;display:flex;align-items:center;justify-content:center;color:#666}
-  .bottom-bar{display:flex;gap:8px;padding:12px;background:var(--card);box-shadow:0 -1px 3px rgba(0,0,0,.06);align-items:center;justify-content:space-between}
-  .nav-links a{margin-right:8px;color:var(--accent);text-decoration:none}
-  .small{font-size:13px;color:#666}
+  body { font-family: Arial, sans-serif; background: #f5f5f5; margin:0; padding:0; display:flex; flex-direction:column; height:100vh; }
+  .chat-header { background:#4CAF50; color:white; padding:15px; text-align:center; }
+  .chat-messages { flex:1; overflow-y:auto; padding:15px; }
+  .message { margin-bottom:15px; padding:10px; border-radius:8px; max-width:70%; }
+  .message.sent { background:#dcf8c6; align-self:flex-end; }
+  .message.received { background:#fff; align-self:flex-start; }
+  .chat-input { display:flex; padding:10px; border-top:1px solid #ccc; background:#eee; }
+  .chat-input input { flex:1; padding:10px; font-size:16px; border-radius:4px; border:1px solid #ccc; }
+  .chat-input button { padding:10px 15px; font-size:16px; margin-left:10px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer; }
+  video, img { max-width: 200px; border-radius:8px; display:block; margin-top:5px; }
 </style>
 </head>
 <body>
 
-<header class="top">
-  <a href="home.html" style="text-decoration:none;color:inherit">
-    <img src="profile.jpg" alt="You">
-  </a>
-  <div>
-    <div class="title">Chats</div>
-    <div class="small">Tap a friend to open chat</div>
-  </div>
-  <div style="margin-left:auto" class="nav-links">
-    <a href="search.html">Search</a>
-    <a href="group.html">Group</a>
-  </div>
-</header>
-
-<div class="content">
-  <aside class="friends-col" id="friendsCol">
-    <!-- friend items -->
-  </aside>
-
-  <main class="chat-col">
-    <div id="chatWindowArea" class="chat-window no-selection">
-      Select a friend to open chat
-    </div>
-
-    <div class="composer" id="composer" style="display:none">
-      <input id="messageInput" placeholder="Type a message..." />
-      <button id="sendBtn">Send</button>
-    </div>
-  </main>
+<div class="chat-header" id="chatHeader">Chat</div>
+<div class="chat-messages" id="chatMessages"></div>
+<div class="chat-input">
+  <input type="text" id="messageInput" placeholder="Type a message...">
+  <button id="sendBtn">Send</button>
 </div>
 
-<footer class="bottom-bar">
-  <div class="small">Logged as: <strong>Mimah Suleiman</strong></div>
-  <div>
-    <a href="home.html">Home</a> •
-    <a href="call.html">Call</a>
-  </div>
-</footer>
-
 <script>
-/*
-  Simple chat page that:
-  - Loads friends from localStorage key: "chatapp_friends" (array of names)
-  - Chats stored per friend under key: "chatapp_chat_<name>" (array of {from:'me'|'them', text, ts})
-  - Clicking a friend loads messages and shows composer
-  - Send message stores it and renders
-*/
+// Get friend from URL
+const urlParams = new URLSearchParams(window.location.search);
+const friend = urlParams.get('friend') || 'UnknownFriend';
+document.getElementById('chatHeader').innerText = `Chat with ${friend}`;
 
-const friendsKey = 'chatapp_friends';
-const friendsCol = document.getElementById('friendsCol');
-const chatWindowArea = document.getElementById('chatWindowArea');
-const composer = document.getElementById('composer');
-const messageInput = document.getElementById('messageInput');
+const messagesDiv = document.getElementById('chatMessages');
+const input = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 
-let friends = [];
-let activeFriend = null;
-
-function loadFriends(){
-  const raw = localStorage.getItem(friendsKey);
-  friends = raw ? JSON.parse(raw) : [];
-  renderFriends();
-}
-
-function saveFriends(){ localStorage.setItem(friendsKey, JSON.stringify(friends)) }
-
-function renderFriends(){
-  friendsCol.innerHTML = '';
-  if(friends.length===0){
-    friendsCol.innerHTML = '<div class="small">No friends yet. Add from Home or Search page.</div>';
-    return;
-  }
-  friends.forEach(name=>{
-    const el = document.createElement('div');
-    el.className = 'friend-item';
-    el.innerHTML = `<img src="friend.png" alt=""><div>${name}</div>`;
-    el.onclick = ()=> openChat(name);
-    friendsCol.appendChild(el);
+// Load chat from localStorage
+function loadChat(){
+  messagesDiv.innerHTML = '';
+  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
+  storedMessages.forEach(msg => {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', 'received'); // received style for friend
+    if(msg.type === 'text'){
+      msgDiv.innerText = msg.data;
+    } else if(msg.type === 'image'){
+      const img = document.createElement('img');
+      img.src = msg.data;
+      msgDiv.appendChild(img);
+    } else if(msg.type === 'video'){
+      const video = document.createElement('video');
+      video.src = msg.data;
+      video.controls = true;
+      msgDiv.appendChild(video);
+    }
+    messagesDiv.appendChild(msgDiv);
   });
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-function chatKey(name){ return 'chatapp_chat_' + name; }
+// Send a text message
+sendBtn.addEventListener('click', () => {
+  const text = input.value.trim();
+  if(!text) return;
 
-function loadChat(name){
-  const raw = localStorage.getItem(chatKey(name));
-  return raw ? JSON.parse(raw) : [];
-}
+  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
+  storedMessages.push({ type:'text', data: text });
+  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
 
-function saveChat(name, arr){ localStorage.setItem(chatKey(name), JSON.stringify(arr)); }
+  input.value = '';
+  loadChat();
+});
 
-function openChat(name){
-  activeFriend = name;
-  composer.style.display = 'flex';
-  renderChat();
-}
-
-function renderChat(){
-  if(!activeFriend){
-    chatWindowArea.innerHTML = 'Select a friend to open chat';
-    chatWindowArea.classList.add('no-selection');
-    composer.style.display = 'none';
-    return;
-  }
-  chatWindowArea.classList.remove('no-selection');
-  const messages = loadChat(activeFriend);
-  chatWindowArea.innerHTML = '';
-  messages.forEach(m=>{
-    const d = document.createElement('div');
-    d.className = 'msg ' + (m.from === 'me' ? 'me' : 'them');
-    d.textContent = m.text;
-    chatWindowArea.appendChild(d);
-  });
-  // scroll to bottom
-  chatWindowArea.scrollTop = chatWindowArea.scrollHeight;
-}
-
-sendBtn.addEventListener('click', sendMessage);
-messageInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
-
-function sendMessage(){
-  const txt = messageInput.value.trim();
-  if(!txt || !activeFriend) return;
-  const arr = loadChat(activeFriend);
-  arr.push({from:'me', text:txt, ts:Date.now()});
-  saveChat(activeFriend, arr);
-  messageInput.value = '';
-  renderChat();
-  // optional: simulate reply
-  setTimeout(()=>{
-    const arr2 = loadChat(activeFriend);
-    arr2.push({from:'them', text:'Thanks! (auto reply)', ts:Date.now()});
-    saveChat(activeFriend, arr2);
-    renderChat();
-  }, 700);
-}
-
-// initial load
-loadFriends();
-renderChat();
-
-// If user navigated to chat.html with a friend reference (e.g., ?open=Name)
-(function checkOpenParam(){
-  const params = new URLSearchParams(location.search);
-  const open = params.get('open');
-  if(open){
-    if(!friends.includes(open)){ friends.push(open); saveFriends(); renderFriends(); }
-    openChat(open);
-  }
-})();
+// Load chat initially
+loadChat();
 </script>
+
 </body>
 </html>
