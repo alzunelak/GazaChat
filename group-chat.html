@@ -5,75 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Group Chat</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#e5ddd5;}
-header{background:#075e54;color:white;padding:10px;text-align:center;position:relative;display:flex;justify-content:space-between;align-items:center;}
-header h2{margin:0;font-size:18px;}
-header button{padding:5px 10px;background:#25d366;color:white;border:none;border-radius:5px;cursor:pointer;}
-#members{padding:5px 10px;font-size:13px;color:#fff;opacity:0.8;background:#128c7e;}
-.chat-messages{padding:10px;min-height:70vh;overflow-y:auto;}
-.message{background:#dcf8c6;padding:8px 12px;margin:5px 0;border-radius:7.5px;max-width:70%;word-wrap:break-word;clear:both;}
-.message.self{background:#fff;margin-left:auto;}
-.sender{font-weight:bold;color:#075e54;}
-.send-container{position:fixed;bottom:50px;left:0;width:100%;display:flex;padding:10px;background:#f0f0f0;border-top:1px solid #ccc;}
-.send-container input{flex:1;padding:10px;border:1px solid #ccc;border-radius:20px;outline:none;}
-.send-container button{padding:10px 15px;margin-left:5px;background:#25d366;color:white;border:none;border-radius:50%;cursor:pointer;}
-nav{position:fixed;bottom:0;left:0;width:100%;background:white;display:flex;justify-content:space-around;border-top:1px solid #ccc;}
-nav a{text-align:center;padding:10px;flex:1;color:#555;text-decoration:none;font-size:14px;}
-nav a.active{color:#25d366;}
+body { margin:0; font-family: Arial,sans-serif; background:#f5f5f5; display:flex; flex-direction:column; height:100vh; }
+header { background:#25d366; color:white; padding:10px; text-align:center; position:relative; }
+header h2 { margin:0; }
+header button { position:absolute; right:10px; top:10px; padding:5px 10px; border:none; border-radius:5px; cursor:pointer; color:white; }
+#chatArea { flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; }
+.message { background:white; padding:8px 12px; margin:5px 0; border-radius:8px; max-width:70%; align-self:flex-start; }
+.message.self { background:#dcf8c6; align-self:flex-end; }
+.message-time { font-size:10px; color:#888; margin-top:2px; text-align:right; }
+#inputArea { display:flex; padding:10px; background:#fff; }
+#inputArea input { flex:1; padding:10px; border:1px solid #ccc; border-radius:20px; outline:none; }
+#inputArea button { margin-left:5px; padding:10px 15px; border:none; border-radius:20px; background:#25d366; color:white; cursor:pointer; }
+.call-buttons { display:flex; justify-content:flex-end; margin-top:5px; }
+.call-buttons button { margin-left:5px; padding:5px 10px; border:none; border-radius:5px; cursor:pointer; color:white; }
+.call-buttons button.audio { background:#25d366; }
+.call-buttons button.video { background:#007bff; }
 </style>
 </head>
 <body>
 
 <header>
-  <h2 id="groupName">Group Chat</h2>
-  <button id="groupCallBtn">📞 Group Call</button>
+  <h2 id="groupName">Group</h2>
+  <div class="call-buttons">
+    <button class="audio" onclick="startGroupCall('audio')">Audio Call</button>
+    <button class="video" onclick="startGroupCall('video')">Video Call</button>
+  </div>
 </header>
 
-<div id="members"></div>
-<div class="chat-messages" id="chatMessages"></div>
+<div id="chatArea"></div>
 
-<div class="send-container">
-  <input type="text" id="msgInput" placeholder="Type a message">
-  <button id="sendBtn">➤</button>
+<div id="inputArea">
+  <input type="text" id="msgInput" placeholder="Type a message...">
+  <button onclick="sendMessage()">Send</button>
 </div>
-
-<nav>
-  <a href="home.html">Chats</a>
-  <a href="groups.html" class="active">Groups</a>
-  <a href="calls.html">Calls</a>
-</nav>
 
 <script>
 // Load current group
-const currentGroup = JSON.parse(localStorage.getItem("currentGroup") || "{}");
-const groupNameElem = document.getElementById("groupName");
-const membersElem = document.getElementById("members");
-const chatMessagesElem = document.getElementById("chatMessages");
+const currentGroup = JSON.parse(localStorage.getItem("currentGroup") || '{"name":"Group","members":[],"id":"group_default"}');
+document.getElementById("groupName").innerText = currentGroup.name;
 
-// Display group name
-groupNameElem.innerText = currentGroup.name || "Group Chat";
+// Load chat messages
+let messages = JSON.parse(localStorage.getItem("groupMessages_"+currentGroup.id) || "[]");
+const chatArea = document.getElementById("chatArea");
 
-// Display members
-if(currentGroup.members && currentGroup.members.length){
-  membersElem.innerText = "Members: " + currentGroup.members.join(", ");
-} else {
-  membersElem.innerText = "No members yet";
-}
-
-// Load group messages
-let groupMessages = JSON.parse(localStorage.getItem("groupMessages") || "{}");
-if(!groupMessages[currentGroup.id]) groupMessages[currentGroup.id] = [];
-
-// Render messages
 function renderMessages(){
-  chatMessagesElem.innerHTML = "";
-  groupMessages[currentGroup.id].forEach(msg => {
+  chatArea.innerHTML = "";
+  messages.forEach(m=>{
     const div = document.createElement("div");
-    div.className = "message" + (msg.sender === localStorage.getItem("username") ? " self" : "");
-    div.innerHTML = `<span class="sender">${msg.sender}</span><br>${msg.text}`;
-    chatMessagesElem.appendChild(div);
+    div.className = "message" + (m.sender===localStorage.getItem("username")?' self':'');
+    div.innerHTML = `<div>${m.sender}: ${m.text}</div><div class="message-time">${m.time}</div>`;
+    chatArea.appendChild(div);
   });
-  chatMessagesElem.scrollTop = chatMessagesElem.scrollHeight;
+  chatArea.scrollTop = chatArea.scrollHeight;
 }
 renderMessages();
 
@@ -82,27 +65,21 @@ function sendMessage(){
   const input = document.getElementById("msgInput");
   const text = input.value.trim();
   if(!text) return;
-  const sender = localStorage.getItem("username") || "You";
-  groupMessages[currentGroup.id].push({sender, text});
-  localStorage.setItem("groupMessages", JSON.stringify(groupMessages));
+  const msg = {sender: localStorage.getItem("username") || "You", text, time:new Date().toLocaleTimeString()};
+  messages.push(msg);
+  localStorage.setItem("groupMessages_"+currentGroup.id, JSON.stringify(messages));
   input.value="";
   renderMessages();
 }
 
-document.getElementById("sendBtn").addEventListener("click", sendMessage);
-document.getElementById("msgInput").addEventListener("keypress", e => {
-  if(e.key === "Enter") sendMessage();
-});
-
-// Group Call button
-document.getElementById("groupCallBtn").addEventListener("click", () => {
-  if(currentGroup.members && currentGroup.members.length){
-    alert("Starting group call with: " + currentGroup.members.join(", "));
-    // Future: Integrate WebRTC group call
-  } else {
-    alert("No members in group to call!");
+// Start group call
+function startGroupCall(mode){
+  if(currentGroup.members.length===0){
+    alert("No members in group to call");
+    return;
   }
-});
+  alert(`${mode==='audio'?'Audio':'Video'} call started with: ${currentGroup.members.join(', ')}`);
+}
 </script>
 
 </body>
