@@ -110,34 +110,19 @@
   <div class="three-dots">&#8942;</div>
 </div>
 
-  <script>
+ <script>
 document.addEventListener('DOMContentLoaded', () => {
   const profileName = document.getElementById('profileName');
   const profilePic = document.getElementById('profilePic');
 
-  // Check if userName exists
-  let savedName = localStorage.getItem('userName');
-  let savedProfile = localStorage.getItem('userProfile');
-
-  if(!savedName) {
-    // Ask for name if not set
-    savedName = prompt("Enter your name:");
-    if(savedName) {
-      localStorage.setItem('userName', savedName);
-    } else {
-      savedName = "User";
-    }
-  }
-
-  if(!savedProfile){
-    savedProfile = 'default-profile.png';
-    localStorage.setItem('userProfile', savedProfile);
-  }
+  const savedName = localStorage.getItem('userName') || 'User';
+  const savedProfile = localStorage.getItem('userProfile') || 'default-profile.png';
 
   profileName.innerText = savedName;
   profilePic.src = savedProfile;
 });
 </script>
+
 
 <!-- No messages -->
 <div class="no-msg">
