@@ -6,54 +6,6 @@
   <button id="sendBtn">Send</button>
 </div>
 
-<script>
-// Get current friend from localStorage (selected from scanned or searched list)
-const friend = localStorage.getItem('selectedFriend') || 'UnknownFriend';
-document.getElementById('chatHeader').innerText = `Chat with ${friend}`;
-
-const messagesDiv = document.getElementById('chatMessages');
-const input = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-
-// Load chat from localStorage
-function loadChat(){
-  messagesDiv.innerHTML = '';
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.forEach(msg => {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', msg.type === 'text' ? 'sent' : 'received'); // style
-    if(msg.type === 'text'){
-      msgDiv.innerText = msg.data;
-    } else if(msg.type === 'image'){
-      const img = document.createElement('img');
-      img.src = msg.data;
-      msgDiv.appendChild(img);
-    } else if(msg.type === 'video'){
-      const video = document.createElement('video');
-      video.src = msg.data;
-      video.controls = true;
-      msgDiv.appendChild(video);
-    }
-    messagesDiv.appendChild(msgDiv);
-  });
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-// Send message
-sendBtn.addEventListener('click', () => {
-  const text = input.value.trim();
-  if(!text) return;
-
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({ type:'text', data: text });
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-
-  input.value = '';
-  loadChat();
-});
-
-loadChat();
-</script>
 <!-- Attachment Menu -->
 <div id="attachmentMenu" class="attachment-menu">
   <button class="attachment-btn" id="sendFileBtn">📄 File</button>
@@ -101,10 +53,62 @@ loadChat();
 
 .message:hover .comment-btn { display: block; }
 .comment-text { font-size: 12px; color:#555; margin-top:2px; cursor:pointer; }
+.message { position: relative; padding:5px; margin:5px 0; border-radius:6px; max-width:70%; }
+.sent { background:#dcf8c6; margin-left:auto; }
+.received { background:#fff; margin-right:auto; }
 </style>
 
 <script>
-// Plus button to toggle attachment menu
+// ===== Existing code =====
+
+// Get current friend from localStorage
+const friend = localStorage.getItem('selectedFriend') || 'UnknownFriend';
+document.getElementById('chatHeader').innerText = `Chat with ${friend}`;
+
+const messagesDiv = document.getElementById('chatMessages');
+const input = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+
+// Load chat from localStorage
+function loadChat(){
+  messagesDiv.innerHTML = '';
+  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
+  storedMessages.forEach(msg => {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', msg.type === 'text' ? 'sent' : 'received'); // style
+    if(msg.type === 'text'){
+      msgDiv.innerText = msg.data;
+    } else if(msg.type === 'image'){
+      const img = document.createElement('img');
+      img.src = msg.data;
+      img.style.maxWidth = '200px';
+      msgDiv.appendChild(img);
+    } else if(msg.type === 'video'){
+      const video = document.createElement('video');
+      video.src = msg.data;
+      video.controls = true;
+      video.style.maxWidth = '200px';
+      msgDiv.appendChild(video);
+    }
+    messagesDiv.appendChild(msgDiv);
+  });
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Send message
+sendBtn.addEventListener('click', () => {
+  const text = input.value.trim();
+  if(!text) return;
+
+  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
+  storedMessages.push({ type:'text', data: text });
+  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
+
+  input.value = '';
+  loadChat();
+});
+
+// ===== Attachment Menu =====
 const plusBtn = document.createElement('button');
 plusBtn.innerText = '+';
 plusBtn.style.marginRight = '5px';
@@ -113,14 +117,16 @@ input.before(plusBtn);
 const attachmentMenu = document.getElementById('attachmentMenu');
 plusBtn.addEventListener('click', () => attachmentMenu.style.display = attachmentMenu.style.display === 'flex' ? 'none' : 'flex');
 
-// Send file / photo / gallery / location
 function sendFile(callback){
   const fileInput = document.createElement('input');
   fileInput.type='file';
   fileInput.onchange = e => {
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onload = () => callback(file.name, reader.result);
+    reader.onload = () => {
+      callback(file.name, reader.result);
+      attachmentMenu.style.display = 'none';
+    };
     reader.readAsDataURL(file);
   };
   fileInput.click();
@@ -155,15 +161,16 @@ document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
       storedMessages.push({type:'location', data:{lat:latitude,lng:longitude}});
       localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
       loadChat();
+      attachmentMenu.style.display = 'none';
     });
   } else alert("Geolocation not supported");
 });
 
-// Add comment button to each message
+// ===== Comment Feature =====
 function addCommentFeature(){
   const messages = document.querySelectorAll('.message');
   messages.forEach((msgDiv, index)=>{
-    if(msgDiv.querySelector('.comment-btn')) return; // avoid duplicates
+    if(msgDiv.querySelector('.comment-btn')) return;
     const btn = document.createElement('button');
     btn.innerText = '💬';
     btn.className = 'comment-btn';
@@ -207,65 +214,44 @@ function addCommentFeature(){
   });
 }
 
-// Wrap loadChat to include comment feature
-const originalLoadChat = loadChat;
-loadChat = function(){
-  originalLoadChat();
-  addCommentFeature();
-};
-loadChat();
-// Helper function to send a file/photo/image
-function sendFile(callback){
-  const fileInput = document.createElement('input');
-  fileInput.type='file';
-  fileInput.onchange = e => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      callback(file.name, reader.result);
-      // Close attachment menu automatically
-      attachmentMenu.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-  };
-  fileInput.click();
-}
-
-// File button
-document.getElementById('sendFileBtn').addEventListener('click', ()=>sendFile((name,data)=>{
+// ===== Message Edit/Delete Feature =====
+function handleMessageAction(msgIndex){
   const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({type:'file',data,name});
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-  loadChat();
-}));
-
-// Take Photo button
-document.getElementById('takePhotoBtn').addEventListener('click', ()=>sendFile((name,data)=>{
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({type:'image',data});
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-  loadChat();
-}));
-
-// Choose from Gallery button
-document.getElementById('choosePhotoBtn').addEventListener('click', ()=>sendFile((name,data)=>{
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({type:'image',data});
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-  loadChat();
-}));
-
-// Send Location button
-document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
-      const {latitude,longitude} = pos.coords;
-      const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-      storedMessages.push({type:'location', data:{lat:latitude,lng:longitude}});
+  const msg = storedMessages[msgIndex];
+  let action = prompt(msg.type === 'text' ? "Type 'edit' or 'delete':" : "Type 'delete' to remove message:");
+  
+  if(action === 'edit' && msg.type === 'text'){
+    const newText = prompt("Edit your message:", msg.data);
+    if(newText){
+      storedMessages[msgIndex].data = newText;
       localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
       loadChat();
-      // Close menu automatically
-      attachmentMenu.style.display = 'none';
-    });
-  } else alert("Geolocation not supported");
-});
+    }
+  } else if(action === 'delete'){
+    if(confirm("Delete this message for everyone?")){
+      storedMessages.splice(msgIndex,1);
+      localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
+      loadChat();
+    }
+  }
+}
+
+function addMessageActions(){
+  const messages = document.querySelectorAll('.message');
+  messages.forEach((msgDiv,index)=>{
+    if(msgDiv.dataset.hasAction) return;
+    msgDiv.dataset.hasAction = 'true';
+    msgDiv.addEventListener('click', ()=>handleMessageAction(index));
+  });
+}
+
+// Wrap loadChat to include comment and message actions
+const oldLoadChat = loadChat;
+loadChat = function(){
+  oldLoadChat();
+  addCommentFeature();
+  addMessageActions();
+};
+
+loadChat();
+</script>
