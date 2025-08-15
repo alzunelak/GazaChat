@@ -5,33 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Search Friend</title>
 <style>
-  body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
-  input, button { padding:10px; margin:5px; font-size:16px; }
+body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
+input, button { padding:10px; margin:5px; font-size:16px; }
+#result { margin-top:20px; font-size:16px; }
+.error { color:red; }
+.success { color:green; }
 </style>
 </head>
 <body>
 <h2>Search Friend</h2>
 <input type="text" id="friendName" placeholder="Enter friend name">
 <button id="searchBtn">Search</button>
-<div id="result" style="margin-top:20px;"></div>
+<div id="result"></div>
 
 <script>
-const users = ["Alice","Bob","Charlie"]; // Example users
+const users = ["Alice","Bob","Charlie"];
+const channel = new BroadcastChannel('chatapp');
 
-document.getElementById('searchBtn').addEventListener('click', () => {
+function addFriend(friendName){
+  let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+  if(!friends.includes(friendName)){
+    friends.push(friendName);
+    localStorage.setItem('friends',JSON.stringify(friends));
+    channel.postMessage({type:'addFriend', friend:friendName});
+  }
+}
+
+document.getElementById('searchBtn').addEventListener('click',()=>{
   const name = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
-  if(name === "") { resultDiv.innerText = "Enter a name"; return; }
+  if(name===""){ resultDiv.className="error"; resultDiv.innerText="Enter a name"; return; }
 
   if(users.includes(name)){
-    resultDiv.innerHTML = `${name} found! <button onclick="startChat('${name}')">Start Chat</button>`;
+    resultDiv.className="success";
+    resultDiv.innerHTML=`${name} found! <button onclick="addAndClose('${name}')">Add Friend</button>`;
   } else {
-    resultDiv.innerText = "No user exists";
+    resultDiv.className="error";
+    resultDiv.innerText="No user exists";
   }
 });
 
-function startChat(friendName){
-  window.location.href = `chat.html?friend=${friendName}`;
+function addAndClose(name){
+  addFriend(name);
+  document.getElementById('result').innerText="Friend added!";
 }
 </script>
 </body>
