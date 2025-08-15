@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,103 +6,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChatApp Home</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin:0;
-    padding:0;
-    background:#f5f5f5;
-  }
-  .header {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:10px 15px;
-    background:#fff;
-    box-shadow:0 1px 3px rgba(0,0,0,0.1);
-  }
-  .profile {
-    display:flex;
-    align-items:center;
-  }
-  .profile img {
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    margin-right:10px;
-  }
-  .profile-name {
-    font-weight:bold;
-    font-size:16px;
-  }
-  .three-dots {
-    font-size:24px;
-    cursor:pointer;
-  }
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
+  .header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+  .profile { display:flex; align-items:center; }
+  .profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; }
+  .profile-name { font-weight:bold; font-size:16px; }
+  .three-dots { font-size:24px; cursor:pointer; }
 
-  .no-msg {
-    text-align:center;
-    margin:50px 0;
-    color:#888;
-    font-size:18px;
-  }
+  .main-content { padding:20px; min-height:70vh; }
 
-  /* Tabs */
-  .tabs {
-    display:flex;
-    justify-content:space-around;
-    padding:10px 0;
-    background:#fff;
-    position:fixed;
-    bottom:0;
-    width:100%;
-    border-top:1px solid #ccc;
-  }
-  .tabs div {
-    font-weight:bold;
-    cursor:pointer;
-  }
+  .no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
 
-  /* Floating + button */
-  .add-button-container {
-    position:fixed;
-    bottom:60px; /* above tabs */
-    right:20px;
-    z-index:100;
-  }
-  #addBtn {
-    width:60px;
-    height:60px;
-    border-radius:50%;
-    font-size:32px;
-    cursor:pointer;
-    background-color:#4CAF50;
-    color:white;
-    border:none;
-  }
-  .popup-options {
-    display:none;
-    position:absolute;
-    bottom:70px;
-    right:0;
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:8px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.1);
-    padding:10px;
-    text-align:left;
-  }
-  .popup-options a {
-    display:block;
-    padding:8px 12px;
-    color:#333;
-    text-decoration:none;
-  }
+  .tabs { display:flex; justify-content:space-around; padding:10px 0; background:#fff; position:fixed; bottom:0; width:100%; border-top:1px solid #ccc; }
+  .tabs div { font-weight:bold; cursor:pointer; }
+
+  .add-button-container { position:fixed; bottom:60px; right:20px; z-index:100; }
+  #addBtn { width:60px; height:60px; border-radius:50%; font-size:32px; cursor:pointer; background-color:#4CAF50; color:white; border:none; }
+  .popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:10px; text-align:left; }
+  .popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
   .popup-options a:hover { background:#f0f0f0; }
 
 </style>
 </head>
 <body>
-  <!-- Header with dynamic profile pic and name -->
+
+<!-- Header -->
 <div class="header">
   <div class="profile">
     <img id="profilePic" src="default-profile.png" alt="Profile">
@@ -110,27 +39,17 @@
   <div class="three-dots">&#8942;</div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const profileName = document.getElementById('profileName');
-  const profilePic = document.getElementById('profilePic');
-
-  const savedName = localStorage.getItem('username') || 'User';
-  const savedProfile = localStorage.getItem('profilePic') || 'default-profile.png';
-
-  profileName.innerText = savedName;
-  profilePic.src = savedProfile;
-});
-</script>
-
-<!-- No messages -->
-<div class="no-msg">
-  No messages yet<br>
-  Add a friend using the + button
+<!-- Main content -->
+<div class="main-content" id="mainContent">
+  <div class="no-msg">
+    No messages yet<br>
+    Add a friend using the + button
+  </div>
 </div>
-  
-<!-- QR Code container (hidden by default) -->
-<div id="qrContainer" style="display:none; text-align:center; margin:20px 0;">
+
+<!-- QR Code container -->
+<div id="qrContainer" style="display:none; text-align:center; margin:20px 0; position:relative;">
+  <button id="closeQR" style="position:absolute; top:0; right:0; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer;">X</button>
   <canvas id="userQRCode"></canvas>
   <p>Your QR Code</p>
 </div>
@@ -149,51 +68,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- Tabs -->
 <div class="tabs">
-  <div>Chat</div>
-  <div>Group</div>
-  <div>Call</div>
+  <div id="tabChat">Chat</div>
+  <a href="group.html"><div>Group</div></a>
+  <a href="call.html"><div>Call</div></a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 <script>
+// Profile setup
+document.addEventListener('DOMContentLoaded', () => {
+  const profileName = document.getElementById('profileName');
+  const profilePic = document.getElementById('profilePic');
+
+  profileName.innerText = localStorage.getItem('username') || 'User';
+  profilePic.src = localStorage.getItem('profilePic') || 'default-profile.png';
+});
+
+// Floating + button
 const addBtn = document.getElementById('addBtn');
 const popupOptions = document.getElementById('popupOptions');
-
 addBtn.addEventListener('click', () => {
   popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block';
 });
-
-document.addEventListener('click', function(event) {
-  if (!addBtn.contains(event.target) && !popupOptions.contains(event.target)) {
+document.addEventListener('click', e => {
+  if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) {
     popupOptions.style.display = 'none';
   }
 });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-<script>
+
+// QR Code
 document.addEventListener('DOMContentLoaded', () => {
   const savedName = localStorage.getItem('username') || 'User';
-
   const showQRCodeLink = document.getElementById('showQRCode');
   const qrContainer = document.getElementById('qrContainer');
   const noMsg = document.querySelector('.no-msg');
-showQRCodeLink.addEventListener('click', (e) => {
-  e.preventDefault();
+  const closeQR = document.getElementById('closeQR');
+  let qrGenerated = false;
 
-  // Hide "No messages" and show QR
-  noMsg.style.display = 'none';
-  qrContainer.style.display = 'block'; // show QR code
+  showQRCodeLink.addEventListener('click', e => {
+    e.preventDefault();
+    qrContainer.style.display = 'block';
+    noMsg.style.display = 'none';
+    if (!qrGenerated) {
+      new QRious({ element: document.getElementById('userQRCode'), value: savedName, size:150, background:'white', foreground:'black', level:'H' });
+      qrGenerated = true;
+    }
+  });
 
-  // Generate QR code dynamically
-  new QRious({
-    element: document.getElementById('userQRCode'),
-    value: savedName,
-    size: 150,
-    background: 'white',
-    foreground: 'black',
-    level: 'H'
+  closeQR.addEventListener('click', () => {
+    qrContainer.style.display = 'none';
+    noMsg.style.display = 'block';
   });
 });
+
+// Load Chat content dynamically
+document.getElementById('tabChat').addEventListener('click', () => {
+  fetch('chat.html')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('mainContent').innerHTML = html;
+    })
+    .catch(err => {
+      document.getElementById('mainContent').innerHTML = '<p>Error loading chat.</p>';
+      console.error(err);
+    });
 });
 </script>
+
 </body>
 </html>
