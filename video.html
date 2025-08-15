@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Take Video</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
+  video { width:300px; margin:10px 0; border:1px solid #ccc; }
+  button { padding:10px 15px; font-size:16px; margin:5px; }
+</style>
+</head>
+<body>
+<h2>Record Video</h2>
+<video id="video" autoplay></video><br>
+<button id="startBtn">Start Recording</button>
+<button id="stopBtn">Stop & Send</button>
+
+<script>
+let mediaRecorder;
+let recordedChunks = [];
+
+// Get the friend to send to from query parameter
+const urlParams = new URLSearchParams(window.location.search);
+const friend = urlParams.get('friend') || 'UnknownFriend';
+
+navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+.then(stream => {
+  const video = document.getElementById('video');
+  video.srcObject = stream;
+
+  mediaRecorder = new MediaRecorder(stream);
+
+  mediaRecorder.ondataavailable = e => {
+    if(e.data.size > 0) recordedChunks.push(e.data);
+  }
+
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    recordedChunks = [];
+    const reader = new FileReader();
+    reader.onload = function() {
+      // Save video to localStorage for the friend (as base64 string)
+      const storedVideos = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
+      storedVideos.push({ type:'video', data: reader.result });
+      localStorage.setItem(`chat_${friend}`, JSON.stringify(storedVideos));
+      alert(`Video sent to ${friend}!`);
+      window.location.href = `chat.html?friend=${friend}`;
+    }
+    reader.readAsDataURL(blob);
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => mediaRecorder.start());
+  document.getElementById('stopBtn').addEventListener('click', () => mediaRecorder.stop());
+})
+.catch(err => { console.error(err); alert("Camera access denied"); });
+</script>
+</body>
+</html>
