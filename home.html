@@ -128,6 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
   No messages yet<br>
   Add a friend using the + button
 </div>
+  
+<!-- QR Code container (hidden by default) -->
+<div id="qrContainer" style="display:none; text-align:center; margin:20px 0;">
+  <canvas id="userQRCode"></canvas>
+  <p>Your QR Code</p>
+</div>
 
 <!-- Floating + button -->
 <div class="add-button-container">
@@ -170,25 +176,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const showQRCodeLink = document.getElementById('showQRCode');
   const qrContainer = document.getElementById('qrContainer');
   const noMsg = document.querySelector('.no-msg');
+showQRCodeLink.addEventListener('click', (e) => {
+  e.preventDefault();
 
-  showQRCodeLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    // Hide "No messages" and show QR
-    noMsg.style.display = 'none';
-    qrContainer.style.display = 'block';
+  // Hide "No messages" and show QR
+  noMsg.style.display = 'none';
+  qrContainer.style.display = 'block'; // show QR code
 
-    // Generate QR code dynamically
-    const qr = new QRious({
-      element: document.getElementById('userQRCode'),
-      value: savedName, // you can replace with unique ID
-      size: 150,
-      background: 'white',
-      foreground: 'black',
-      level: 'H'
-    });
+  // Generate QR code dynamically
+  new QRious({
+    element: document.getElementById('userQRCode'),
+    value: savedName,
+    size: 150,
+    background: 'white',
+    foreground: 'black',
+    level: 'H'
   });
 });
+});
 </script>
-
 </body>
 </html>
