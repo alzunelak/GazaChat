@@ -228,6 +228,56 @@ function renderFriends() {
 // Run on page load
 document.addEventListener('DOMContentLoaded', renderFriends);
 </script>
-  
+  <script>
+// Load friends from localStorage or empty array
+function getFriends() {
+  return JSON.parse(localStorage.getItem('friends')) || [];
+}
+
+// Save friends to localStorage
+function saveFriends(friends) {
+  localStorage.setItem('friends', JSON.stringify(friends));
+}
+
+// Render friends list
+function renderFriends() {
+  const friends = getFriends();
+  const mainContent = document.querySelector('.main-content');
+  mainContent.innerHTML = ''; // Clear previous content
+
+  if (friends.length === 0) {
+    // Show placeholder if no friends
+    mainContent.innerHTML = `<p>No message yet, add friend</p>`;
+  } else {
+    // Show all friends
+    friends.forEach(friend => {
+      const friendDiv = document.createElement('div');
+      friendDiv.className = 'friend';
+      friendDiv.textContent = friend;
+      friendDiv.onclick = () => {
+        localStorage.setItem('currentChat', friend);
+        window.location.href = 'chat.html';
+      };
+      mainContent.appendChild(friendDiv);
+    });
+  }
+}
+
+// Add a new friend and refresh the list
+function addFriend(friendName) {
+  const friends = getFriends();
+  if (!friends.includes(friendName)) {
+    friends.push(friendName);
+    saveFriends(friends);
+  }
+  renderFriends();
+}
+
+// Example: Call this after scan/search completes
+// addFriend("John Doe");
+
+document.addEventListener('DOMContentLoaded', renderFriends);
+</script>
+
 </body>
 </html>
