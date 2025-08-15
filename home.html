@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,6 +25,44 @@
   .popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
   .popup-options a:hover { background:#f0f0f0; }
 
+  /* Overlay for modal */
+  #overlay {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.3);
+    z-index:150;
+  }
+
+  /* QR popup */
+  #qrContainer {
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    z-index:200;
+    text-align:center;
+  }
+  #closeQR {
+    position:absolute;
+    top:5px;
+    right:5px;
+    border:none;
+    background:#f44336;
+    color:white;
+    border-radius:50%;
+    width:25px;
+    height:25px;
+    cursor:pointer;
+  }
 </style>
 </head>
 <body>
@@ -47,9 +84,12 @@
   </div>
 </div>
 
-<!-- QR Code container -->
-<div id="qrContainer" style="display:none; text-align:center; margin:20px 0; position:relative;">
-  <button id="closeQR" style="position:absolute; top:0; right:0; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer;">X</button>
+<!-- Overlay -->
+<div id="overlay"></div>
+
+<!-- QR Code popup -->
+<div id="qrContainer">
+  <button id="closeQR">X</button>
   <canvas id="userQRCode"></canvas>
   <p>Your QR Code</p>
 </div>
@@ -79,7 +119,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const profileName = document.getElementById('profileName');
   const profilePic = document.getElementById('profilePic');
-
   profileName.innerText = localStorage.getItem('username') || 'User';
   profilePic.src = localStorage.getItem('profilePic') || 'default-profile.png';
 });
@@ -96,29 +135,38 @@ document.addEventListener('click', e => {
   }
 });
 
-// QR Code
-document.addEventListener('DOMContentLoaded', () => {
-  const savedName = localStorage.getItem('username') || 'User';
-  const showQRCodeLink = document.getElementById('showQRCode');
-  const qrContainer = document.getElementById('qrContainer');
-  const noMsg = document.querySelector('.no-msg');
-  const closeQR = document.getElementById('closeQR');
-  let qrGenerated = false;
+// QR Code popup
+const showQRCodeLink = document.getElementById('showQRCode');
+const qrContainer = document.getElementById('qrContainer');
+const overlay = document.getElementById('overlay');
+const closeQR = document.getElementById('closeQR');
+const noMsg = document.querySelector('.no-msg');
+let qrGenerated = false;
+const savedName = localStorage.getItem('username') || 'User';
 
-  showQRCodeLink.addEventListener('click', e => {
-    e.preventDefault();
-    qrContainer.style.display = 'block';
-    noMsg.style.display = 'none';
-    if (!qrGenerated) {
-      new QRious({ element: document.getElementById('userQRCode'), value: savedName, size:150, background:'white', foreground:'black', level:'H' });
-      qrGenerated = true;
-    }
-  });
+showQRCodeLink.addEventListener('click', e => {
+  e.preventDefault();
+  qrContainer.style.display = 'block';
+  overlay.style.display = 'block';
+  noMsg.style.display = 'none';
 
-  closeQR.addEventListener('click', () => {
-    qrContainer.style.display = 'none';
-    noMsg.style.display = 'block';
-  });
+  if (!qrGenerated) {
+    new QRious({
+      element: document.getElementById('userQRCode'),
+      value: savedName,
+      size:150,
+      background:'white',
+      foreground:'black',
+      level:'H'
+    });
+    qrGenerated = true;
+  }
+});
+
+closeQR.addEventListener('click', () => {
+  qrContainer.style.display = 'none';
+  overlay.style.display = 'none';
+  noMsg.style.display = 'block';
 });
 
 // Load Chat content dynamically
