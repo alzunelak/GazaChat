@@ -1,28 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Scan Friend — ChatApp</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://unpkg.com/html5-qrcode" defer></script>
-<script src="app.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan Code</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+  body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
+  #reader { width:300px; margin:auto; }
+</style>
 </head>
 <body>
-  <header class="topbar sticky">
-    <button class="icon-btn" onclick="history.back()">◀</button>
-    <div class="title">Scan Friend's QR</div>
-    <div style="width:36px"></div>
-  </header>
+<h2>Scan Friend QR Code</h2>
+<div id="reader"></div>
 
-  <main class="page pad">
-    <div id="reader" class="qr-box">Starting camera…</div>
-    <p class="muted center">Point camera at friend’s QR (their username + key)</p>
+<script>
+const qrCodeReader = new Html5Qrcode("reader");
 
-    <div id="scanResult" class="card hidden">
-      <div>Found friend: <strong id="foundFriend"></strong></div>
-      <button id="addFriendFromScan" class="btn primary wide">Add friend & go Home</button>
-    </div>
-  </main>
+// Example list of users (replace with actual IDs from your system)
+const users = ["QR1234","QR5678","QR9999"];
+
+qrCodeReader.start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 250 },
+  (decodedText) => {
+    if(decodedText){
+      if(users.includes(decodedText)){
+        alert("Friend found! Connecting...");
+        window.location.href = `chat.html?friend=${decodedText}`;
+        qrCodeReader.stop();
+      } else {
+        alert("Friend not found.");
+      }
+    }
+  },
+  (errorMessage) => { console.log(errorMessage); }
+);
+</script>
 </body>
 </html>
