@@ -8,11 +8,14 @@
 body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2;}
 header{background:#25d366;color:white;padding:10px;text-align:center;}
 header h2{margin:0;}
-.group-list{padding:10px;}
-.group-item{background:white;padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;}
-.add-group{padding:10px;text-align:center;}
+.add-group{padding:10px;text-align:center;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
 .add-group input{padding:5px;width:60%;margin-right:5px;}
 .add-group button{padding:5px;background:#25d366;color:white;border:none;border-radius:5px;cursor:pointer;}
+.friend-list{padding:10px;background:#fff;margin-top:10px;border-radius:5px;}
+.friend-item{margin:5px 0;}
+.friend-item input{margin-right:5px;}
+.group-list{padding:10px;margin-top:10px;}
+.group-item{background:white;padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;}
 nav{position:fixed;bottom:0;left:0;width:100%;background:white;display:flex;justify-content:space-around;border-top:1px solid #ccc;}
 nav a{text-align:center;padding:10px;flex:1;color:#555;text-decoration:none;font-size:14px;}
 nav a.active{color:#25d366;}
@@ -26,7 +29,12 @@ nav a.active{color:#25d366;}
 
 <div class="add-group">
   <input type="text" id="groupNameInput" placeholder="New group name">
-  <button onclick="addGroup()">Add</button>
+  <button id="createGroupBtn">Create Group</button>
+</div>
+
+<div class="friend-list" id="friend-list">
+  <strong>Select friends to add:</strong>
+  <div id="friendsCheckboxes"></div>
 </div>
 
 <div class="group-list" id="group-list"></div>
@@ -38,15 +46,35 @@ nav a.active{color:#25d366;}
 </nav>
 
 <script>
-// Groups
+// Load friends from localStorage
+let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+
+// Display friends with checkboxes
+const friendsContainer = document.getElementById("friendsCheckboxes");
+function renderFriendsCheckboxes(){
+  friendsContainer.innerHTML="";
+  if(friends.length === 0){
+    friendsContainer.innerHTML = "No friends found. Add friends first.";
+    return;
+  }
+  friends.forEach(f=>{
+    const div = document.createElement("div");
+    div.className="friend-item";
+    div.innerHTML = `<label><input type="checkbox" value="${f}"> ${f}</label>`;
+    friendsContainer.appendChild(div);
+  });
+}
+renderFriendsCheckboxes();
+
+// Load groups
 let groups = JSON.parse(localStorage.getItem("groups")||"[]");
 function renderGroups(){
   const list = document.getElementById("group-list");
   list.innerHTML="";
-  groups.forEach((g,i)=>{
+  groups.forEach((g)=>{
     const div = document.createElement("div");
     div.className="group-item";
-    div.innerText=g.name;
+    div.innerText = g.name + " (" + g.members.length + " members)";
     div.onclick = ()=> {
       localStorage.setItem("currentGroup", JSON.stringify(g));
       window.location.href="group-chat.html";
@@ -56,16 +84,21 @@ function renderGroups(){
 }
 renderGroups();
 
-function addGroup(){
-  const input = document.getElementById("groupNameInput");
-  const name = input.value.trim();
-  if(!name) return alert("Enter group name");
-  const newGroup = {id:"group_"+Date.now(), name};
+// Create group
+document.getElementById("createGroupBtn").addEventListener("click", ()=>{
+  const groupName = document.getElementById("groupNameInput").value.trim();
+  if(!groupName) return alert("Enter group name");
+
+  const selected = Array.from(document.querySelectorAll('#friendsCheckboxes input:checked')).map(cb=>cb.value);
+  if(selected.length === 0) return alert("Select at least one friend");
+
+  const newGroup = {id:"group_"+Date.now(), name:groupName, members:selected};
   groups.push(newGroup);
   localStorage.setItem("groups", JSON.stringify(groups));
-  input.value="";
+  document.getElementById("groupNameInput").value="";
+  document.querySelectorAll('#friendsCheckboxes input').forEach(cb=>cb.checked=false);
   renderGroups();
-}
+});
 </script>
 
 </body>
