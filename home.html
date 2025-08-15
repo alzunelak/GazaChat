@@ -110,19 +110,18 @@
   <div class="three-dots">&#8942;</div>
 </div>
 
- <script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
   const profileName = document.getElementById('profileName');
   const profilePic = document.getElementById('profilePic');
 
-  const savedName = localStorage.getItem('userName') || 'User';
-  const savedProfile = localStorage.getItem('userProfile') || 'default-profile.png';
+  const savedName = localStorage.getItem('username') || 'User';
+  const savedProfile = localStorage.getItem('profilePic') || 'default-profile.png';
 
   profileName.innerText = savedName;
   profilePic.src = savedProfile;
 });
 </script>
-
 
 <!-- No messages -->
 <div class="no-msg">
