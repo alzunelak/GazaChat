@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Take Picture</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
+  video, canvas { width:300px; margin:10px 0; border:1px solid #ccc; }
+  button { padding:10px 15px; font-size:16px; margin:5px; }
+</style>
+</head>
+<body>
+<h2>Take Picture</h2>
+<video id="video" autoplay></video><br>
+<button id="captureBtn">Capture Picture</button>
+<button id="sendBtn">Send to Friend</button>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const friend = urlParams.get('friend') || 'UnknownFriend';
+
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+  const video = document.getElementById('video');
+  video.srcObject = stream;
+
+  const canvas = document.getElementById('canvas');
+  let imageData = null;
+
+  document.getElementById('captureBtn').addEventListener('click', () => {
+    canvas.width = 300;
+    canvas.height = 300;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    imageData = canvas.toDataURL('image/png');
+    alert("Picture captured!");
+  });
+
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    if(!imageData){ alert("Capture picture first!"); return; }
+    // Save image to localStorage for the friend
+    const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
+    storedMessages.push({ type:'image', data: imageData });
+    localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
+    alert(`Picture sent to ${friend}!`);
+    window.location.href = `chat.html?friend=${friend}`;
+  });
+
+})
+.catch(err => { console.error(err); alert("Camera access denied"); });
+</script>
+</body>
+</html>
