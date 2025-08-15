@@ -111,13 +111,26 @@
 </div>
 
 <script>
-  // Load user's name and profile from localStorage
+document.addEventListener('DOMContentLoaded', () => {
+  // Get saved name and profile from localStorage
   const savedName = localStorage.getItem('userName') || 'User';
-  const savedProfile = localStorage.getItem('userProfile') || 'default-profile.png'; // base64 or URL
+  const savedProfile = localStorage.getItem('userProfile') || 'default-profile.png';
 
-  document.getElementById('profileName').innerText = savedName;
-  document.getElementById('profilePic').src = savedProfile;
+  // Update header
+  const profileName = document.getElementById('profileName');
+  const profilePic = document.getElementById('profilePic');
+
+  profileName.innerText = savedName;
+
+  // If user uploaded a photo, use it; else default
+  if(savedProfile.startsWith('data:image') || savedProfile.endsWith('.png') || savedProfile.endsWith('.jpg')){
+    profilePic.src = savedProfile;
+  } else {
+    profilePic.src = 'default-profile.png';
+  }
+});
 </script>
+
 
 
 <!-- No messages -->
