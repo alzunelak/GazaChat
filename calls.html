@@ -5,135 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calls</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2;}
-header{background:#25d366;color:white;padding:10px;text-align:center;}
-header h2{margin:0;}
-.call-list{padding:10px;}
-.call-item{background:white;padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
-.call-item span{margin-right:5px;}
-.call-item button{margin-left:5px;padding:5px;border:none;border-radius:5px;color:white;cursor:pointer;}
-.start-call{padding:10px;text-align:center;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.1);margin-bottom:10px;}
-.start-call select, .start-call input{padding:5px;margin:5px;}
-.start-call button.audio{background:#25d366;}
-.start-call button.video{background:#007bff;}
-nav{position:fixed;bottom:0;left:0;width:100%;background:white;display:flex;justify-content:space-around;border-top:1px solid #ccc;}
-nav a{text-align:center;padding:10px;flex:1;color:#555;text-decoration:none;font-size:14px;}
-nav a.active{color:#25d366;}
+body { font-family: Arial,sans-serif; margin:0; padding:20px; background:#f5f5f5; }
+.profile-section { display:flex; flex-direction:column; align-items:center; }
+.profile-section img { width:80px; height:80px; border-radius:50%; margin-bottom:10px; }
+.friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
 </style>
 </head>
 <body>
 
-<header>
-  <h2>Calls</h2>
-</header>
-
-<div class="start-call">
-  <strong>Start New Call:</strong><br>
-  <select id="callType">
-    <option value="one">One-to-One Call</option>
-    <option value="group">Group Call</option>
-  </select>
-  <div id="friendSelectContainer" style="margin-top:5px;">
-    <select id="friendSelect">
-      <option value="">Select friend</option>
-    </select>
-  </div>
-  <div id="groupFriendSelectContainer" style="margin-top:5px; display:none;">
-    <strong>Select friends for group call:</strong><br>
-    <div id="friendsCheckboxes"></div>
-  </div>
-  <button class="audio" onclick="startCall('audio')">Audio Call</button>
-  <button class="video" onclick="startCall('video')">Video Call</button>
+<div class="profile-section">
+  <img id="profilePhoto" src="default-profile.png">
+  <h2 id="profileName">User</h2>
 </div>
 
-<div class="call-list" id="call-list"></div>
-
-<nav>
-  <a href="home.html">Chats</a>
-  <a href="groups.html">Groups</a>
-  <a href="calls.html" class="active">Calls</a>
-</nav>
+<h3>Friends</h3>
+<div id="callFriendsList"></div>
 
 <script>
-// Load friends
-let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+// Profile
+const profileName = localStorage.getItem('username') || 'User';
+const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
+document.getElementById('profileName').textContent = profileName;
+document.getElementById('profilePhoto').src = profilePic;
 
-// Populate one-to-one select
-const friendSelect = document.getElementById("friendSelect");
-function renderFriendOptions(){
-  friendSelect.innerHTML = `<option value="">Select friend</option>`;
+// Render friends
+function renderCallFriends(){
+  const friends = JSON.parse(localStorage.getItem('friends')||'[]');
+  const list = document.getElementById('callFriendsList');
+  list.innerHTML='';
   friends.forEach(f=>{
-    const opt = document.createElement("option");
-    opt.value = f;
-    opt.innerText = f;
-    friendSelect.appendChild(opt);
-  });
-}
-renderFriendOptions();
-
-// Populate group checkboxes
-const friendsContainer = document.getElementById("friendsCheckboxes");
-function renderFriendsCheckboxes(){
-  friendsContainer.innerHTML="";
-  if(friends.length===0){
-    friendsContainer.innerText="No friends found. Add friends first.";
-    return;
-  }
-  friends.forEach(f=>{
-    const div = document.createElement("div");
-    div.innerHTML = `<label><input type="checkbox" value="${f}"> ${f}</label>`;
-    friendsContainer.appendChild(div);
-  });
-}
-renderFriendsCheckboxes();
-
-// Toggle between one-to-one and group call
-const callTypeSelect = document.getElementById("callType");
-callTypeSelect.addEventListener("change",()=>{
-  if(callTypeSelect.value==="one"){
-    document.getElementById("friendSelectContainer").style.display="block";
-    document.getElementById("groupFriendSelectContainer").style.display="none";
-  } else {
-    document.getElementById("friendSelectContainer").style.display="none";
-    document.getElementById("groupFriendSelectContainer").style.display="block";
-  }
-});
-
-// Load previous calls
-let calls = JSON.parse(localStorage.getItem("calls")||"[]");
-function renderCalls(){
-  const list = document.getElementById("call-list");
-  list.innerHTML="";
-  calls.forEach(c=>{
-    const div = document.createElement("div");
-    div.className="call-item";
-    div.innerHTML = `<span>${c.type==='group'? 'Group Call' : 'Call'}: ${c.participants.join(', ')}</span>
-                     <span>${c.time}</span>
-                     <button style="background:#25d366;" onclick="alert('Audio call to ${c.participants.join(', ')}')">Audio</button>
-                     <button style="background:#007bff;" onclick="alert('Video call to ${c.participants.join(', ')}')">Video</button>`;
+    const div = document.createElement('div');
+    div.className='friend';
+    div.innerText=f;
+    div.onclick = ()=>{
+      const mode = prompt(`Call ${f} via audio or video?`, 'audio');
+      if(!mode) return;
+      alert(`${mode==='video'?'Video':'Audio'} call started with ${f}`);
+    };
     list.appendChild(div);
   });
 }
-renderCalls();
+renderCallFriends();
 
-// Start new call
-function startCall(mode){
-  let participants = [];
-  if(callTypeSelect.value==="one"){
-    const selected = friendSelect.value;
-    if(!selected) return alert("Select a friend for call");
-    participants.push(selected);
-  } else {
-    participants = Array.from(document.querySelectorAll('#friendsCheckboxes input:checked')).map(cb=>cb.value);
-    if(participants.length===0) return alert("Select at least one friend for group call");
-  }
-
-  const call = {type:callTypeSelect.value, participants, mode, time:new Date().toLocaleString()};
-  calls.push(call);
-  localStorage.setItem("calls", JSON.stringify(calls));
-  renderCalls();
-  alert(`${mode==='audio'? 'Audio':'Video'} call started with ${participants.join(', ')}`);
-}
+// Broadcast updates
+const channel = new BroadcastChannel('chatapp');
+channel.onmessage = e=>{
+  if(e.data.type==='addFriend') renderCallFriends();
+};
 </script>
 
 </body>
