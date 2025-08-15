@@ -5,30 +5,57 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calls</title>
 <style>
-body { font-family: Arial,sans-serif; margin:0; padding:20px; background:#f5f5f5; text-align:center; }
-.profile-section { display:flex; flex-direction:column; align-items:center; }
-.profile-section img { width:80px; height:80px; border-radius:50%; margin-bottom:10px; }
+body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2;}
+header{background:#25d366;color:white;padding:10px;text-align:center;}
+header h2{margin:0;}
+.call-list{padding:10px;}
+.call-item{background:white;padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;display:flex;justify-content:space-between;}
+.call-item button{padding:5px;background:#25d366;color:white;border:none;border-radius:5px;cursor:pointer;}
+nav{position:fixed;bottom:0;left:0;width:100%;background:white;display:flex;justify-content:space-around;border-top:1px solid #ccc;}
+nav a{text-align:center;padding:10px;flex:1;color:#555;text-decoration:none;font-size:14px;}
+nav a.active{color:#25d366;}
 </style>
 </head>
 <body>
 
-<div class="profile-section">
-  <img id="profilePhoto" src="default-profile.png">
-  <h2 id="profileName">Guest</h2>
+<header>
+  <h2>Calls</h2>
+</header>
+
+<div class="call-list" id="call-list"></div>
+<div style="padding:10px;text-align:center;">
+  <button onclick="startCall()">Start New Call</button>
 </div>
 
-<h3>Call History</h3>
-<p>No calls yet...</p>
+<nav>
+  <a href="home.html">Chats</a>
+  <a href="groups.html">Groups</a>
+  <a href="calls.html" class="active">Calls</a>
+</nav>
 
 <script>
-const name = localStorage.getItem('chatapp_username');
-const photo = localStorage.getItem('chatapp_userphoto');
+// Calls
+let calls = JSON.parse(localStorage.getItem("calls")||"[]");
 
-if (!name || !photo) {
-    window.location.href = 'name.html';
-} else {
-    document.getElementById('profileName').textContent = name;
-    document.getElementById('profilePhoto').src = photo;
+function renderCalls(){
+  const list = document.getElementById("call-list");
+  list.innerHTML="";
+  calls.forEach((c)=>{
+    const div = document.createElement("div");
+    div.className="call-item";
+    div.innerHTML = `<span>${c.name}</span><span>${c.time}</span>`;
+    list.appendChild(div);
+  });
+}
+renderCalls();
+
+function startCall(){
+  const name = prompt("Enter friend's name to call:");
+  if(!name) return;
+  const time = new Date().toLocaleString();
+  calls.push({name,time});
+  localStorage.setItem("calls", JSON.stringify(calls));
+  renderCalls();
 }
 </script>
 
