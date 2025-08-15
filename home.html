@@ -175,6 +175,59 @@ document.getElementById('tabChat').addEventListener('click', () => {
     });
 });
 </script>
+<script>
+// Function to add friend to the list
+function addFriendToList(friendName) {
+  let friends = JSON.parse(localStorage.getItem('friends') || '[]');
+  if (!friends.includes(friendName)) friends.push(friendName);
+  localStorage.setItem('friends', JSON.stringify(friends));
+  renderFriends();
+}
 
+// Function to display friends in main content
+function renderFriends() {
+  const main = document.getElementById('mainContent');
+  const friends = JSON.parse(localStorage.getItem('friends') || '[]');
+  main.innerHTML = ''; // clear previous content
+
+  if (friends.length === 0) {
+    main.innerHTML = `<div class="no-msg">
+      No messages yet<br>
+      Add a friend using the + button
+    </div>`;
+    return;
+  }
+
+  friends.forEach(f => {
+    const div = document.createElement('div');
+    div.innerText = f;
+    div.style.padding = '10px';
+    div.style.background = '#fff';
+    div.style.margin = '5px 0';
+    div.style.borderRadius = '8px';
+    div.style.cursor = 'pointer';
+    div.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+    div.addEventListener('click', () => {
+      localStorage.setItem('selectedFriend', f);
+      fetch('chat.html')
+        .then(r => r.text())
+        .then(html => main.innerHTML = html)
+        .then(() => {
+          // Re-run the chat script after loading chat.html
+          const script = document.createElement('script');
+          script.src = 'chat.js'; // if you use external chat.js
+          main.appendChild(script);
+        });
+    });
+
+    main.appendChild(div);
+  });
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', renderFriends);
+</script>
+  
 </body>
 </html>
