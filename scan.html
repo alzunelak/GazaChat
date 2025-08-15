@@ -22,26 +22,34 @@ const messageDiv = document.getElementById('message');
 const channel = new BroadcastChannel('chatapp');
 
 const qrCodeReader = new Html5Qrcode("reader");
-qrCodeReader.start({facingMode:"environment"},{fps:10,qrbox:250},
-(decodedText)=>{
-  if(decodedText){
-    if(users.includes(decodedText)){
-      messageDiv.style.color="green";
-      messageDiv.innerText="Friend found! Adding...";
+qrCodeReader.start(
+  { facingMode:"environment" },
+  { fps:10, qrbox:250 },
+  (decodedText) => {
+    if(decodedText.startsWith("FRIEND:")){
+      const friendName = decodedText.replace("FRIEND:", "");
+      messageDiv.style.color = "green";
+      messageDiv.innerText = "Friend found! Adding...";
+      
       // Add to localStorage
       let friends = JSON.parse(localStorage.getItem('friends')||'[]');
-      if(!friends.includes(decodedText)){
-        friends.push(decodedText);
-        localStorage.setItem('friends',JSON.stringify(friends));
-        channel.postMessage({type:'addFriend', friend:decodedText});
+      if(!friends.includes(friendName)){
+        friends.push(friendName);
+        localStorage.setItem('friends', JSON.stringify(friends));
+        const channel = new BroadcastChannel('chatapp');
+        channel.postMessage({type:'addFriend', friend:friendName});
       }
-      qrCodeReader.stop().then(()=>{ messageDiv.innerText="Friend added!"; });
+      
+      qrCodeReader.stop().then(()=>{ messageDiv.innerText = "Friend added!"; });
     } else {
-      messageDiv.style.color="red";
-      messageDiv.innerText="No user exists";
+      messageDiv.style.color = "red";
+      messageDiv.innerText = "Invalid QR code";
     }
-  }
-}, (err)=>{console.log(err);});
+  },
+  (err) => { console.log(err); }
+);
+
+
 </script>
 </body>
 </html>
