@@ -6,87 +6,73 @@
 <title>Groups</title>
 <style>
 body { font-family: Arial,sans-serif; margin:0; padding:20px; background:#f5f5f5; }
-.profile-section { display:flex; flex-direction:column; align-items:center; }
-.profile-section img { width:80px; height:80px; border-radius:50%; margin-bottom:10px; }
-.friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-.selected { background:#c8e6c9; }
-button#createGroup { margin-top:10px; padding:10px 20px; cursor:pointer; background:#4CAF50; color:white; border:none; border-radius:6px; }
+header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+header h2 { margin:0; }
+button { cursor:pointer; }
+.group { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; }
+.group-name { font-weight:bold; }
+.delete-btn { background:#f44336; color:white; border:none; padding:5px 8px; border-radius:5px; }
 </style>
 </head>
 <body>
 
-<div class="profile-section">
-  <img id="profilePhoto" src="default-profile.png">
-  <h2 id="profileName">User</h2>
-</div>
+<header>
+  <h2>Groups</h2>
+  <button id="createGroupBtn">Create Group</button>
+</header>
 
-<h3>Select Friends to Add to Group</h3>
-<div id="groupFriendsList"></div>
-<button id="createGroup">Create Group</button>
+<div id="groupsList"></div>
 
 <script>
-const username = localStorage.getItem('username') || 'User';
-const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
-document.getElementById('profileName').textContent = username;
-document.getElementById('profilePhoto').src = profilePic;
-
 const friends = JSON.parse(localStorage.getItem('friends')||'[]');
-const groupList = document.getElementById('groupFriendsList');
-const selectedFriends = new Set();
+let groups = JSON.parse(localStorage.getItem('groups')||'[]');
 
-// Display friends to select
-if(friends.length === 0){
-  groupList.innerHTML = '<p>No friends added yet</p>';
-} else {
-  friends.forEach(f=>{
-    const div = document.createElement('div');
-    div.className='friend';
-    div.innerText = f;
-    div.onclick = ()=>{
-      if(selectedFriends.has(f)){
-        selectedFriends.delete(f);
-        div.classList.remove('selected');
-      } else {
-        selectedFriends.add(f);
-        div.classList.add('selected');
-      }
-    };
-    groupList.appendChild(div);
-  });
-}
+function saveGroups(){ localStorage.setItem('groups', JSON.stringify(groups)); }
 
-// Create group with pending invites
-document.getElementById('createGroup').addEventListener('click', ()=>{
-  if(selectedFriends.size === 0){
-    alert('Select at least one friend to create a group.');
+function renderGroups(){
+  const list = document.getElementById('groupsList');
+  list.innerHTML='';
+  if(groups.length===0){
+    list.innerHTML='<p>No groups yet</p>';
     return;
   }
+  groups.forEach((g, idx)=>{
+    const div = document.createElement('div');
+    div.className='group';
+    div.innerHTML=`<span class="group-name">${g.name}</span>
+      <button class="delete-btn">Delete</button>`;
+    div.onclick = e=>{
+      if(!e.target.classList.contains('delete-btn')){
+        localStorage.setItem('currentGroup', JSON.stringify(g));
+        window.location.href='group-chat.html';
+      }
+    };
+    div.querySelector('.delete-btn').onclick = ()=>{
+      if(confirm(`Delete group "${g.name}"?`)){
+        groups.splice(idx,1);
+        saveGroups();
+        renderGroups();
+      }
+    };
+    list.appendChild(div);
+  });
+}
+renderGroups();
 
-  const groupName = prompt("Enter group name:", "New Group");
-  if(!groupName) return;
-
-  const groupId = 'group_' + new Date().getTime();
-  const group = {
-    id: groupId,
-    name: groupName,
-    members: [username],        // Creator is initially the only member
-    pending: Array.from(selectedFriends)  // Friends need to accept
-  };
-
-  // Save group in localStorage
-  let allGroups = JSON.parse(localStorage.getItem('groups')||'[]');
-  allGroups.push(group);
-  localStorage.setItem('groups', JSON.stringify(allGroups));
-
-  // Clear selections
-  selectedFriends.clear();
-  document.querySelectorAll('.friend').forEach(div => div.classList.remove('selected'));
-
-  alert(`Group "${groupName}" created. Invites sent to: ${group.pending.join(', ')}`);
-
-  // Notify other tabs/users about invites using BroadcastChannel
-  const channel = new BroadcastChannel('chatapp');
-  channel.postMessage({type:'groupInvite', group: group});
+// Create group
+document.getElementById('createGroupBtn').addEventListener('click', ()=>{
+  if(friends.length===0){ alert('Add friends first'); return; }
+  const name = prompt('Enter group name:');
+  if(!name) return;
+  const selected = prompt('Enter friend names separated by comma to invite:\nAvailable: '+friends.join(','));
+  if(!selected) return;
+  const members = selected.split(',').map(f=>f.trim()).filter(f=>friends.includes(f));
+  if(members.length===0){ alert('No valid members selected'); return; }
+  const group = {id:'group_'+Date.now(), name, members, messages:[]};
+  groups.push(group);
+  saveGroups();
+  renderGroups();
+  alert('Group created! Members need to accept invitation.');
 });
 </script>
 </body>
