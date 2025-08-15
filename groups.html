@@ -25,48 +25,69 @@ button#createGroup { margin-top:10px; padding:10px 20px; cursor:pointer; backgro
 <button id="createGroup">Create Group</button>
 
 <script>
-// Profile
-const profileName = localStorage.getItem('username') || 'User';
+const username = localStorage.getItem('username') || 'User';
 const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
-document.getElementById('profileName').textContent = profileName;
+document.getElementById('profileName').textContent = username;
 document.getElementById('profilePhoto').src = profilePic;
 
-const selectedFriends = new Set();
+const friends = JSON.parse(localStorage.getItem('friends')||'[]');
 const groupList = document.getElementById('groupFriendsList');
+const selectedFriends = new Set();
 
-function renderGroupFriends(){
-  const friends = JSON.parse(localStorage.getItem('friends')||'[]');
-  groupList.innerHTML='';
-  if(friends.length===0){ groupList.innerHTML='<p>No friends added yet</p>'; return; }
+// Display friends to select
+if(friends.length === 0){
+  groupList.innerHTML = '<p>No friends added yet</p>';
+} else {
   friends.forEach(f=>{
     const div = document.createElement('div');
     div.className='friend';
-    div.innerText=f;
-    div.onclick = ()=>{ 
-      div.classList.toggle('selected');
-      if(selectedFriends.has(f)) selectedFriends.delete(f);
-      else selectedFriends.add(f);
+    div.innerText = f;
+    div.onclick = ()=>{
+      if(selectedFriends.has(f)){
+        selectedFriends.delete(f);
+        div.classList.remove('selected');
+      } else {
+        selectedFriends.add(f);
+        div.classList.add('selected');
+      }
     };
     groupList.appendChild(div);
   });
 }
-renderGroupFriends();
 
-// Create Group
+// Create group with pending invites
 document.getElementById('createGroup').addEventListener('click', ()=>{
-  if(selectedFriends.size===0){ alert('Select at least one friend'); return; }
-  localStorage.setItem('currentGroup', JSON.stringify({name:'New Group', members:Array.from(selectedFriends), id:'group_'+Date.now()}));
-  alert('Group created with: '+Array.from(selectedFriends).join(', '));
+  if(selectedFriends.size === 0){
+    alert('Select at least one friend to create a group.');
+    return;
+  }
+
+  const groupName = prompt("Enter group name:", "New Group");
+  if(!groupName) return;
+
+  const groupId = 'group_' + new Date().getTime();
+  const group = {
+    id: groupId,
+    name: groupName,
+    members: [username],        // Creator is initially the only member
+    pending: Array.from(selectedFriends)  // Friends need to accept
+  };
+
+  // Save group in localStorage
+  let allGroups = JSON.parse(localStorage.getItem('groups')||'[]');
+  allGroups.push(group);
+  localStorage.setItem('groups', JSON.stringify(allGroups));
+
+  // Clear selections
   selectedFriends.clear();
-  renderGroupFriends();
+  document.querySelectorAll('.friend').forEach(div => div.classList.remove('selected'));
+
+  alert(`Group "${groupName}" created. Invites sent to: ${group.pending.join(', ')}`);
+
+  // Notify other tabs/users about invites using BroadcastChannel
+  const channel = new BroadcastChannel('chatapp');
+  channel.postMessage({type:'groupInvite', group: group});
 });
-
-// Broadcast updates
-const channel = new BroadcastChannel('chatapp');
-channel.onmessage = e=>{
-  if(e.data.type==='addFriend') renderGroupFriends();
-};
 </script>
-
 </body>
 </html>
