@@ -3,20 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Chat</title>
+<title>Groups</title>
 <style>
 body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2;}
-header{background:#25d366;color:white;padding:10px;text-align:center;display:flex;align-items:center;justify-content:space-between;}
+header{background:#25d366;color:white;padding:10px;text-align:center;}
 header h2{margin:0;}
-header button{padding:5px 10px;border:none;border-radius:5px;background:white;color:#25d366;cursor:pointer;}
-#chatWindow{display:flex;flex-direction: column;height:80vh;background:#fff;margin:10px;border-radius:10px;overflow:hidden;}
-#messages{flex:1;padding:10px;overflow-y:auto;}
-.message{margin:5px 0;padding:5px 10px;border-radius:10px;max-width:80%;}
-.sent{background:#25d366;color:white;margin-left:auto;}
-.received{background:#eee;margin-right:auto;}
-#inputArea{display:flex;padding:5px;border-top:1px solid #ccc;}
-#inputArea input{flex:1;padding:5px;}
-#inputArea button{padding:5px 10px;margin-left:5px;background:#25d366;color:white;border:none;border-radius:5px;cursor:pointer;}
+.group-list{padding:10px;}
+.group-item{background:white;padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;}
+.add-group{padding:10px;text-align:center;}
+.add-group input{padding:5px;width:60%;margin-right:5px;}
+.add-group button{padding:5px;background:#25d366;color:white;border:none;border-radius:5px;cursor:pointer;}
 nav{position:fixed;bottom:0;left:0;width:100%;background:white;display:flex;justify-content:space-around;border-top:1px solid #ccc;}
 nav a{text-align:center;padding:10px;flex:1;color:#555;text-decoration:none;font-size:14px;}
 nav a.active{color:#25d366;}
@@ -25,17 +21,15 @@ nav a.active{color:#25d366;}
 <body>
 
 <header>
-  <h2 id="group-name">Group Name</h2>
-  <button onclick="goBack()">Back</button>
+  <h2>Groups</h2>
 </header>
 
-<div id="chatWindow">
-  <div id="messages"></div>
-  <div id="inputArea">
-    <input type="text" id="chatInput" placeholder="Type a message">
-    <button onclick="sendMessage()">Send</button>
-  </div>
+<div class="add-group">
+  <input type="text" id="groupNameInput" placeholder="New group name">
+  <button onclick="addGroup()">Add</button>
 </div>
+
+<div class="group-list" id="group-list"></div>
 
 <nav>
   <a href="home.html">Chats</a>
@@ -44,46 +38,35 @@ nav a.active{color:#25d366;}
 </nav>
 
 <script>
-// Load group
-let group = JSON.parse(localStorage.getItem("currentGroup"));
-if(!group){ alert("No group selected"); window.location.href="groups.html"; }
-document.getElementById("group-name").innerText = group.name;
-
-// User info
-let username = localStorage.getItem("username");
-let userId = localStorage.getItem("userId");
-
-// Load messages
-function loadMessages(){
-  const messagesDiv = document.getElementById("messages");
-  const msgs = JSON.parse(localStorage.getItem("group_"+group.id)||"[]");
-  messagesDiv.innerHTML="";
-  msgs.forEach(m=>{
+// Groups
+let groups = JSON.parse(localStorage.getItem("groups")||"[]");
+function renderGroups(){
+  const list = document.getElementById("group-list");
+  list.innerHTML="";
+  groups.forEach((g,i)=>{
     const div = document.createElement("div");
-    div.className = "message "+(m.senderId===userId?"sent":"received");
-    div.innerText = m.senderName+": "+m.text;
-    messagesDiv.appendChild(div);
+    div.className="group-item";
+    div.innerText=g.name;
+    div.onclick = ()=> {
+      localStorage.setItem("currentGroup", JSON.stringify(g));
+      window.location.href="group-chat.html";
+    };
+    list.appendChild(div);
   });
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
-loadMessages();
+renderGroups();
 
-// Send message
-function sendMessage(){
-  const input = document.getElementById("chatInput");
-  const text = input.value.trim();
-  if(!text) return;
-  const key = "group_"+group.id;
-  const msgs = JSON.parse(localStorage.getItem(key)||"[]");
-  msgs.push({senderId:userId, senderName:username, text});
-  localStorage.setItem(key, JSON.stringify(msgs));
+function addGroup(){
+  const input = document.getElementById("groupNameInput");
+  const name = input.value.trim();
+  if(!name) return alert("Enter group name");
+  const newGroup = {id:"group_"+Date.now(), name};
+  groups.push(newGroup);
+  localStorage.setItem("groups", JSON.stringify(groups));
   input.value="";
-  loadMessages();
+  renderGroups();
 }
-
-// Back
-function goBack(){ window.location.href="groups.html"; }
-
 </script>
+
 </body>
 </html>
