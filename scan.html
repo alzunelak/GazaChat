@@ -20,29 +20,29 @@ body { font-family: Arial, sans-serif; text-align:center; padding:20px; backgrou
 const messageDiv = document.getElementById('message');
 const channel = new BroadcastChannel('chatapp');
 
-const qrCodeReader = new Html5Qrcode("reader");
+// Default profile picture
+const defaultProfile = "default-profile.png";
 
+const qrCodeReader = new Html5Qrcode("reader");
 qrCodeReader.start(
   { facingMode: "environment" },
-  { fps: 10, qrbox: 250 },
+  { fps:10, qrbox:250 },
   (decodedText) => {
-    if (decodedText.startsWith("FRIEND:")) {
+    if(decodedText.startsWith("FRIEND:")){
       const friendName = decodedText.replace("FRIEND:", "");
       messageDiv.style.color = "green";
       messageDiv.innerText = "Friend found! Adding...";
 
-      // Add friend to localStorage
+      // Add friend to localStorage with profile
       let friends = JSON.parse(localStorage.getItem('friends') || '[]');
-      if (!friends.includes(friendName)) {
-        friends.push(friendName);
+      if(!friends.some(f => f.name === friendName)){
+        friends.push({name: friendName, profile: defaultProfile});
         localStorage.setItem('friends', JSON.stringify(friends));
-        channel.postMessage({ type: 'addFriend', friend: friendName });
+        channel.postMessage({type:'addFriend', friend: friendName});
       }
 
-      // Stop scanner and redirect back to home
       qrCodeReader.stop().then(() => {
-        messageDiv.innerText = "Friend added! Redirecting...";
-        setTimeout(() => { window.location.href = "home.html"; }, 1500);
+        messageDiv.innerText = "Friend added!";
       });
     } else {
       messageDiv.style.color = "red";
