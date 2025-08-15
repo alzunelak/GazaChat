@@ -3,171 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home</title>
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<title>ChatApp Home</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2;}
-header{background:#25d366;color:white;padding:10px;text-align:center;}
-header img{width:60px;height:60px;border-radius:50%;display:block;margin:0 auto 5px;}
-.buttons{display:flex;justify-content:space-around;padding:10px;background:white;}
-.buttons button{padding:10px;background:#25d366;color:white;border:none;border-radius:5px;cursor:pointer;font-size:14px;}
-.chat-list{padding:10px;}
-.chat-item{background:white;padding:10px;margin-bottom:5px;border-radius:5px;cursor:pointer;}
-nav{position:fixed;bottom:0;left:0;width:100%;background:white;display:flex;justify-content:space-around;border-top:1px solid #ccc;}
-nav a{text-align:center;padding:10px;flex:1;color:#555;text-decoration:none;font-size:14px;}
-nav a.active{color:#25d366;}
-.popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background: rgba(0,0,0,0.7);justify-content:center;align-items:center;}
-.popup-content{background:white;padding:20px;border-radius:10px;text-align:center;}
-.popup-content button{background:red;color:white;padding:5px 10px;margin-top:10px;border:none;border-radius:5px;}
-#reader{width:300px;height:300px;margin:auto;}
-#chatWindow{display:none;flex-direction: column;height:60vh;background:#fff;border:1px solid #ccc;margin:10px;border-radius:10px;overflow:hidden;}
-#messages{flex:1;padding:10px;overflow-y:auto;}
-.message{margin:5px 0;padding:5px 10px;border-radius:10px;max-width:80%;}
-.sent{background:#25d366;color:white;margin-left:auto;}
-.received{background:#eee;margin-right:auto;}
-#inputArea{display:flex;padding:5px;border-top:1px solid #ccc;}
-#inputArea input{flex:1;padding:5px;}
-#inputArea button{padding:5px 10px;margin-left:5px;background:#25d366;color:white;border:none;border-radius:5px;cursor:pointer;}
+  body {
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    background:#f5f5f5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    min-height:100vh;
+  }
+
+  /* Main content (My Code) */
+  .main-content {
+    margin-top:50px;
+    text-align:center;
+  }
+  .my-code {
+    width:200px;
+    height:200px;
+    background:#fff;
+    border:2px solid #000;
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+  }
+
+  /* Floating + button */
+  .add-button-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+  }
+
+  #addBtn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 32px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+
+  /* Popup options */
+  .popup-options {
+    display: none;
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    padding: 10px;
+    text-align: left;
+  }
+
+  .popup-options a {
+    display: block;
+    padding: 8px 12px;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .popup-options a:hover {
+    background-color: #f0f0f0;
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <img id="profile-pic" src="default-profile.png" alt="Profile">
-  <h2 id="username-display">My Name</h2>
-</header>
-
-<div class="buttons">
-  <button onclick="showMyCode()">My Code</button>
-  <button onclick="startScan()">Scan Code</button>
-  <button onclick="location.href='search.html'">Search Friend</button>
+<!-- Main content (My Code) -->
+<div class="main-content">
+  <h2>My Code</h2>
+  <div class="my-code" id="myCode">QR1234</div>
 </div>
 
-<div class="chat-list" id="chat-list"></div>
-
-<div id="chatWindow">
-  <div id="messages"></div>
-  <div id="inputArea">
-    <input type="text" id="chatInput" placeholder="Type a message">
-    <button onclick="sendMessage()">Send</button>
-  </div>
-</div>
-
-<nav>
-  <a href="home.html" class="active">Chats</a>
-  <a href="groups.html">Groups</a>
-  <a href="calls.html">Calls</a>
-</nav>
-
-<!-- My Code Popup -->
-<div class="popup" id="myCodePopup">
-  <div class="popup-content">
-    <h3>My QR Code</h3>
-    <div id="qrcode"></div>
-    <button onclick="closeMyCode()">Close</button>
-  </div>
-</div>
-
-<!-- Scan Popup -->
-<div class="popup" id="scanPopup">
-  <div class="popup-content">
-    <h3>Scan Friend's QR</h3>
-    <div id="reader"></div>
-    <button onclick="closeScan()">Close</button>
+<!-- + Button and popup -->
+<div class="add-button-container">
+  <button id="addBtn">+</button>
+  <div id="popupOptions" class="popup-options">
+    <a href="scan.html">Scan Code</a>
+    <a href="search.html">Search Friend</a>
+    <a href="video.html">Take Video</a>
+    <a href="picture.html">Take Picture</a>
   </div>
 </div>
 
 <script>
-// Profile info
-let username = localStorage.getItem("username");
-document.getElementById("username-display").innerText = username;
-document.getElementById("profile-pic").src = localStorage.getItem("profilePic") || "default-profile.png";
-let userId = localStorage.getItem("userId");
+  const addBtn = document.getElementById('addBtn');
+  const popupOptions = document.getElementById('popupOptions');
 
-// Friends
-let friends = JSON.parse(localStorage.getItem("friends") || "[]");
-let currentChat = null;
-
-function renderFriends(){
-  const list = document.getElementById("chat-list");
-  list.innerHTML = "";
-  friends.forEach(f => {
-    const div = document.createElement("div");
-    div.className = "chat-item";
-    div.innerText = f.name;
-    div.onclick = ()=> openChat(f);
-    list.appendChild(div);
+  addBtn.addEventListener('click', () => {
+    popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block';
   });
-}
-renderFriends();
 
-function openChat(friend){
-  currentChat = friend;
-  document.getElementById("chatWindow").style.display="flex";
-  loadMessages();
-}
-
-function loadMessages(){
-  const messagesDiv = document.getElementById("messages");
-  const msgs = JSON.parse(localStorage.getItem("chat_"+currentChat.id)||"[]");
-  messagesDiv.innerHTML="";
-  msgs.forEach(m=>{
-    const div = document.createElement("div");
-    div.className="message "+(m.senderId===userId?"sent":"received");
-    div.innerText=m.text;
-    messagesDiv.appendChild(div);
+  // Close popup if clicked outside
+  document.addEventListener('click', function(event) {
+    if (!addBtn.contains(event.target) && !popupOptions.contains(event.target)) {
+      popupOptions.style.display = 'none';
+    }
   });
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-function sendMessage(){
-  const input = document.getElementById("chatInput");
-  const text = input.value.trim();
-  if(!text||!currentChat) return;
-  const key = "chat_"+currentChat.id;
-  const msgs = JSON.parse(localStorage.getItem(key)||"[]");
-  msgs.push({senderId:userId,text});
-  localStorage.setItem(key,JSON.stringify(msgs));
-  input.value="";
-  loadMessages();
-}
-
-// My Code
-function showMyCode(){
-  document.getElementById("myCodePopup").style.display="flex";
-  document.getElementById("qrcode").innerHTML="";
-  new QRCode(document.getElementById("qrcode"),{text:JSON.stringify({id:userId,name:username}),width:200,height:200});
-}
-function closeMyCode(){ document.getElementById("myCodePopup").style.display="none"; }
-
-// Scan
-let html5QrCodeInstance;
-function startScan(){
-  document.getElementById("scanPopup").style.display="flex";
-  html5QrCodeInstance = new Html5Qrcode("reader");
-  html5QrCodeInstance.start(
-    {facingMode:"environment"},
-    {fps:10,qrbox:250},
-    qrCodeMessage=>{
-      try{
-        const data = JSON.parse(qrCodeMessage);
-        if(!friends.find(f=>f.id===data.id)){
-          friends.push({id:data.id,name:data.name});
-          localStorage.setItem("friends",JSON.stringify(friends));
-          renderFriends();
-        }
-        html5QrCodeInstance.stop();
-        document.getElementById("scanPopup").style.display="none";
-        alert("Friend added: "+data.name);
-      }catch(e){ alert("Invalid QR"); }
-    },
-    errorMessage=>{}
-  ).catch(err=>{ alert("Camera not accessible: "+err); document.getElementById("scanPopup").style.display="none"; });
-}
-
-function closeScan(){ if(html5QrCodeInstance) html5QrCodeInstance.stop(); document.getElementById("scanPopup").style.display="none"; }
-
 </script>
+
 </body>
 </html>
