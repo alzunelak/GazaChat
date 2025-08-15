@@ -13,29 +13,36 @@
   .three-dots { font-size:24px; cursor:pointer; }
 
   .main-content { padding:20px; min-height:70vh; }
-
   .no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
 
   .tabs { display:flex; justify-content:space-around; padding:10px 0; background:#fff; position:fixed; bottom:0; width:100%; border-top:1px solid #ccc; }
   .tabs div { font-weight:bold; cursor:pointer; }
 
+  /* Floating + button */
   .add-button-container { position:fixed; bottom:60px; right:20px; z-index:100; }
   #addBtn { width:60px; height:60px; border-radius:50%; font-size:32px; cursor:pointer; background-color:#4CAF50; color:white; border:none; }
-  .popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:10px; text-align:left; }
-  .popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
-  .popup-options a:hover { background:#f0f0f0; }
 
-  /* Overlay for modal */
-  #overlay {
+  /* Popup options vertical */
+  .popup-options {
     display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.3);
-    z-index:150;
+    position:absolute;
+    bottom:70px;
+    right:0;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:8px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    padding:5px 0;
+    text-align:left;
+    min-width:140px;
   }
+  .popup-options a {
+    display:block;
+    padding:8px 12px;
+    color:#333;
+    text-decoration:none;
+  }
+  .popup-options a:hover { background:#f0f0f0; }
 
   /* QR popup */
   #qrContainer {
@@ -51,7 +58,7 @@
     z-index:200;
     text-align:center;
   }
-  #closeQR {
+  #qrContainer button {
     position:absolute;
     top:5px;
     right:5px;
@@ -83,9 +90,6 @@
     Add a friend using the + button
   </div>
 </div>
-
-<!-- Overlay -->
-<div id="overlay"></div>
 
 <!-- QR Code popup -->
 <div id="qrContainer">
@@ -123,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   profilePic.src = localStorage.getItem('profilePic') || 'default-profile.png';
 });
 
-// Floating + button
+// Floating + button toggle
 const addBtn = document.getElementById('addBtn');
 const popupOptions = document.getElementById('popupOptions');
 addBtn.addEventListener('click', () => {
@@ -138,34 +142,23 @@ document.addEventListener('click', e => {
 // QR Code popup
 const showQRCodeLink = document.getElementById('showQRCode');
 const qrContainer = document.getElementById('qrContainer');
-const overlay = document.getElementById('overlay');
-const closeQR = document.getElementById('closeQR');
 const noMsg = document.querySelector('.no-msg');
+const closeQR = document.getElementById('closeQR');
 let qrGenerated = false;
 const savedName = localStorage.getItem('username') || 'User';
 
 showQRCodeLink.addEventListener('click', e => {
   e.preventDefault();
   qrContainer.style.display = 'block';
-  overlay.style.display = 'block';
   noMsg.style.display = 'none';
-
   if (!qrGenerated) {
-    new QRious({
-      element: document.getElementById('userQRCode'),
-      value: savedName,
-      size:150,
-      background:'white',
-      foreground:'black',
-      level:'H'
-    });
+    new QRious({ element: document.getElementById('userQRCode'), value: savedName, size:150, background:'white', foreground:'black', level:'H' });
     qrGenerated = true;
   }
 });
 
 closeQR.addEventListener('click', () => {
   qrContainer.style.display = 'none';
-  overlay.style.display = 'none';
   noMsg.style.display = 'block';
 });
 
