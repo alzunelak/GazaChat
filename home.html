@@ -101,15 +101,24 @@
 </style>
 </head>
 <body>
-
-<!-- Header with profile pic, name, three dots -->
+  <!-- Header with dynamic profile pic and name -->
 <div class="header">
   <div class="profile">
-    <img src="profile.jpg" alt="Profile">
-    <div class="profile-name">Mimah Suleiman</div>
+    <img id="profilePic" src="default-profile.png" alt="Profile">
+    <div class="profile-name" id="profileName">User</div>
   </div>
   <div class="three-dots">&#8942;</div>
 </div>
+
+<script>
+  // Load user's name and profile from localStorage
+  const savedName = localStorage.getItem('userName') || 'User';
+  const savedProfile = localStorage.getItem('userProfile') || 'default-profile.png'; // base64 or URL
+
+  document.getElementById('profileName').innerText = savedName;
+  document.getElementById('profilePic').src = savedProfile;
+</script>
+
 
 <!-- No messages -->
 <div class="no-msg">
