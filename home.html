@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="add-button-container">
   <button id="addBtn">+</button>
   <div id="popupOptions" class="popup-options">
-    <a href="Code.html">My Code</a>
+    <a href="#" id="showQRCode">My Code</a>
     <a href="scan.html">Scan Code</a>
     <a href="search.html">Search Friend</a>
     <a href="video.html?friend=QR1234">Take Video</a>
@@ -160,6 +160,33 @@ document.addEventListener('click', function(event) {
   if (!addBtn.contains(event.target) && !popupOptions.contains(event.target)) {
     popupOptions.style.display = 'none';
   }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const savedName = localStorage.getItem('username') || 'User';
+
+  const showQRCodeLink = document.getElementById('showQRCode');
+  const qrContainer = document.getElementById('qrContainer');
+  const noMsg = document.querySelector('.no-msg');
+
+  showQRCodeLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Hide "No messages" and show QR
+    noMsg.style.display = 'none';
+    qrContainer.style.display = 'block';
+
+    // Generate QR code dynamically
+    const qr = new QRious({
+      element: document.getElementById('userQRCode'),
+      value: savedName, // you can replace with unique ID
+      size: 150,
+      background: 'white',
+      foreground: 'black',
+      level: 'H'
+    });
+  });
 });
 </script>
 
