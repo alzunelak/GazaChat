@@ -36,63 +36,51 @@ h1{margin-bottom:10px;}
 <script>
 let groups = JSON.parse(localStorage.getItem("groups") || "[]");
 const groupsListDiv = document.getElementById("groupsList");
-const createGroupBtn = document.getElementById("createGroupBtn");
-const newGroupPopup = document.getElementById("newGroupPopup");
 
-// Render groups list
+// Render groups
 function renderGroups(){
-  groupsListDiv.innerHTML = "";
-  groups.forEach((g,index)=>{
-    const div = document.createElement("div");
+  groupsListDiv.innerHTML="";
+  groups.forEach((g,i)=>{
+    const div=document.createElement("div");
     div.className="group";
     div.onclick = ()=>{
-      localStorage.setItem("currentGroupIndex", index);
-      g.unread=false; // clear unread when opened
+      localStorage.setItem("currentGroupIndex", i);
+      g.unread=false;
       saveGroups();
-      window.location="group-chat.html";
+      window.location="groupChat.html";
     };
-    const lastMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text || "["+g.messages[g.messages.length-1].type+"]" : "No messages yet";
-    div.innerHTML = `
-      <img src="${g.photo || 'group.png'}">
-      <div class="info">
-        <h3>${g.name}</h3>
-        <p>${lastMsg}</p>
-      </div>
-      ${g.unread ? '<div class="red-dot"></div>' : ''}
-    `;
+    const lastMsg = g.messages.length>0 ? g.messages[g.messages.length-1].text || `[${g.messages[g.messages.length-1].type}]` : "No messages yet";
+    div.innerHTML = `<img src="${g.photo || 'group.png'}">
+                     <div class="info">
+                       <h3>${g.name}</h3>
+                       <p>${lastMsg}</p>
+                     </div>
+                     ${g.unread ? '<div class="red-dot"></div>' : ''}`;
     groupsListDiv.appendChild(div);
   });
 }
 
 // Popup
-createGroupBtn.onclick = ()=>{ newGroupPopup.style.display="block"; }
-function closeNewGroupPopup(){ newGroupPopup.style.display="none"; }
+document.getElementById("createGroupBtn").onclick=()=>{ document.getElementById("newGroupPopup").style.display="block"; }
+function closeNewGroupPopup(){ document.getElementById("newGroupPopup").style.display="none"; }
 
-// Create new group
+// Create group
 function createGroup(){
   const name = document.getElementById("newGroupName").value.trim();
-  if(!name){ alert("Enter a group name!"); return; }
+  if(!name){ alert("Enter group name!"); return; }
   const fileInput = document.getElementById("newGroupPhoto");
   if(fileInput.files && fileInput.files[0]){
     const reader = new FileReader();
-    reader.onload = function(e){
-      saveGroup(name, e.target.result);
-    }
+    reader.onload=function(e){ saveGroup(name,e.target.result); }
     reader.readAsDataURL(fileInput.files[0]);
-  } else {
-    saveGroup(name, "group.png");
-  }
+  } else { saveGroup(name,'group.png'); }
 }
 
 function saveGroup(name, photo){
   const newGroup = {
-    name, photo,
-    admin:"You",
+    name, photo, admin:"You",
     members:[{name:"You", accepted:true}],
-    pending:[],
-    blocked:[],
-    messages:[],
-    unread:false
+    pending:[], blocked:[], messages:[], unread:false
   };
   groups.push(newGroup);
   saveGroups();
@@ -106,6 +94,5 @@ function saveGroups(){ localStorage.setItem("groups", JSON.stringify(groups)); }
 
 renderGroups();
 </script>
-
 </body>
 </html>
