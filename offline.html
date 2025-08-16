@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #25d366;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+  }
+  h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  p {
+    font-size: 18px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background: #fff;
+    color: #25d366;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+  <h1>You're Offline</h1>
+  <p>It looks like you have no internet connection.</p>
+  <p>You can still access your saved friends and chats.</p>
+  <button onclick="reloadPage()">Retry</button>
+
+<script>
+function reloadPage(){
+  location.reload();
+}
+</script>
+</body>
+</html>
