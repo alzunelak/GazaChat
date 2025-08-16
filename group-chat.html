@@ -50,7 +50,7 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
 
 <script>
 let groups = JSON.parse(localStorage.getItem("groups")||"[]");
-let currentIndex = localStorage.getItem("currentGroupIndex");
+let currentIndex = Number(localStorage.getItem("currentGroupIndex"));
 let group = groups[currentIndex];
 const myName="You";
 
@@ -94,6 +94,7 @@ function renderMessages(){
   });
   chatBox.scrollTop=chatBox.scrollHeight;
 }
+
 document.getElementById("sendBtn").onclick=()=>{
   const txt=document.getElementById("msgInput").value.trim();
   if(!txt) return;
@@ -121,6 +122,7 @@ function sendPhoto(){ group.messages.push({sender:myName,text:"[Sent Photo]"}); 
 function sendVideo(){ group.messages.push({sender:myName,text:"[Sent Video]"}); saveGroup(); renderMessages();}
 function sendLocation(){ group.messages.push({sender:myName,text:"[Sent Location]"}); saveGroup(); renderMessages();}
 
+// Save function
 function saveGroup(){
   groups[currentIndex]=group;
   localStorage.setItem("groups",JSON.stringify(groups));
@@ -128,7 +130,8 @@ function saveGroup(){
 
 renderMembers();
 renderMessages();
-group.unread=false; saveGroup();
+group.unread=false;
+saveGroup();
 </script>
 
 </body>
