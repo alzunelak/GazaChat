@@ -12,9 +12,9 @@ body {
   justify-content:center;
   align-items:center;
   height:100vh;
-  background:#fff; /* white background */
+  background:#fff;
   flex-direction:column;
-  color:#000; /* text color black */
+  color:#000;
 }
 .profile-pic {
   width:150px;
@@ -38,7 +38,7 @@ button {
   font-size:16px;
   border:none;
   border-radius:5px;
-  background:#25d366; /* green button */
+  background:#25d366;
   color:white;
   cursor:pointer;
 }
@@ -46,34 +46,46 @@ button {
 </head>
 <body>
 
-<img id="profilePicPreview" class="profile-pic" src="https://via.placeholder.com/150" alt="Profile Picture"><br>
+<img id="profilePicPreview" class="profile-pic" src="default-profile.png" alt="Profile Picture"><br>
 <input type="file" id="photoInput" accept="image/*"><br>
 <input type="text" id="nameInput" placeholder="Enter your name"><br>
-<button onclick="saveProfile()">Get Started</button>
+<button id="getStartedBtn">Get Started</button>
 
 <script>
 const photoInput = document.getElementById('photoInput');
 const profilePicPreview = document.getElementById('profilePicPreview');
 const nameInput = document.getElementById('nameInput');
+const getStartedBtn = document.getElementById('getStartedBtn');
 
+// Preview uploaded profile image
 photoInput.addEventListener('change', () => {
-  if(photoInput.files.length>0){
+  if(photoInput.files.length > 0){
     const reader = new FileReader();
     reader.onload = e => profilePicPreview.src = e.target.result;
     reader.readAsDataURL(photoInput.files[0]);
   }
 });
 
-function saveProfile(){
+// Save profile offline
+getStartedBtn.addEventListener('click', () => {
   const name = nameInput.value.trim();
-  if(!name){ alert("Enter your name"); return; }
+  if(!name){
+    alert("Please enter your name");
+    return;
+  }
+
+  // Save name and profile picture to localStorage
   localStorage.setItem("username", name);
   localStorage.setItem("profilePic", profilePicPreview.src);
+
+  // Generate a simple userId if not exists
   if(!localStorage.getItem("userId")){
     localStorage.setItem("userId", name + "_" + Math.floor(Math.random()*100000));
   }
-  window.location.href="home.html";
-}
+
+  // Go to home page
+  window.location.href = "home.html";
+});
 </script>
 
 </body>
