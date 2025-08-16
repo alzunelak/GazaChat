@@ -5,22 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bluetooth Chat</title>
 <style>
-body{margin:0;padding:0;font-family:Arial;background:#e5ddd5;}
-.chat-header{background:#075E54;color:white;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;}
+body{font-family:Arial;margin:0;padding:0;background:#e5ddd5;}
+.chat-header{background:#075E54;color:white;padding:10px 15px;font-size:18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;}
 .chat-header img{width:40px;height:40px;border-radius:50%;margin-right:10px;}
-.chat-messages{padding:10px;height:calc(100vh-120px);overflow-y:auto;display:flex;flex-direction:column;}
-.chat-input-container{position:sticky;bottom:0;padding:10px;background:#f0f0f0;display:flex;align-items:center;border-top:1px solid #ccc;}
-.chat-input-container input{flex:1;padding:10px 45px 10px 12px;border-radius:20px;border:1px solid #ccc;}
-.chat-input-container button{position:absolute;right:20px;background:#25D366;border:none;color:white;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;}
+.chat-messages{padding:10px;height:calc(100vh-150px);overflow-y:auto;display:flex;flex-direction:column;}
+.chat-input-container{display:flex;padding:10px;background:#f0f0f0;position:sticky;bottom:0;align-items:center;}
+#messageInput{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
+#sendBtn{padding:0 15px;border:none;background:#25D366;color:white;border-radius:50%;font-size:18px;cursor:pointer;margin-right:5px;}
+#plusBtn{padding:0 12px;border:none;background:#4CAF50;color:white;border-radius:50%;font-size:20px;cursor:pointer;}
 .message{max-width:70%;padding:8px 12px;border-radius:18px;margin:5px 0;position:relative;word-wrap:break-word;}
 .sent{background:#dcf8c6;align-self:flex-end;}
 .received{background:white;align-self:flex-start;}
 .timestamp{font-size:10px;color:#888;margin-top:2px;text-align:right;}
-.attachment-menu{position:absolute;bottom:60px;right:10px;display:none;flex-direction:column;gap:10px;background:#fff;padding:10px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
-.attachment-btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:#f0f0f0;}
-.attachment-btn:hover{background:#e0e0e0;}
-video,img{border-radius:8px;max-width:200px;margin-top:5px;}
-.header-buttons button{margin-left:5px;background:#128C7E;border:none;color:white;font-size:16px;padding:6px 10px;border-radius:6px;cursor:pointer;}
+.media{max-width:200px;max-height:200px;border-radius:12px;margin-top:5px;}
 </style>
 </head>
 <body>
@@ -30,10 +27,8 @@ video,img{border-radius:8px;max-width:200px;margin-top:5px;}
     <img id="friendProfile" src="">
     <span id="friendName"></span>
   </div>
-  <div class="header-buttons">
-    <button id="audioCallBtn">🎤</button>
-    <button id="videoCallBtn">📹</button>
-    <button id="blockBtn">🚫 Block</button>
+  <div>
+    <button id="blockBtn">🚫</button>
   </div>
 </div>
 
@@ -42,154 +37,120 @@ video,img{border-radius:8px;max-width:200px;margin-top:5px;}
 <div class="chat-input-container">
   <input type="text" id="messageInput" placeholder="Type a message...">
   <button id="plusBtn">+</button>
-  <div id="attachmentMenu" class="attachment-menu">
-    <button class="attachment-btn" id="sendFileBtn">📄 File</button>
-    <button class="attachment-btn" id="takePhotoBtn">📸 Take Photo</button>
-    <button class="attachment-btn" id="choosePhotoBtn">🖼️ Gallery</button>
-    <button class="attachment-btn" id="sendLocationBtn">📍 Location</button>
-  </div>
+  <button id="sendBtn">➡</button>
 </div>
 
-<video id="localVideo" autoplay muted style="display:none;position:fixed;bottom:80px;right:10px;width:150px;height:150px;"></video>
-<video id="remoteVideo" autoplay style="display:none;position:fixed;bottom:80px;right:170px;width:150px;height:150px;"></video>
+<input type="file" id="mediaInput" style="display:none;" multiple>
 
 <script>
 // --- Setup ---
 const params = new URLSearchParams(window.location.search);
-const friend = params.get('friend');
-const profile = params.get('profile');
-document.getElementById('friendName').innerText = friend;
-document.getElementById('friendProfile').src = profile;
+const friend = JSON.parse(localStorage.getItem('currentChat'));
+document.getElementById('friendName').innerText = friend.name;
+document.getElementById('friendProfile').src = friend.profile;
 
 let blockedUsers = JSON.parse(localStorage.getItem('blockedUsers')||'[]');
-if(blockedUsers.includes(friend)){
-  alert(`${friend} is blocked!`);
-  window.location.href=`blockuser.html?friend=${friend}`;
+if(blockedUsers.includes(friend.name)){
+  alert(`${friend.name} is blocked!`);
+  window.location.href='blockuser.html';
 }
 
-// Bluetooth variables
+const chatMessages = document.getElementById('chatMessages');
+const input = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const plusBtn = document.getElementById('plusBtn');
+const mediaInput = document.getElementById('mediaInput');
+
+// --- Bluetooth Setup ---
 let bluetoothDevice, btServer, btService, btCharacteristic;
 async function connectBluetooth(){
-  try {
+  try{
     bluetoothDevice = await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:['0000ffe0-0000-1000-8000-00805f9b34fb']});
     btServer = await bluetoothDevice.gatt.connect();
     btService = await btServer.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
     btCharacteristic = await btService.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-    await btCharacteristic.startNotifications();
-    btCharacteristic.addEventListener('characteristicvaluechanged', e=>{
-      const data = new TextDecoder().decode(e.target.value);
-      const msgObj = JSON.parse(data);
-      const messages = getChat(); messages.push({...msgObj,sender:'friend'}); saveChat(messages); loadChat();
-    });
-  } catch(e){ console.log(e); alert('Bluetooth failed'); }
+    btCharacteristic.startNotifications();
+    btCharacteristic.addEventListener('characteristicvaluechanged', receiveData);
+  }catch(err){ console.log(err); alert('Bluetooth failed'); }
 }
 
-// Chat storage
-const messagesDiv = document.getElementById('chatMessages');
-const input = document.getElementById('messageInput');
-const sendBtn = document.getElementById('plusBtn'); // use plus button as primary to open attachments
-const attachmentMenu = document.getElementById('attachmentMenu');
-
-function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
-function saveChat(messages){ localStorage.setItem(`chat_${friend}`, JSON.stringify(messages)); }
+// --- Chat storage ---
+function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend.name}`)||'[]'); }
+function saveChat(messages){ localStorage.setItem(`chat_${friend.name}`, JSON.stringify(messages)); }
 
 function formatTime(){ const d=new Date(); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
 
 function loadChat(){
-  messagesDiv.innerHTML='';
-  const messages=getChat();
+  chatMessages.innerHTML='';
+  const messages = getChat();
   messages.forEach(msg=>{
-    const div=document.createElement('div');
+    const div = document.createElement('div');
     div.classList.add('message', msg.sender==='me'?'sent':'received');
     if(msg.type==='text') div.innerText=msg.data;
-    if(msg.type==='image'){ const img=document.createElement('img'); img.src=msg.data; div.appendChild(img); }
-    if(msg.type==='file'){ const a=document.createElement('a'); a.href=msg.data; a.download=msg.name; a.innerText='📄 '+msg.name; div.appendChild(a); }
-    if(msg.type==='video'){ const v=document.createElement('video'); v.src=msg.data; v.controls=true; div.appendChild(v); }
-    if(msg.type==='location'){ const a=document.createElement('a'); a.href=`https://www.google.com/maps?q=${msg.data.lat},${msg.data.lng}`; a.target='_blank'; a.innerText='📍 Shared Location'; div.appendChild(a); }
+    if(msg.type==='media'){
+      const mediaEl = document.createElement(msg.mediaType==='image'?'img':'video');
+      mediaEl.src = msg.data;
+      mediaEl.className='media';
+      if(msg.mediaType==='video') mediaEl.controls=true;
+      div.appendChild(mediaEl);
+    }
     const ts=document.createElement('div'); ts.className='timestamp'; ts.innerText=msg.time||formatTime();
     div.appendChild(ts);
-    messagesDiv.appendChild(div);
+    chatMessages.appendChild(div);
   });
-  messagesDiv.scrollTop=messagesDiv.scrollHeight;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Send message
-async function sendBluetoothMessage(msgObj){
-  const enc = new TextEncoder();
-  if(btCharacteristic){
-    await btCharacteristic.writeValue(enc.encode(JSON.stringify(msgObj)));
-  }
-}
+// --- Send text ---
+sendBtn.addEventListener('click', ()=>{
+  if(blockedUsers.includes(friend.name)){ alert('Cannot send to blocked user'); return; }
+  const text = input.value.trim(); if(!text) return;
+  const msg = {type:'text', data:text, sender:'me', time:formatTime()};
+  const messages = getChat(); messages.push(msg); saveChat(messages); sendBluetooth(msg);
+  input.value=''; loadChat();
+});
 
-input.addEventListener('keypress', async (e)=>{
-  if(e.key==='Enter'){
-    if(blockedUsers.includes(friend)){ alert('Cannot send to blocked user'); return; }
-    const text=input.value.trim(); if(!text) return;
-    const msgObj={type:'text',data:text,sender:'me',time:formatTime()};
-    const messages=getChat(); messages.push(msgObj); saveChat(messages); input.value=''; loadChat();
-    await sendBluetoothMessage(msgObj);
+// --- Plus button for media ---
+plusBtn.addEventListener('click', ()=>mediaInput.click());
+mediaInput.addEventListener('change', async e=>{
+  const files = Array.from(e.target.files);
+  for(let f of files){
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      const ext = f.type.split('/')[0];
+      const msg = {type:'media', mediaType: ext, data: evt.target.result, sender:'me', time:formatTime()};
+      const messages = getChat(); messages.push(msg); saveChat(messages); loadChat();
+      sendBluetooth(msg);
+    }
+    reader.readAsDataURL(f);
   }
 });
 
-// Attachment menu toggle
-sendBtn.addEventListener('click', ()=>attachmentMenu.style.display = attachmentMenu.style.display==='flex'?'none':'flex');
-
-function sendFile(callback){
-  const fileInput=document.createElement('input');
-  fileInput.type='file';
-  fileInput.onchange=e=>{
-    const file=e.target.files[0];
-    const reader=new FileReader();
-    reader.onload=async ()=>{
-      callback(file.name,reader.result);
-      attachmentMenu.style.display='none';
-    };
-    reader.readAsDataURL(file);
-  };
-  fileInput.click();
+// --- Bluetooth send/receive ---
+async function sendBluetooth(msg){
+  if(!btCharacteristic) await connectBluetooth();
+  const data = JSON.stringify(msg);
+  const encoder = new TextEncoder();
+  await btCharacteristic.writeValue(encoder.encode(data));
 }
 
-document.getElementById('sendFileBtn').addEventListener('click',()=>sendFile(async (name,data)=>{
-  const msgObj={type:'file',data,name,sender:'me',time:formatTime()};
-  const messages=getChat(); messages.push(msgObj); saveChat(messages); loadChat();
-  await sendBluetoothMessage(msgObj);
-}));
+function receiveData(event){
+  const decoder = new TextDecoder();
+  const data = decoder.decode(event.target.value);
+  const msg = JSON.parse(data);
+  const messages = getChat(); messages.push({...msg,sender:'friend'}); saveChat(messages); loadChat();
+}
 
-document.getElementById('takePhotoBtn').addEventListener('click',()=>sendFile(async (name,data)=>{
-  const msgObj={type:'image',data,sender:'me',time:formatTime()};
-  const messages=getChat(); messages.push(msgObj); saveChat(messages); loadChat();
-  await sendBluetoothMessage(msgObj);
-}));
-
-document.getElementById('choosePhotoBtn').addEventListener('click',()=>sendFile(async (name,data)=>{
-  const msgObj={type:'image',data,sender:'me',time:formatTime()};
-  const messages=getChat(); messages.push(msgObj); saveChat(messages); loadChat();
-  await sendBluetoothMessage(msgObj);
-}));
-
-document.getElementById('sendLocationBtn').addEventListener('click',()=>{ 
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(async pos=>{
-      const {latitude,longitude}=pos.coords;
-      const msgObj={type:'location',data:{lat:latitude,lng:longitude},sender:'me',time:formatTime()};
-      const messages=getChat(); messages.push(msgObj); saveChat(messages); loadChat();
-      await sendBluetoothMessage(msgObj);
-      attachmentMenu.style.display='none';
-    });
-  } else alert("Geolocation not supported");
+// --- Block user ---
+document.getElementById('blockBtn').addEventListener('click', ()=>{
+  blockedUsers.push(friend.name);
+  localStorage.setItem('blockedUsers', JSON.stringify(blockedUsers));
+  alert(`${friend.name} blocked!`);
+  window.location.href='blockuser.html';
 });
 
-// --- Block User ---
-document.getElementById('blockBtn').onclick=()=>{
-  blockedUsers.push(friend);
-  localStorage.setItem('blockedUsers',JSON.stringify(blockedUsers));
-  alert(`${friend} is now blocked`);
-  window.location.href=`blockuser.html?friend=${friend}`;
-};
-
-// Initialize
+// --- Initialize ---
 loadChat();
-connectBluetooth();
 </script>
 </body>
 </html>
