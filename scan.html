@@ -28,28 +28,37 @@ qrCodeReader.start(
   { facingMode: "environment" },
   { fps:10, qrbox:250 },
   (decodedText) => {
-    if(decodedText.startsWith("FRIEND:")){
-      const friendName = decodedText.replace("FRIEND:", "").trim();
-      messageDiv.style.color = "green";
-      messageDiv.innerText = "Friend found! Adding...";
+    try {
+      // Expect JSON data like: {"name":"Mimah","profile":"mimah.png"}
+      const friendData = JSON.parse(decodedText);
 
-      // Add friend to localStorage with profile
-      let friends = JSON.parse(localStorage.getItem('friends') || '[]');
-      if(!friends.some(f => f.name === friendName)){
-        const newFriend = {name: friendName, profile: defaultProfile};
-        friends.push(newFriend);
-        localStorage.setItem('friends', JSON.stringify(friends));
+      if(friendData.name){
+        messageDiv.style.color = "green";
+        messageDiv.innerText = "Friend found! Adding...";
 
-        // Send full friend object, not just name
-        channel.postMessage({type:'addFriend', friend: newFriend});
+        // Add friend to localStorage
+        let friends = JSON.parse(localStorage.getItem('friends') || '[]');
+        if(!friends.some(f => f.name === friendData.name)){
+          // if no profile provided, fallback to default
+          if(!friendData.profile) friendData.profile = defaultProfile;
+
+          friends.push(friendData);
+          localStorage.setItem('friends', JSON.stringify(friends));
+
+          // Send full friend object to home
+          channel.postMessage({type:'addFriend', friend: friendData});
+        }
+
+        qrCodeReader.stop().then(() => {
+          messageDiv.innerText = `Friend "${friendData.name}" added!`;
+        });
+      } else {
+        messageDiv.style.color = "red";
+        messageDiv.innerText = "Invalid QR code (missing name)";
       }
-
-      qrCodeReader.stop().then(() => {
-        messageDiv.innerText = "Friend added!";
-      });
-    } else {
+    } catch(e){
       messageDiv.style.color = "red";
-      messageDiv.innerText = "Invalid QR code";
+      messageDiv.innerText = "Invalid QR code format";
     }
   },
   (err) => { console.log(err); }
