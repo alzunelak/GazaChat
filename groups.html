@@ -46,7 +46,7 @@ function renderGroups(){
     div.className="group";
     div.onclick = ()=>{ // go to chat
       localStorage.setItem("currentGroupIndex", index);
-      window.location="groupChat.html";
+      window.location="group-chat.html";
     };
     const latestMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
     div.innerHTML = `
