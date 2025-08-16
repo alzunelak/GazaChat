@@ -24,29 +24,32 @@ button { cursor:pointer; }
 <div id="groupsList"></div>
 
 <script>
+// Friends & groups from localStorage
 const friends = JSON.parse(localStorage.getItem('friends')||'[]');
 let groups = JSON.parse(localStorage.getItem('groups')||'[]');
-
 function saveGroups(){ localStorage.setItem('groups', JSON.stringify(groups)); }
 
+// Render existing groups
 function renderGroups(){
   const list = document.getElementById('groupsList');
   list.innerHTML='';
-  if(groups.length===0){
-    list.innerHTML='<p>No groups yet</p>';
-    return;
-  }
+  if(groups.length===0){ list.innerHTML='<p>No groups yet</p>'; return; }
+
   groups.forEach((g, idx)=>{
     const div = document.createElement('div');
     div.className='group';
     div.innerHTML=`<span class="group-name">${g.name}</span>
       <button class="delete-btn">Delete</button>`;
+
+    // Click group to open chat
     div.onclick = e=>{
       if(!e.target.classList.contains('delete-btn')){
         localStorage.setItem('currentGroup', JSON.stringify(g));
         window.location.href='group-chat.html';
       }
     };
+
+    // Delete group
     div.querySelector('.delete-btn').onclick = ()=>{
       if(confirm(`Delete group "${g.name}"?`)){
         groups.splice(idx,1);
@@ -54,6 +57,7 @@ function renderGroups(){
         renderGroups();
       }
     };
+
     list.appendChild(div);
   });
 }
@@ -62,18 +66,23 @@ renderGroups();
 // Create group
 document.getElementById('createGroupBtn').addEventListener('click', ()=>{
   if(friends.length===0){ alert('Add friends first'); return; }
+
   const name = prompt('Enter group name:');
   if(!name) return;
-  const selected = prompt('Enter friend names separated by comma to invite:\nAvailable: '+friends.join(','));
-  if(!selected) return;
-  const members = selected.split(',').map(f=>f.trim()).filter(f=>friends.includes(f));
+
+  // Select members (multiple)
+  const memberSelection = prompt('Enter friend names separated by comma:\nAvailable: '+friends.map(f=>f.name).join(','));
+  if(!memberSelection) return;
+  const members = memberSelection.split(',').map(f=>f.trim()).filter(f=>friends.some(fr=>fr.name===f));
   if(members.length===0){ alert('No valid members selected'); return; }
-  const group = {id:'group_'+Date.now(), name, members, messages:[]};
+
+  const group = {id:'group_'+Date.now(), name, members};
   groups.push(group);
   saveGroups();
   renderGroups();
-  alert('Group created! Members need to accept invitation.');
+  alert('Group created! Click group to chat.');
 });
 </script>
+
 </body>
 </html>
