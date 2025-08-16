@@ -18,7 +18,7 @@ header img{width:60px;height:60px;border-radius:50%;display:block;margin:0 auto;
 .message.self{background:#dcf8c6;align-self:flex-end;}
 .message img{width:30px;height:30px;border-radius:50%;margin-right:5px;}
 #inputArea{display:flex;padding:5px;gap:5px;background:white;align-items:center;position:relative;}
-#msgInput{flex:1;padding:8px;border-radius:20px;border:1px solid #ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#msgInput{flex:1;padding:8px;border-radius:20px;border:1px solid #ccc;}
 #sendBtn{padding:8px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
 .callButtons{display:flex;gap:5px;}
 #filePopup{display:none;position:absolute;bottom:50px;left:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
@@ -59,114 +59,62 @@ header img{width:60px;height:60px;border-radius:50%;display:block;margin:0 auto;
 <input type="file" id="photoInput" style="display:none" accept="image/*">
 
 <script>
-let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+let groups = JSON.parse(localStorage.getItem("groups")||"[]");
 let index = localStorage.getItem("currentGroupIndex");
 let group = groups[index];
 
-// Display group name/photo
-const groupNameEl = document.getElementById("groupName");
-const groupPhotoEl = document.getElementById("groupPhoto");
-const membersEl = document.getElementById("members");
-groupNameEl.innerText = group.name;
-groupPhotoEl.src = group.photo || "group.png";
+// Elements
+const groupNameEl=document.getElementById("groupName");
+const groupPhotoEl=document.getElementById("groupPhoto");
+const membersEl=document.getElementById("members");
+const chatBox=document.getElementById("chatBox");
+const pendingDiv=document.getElementById("pendingInvites");
 
-// Change group photo/name (members can change)
-groupPhotoEl.onclick = changePhoto;
-groupNameEl.onclick = changeName;
-function changePhoto(){
-  const input = document.getElementById("photoInput");
-  input.click();
-  input.onchange = function(e){
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      group.photo = ev.target.result;
-      groupPhotoEl.src = group.photo;
-      save();
-    }
-    reader.readAsDataURL(file);
-  }
-}
-function changeName(){
-  const newName = prompt("Enter new group name:", group.name);
-  if(newName){ group.name = newName; groupNameEl.innerText = newName; save(); }
-}
+// Display group info
+groupNameEl.innerText=group.name;
+groupPhotoEl.src=group.photo||"group.png";
+groupPhotoEl.onclick=changePhoto;
+groupNameEl.onclick=changeName;
+document.getElementById("deleteGroupBtn").style.display = group.admin==="You"?"block":"none";
+document.getElementById("deleteGroupBtn").onclick=()=>{ if(confirm("Delete?")){ groups.splice(index,1); localStorage.setItem("groups",JSON.stringify(groups)); window.location="groups.html"; }}
 
-// Delete group (admin only)
-const deleteBtn = document.getElementById("deleteGroupBtn");
-deleteBtn.style.display = group.admin==="You"?"block":"none";
-deleteBtn.onclick = ()=>{
-  if(confirm("Delete this group?")){ groups.splice(index,1); localStorage.setItem("groups", JSON.stringify(groups)); window.location="groups.html"; }
-}
-
-// Render members
-function renderMembers(){
-  membersEl.innerHTML = "";
-  group.members.filter(m=>m.accepted).forEach(m=>{ membersEl.innerHTML += `<div>${m.name}</div>`; });
-}
+// Members
+function renderMembers(){ membersEl.innerHTML=""; group.members.filter(m=>m.accepted).forEach(m=>{ membersEl.innerHTML+=`<div>${m.name}</div>`; }); }
 renderMembers();
 
 // Pending invites
-const pendingDiv = document.getElementById("pendingInvites");
-function renderPending(){
-  pendingDiv.innerHTML = "";
-  group.pending.forEach((p,i)=>{
-    pendingDiv.innerHTML += `<span>${p} <button onclick="acceptInvite(${i})">✔</button><button onclick="rejectInvite(${i})">✖</button></span>`;
-  });
-}
-renderPending();
-function acceptInvite(i){ const member = group.pending[i]; group.members.push({name:member, accepted:true}); group.pending.splice(i,1); save(); renderMembers(); renderPending(); }
+function renderPending(){ pendingDiv.innerHTML=""; group.pending.forEach((p,i)=>{ pendingDiv.innerHTML+=`<span>${p} <button onclick="acceptInvite(${i})">✔</button><button onclick="rejectInvite(${i})">✖</button></span>`; }); }
+function acceptInvite(i){ group.members.push({name:group.pending[i],accepted:true}); group.pending.splice(i,1); save(); renderMembers(); renderPending(); }
 function rejectInvite(i){ group.pending.splice(i,1); save(); renderPending(); }
+renderPending();
 
 // Messages
-const chatBox = document.getElementById("chatBox");
-function renderMessages(){
-  chatBox.innerHTML = "";
-  group.messages.forEach(m=>{
-    if(group.blocked.includes(m.sender)) return;
-    const div = document.createElement("div");
-    div.className="message"+(m.sender==="You"?" self":"");
-    if(m.type==="photo") div.innerHTML=`<img src="${m.content}" style="max-width:100px"><strong>${m.sender}</strong>`;
-    else if(m.type==="video") div.innerHTML=`<video src="${m.content}" controls style="max-width:150px"></video><strong>${m.sender}</strong>`;
-    else div.innerHTML=`<strong>${m.sender}:</strong> ${m.text || ""}`;
-    chatBox.appendChild(div);
-  });
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+function renderMessages(){ chatBox.innerHTML=""; group.messages.forEach(m=>{ if(group.blocked.includes(m.sender)) return; let div=document.createElement("div"); div.className="message"+(m.sender==="You"?" self":""); if(m.type==="photo") div.innerHTML=`<img src="${m.content}" style="max-width:100px"><strong>${m.sender}</strong>`; else if(m.type==="video") div.innerHTML=`<video src="${m.content}" controls style="max-width:150px"></video><strong>${m.sender}</strong>`; else div.innerHTML=`<strong>${m.sender}:</strong> ${m.text||""}`; chatBox.appendChild(div); }); chatBox.scrollTop=chatBox.scrollHeight; }
 renderMessages();
 
 // Send message
-function sendMessage(){
-  const input = document.getElementById("msgInput");
-  const text = input.value.trim();
-  if(!text) return;
-  if(group.blocked.includes("You")){ alert("You are blocked!"); return; }
-  group.messages.push({sender:"You", type:"text", text});
-  input.value="";
-  group.unread = true;
-  save();
-  renderMessages();
-}
+function sendMessage(){ const input=document.getElementById("msgInput"); const text=input.value.trim(); if(!text) return; if(group.blocked.includes("You")){ alert("You are blocked!"); return; } group.messages.push({sender:"You",type:"text",text}); input.value=""; group.unread=true; save(); renderMessages(); }
 
 // File popup
-function toggleFilePopup(){ const popup=document.getElementById("filePopup"); popup.style.display=popup.style.display==="none"?"block":"none"; }
-function sendFile(){ const content=prompt("Enter file description or URL"); if(content){ group.messages.push({sender:"You", type:"file", content}); save(); renderMessages(); toggleFilePopup(); } }
-function sendPhoto(){ const input=document.createElement("input"); input.type="file"; input.accept="image/*"; input.onchange=function(e){ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(ev){ group.messages.push({sender:"You", type:"photo", content:ev.target.result}); save(); renderMessages(); } reader.readAsDataURL(file); } input.click(); }
-function sendVideo(){ const input=document.createElement("input"); input.type="file"; input.accept="video/*"; input.onchange=function(e){ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(ev){ group.messages.push({sender:"You", type:"video", content:ev.target.result}); save(); renderMessages(); } reader.readAsDataURL(file); } input.click(); }
-function sendLocation(){ const loc=prompt("Enter location URL/text"); if(loc){ group.messages.push({sender:"You", type:"location", text:loc}); save(); renderMessages(); } }
+function toggleFilePopup(){ const p=document.getElementById("filePopup"); p.style.display=p.style.display==="none"?"block":"none"; }
+function sendFile(){ const content=prompt("Enter file URL/description"); if(content){ group.messages.push({sender:"You",type:"file",content}); save(); renderMessages(); toggleFilePopup(); } }
+function sendPhoto(){ const input=document.createElement("input"); input.type="file"; input.accept="image/*"; input.onchange=function(e){ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(ev){ group.messages.push({sender:"You",type:"photo",content:ev.target.result}); save(); renderMessages(); } reader.readAsDataURL(file); } input.click(); }
+function sendVideo(){ const input=document.createElement("input"); input.type="file"; input.accept="video/*"; input.onchange=function(e){ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(ev){ group.messages.push({sender:"You",type:"video",content:ev.target.result}); save(); renderMessages(); } reader.readAsDataURL(file); } input.click(); }
+function sendLocation(){ const loc=prompt("Enter location"); if(loc){ group.messages.push({sender:"You",type:"location",text:loc}); save(); renderMessages(); } }
 
-// Calls placeholders
-function startAudioCall(){ alert("Audio call placeholder"); }
-function startVideoCall(){ alert("Video call placeholder"); }
+// Calls placeholder
+function startAudioCall(){ alert("Audio call"); }
+function startVideoCall(){ alert("Video call"); }
 
-// Add member button
-document.getElementById("addMemberBtn").onclick=()=>{
-  const name=prompt("Enter friend name to add:");
-  if(name){ group.pending.push(name); save(); renderPending(); alert(name+" added as pending."); }
-}
+// Add member
+document.getElementById("addMemberBtn").onclick=()=>{ const name=prompt("Friend name"); if(name){ group.pending.push(name); save(); renderPending(); alert(name+" added as pending"); }}
+
+// Change name/photo
+function changePhoto(){ const input=document.getElementById("photoInput"); input.click(); input.onchange=function(e){ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(ev){ group.photo=ev.target.result; groupPhotoEl.src=group.photo; save(); } reader.readAsDataURL(file); } }
+function changeName(){ const n=prompt("New group name",group.name); if(n){ group.name=n; groupNameEl.innerText=n; save(); }}
 
 // Save group
-function save(){ groups[index] = group; localStorage.setItem("groups", JSON.stringify(groups)); }
+function save(){ groups[index]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
 
 group.unread=false; save();
 </script>
