@@ -22,6 +22,7 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
 .chat-input {display:flex;padding:10px;background:#f0f0f0;align-items:center;position:sticky;bottom:0;z-index:10;}
 .chat-input input {flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
 .chat-input button {padding:0 12px;border:none;background:#25D366;color:white;border-radius:50%;font-size:22px;cursor:pointer;margin-left:5px;}
+.preview{max-width:200px;border-radius:10px;margin-top:5px;}
 </style>
 </head>
 <body>
@@ -47,12 +48,12 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
-// --- User Profile from localStorage ---
+// --- User Profile ---
 const myName = localStorage.getItem("username") || "Me";
 const myPic = localStorage.getItem("profilePic") || "default-profile.png";
 const myId  = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
 
-// --- Friend info (from URL) ---
+// --- Friend Info from URL ---
 const params = new URLSearchParams(window.location.search);
 const friend = params.get('friend') ? decodeURIComponent(params.get('friend')) : 'John Doe';
 const profile = params.get('profile') ? decodeURIComponent(params.get('profile')) : 'default-profile.png';
@@ -60,7 +61,10 @@ document.getElementById('friendName').innerText = friend;
 document.getElementById('friendProfile').src = profile;
 
 // --- Socket.IO connection ---
-const socket = io("http://localhost:3000"); // change to your server URL
+const socket = io("http://localhost:3000");
+
+// --- Register on server ---
+socket.emit("register", myName);
 
 // --- Chat Storage ---
 function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
@@ -82,11 +86,9 @@ function loadChat(){
       container.appendChild(img);
     }
 
-    // message bubble
     const div = document.createElement('div');
     div.className='message';
 
-    // show sender name (for received)
     if(msg.senderId !== myId){
       div.innerHTML = `<strong>${msg.senderName}</strong><br>`;
     }
@@ -96,7 +98,6 @@ function loadChat(){
     else if(msg.type==='video'){ div.innerHTML += `<video src="${msg.data}" class="preview" controls></video>`; }
     else if(msg.type==='file'){ div.innerHTML += `📄 <a href="${msg.data}" download>Download File</a>`; }
 
-    // timestamp
     const ts = document.createElement('div');
     ts.className='timestamp';
     ts.innerText = msg.time;
@@ -122,24 +123,35 @@ function sendMessage(){
     senderId: myId,
     senderName: myName,
     profile: myPic,
+    recipient: friend,
     type: "text",
     text: text,
     time: formatTime()
   };
 
-  socket.emit("chat message", msg);
-  input.value = "";
-}
-
-// --- Receive Message ---
-socket.on("chat message", (msg) => {
+  // save locally and display immediately
   const messages = getChat();
   messages.push(msg);
   saveChat(messages);
   loadChat();
+
+  // send private to server
+  socket.emit("private message", msg);
+  input.value = "";
+}
+
+// --- Receive Private Message ---
+socket.on("private message", (msg)=>{
+  // only display if it's from the friend
+  if(msg.senderName === friend || msg.senderId === myId){
+    const messages = getChat();
+    messages.push(msg);
+    saveChat(messages);
+    loadChat();
+  }
 });
 
-// --- Initial load ---
+// --- Initial Load ---
 loadChat();
 </script>
 </body>
