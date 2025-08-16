@@ -1,42 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat App</title>
-<style>
-  body {
-    margin:0;
-    padding:0;
-    background:#25d366;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    font-family: Arial, sans-serif;
-    color:#fff;
-    height:100vh;
-    text-align:center;
-  }
-  img { width:150px; height:150px; margin-bottom:20px; border-radius:20px; }
-  h1 { font-size:32px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App</title>
+
+  <!-- Link to PWA manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Optional theme color for browser -->
+  <meta name="theme-color" content="#3b82f6">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #25d366;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      height: 100vh;
+      text-align: center;
+    }
+    img { 
+      width: 150px; 
+      height: 150px; 
+      margin-bottom: 20px; 
+      border-radius: 20px; 
+    }
+    h1 { 
+      font-size: 32px; 
+    }
+  </style>
 </head>
 <body>
   <img src="logo.png" alt="App Logo">
   <h1>My Chat App</h1>
 
   <script>
-    // Go to profile page after 2 seconds
+    // Redirect to profile page after 2 seconds
     setTimeout(() => {
       window.location.href = "profile.html";
     }, 2000);
 
-    // Register service worker
+    // Register service worker for offline caching
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch(err => console.error('Service Worker registration failed', err));
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Service Worker registered:', reg.scope))
+          .catch(err => console.error('Service Worker registration failed', err));
+      });
     }
   </script>
 </body>
