@@ -66,9 +66,24 @@ document.getElementById("groupName").onclick = ()=>{
   const newName = prompt("Enter new group name:", group.name);
   if(newName) { group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName;}
 };
-document.getElementById("groupPhoto").onclick = ()=>{
-  const newPhoto = prompt("Enter new group photo URL:", group.photo);
-  if(newPhoto) { group.photo=newPhoto; saveGroup(); document.getElementById("groupPhoto").src=newPhoto;}
+
+  document.getElementById("groupPhoto").onclick = ()=>{
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = event => {
+        group.photo = event.target.result;
+        saveGroup();
+        document.getElementById("groupPhoto").src = group.photo;
+      }
+      reader.readAsDataURL(file);
+    }
+  };
+  fileInput.click();
 };
 
 // Render members
