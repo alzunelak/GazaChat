@@ -50,7 +50,7 @@ function renderGroups(){
       g.lastRead = new Date().toISOString();
       groups[index] = g;
       localStorage.setItem("allGroups", JSON.stringify(groups));
-      window.location="groupChat.html";
+      window.location="group-chat.html";
     };
     const latestMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
     div.innerHTML = `
