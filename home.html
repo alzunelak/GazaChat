@@ -6,15 +6,25 @@
 <title>ChatApp Home</title>
 <style>
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-.header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+.header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); position:relative; }
 .profile { display:flex; align-items:center; }
 .profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; }
 .profile-name { font-weight:bold; font-size:16px; }
 .three-dots { font-size:24px; cursor:pointer; position:relative; }
 .main-content { padding:20px; min-height:70vh; }
+.no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
+.tabs { display:flex; justify-content:space-around; padding:10px 0; background:#fff; position:fixed; bottom:0; width:100%; border-top:1px solid #ccc; }
+.tabs div { font-weight:bold; cursor:pointer; }
+.add-button-container { position:fixed; bottom:60px; right:20px; z-index:100; }
+#addBtn { width:60px; height:60px; border-radius:50%; font-size:32px; cursor:pointer; background-color:#4CAF50; color:white; border:none; }
+.popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:5px 0; text-align:left; min-width:140px; }
+.popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
+.popup-options a:hover { background:#f0f0f0; }
+#qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
+#qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
 .friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; }
 .friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; }
-/* Three-dots menu */
+/* Three-dots dropdown style */
 .three-dots-menu {
   position:absolute;
   top:45px;
@@ -35,21 +45,6 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
   font-weight:500;
 }
 .three-dots-menu a:hover { background:#f0f0f0; }
-
-/* Floating + button */
-.add-button-container { position:fixed; bottom:80px; right:20px; z-index:100; }
-#addBtn { width:60px; height:60px; border-radius:50%; font-size:32px; cursor:pointer; background-color:#4CAF50; color:white; border:none; }
-.popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:5px 0; text-align:left; min-width:140px; }
-.popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
-.popup-options a:hover { background:#f0f0f0; }
-
-/* QR Container */
-#qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
-#qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
-
-/* Tabs */
-.tabs { display:flex; justify-content:space-around; padding:10px 0; background:#fff; position:fixed; bottom:0; width:100%; border-top:1px solid #ccc; }
-.tabs div { font-weight:bold; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -69,16 +64,9 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 </div>
 
 <div class="main-content" id="mainContent">
-  <div class="no-msg">No friends yet.<br>Click + to add friends.</div>
-</div>
-
-<!-- QR and Add Friend -->
-<div class="add-button-container">
-  <button id="addBtn">+</button>
-  <div id="popupOptions" class="popup-options">
-    <a href="#" id="showQRCode">My Code</a>
-    <a href="scan.html">Scan Code</a>
-    <a href="search.html">Search Friend</a>
+  <div class="no-msg">
+    No messages yet<br>
+    Add a friend using the + button
   </div>
 </div>
 
@@ -88,18 +76,63 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
   <p>Your QR Code</p>
 </div>
 
-<!-- Tabs -->
+<div class="add-button-container">
+  <button id="addBtn">+</button>
+  <div id="popupOptions" class="popup-options">
+    <a href="#" id="showQRCode">My Code</a>
+    <a href="scan.html">Scan Code</a>
+    <a href="search.html">Search Friend</a>
+  </div>
+</div>
+
 <div class="tabs">
   <div id="tabChat">Chat</div>
-  <div id="tabGroup">Group</div>
-  <div id="tabCall">Call</div>
+  <a href="groups.html"><div>Group</div></a>
+  <a href="calls.html"><div>Call</div></a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 <script>
 // --- Profile setup ---
-document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
-document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
+  document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+});
+
+// --- Floating + button ---
+const addBtn = document.getElementById('addBtn');
+const popupOptions = document.getElementById('popupOptions');
+addBtn.addEventListener('click', () => {
+  popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block';
+});
+document.addEventListener('click', e => {
+  if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display = 'none';
+});
+
+// --- QR popup ---
+const showQRCodeLink = document.getElementById('showQRCode');
+const qrContainer = document.getElementById('qrContainer');
+const noMsg = document.querySelector('.no-msg');
+const closeQR = document.getElementById('closeQR');
+let qrGenerated = false;
+const savedName = localStorage.getItem('username') || 'User';
+const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
+
+showQRCodeLink.addEventListener('click', e => {
+  e.preventDefault();
+  qrContainer.style.display = 'block';
+  noMsg.style.display = 'none';
+  if(!qrGenerated){
+    const qrData = JSON.stringify({name: savedName, profile: profilePic});
+    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    qrGenerated = true;
+  }
+});
+
+closeQR.addEventListener('click', () => {
+  qrContainer.style.display='none';
+  noMsg.style.display='block';
+});
 
 // --- Friends management ---
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
@@ -113,67 +146,32 @@ function addFriend(friend){
   }
 }
 
+// --- Real-time updates using BroadcastChannel ---
+const channel = new BroadcastChannel('chatapp');
+channel.onmessage = (e) => {
+  if(e.data.type === 'addFriend') addFriend(e.data.friend);
+}
+
 // --- Render friends ---
-async function renderFriends(){
+function renderFriends(){
   const mainContent = document.getElementById('mainContent');
   const friends = getFriends();
   mainContent.innerHTML = '';
   if(friends.length===0){
-    mainContent.innerHTML = `<div class="no-msg">No friends yet.<br>Click + to add friends.</div>`;
+    mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
   } else {
     friends.forEach(f => {
       const div = document.createElement('div');
       div.className='friend';
       div.innerHTML = `<img src="${f.profile}"><span>${f.name}</span>`;
-      div.onclick = async () => {
-        // Save current chat info
-        localStorage.setItem('currentChat', JSON.stringify(f));
-        // Bluetooth connection attempt
-        try {
-          const device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
-            optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
-          });
-          localStorage.setItem('btDeviceName', device.name || f.name);
-          window.location.href='chat.html';
-        } catch(err) {
-          alert('Bluetooth connection failed: ' + err);
-        }
+      div.onclick = () => {
+        localStorage.setItem('currentChat', f.name);
+        window.location.href = 'chat.html';
       };
       mainContent.appendChild(div);
     });
   }
 }
-
-// --- Floating + button ---
-const addBtn = document.getElementById('addBtn');
-const popupOptions = document.getElementById('popupOptions');
-addBtn.addEventListener('click', () => {
-  popupOptions.style.display = popupOptions.style.display==='block'?'none':'block';
-});
-document.addEventListener('click', e => {
-  if(!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display='none';
-});
-
-// --- QR popup ---
-const showQRCodeLink = document.getElementById('showQRCode');
-const qrContainer = document.getElementById('qrContainer');
-const closeQR = document.getElementById('closeQR');
-let qrGenerated = false;
-const savedName = localStorage.getItem('username') || 'User';
-const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
-
-showQRCodeLink.addEventListener('click', e => {
-  e.preventDefault();
-  qrContainer.style.display = 'block';
-  if(!qrGenerated){
-    const qrData = JSON.stringify({name: savedName, profile: profilePic});
-    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
-    qrGenerated = true;
-  }
-});
-
-closeQR.addEventListener('click', () => qrContainer.style.display='none');
 
 // --- Three-dots menu ---
 const threeDots = document.querySelector('.three-dots');
@@ -183,14 +181,12 @@ threeDots.addEventListener('click', e => {
   e.stopPropagation();
   threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block';
 });
-document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
 
-// --- Tabs actions ---
-document.getElementById('tabChat').onclick = () => { renderFriends(); };
-document.getElementById('tabGroup').onclick = () => { window.location.href='groups.html'; };
-document.getElementById('tabCall').onclick = () => { window.location.href='calls.html'; };
+document.addEventListener('click', () => {
+  threeDotsMenu.style.display = 'none';
+});
 
-// --- Initialize ---
+// Render friends on page load
 document.addEventListener('DOMContentLoaded', renderFriends);
 </script>
 </body>
