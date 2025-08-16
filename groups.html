@@ -7,7 +7,7 @@
 <style>
 body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
 .group{display:flex;align-items:center;background:white;padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;position:relative;}
-.group img{width:50px;height:50px;border-radius:50%;margin-right:10px;}
+.group img{width:50px;height:50px;border-radius:50%;margin-right:10px;object-fit:cover;}
 .group .info{flex:1;}
 .group .info h3{margin:0;font-size:16px;}
 .group .info p{margin:0;font-size:12px;color:gray;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -26,9 +26,8 @@ body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
 
 <div id="newGroupPopup">
   <h3>New Group</h3>
-  <input type="text" id="newGroupName" placeholder="Group Name">
-  <input type="text" id="newGroupImg" placeholder="Profile Image URL (optional)">
-  <br>
+  <input type="text" id="newGroupName" placeholder="Group Name"><br>
+  <input type="file" id="newGroupPhoto" accept="image/*"><br>
   <button onclick="createGroup()">Create</button>
   <button onclick="closeNewGroupPopup()">Cancel</button>
 </div>
@@ -82,9 +81,22 @@ function closeNewGroupPopup(){ newGroupPopup.style.display="none"; }
 function createGroup(){
   const name = document.getElementById("newGroupName").value.trim();
   if(!name) { alert("Enter a group name!"); return; }
-  const img = document.getElementById("newGroupImg").value.trim();
+
+  const fileInput = document.getElementById("newGroupPhoto");
+  if(fileInput.files && fileInput.files[0]){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      saveGroup(name, e.target.result); // base64 image
+    }
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    saveGroup(name, "group.png"); // fallback
+  }
+}
+
+function saveGroup(name, img){
   const newGroup = {
-    name, img: img || "group.png",
+    name, img,
     admin: "You",
     members:[{name:"You", accepted:true}],
     blocked:[],
@@ -96,7 +108,7 @@ function createGroup(){
   renderGroups();
   closeNewGroupPopup();
   document.getElementById("newGroupName").value="";
-  document.getElementById("newGroupImg").value="";
+  document.getElementById("newGroupPhoto").value="";
 }
 
 renderGroups();
