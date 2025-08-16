@@ -3,57 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blocked User</title>
+<title>Blocked Users</title>
 <style>
-body{font-family:Arial;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#f5f5f5;}
-.block-container{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);text-align:center;}
-.block-container img{width:80px;height:80px;border-radius:50%;margin-bottom:10px;}
-button{padding:10px 20px;background:#075E54;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:15px;}
+body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
+h2{text-align:center;}
+.block-list{margin-top:20px;}
+.block-item{background:white;padding:10px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+.block-item img{width:50px;height:50px;border-radius:50%;margin-right:10px;}
+button{padding:5px 10px;background:#075E54;color:white;border:none;border-radius:5px;cursor:pointer;}
 </style>
 </head>
 <body>
-
-<div class="block-container" id="blockContainer">
-  <img id="blockedProfile" src="">
-  <h2 id="blockedName">Blocked User</h2>
-  <p id="blockMsg">You have blocked this user. You won't be able to send or receive messages until you unblock them.</p>
-  <button id="unblockBtn">Unblock User</button>
-</div>
+<h2>Blocked Users</h2>
+<div class="block-list" id="blockList">No users blocked</div>
 
 <script>
-// Get blocked friend info from URL
-const params = new URLSearchParams(window.location.search);
-let friend = params.get('friend');
-
-// Fetch blocked users list
 let blockedUsers = JSON.parse(localStorage.getItem('blockedUsers')||'[]');
-const blockContainer = document.getElementById('blockContainer');
 
-if(friend && blockedUsers.includes(friend)){
-  // Show blocked user
-  document.getElementById('blockedName').innerText = friend;
-  document.getElementById('blockedProfile').src = params.get('profile') || '';
-  document.getElementById('blockMsg').innerText = 
-    "You have blocked this user. Messages will not be visible until you unblock them.";
-  
-  // Optionally clear chat for blocked user
-  localStorage.removeItem(`chat_${friend}`);
-} else if(blockedUsers.length === 0){
-  // No user blocked
-  blockContainer.innerHTML = "<h2>No user blocked</h2><p>You haven't blocked anyone.</p>";
-} else {
-  // There are blocked users but URL friend param not set
-  blockContainer.innerHTML = "<h2>Blocked Users</h2><p>You have blocked some users. Open chat to see who.</p>";
+function renderBlocked(){
+  const listDiv = document.getElementById('blockList');
+  listDiv.innerHTML='';
+  if(blockedUsers.length === 0){
+    listDiv.innerText = 'No users blocked';
+    return;
+  }
+  blockedUsers.forEach((friend,index)=>{
+    const div = document.createElement('div');
+    div.className='block-item';
+    div.innerHTML = `<span>${friend}</span> <button>Unblock</button>`;
+    div.querySelector('button').addEventListener('click', ()=>{
+      blockedUsers.splice(index,1);
+      localStorage.setItem('blockedUsers', JSON.stringify(blockedUsers));
+      renderBlocked();
+      alert(`${friend} is unblocked!`);
+    });
+    listDiv.appendChild(div);
+  });
 }
 
-// Unblock function
-document.getElementById('unblockBtn')?.addEventListener('click', ()=>{
-  blockedUsers = blockedUsers.filter(u => u !== friend);
-  localStorage.setItem('blockedUsers', JSON.stringify(blockedUsers));
-  alert(`${friend} is unblocked!`);
-  window.location.href = `chat.html?friend=${friend}&profile=${params.get('profile')||''}`;
-});
+renderBlocked();
 </script>
-
 </body>
 </html>
