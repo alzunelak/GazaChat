@@ -64,26 +64,27 @@ header #addMember{position:absolute;right:10px;top:10px;font-size:24px;cursor:po
 </div>
 
 <script>
-
-  // Load current group by index
+// Get current group by index
 let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "0");
 let allGroups = JSON.parse(localStorage.getItem("allGroups") || "[]");
-let currentGroup = allGroups[currentGroupIndex];
+let currentGroup = allGroups[currentGroupIndex] || {};
 
-// Reset unread on opening
+// Update header info
+document.getElementById("groupName").innerText = currentGroup.name || "Group Name";
+document.getElementById("groupPhoto").src = currentGroup.img || "group.png";
+
+// Mark as read
 currentGroup.lastRead = new Date().toISOString();
 allGroups[currentGroupIndex] = currentGroup;
 localStorage.setItem("allGroups", JSON.stringify(allGroups));
 
 const myName = "You";
-let currentGroup = JSON.parse(localStorage.getItem("groupData") || "{}");
 
-// Load group info
-document.getElementById("groupName").innerText = currentGroup.name || "Group";
-document.getElementById("groupPhoto").src = currentGroup.img || "group.png";
-
-// Save group
-function saveGroup(){ localStorage.setItem("groupData", JSON.stringify(currentGroup)); }
+// Save group changes
+function saveGroup(){ 
+  allGroups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("allGroups", JSON.stringify(allGroups));
+}
 
 // Render members
 function renderMembers(){
@@ -92,14 +93,10 @@ function renderMembers(){
   currentGroup.members.filter(m => m.accepted).forEach(m => {
     const div = document.createElement("div");
     div.innerHTML = `<strong>${m.name}</strong>`;
-
-    // Admin can block/unblock
     if(currentGroup.admin === myName && m.name !== myName){
       const blockSpan = document.createElement("span");
       blockSpan.innerText = currentGroup.blocked.includes(m.name) ? "🔓" : "🚫";
       blockSpan.title = currentGroup.blocked.includes(m.name) ? "Unblock" : "Block";
-      blockSpan.style.marginLeft="5px";
-      blockSpan.style.cursor="pointer";
       blockSpan.onclick = ()=>{ toggleBlock(m.name); };
       div.appendChild(blockSpan);
     }
@@ -112,8 +109,7 @@ function renderPendingRequests(){
   const pendingDiv = document.getElementById("pendingRequests");
   pendingDiv.innerHTML = "";
   if(currentGroup.admin !== myName) return;
-
-  currentGroup.members.filter(m => !m.accepted).forEach(m => {
+  currentGroup.members.filter(m => !m.accepted).forEach(m=>{
     const div = document.createElement("div");
     div.innerHTML = `<strong>${m.name}</strong>`;
     const acceptBtn = document.createElement("span"); acceptBtn.innerText="✅"; acceptBtn.title="Accept";
@@ -125,32 +121,23 @@ function renderPendingRequests(){
   });
 }
 
-// Accept/Reject
-function acceptRequest(name){
-  currentGroup.members.find(m=>m.name===name).accepted = true;
-  saveGroup(); renderMembers(); renderPendingRequests();
-}
-
-function rejectRequest(name){
-  currentGroup.members = currentGroup.members.filter(m=>m.name!==name);
-  saveGroup(); renderMembers(); renderPendingRequests();
-}
+// Accept/Reject requests
+function acceptRequest(name){ currentGroup.members.find(m=>m.name===name).accepted=true; saveGroup(); renderMembers(); renderPendingRequests(); }
+function rejectRequest(name){ currentGroup.members=currentGroup.members.filter(m=>m.name!==name); saveGroup(); renderMembers(); renderPendingRequests(); }
 
 // Block/unblock
 function toggleBlock(name){
   if(currentGroup.admin !== myName) return;
-  if(currentGroup.blocked.includes(name)){
-    currentGroup.blocked = currentGroup.blocked.filter(u=>u!==name);
-  } else currentGroup.blocked.push(name);
+  if(currentGroup.blocked.includes(name)) currentGroup.blocked=currentGroup.blocked.filter(u=>u!==name);
+  else currentGroup.blocked.push(name);
   saveGroup(); renderMembers(); renderMessages();
 }
 
-// Add friend request (appears in pending for admin)
+// Add friend request
 document.getElementById("addMember").onclick = ()=> {
   const popup = document.getElementById("friendPopup");
   popup.style.display = popup.style.display==="none"?"block":"none";
 }
-
 function addFriend(){
   const name = document.getElementById("newFriend").value.trim();
   if(!name) return;
@@ -210,5 +197,6 @@ function startVideoCall(){ alert("Video call placeholder"); }
 // Initial render
 renderMembers(); renderPendingRequests(); renderMessages();
 </script>
+
 </body>
 </html>
