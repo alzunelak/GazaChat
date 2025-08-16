@@ -134,6 +134,16 @@ document.getElementById("topAdd").onclick = ()=>{
     }
   }
 }
+} else if(action==="delete"){
+  if(confirm("Are you sure you want to delete this group?")){
+    // Remove the group from localStorage
+    groups.splice(currentIndex,1);
+    localStorage.setItem("groups",JSON.stringify(groups));
+    alert("Group deleted");
+    // Redirect back to groups list page
+    window.location.href = "groups.html";
+  }
+}
 
 // Plus button for file/photo/video/location/call
 const plusBtn = document.getElementById("plusBtn");
