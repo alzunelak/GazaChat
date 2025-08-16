@@ -1,98 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Groups</title>
-<style>
-body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
-h1{margin-bottom:10px;}
-.group{display:flex;align-items:center;background:white;padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;position:relative;}
-.group img{width:50px;height:50px;border-radius:50%;margin-right:10px;object-fit:cover;}
-.group .info{flex:1;}
-.group .info h3{margin:0;font-size:16px;}
-.group .info p{margin:0;font-size:12px;color:gray;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.red-dot{position:absolute;right:10px;top:20px;width:10px;height:10px;background:red;border-radius:50%;}
-#createGroupBtn{padding:10px 15px;background:#25d366;color:white;border:none;border-radius:8px;cursor:pointer;margin-bottom:10px;}
-#newGroupPopup{display:none;position:absolute;top:50px;left:50%;transform:translateX(-50%);background:white;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
-#newGroupPopup input{width:200px;margin-bottom:10px;padding:5px;}
-#newGroupPopup button{padding:5px 10px;margin-right:5px;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groups</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:20px; }
+    h2 { text-align:center; }
+    #groupList { margin-top:20px; }
+    .group-card {
+      background:white; padding:15px; margin:10px 0; border-radius:10px;
+      display:flex; align-items:center; justify-content:space-between; cursor:pointer;
+    }
+    .group-card img { width:50px; height:50px; border-radius:50%; margin-right:10px; }
+    .group-info { flex-grow:1; }
+    .unread-dot { width:10px; height:10px; background:red; border-radius:50%; display:inline-block; margin-left:5px; }
+    #createGroup { margin-top:20px; padding:10px; background:#007bff; color:white; border:none; border-radius:8px; cursor:pointer; }
+  </style>
 </head>
 <body>
+  <h2>My Groups</h2>
+  <div id="groupList"></div>
 
-<h1>Your Groups</h1>
-<button id="createGroupBtn">+ Create Group</button>
-<div id="groupsList"></div>
+  <button id="createGroup">+ Create New Group</button>
 
-<div id="newGroupPopup">
-  <h3>New Group</h3>
-  <input type="text" id="newGroupName" placeholder="Group Name"><br>
-  <input type="file" id="newGroupPhoto" accept="image/*"><br>
-  <button onclick="createGroup()">Create</button>
-  <button onclick="closeNewGroupPopup()">Cancel</button>
-</div>
+  <script>
+    let groups = JSON.parse(localStorage.getItem("groups") || "[]");
 
-<script>
-let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-const groupsListDiv = document.getElementById("groupsList");
+    function renderGroups(){
+      let list = document.getElementById("groupList");
+      list.innerHTML = "";
+      groups.forEach((g, i) => {
+        let div = document.createElement("div");
+        div.className = "group-card";
+        div.onclick = () => {
+          localStorage.setItem("currentGroup", i);
+          window.location.href = "groupChat.html";
+        };
+        div.innerHTML = `
+          <img src="${g.photo || 'default-group.png'}" alt="">
+          <div class="group-info">
+            <strong>${g.name}</strong><br>
+            <small>${g.lastMsg || "No messages yet"}</small>
+            ${g.unread ? '<span class="unread-dot"></span>' : ""}
+          </div>
+        `;
+        list.appendChild(div);
+      });
+      localStorage.setItem("groups", JSON.stringify(groups));
+    }
 
-// Render groups
-function renderGroups(){
-  groupsListDiv.innerHTML="";
-  groups.forEach((g,i)=>{
-    const div=document.createElement("div");
-    div.className="group";
-    div.onclick = ()=>{
-      localStorage.setItem("currentGroupIndex", i);
-      g.unread=false;
-      saveGroups();
-      window.location="groupChat.html";
+    document.getElementById("createGroup").onclick = () => {
+      let name = prompt("Enter group name:");
+      if(!name) return;
+      let photo = prompt("Enter group photo URL (optional):");
+      groups.push({name, photo, messages:[], members:[], requests:[], blocked:[], lastMsg:"", unread:false, admin:"me"});
+      renderGroups();
     };
-    const lastMsg = g.messages.length>0 ? g.messages[g.messages.length-1].text || `[${g.messages[g.messages.length-1].type}]` : "No messages yet";
-    div.innerHTML = `<img src="${g.photo || 'group.png'}">
-                     <div class="info">
-                       <h3>${g.name}</h3>
-                       <p>${lastMsg}</p>
-                     </div>
-                     ${g.unread ? '<div class="red-dot"></div>' : ''}`;
-    groupsListDiv.appendChild(div);
-  });
-}
 
-// Popup
-document.getElementById("createGroupBtn").onclick=()=>{ document.getElementById("newGroupPopup").style.display="block"; }
-function closeNewGroupPopup(){ document.getElementById("newGroupPopup").style.display="none"; }
-
-// Create group
-function createGroup(){
-  const name = document.getElementById("newGroupName").value.trim();
-  if(!name){ alert("Enter group name!"); return; }
-  const fileInput = document.getElementById("newGroupPhoto");
-  if(fileInput.files && fileInput.files[0]){
-    const reader = new FileReader();
-    reader.onload=function(e){ saveGroup(name,e.target.result); }
-    reader.readAsDataURL(fileInput.files[0]);
-  } else { saveGroup(name,'group.png'); }
-}
-
-function saveGroup(name, photo){
-  const newGroup = {
-    name, photo, admin:"You",
-    members:[{name:"You", accepted:true}],
-    pending:[], blocked:[], messages:[], unread:false
-  };
-  groups.push(newGroup);
-  saveGroups();
-  renderGroups();
-  closeNewGroupPopup();
-  document.getElementById("newGroupName").value="";
-  document.getElementById("newGroupPhoto").value="";
-}
-
-function saveGroups(){ localStorage.setItem("groups", JSON.stringify(groups)); }
-
-renderGroups();
-</script>
+    renderGroups();
+  </script>
 </body>
 </html>
