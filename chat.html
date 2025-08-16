@@ -57,6 +57,7 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
   <button class="attachment-btn" id="sendLocationBtn">📍</button>
 </div>
 
+
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
 // --- User Profile ---
@@ -85,6 +86,7 @@ function isBlocked(friendName){
   const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")||"[]");
   return blockedUsers.includes(friendName);
 }
+
 const blockBtn = document.getElementById('blockBtn');
 const input = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
@@ -102,19 +104,17 @@ function updateInputState(){
 }
 
 blockBtn.addEventListener('click', () => {
-  let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")||"[]");
+  let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
   if(!blockedUsers.includes(friend)){
     blockedUsers.push(friend);
     localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
 
-    // Remove friend from home list
-    let friends = JSON.parse(localStorage.getItem("friends")||"[]");
-    friends = friends.filter(f => f.name !== friend);
+    let friends = JSON.parse(localStorage.getItem("friends") || "[]");
+    friends = friends.filter(f => f !== friend); // assuming array of names
     localStorage.setItem("friends", JSON.stringify(friends));
 
     alert(friend + " is blocked. You cannot send messages until unblocked.");
     updateInputState();
-    window.location.href = "home.html"; 
   }
 });
 updateInputState();
@@ -126,12 +126,13 @@ function loadChat(){
   getChat().forEach((msg)=>{
     const container = document.createElement('div');
     container.className = 'message-container ' + (msg.senderId===myId?'sent':'received');
-  }
+
     const div = document.createElement('div');
     div.className='message';
     if(msg.senderId !== myId){
       div.innerHTML = `<strong>${msg.senderName}</strong><br>`;
     }
+
     if(msg.type==='text'){
       if(msg.text === "My Location" && msg.data && msg.data.startsWith("https://maps.google.com/")){
         div.innerHTML += `<a href="${msg.data}" target="_blank">📍 My Location</a>`;
@@ -187,10 +188,13 @@ socket.on("private message", (msg)=>{
 });
 loadChat();
 
-// --- Attachment Menu ---
+// --- Attachment Menu Toggle ---
 const attachmentToggle = document.getElementById('attachmentToggle');
 const attachmentMenu = document.getElementById('attachmentMenu');
-attachmentToggle.addEventListener('click', ()=>{attachmentMenu.style.display = attachmentMenu.style.display==='flex'?'none':'flex';});
+attachmentToggle.addEventListener('click', () => {
+  if(attachmentMenu.style.display === 'flex') attachmentMenu.style.display = 'none';
+  else attachmentMenu.style.display = 'flex';
+});
 
 // --- File ---
 document.getElementById('sendFileBtn').addEventListener('click', ()=>{
@@ -206,13 +210,13 @@ document.getElementById('sendFileBtn').addEventListener('click', ()=>{
   inputFile.click();
 });
 
-// --- Photo with camera or gallery ---
+// --- Photo ---
 document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
   const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
   const inputPhoto = document.createElement('input');
   inputPhoto.type = 'file';
   inputPhoto.accept = 'image/*';
-  if(choice) inputPhoto.capture = 'environment'; // Camera
+  if(choice) inputPhoto.capture = 'environment';
   inputPhoto.onchange = e => {
     const file = e.target.files[0];
     if(!file) return;
@@ -223,13 +227,13 @@ document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
   inputPhoto.click();
 });
 
-// --- Video with recording or gallery ---
+// --- Video ---
 document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
-  const choice = confirm("Press record to record video, pick to pick from gallery");
+  const choice = confirm("Press OK to record video, Cancel to pick from gallery");
   const inputVideo = document.createElement('input');
   inputVideo.type = 'file';
   inputVideo.accept = 'video/*';
-  if(choice) inputVideo.capture = 'camcorder'; // Record video
+  if(choice) inputVideo.capture = 'camcorder';
   inputVideo.onchange = e => {
     const file = e.target.files[0];
     if(!file) return;
@@ -239,7 +243,6 @@ document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
   };
   inputVideo.click();
 });
-
 
 // --- Location ---
 document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
@@ -257,5 +260,4 @@ function sendAttachment(type, data, name){
   socket.emit("private message", msg);
 }
 </script>
-</body>
-</html>
+
