@@ -1,59 +1,38 @@
-// Save user profile
-localStorage.setItem('username', 'John Doe');
-localStorage.setItem('profilePic', 'data:image/png;base64,...');
-
-// Save friends list
-const friends = [{ name: 'Alice', profile: 'data:image/png;base64,...' }];
-localStorage.setItem('friends', JSON.stringify(friends));
-
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
-    .then(() => console.log('Service Worker registered'))
-    .catch(err => console.error('Service Worker registration failed', err));
-}
-
-
 const CACHE_NAME = 'chat-app-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
   '/profile.html',
+  '/name.html',
   '/home.html',
+  '/offline.html',
   '/style.css',
   '/script.js',
   '/default-profile.png',
-  // Add other assets as needed
+  // Add any other assets you need
 ];
 
-// Install the service worker and cache necessary files
+// Install service worker and cache files
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Serve cached files when offline
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request);
-      })
-  );
+// Activate service worker immediately
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
 });
 
-
+// Fetch files: return cached if offline, or offline page if request fails
 self.addEventListener('fetch', event => {
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request)
-        .then(response => {
-          return response || caches.match('/offline.html');
-        });
-    })
+    fetch(event.request)
+      .then(response => response)
+      .catch(() => caches.match(event.request)
+        .then(cachedResponse => cachedResponse || caches.match('/offline.html'))
+      )
   );
 });
