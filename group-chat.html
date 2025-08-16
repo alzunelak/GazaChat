@@ -7,8 +7,8 @@
 <style>
 body{font-family:Arial;margin:0;background:#e5ddd5;}
 .header{background:#25d366;color:white;text-align:center;padding:10px;position:relative;}
-.header img{width:80px;height:80px;border-radius:50%;margin-top:5px;}
-.header h2{margin:5px 0;}
+.header img{width:80px;height:80px;border-radius:50%;margin-top:5px;cursor:pointer;}
+.header h2{margin:5px 0;cursor:pointer;}
 #members{display:flex;flex-wrap:wrap;justify-content:center;margin:5px;}
 #members div{background:#128C7E;color:white;padding:5px 10px;border-radius:15px;margin:2px;position:relative;}
 #members div span{cursor:pointer;margin-left:5px;}
@@ -16,11 +16,15 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
 .msg{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;display:flex;align-items:center;}
 .msg.self{background:#dcf8c6;align-self:flex-end;}
 .msg img{width:30px;height:30px;border-radius:50%;margin-right:5px;}
-#inputArea{display:flex;padding:10px;background:white;border-radius:25px;margin:10px;align-items:center;}
+#inputArea{display:flex;padding:10px;background:white;border-radius:25px;margin:10px;align-items:center;position:relative;}
 #inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
 #inputArea button{margin-left:5px;padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
-.controls{display:flex;justify-content:space-around;margin:5px;}
-.controls button{padding:8px;border:none;border-radius:6px;cursor:pointer;}
+#filePopup{display:none;position:absolute;bottom:50px;left:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+#filePopup button{display:block;margin:5px 0;width:100%;}
+#addMember, #deleteGroup{cursor:pointer;margin:5px;}
+#pendingList{margin:10px;padding:10px;background:#f1f1f1;border-radius:8px;}
+#pendingList div{background:#ff9800;color:white;padding:5px 10px;border-radius:12px;margin:2px;display:flex;justify-content:space-between;align-items:center;}
+#pendingList button{margin-left:5px;padding:2px 5px;border:none;border-radius:5px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -29,23 +33,24 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
   <h2 id="groupName"></h2>
   <img id="groupPhoto" src="">
   <div id="members"></div>
-  <div id="addMember" style="position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;">+</div>
+  <div style="position:absolute;top:10px;right:40px;" id="addMember">➕</div>
+  <div style="position:absolute;top:10px;right:10px;" id="deleteGroup">🗑️</div>
 </div>
+
+<div id="pendingList"></div>
 
 <div id="chatBox"></div>
 
 <div id="inputArea">
+  <div id="fileBtn" style="margin-right:5px;cursor:pointer;">➕</div>
   <input id="msgInput" placeholder="Type a message...">
   <button id="sendBtn">➤</button>
-</div>
-
-<div class="controls">
-  <button onclick="sendFile()">📎 File</button>
-  <button onclick="sendPhoto()">🖼️ Photo</button>
-  <button onclick="sendVideo()">🎥 Video</button>
-  <button onclick="sendLocation()">📍 Location</button>
-  <button onclick="alert('Voice call coming soon')">📞 Call</button>
-  <button onclick="alert('Video call coming soon')">🎥 Video Call</button>
+  <div id="filePopup">
+    <button onclick="sendFile('File')">📎 File</button>
+    <button onclick="sendFile('Photo')">🖼️ Photo</button>
+    <button onclick="sendFile('Video')">🎥 Video</button>
+    <button onclick="sendFile('Location')">📍 Location</button>
+  </div>
 </div>
 
 <script>
@@ -54,8 +59,32 @@ let currentIndex = Number(localStorage.getItem("currentGroupIndex"));
 let group = groups[currentIndex];
 const myName="You";
 
+// Initialize group display
 document.getElementById("groupName").innerText = group.name;
 document.getElementById("groupPhoto").src = group.photo;
+
+// Show/hide delete button only for admin
+document.getElementById("deleteGroup").style.display = (group.admin===myName) ? "block" : "none";
+
+// Update group name
+document.getElementById("groupName").onclick = ()=>{
+  const newName = prompt("Enter new group name:", group.name);
+  if(newName){
+    group.name = newName;
+    document.getElementById("groupName").innerText = newName;
+    saveGroup();
+  }
+}
+
+// Update group photo
+document.getElementById("groupPhoto").onclick = ()=>{
+  const url = prompt("Enter new photo URL:", group.photo);
+  if(url){
+    group.photo = url;
+    document.getElementById("groupPhoto").src = url;
+    saveGroup();
+  }
+}
 
 // Render members
 function renderMembers(){
@@ -73,6 +102,26 @@ function renderMembers(){
     div.appendChild(mDiv);
   });
 }
+
+// Render pending requests (for members themselves to accept/reject)
+function renderPending(){
+  const pendingDiv=document.getElementById("pendingList");
+  pendingDiv.innerHTML="";
+  group.members.filter(m=>!m.accepted && m.name===myName).forEach(m=>{
+    const div=document.createElement("div");
+    div.innerHTML=`<span>${m.name} - Join Request</span>`;
+    const acceptBtn=document.createElement("button");
+    acceptBtn.textContent="Accept";
+    acceptBtn.onclick=()=>{ m.accepted=true; saveGroup(); renderMembers(); renderPending(); };
+    const rejectBtn=document.createElement("button");
+    rejectBtn.textContent="Reject";
+    rejectBtn.onclick=()=>{ group.members = group.members.filter(x=>x!==m); saveGroup(); renderPending(); };
+    div.appendChild(acceptBtn);
+    div.appendChild(rejectBtn);
+    pendingDiv.appendChild(div);
+  });
+}
+
 function blockMember(name){
   if(group.blocked.includes(name)){
     group.blocked=group.blocked.filter(x=>x!==name);
@@ -81,7 +130,7 @@ function blockMember(name){
   renderMembers();
 }
 
-// Chat messages
+// Render messages
 const chatBox=document.getElementById("chatBox");
 function renderMessages(){
   chatBox.innerHTML="";
@@ -95,6 +144,7 @@ function renderMessages(){
   chatBox.scrollTop=chatBox.scrollHeight;
 }
 
+// Send message
 document.getElementById("sendBtn").onclick=()=>{
   const txt=document.getElementById("msgInput").value.trim();
   if(!txt) return;
@@ -106,30 +156,46 @@ document.getElementById("sendBtn").onclick=()=>{
   renderMessages();
 }
 
-// Add friend
+// File/photo/video/location buttons
+const fileBtn=document.getElementById("fileBtn");
+const filePopup=document.getElementById("filePopup");
+fileBtn.onclick=()=>{ filePopup.style.display = (filePopup.style.display==="none")?"block":"none"; }
+function sendFile(type){
+  group.messages.push({sender:myName,text:"[Sent "+type+"]"});
+  saveGroup();
+  renderMessages();
+  filePopup.style.display="none";
+}
+
+// Add friend (invite someone)
 document.getElementById("addMember").onclick=()=>{
   const name=prompt("Friend name to add:");
   if(!name) return;
   group.members.push({name,accepted:false});
   saveGroup();
-  alert(name+" added. Waiting for acceptance.");
   renderMembers();
+  renderPending();
 }
 
-// File/photo/video/location placeholders
-function sendFile(){ group.messages.push({sender:myName,text:"[Sent File]"}); saveGroup(); renderMessages();}
-function sendPhoto(){ group.messages.push({sender:myName,text:"[Sent Photo]"}); saveGroup(); renderMessages();}
-function sendVideo(){ group.messages.push({sender:myName,text:"[Sent Video]"}); saveGroup(); renderMessages();}
-function sendLocation(){ group.messages.push({sender:myName,text:"[Sent Location]"}); saveGroup(); renderMessages();}
+// Delete group (admin only)
+document.getElementById("deleteGroup").onclick=()=>{
+  if(confirm("Delete this group?")){
+    groups.splice(currentIndex,1);
+    localStorage.setItem("groups",JSON.stringify(groups));
+    window.location="groups.html";
+  }
+}
 
-// Save function
+// Save group
 function saveGroup(){
   groups[currentIndex]=group;
   localStorage.setItem("groups",JSON.stringify(groups));
 }
 
+// Initial render
 renderMembers();
 renderMessages();
+renderPending();
 group.unread=false;
 saveGroup();
 </script>
