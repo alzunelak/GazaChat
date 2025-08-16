@@ -112,10 +112,8 @@ function loadChat(){
     const ts = document.createElement('div'); ts.className='timestamp'; ts.innerText = msg.time;
     div.appendChild(ts);
 
-    // Right click message options
-    div.addEventListener('contextmenu', e=>{
-      e.preventDefault(); showMsgOptions(div,i);
-    });
+    // Right click or long press for mobile
+    attachMessageOptions(div,i);
 
     chatContainer.appendChild(div);
   });
@@ -156,68 +154,81 @@ document.getElementById('attachLocation').addEventListener('click', ()=>{
     });
   }
 });
-document.getElementById('attachPhoto').addEventListener('click', ()=>{
-  const file = document.createElement('input'); file.type='file'; file.accept='image/*';
+function attachFileHandler(type,accept){
+  const file = document.createElement('input'); file.type='file'; file.accept=accept||'*';
   file.onchange = e=>{
     const reader = new FileReader();
-    reader.onload = ()=>{ 
+    reader.onload = ()=>{
       const messages = getChat();
-      messages.push({type:'photo',data:reader.result,sender:'me',time:formatTime()});
+      messages.push({type:type,data:reader.result,sender:'me',time:formatTime()});
       saveChat(messages); loadChat();
     }
     reader.readAsDataURL(file.files[0]);
   }
   file.click();
-});
-document.getElementById('attachVideo').addEventListener('click', ()=>{
-  const file = document.createElement('input'); file.type='file'; file.accept='video/*';
-  file.onchange = e=>{
-    const reader = new FileReader();
-    reader.onload = ()=>{ 
-      const messages = getChat();
-      messages.push({type:'video',data:reader.result,sender:'me',time:formatTime()});
-      saveChat(messages); loadChat();
-    }
-    reader.readAsDataURL(file.files[0]);
-  }
-  file.click();
-});
-document.getElementById('attachFile').addEventListener('click', ()=>{
-  const file = document.createElement('input'); file.type='file';
-  file.onchange = e=>{
-    const reader = new FileReader();
-    reader.onload = ()=>{ 
-      const messages = getChat();
-      messages.push({type:'file',data:reader.result,sender:'me',time:formatTime()});
-      saveChat(messages); loadChat();
-    }
-    reader.readAsDataURL(file.files[0]);
-  }
-  file.click();
-});
+}
+document.getElementById('attachPhoto').addEventListener('click', ()=> attachFileHandler('photo','image/*'));
+document.getElementById('attachVideo').addEventListener('click', ()=> attachFileHandler('video','video/*'));
+document.getElementById('attachFile').addEventListener('click', ()=> attachFileHandler('file'));
 
-// Message options popup
-function showMsgOptions(messageDiv,index){
+// Message options (Delete/Edit)
+function attachMessageOptions(msgDiv,index){
+  // Desktop right-click
+  msgDiv.addEventListener('contextmenu', e=>{
+    e.preventDefault();
+    showMsgOptions(msgDiv,index);
+  });
+
+  // Mobile long-press
+  let pressTimer;
+  msgDiv.addEventListener('touchstart', e=>{
+    pressTimer = setTimeout(()=> showMsgOptions(msgDiv,index), 600);
+  });
+  msgDiv.addEventListener('touchend', e=> clearTimeout(pressTimer));
+  msgDiv.addEventListener('touchmove', e=> clearTimeout(pressTimer));
+}
+
+function showMsgOptions(msgDiv,index){
+  document.querySelectorAll('.msg-options').forEach(o=>o.remove());
   let options = document.createElement('div');
   options.className='msg-options';
-  options.style.top = messageDiv.offsetTop - 30 + 'px';
-  options.style.left = messageDiv.offsetLeft + 'px';
+  options.style.top = msgDiv.offsetTop - 5 + 'px';
+  options.style.left = msgDiv.offsetLeft + 'px';
 
   const delAll = document.createElement('button'); delAll.innerText='Delete for everyone';
   delAll.onclick = ()=>{
-    let msgs = getChat(); msgs.splice(index,1); saveChat(msgs); loadChat(); options.remove();
+    let messages = getChat(); messages.splice(index,1); saveChat(messages); loadChat(); options.remove();
   };
-  const delSelf = document.createElement('button'); delSelf.innerText='Delete';
-  delSelf.onclick = ()=>{
-    let msgs = getChat();
-    msgs[index].text = ''; saveChat(msgs); loadChat(); options.remove();
+
+  const delMe = document.createElement('button'); delMe.innerText='Delete for me';
+  delMe.onclick = ()=>{
+    let messages = getChat();
+    if(messages[index].sender==='me'){ messages.splice(index,1); saveChat(messages); loadChat(); }
+    else alert('Cannot delete others message for you.');
+    options.remove();
   };
+
+  const editBtn = document.createElement('button'); editBtn.innerText='Edit';
+  editBtn.onclick = ()=>{
+    let messages = getChat();
+    if(messages[index].sender==='me'){
+      let newText = prompt('Edit your message:', messages[index].text);
+      if(newText!==null && newText.trim()!==''){
+        messages[index].text = newText;
+        saveChat(messages);
+        loadChat();
+      }
+    } else alert('Cannot edit others message.');
+    options.remove();
+  };
+
   options.appendChild(delAll);
-  options.appendChild(delSelf);
+  options.appendChild(delMe);
+  options.appendChild(editBtn);
   document.body.appendChild(options);
 
   document.addEventListener('click', function hide(e){
-    if(!options.contains(e.target)){ options.remove(); document.removeEventListener('click',hide);}
+    if(!options.contains(e.target)){ options.remove(); document.removeEventListener('click',hide); }
   });
 }
 
@@ -235,6 +246,5 @@ document.getElementById('blockBtn').addEventListener('click', ()=>{
 // Initial load
 loadChat();
 </script>
-
 </body>
 </html>
