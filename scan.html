@@ -29,16 +29,19 @@ qrCodeReader.start(
   { fps:10, qrbox:250 },
   (decodedText) => {
     if(decodedText.startsWith("FRIEND:")){
-      const friendName = decodedText.replace("FRIEND:", "");
+      const friendName = decodedText.replace("FRIEND:", "").trim();
       messageDiv.style.color = "green";
       messageDiv.innerText = "Friend found! Adding...";
 
       // Add friend to localStorage with profile
       let friends = JSON.parse(localStorage.getItem('friends') || '[]');
       if(!friends.some(f => f.name === friendName)){
-        friends.push({name: friendName, profile: defaultProfile});
+        const newFriend = {name: friendName, profile: defaultProfile};
+        friends.push(newFriend);
         localStorage.setItem('friends', JSON.stringify(friends));
-        channel.postMessage({type:'addFriend', friend: friendName});
+
+        // Send full friend object, not just name
+        channel.postMessage({type:'addFriend', friend: newFriend});
       }
 
       qrCodeReader.stop().then(() => {
