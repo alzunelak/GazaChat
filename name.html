@@ -1,17 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Enter Name</title>
+<style>
+body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
+input, button { padding:10px; margin:10px; font-size:16px; }
+#preview { display:none; width:100px; height:100px; border-radius:50%; object-fit:cover; margin-top:10px; }
+</style>
 </head>
 <body>
 
 <h2>Enter your name</h2>
 <input type="text" id="nameInput" placeholder="Your Name"><br>
 <input type="file" id="profileInput" accept="image/*"><br>
-<img id="preview" src="" style="display:none; width:100px; height:100px; border-radius:50%;"><br>
+<img id="preview"><br>
 <button id="continueBtn">Continue</button>
 
 <script>
@@ -20,36 +24,37 @@ const profileInput = document.getElementById('profileInput');
 const preview = document.getElementById('preview');
 const continueBtn = document.getElementById('continueBtn');
 
-// Preview uploaded image
+// Preview uploaded profile image
 profileInput.addEventListener('change', () => {
   if(profileInput.files && profileInput.files[0]){
     const reader = new FileReader();
     reader.onload = e => {
       preview.src = e.target.result;
       preview.style.display = 'block';
-    }
+    };
     reader.readAsDataURL(profileInput.files[0]);
   }
 });
 
-// Save name and profile, then go to home
+// Save name and profile locally
 continueBtn.addEventListener('click', () => {
   const enteredName = nameInput.value.trim();
   if(!enteredName){
     alert("Please enter your name");
     return;
   }
-  localStorage.setItem('userName', enteredName);
+
+  localStorage.setItem('username', enteredName);
 
   if(profileInput.files && profileInput.files[0]){
     const reader = new FileReader();
     reader.onload = e => {
-      localStorage.setItem('userProfile', e.target.result); // base64
+      localStorage.setItem('profilePic', e.target.result); // base64
       window.location.href = 'home.html';
-    }
+    };
     reader.readAsDataURL(profileInput.files[0]);
   } else {
-    localStorage.setItem('userProfile', 'default-profile.png');
+    localStorage.setItem('profilePic', 'default-profile.png');
     window.location.href = 'home.html';
   }
 });
