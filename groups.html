@@ -38,6 +38,7 @@ const groupsListDiv = document.getElementById("groupsList");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
 
+// Render all groups
 function renderGroups(){
   groupsListDiv.innerHTML = "";
   groups.forEach((g,index)=>{
@@ -45,9 +46,9 @@ function renderGroups(){
     div.className="group";
     div.onclick = ()=>{
       localStorage.setItem("currentGroupIndex", index);
-      g.unread = false;
-      localStorage.setItem("groups", JSON.stringify(groups));
-      window.location="group-chat.html";
+      g.unread = false; // mark as read
+      saveGroups();
+      window.location="groupChat.html";
     };
     const latestMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
     div.innerHTML = `
@@ -62,9 +63,11 @@ function renderGroups(){
   });
 }
 
+// Create group popup
 createGroupBtn.onclick = ()=>{ newGroupPopup.style.display="block"; }
 function closeNewGroupPopup(){ newGroupPopup.style.display="none"; }
 
+// Create new group
 function createGroup(){
   const name = document.getElementById("newGroupName").value.trim();
   if(!name){ alert("Enter a group name!"); return; }
@@ -72,31 +75,34 @@ function createGroup(){
   const fileInput = document.getElementById("newGroupPhoto");
   if(fileInput.files && fileInput.files[0]){
     const reader = new FileReader();
-    reader.onload = function(e){ saveGroup(name,e.target.result); }
+    reader.onload = function(e){ saveGroup(name, e.target.result); }
     reader.readAsDataURL(fileInput.files[0]);
-  } else { saveGroup(name,"group.png"); }
+  } else { saveGroup(name, "group.png"); }
 }
 
-function saveGroup(name,img){
+function saveGroup(name, photo){
   const newGroup = {
     name,
-    photo: img,
+    photo,
     admin:"You",
-    members:[{name:"You",accepted:true}],
-    requests:[],
+    members:[{name:"You", accepted:true}],
+    pending:[], // new pending invites
     blocked:[],
     messages:[],
     unread:false
   };
   groups.push(newGroup);
-  localStorage.setItem("groups", JSON.stringify(groups));
+  saveGroups();
   renderGroups();
   closeNewGroupPopup();
   document.getElementById("newGroupName").value="";
   document.getElementById("newGroupPhoto").value="";
 }
 
+function saveGroups(){ localStorage.setItem("groups", JSON.stringify(groups)); }
+
 renderGroups();
 </script>
+
 </body>
 </html>
