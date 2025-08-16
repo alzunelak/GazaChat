@@ -5,53 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calls</title>
 <style>
-body { font-family: Arial,sans-serif; margin:0; padding:20px; background:#f5f5f5; }
-.profile-section { display:flex; flex-direction:column; align-items:center; }
-.profile-section img { width:80px; height:80px; border-radius:50%; margin-bottom:10px; }
-.friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+body{font-family:Arial;margin:0;padding:0;background:#f5f5f5;}
+.main-content{padding:20px;min-height:70vh;}
+.call-item{padding:10px;background:#fff;margin:5px 0;border-radius:8px;cursor:pointer;display:flex;align-items:center;}
+.call-item img{width:40px;height:40px;border-radius:50%;margin-right:10px;}
 </style>
 </head>
 <body>
 
-<div class="profile-section">
-  <img id="profilePhoto" src="default-profile.png">
-  <h2 id="profileName">User</h2>
-</div>
-
-<h3>Friends</h3>
-<div id="callFriendsList"></div>
+<div class="main-content" id="mainContent"></div>
 
 <script>
-// Profile
-const profileName = localStorage.getItem('username') || 'User';
-const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
-document.getElementById('profileName').textContent = profileName;
-document.getElementById('profilePhoto').src = profilePic;
-
-// Render friends
-function renderCallFriends(){
-  const friends = JSON.parse(localStorage.getItem('friends')||'[]');
-  const list = document.getElementById('callFriendsList');
-  list.innerHTML='';
+const friends = JSON.parse(localStorage.getItem('friends')||'[]');
+const mainContent = document.getElementById('mainContent');
+if(friends.length===0){ mainContent.innerHTML="<div>No calls yet</div>"; }
+else{
   friends.forEach(f=>{
-    const div = document.createElement('div');
-    div.className='friend';
-    div.innerText=f;
-    div.onclick = ()=>{
-      const mode = prompt(`Call ${f} via audio or video?`, 'audio');
-      if(!mode) return;
-      alert(`${mode==='video'?'Video':'Audio'} call started with ${f}`);
+    const div=document.createElement('div'); div.className='call-item';
+    div.innerHTML=`<img src="${f.profile||'default-profile.png'}"><span>${f.name}</span>`;
+    div.onclick=()=>{
+      const mode = prompt(`Call ${f.name}:\nType "audio" or "video"`);
+      if(mode==='audio') alert(`Audio call with ${f.name} started`);
+      else if(mode==='video') alert(`Video call with ${f.name} started`);
+      else alert('Cancelled');
     };
-    list.appendChild(div);
+    mainContent.appendChild(div);
   });
 }
-renderCallFriends();
-
-// Broadcast updates
-const channel = new BroadcastChannel('chatapp');
-channel.onmessage = e=>{
-  if(e.data.type==='addFriend') renderCallFriends();
-};
 </script>
 
 </body>
