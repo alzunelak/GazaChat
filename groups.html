@@ -49,7 +49,7 @@ function renderGroups(){
       localStorage.setItem("currentGroupIndex", index);
       g.unread=false; // clear unread when opened
       saveGroups();
-      window.location="groupChat.html";
+      window.location="group-chat.html";
     };
     const lastMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text || "["+g.messages[g.messages.length-1].type+"]" : "No messages yet";
     div.innerHTML = `
