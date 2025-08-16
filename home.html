@@ -64,7 +64,7 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-<script>
+ <script>
 // --- Profile setup ---
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
@@ -107,10 +107,11 @@ closeQR.addEventListener('click', () => {
 // --- Friends management ---
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
 function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
-function addFriend(friendName){
+function addFriend(friend){
   let friends = getFriends();
-  if(!friends.includes(friendName)){
-    friends.push(friendName);
+  // friend is now an object: {name, profile}
+  if(!friends.some(f => f.name === friend.name)){
+    friends.push(friend);
     saveFriends(friends);
     renderFriends();
   }
@@ -133,9 +134,12 @@ function renderFriends(){
     friends.forEach(f => {
       const div = document.createElement('div');
       div.className='friend';
-      div.innerText = f;
+      div.innerHTML = `
+        <img src="${f.profile}" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
+        <span>${f.name}</span>
+      `;
       div.onclick = () => {
-        localStorage.setItem('currentChat', f);
+        localStorage.setItem('currentChat', f.name);
         window.location.href = 'chat.html';
       };
       mainContent.appendChild(div);
