@@ -19,17 +19,13 @@ input, button { padding:10px; margin:5px; font-size:16px; }
 <div id="result"></div>
 
 <script>
-// --- Predefined offline users ---
-const offlineUsers = JSON.parse(localStorage.getItem('offlineUsers') || '["Alice","Bob","Charlie","David","Eve"]');
-
-// --- Broadcast channel for real-time updates ---
+const users = ["Alice","Bob","Charlie"];
 const channel = new BroadcastChannel('chatapp');
 const defaultProfile = "default-profile.png";
 
-// --- Add friend locally ---
 function addFriendObject(name){
   let friends = JSON.parse(localStorage.getItem('friends')||'[]');
-  if(!friends.some(f => f.name === name)){
+  if(!friends.some(f=>f.name===name)){
     const newFriend = {name, profile: defaultProfile};
     friends.push(newFriend);
     localStorage.setItem('friends', JSON.stringify(friends));
@@ -39,31 +35,23 @@ function addFriendObject(name){
   return false;
 }
 
-// --- Search functionality ---
-document.getElementById('searchBtn').addEventListener('click', () => {
+document.getElementById('searchBtn').addEventListener('click', ()=>{
   const name = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
-  if(name === "") {
-    resultDiv.className = "error";
-    resultDiv.innerText = "Enter a name";
-    return;
-  }
+  if(name===""){ resultDiv.className="error"; resultDiv.innerText="Enter a name"; return; }
 
-  if(offlineUsers.includes(name)){
-    resultDiv.className = "success";
-    resultDiv.innerHTML = `${name} found! <button onclick="addAndClose('${name}')">Add Friend</button>`;
+  if(users.includes(name)){
+    resultDiv.className="success";
+    resultDiv.innerHTML=`${name} found! <button onclick="addAndClose('${name}')">Add Friend</button>`;
   } else {
-    resultDiv.className = "error";
-    resultDiv.innerText = "No user found";
+    resultDiv.className="error";
+    resultDiv.innerText="No user exists";
   }
 });
 
-// --- Add friend button ---
 function addAndClose(name){
   addFriendObject(name);
-  const resultDiv = document.getElementById('result');
-  resultDiv.className = "success";
-  resultDiv.innerText = `Friend ${name} added!`;
+  document.getElementById('result').innerText="Friend added!";
 }
 </script>
 </body>
