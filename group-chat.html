@@ -11,17 +11,19 @@ header img{width:60px;height:60px;border-radius:50%;display:block;margin:0 auto;
 #groupName{margin:5px 0;cursor:pointer;}
 #members{display:flex;flex-wrap:wrap;justify-content:center;margin-top:5px;gap:5px;}
 #members div{background:#128C7E;color:white;padding:3px 8px;border-radius:12px;font-size:12px;}
+#addMemberBtn{position:absolute;right:10px;top:10px;font-size:24px;cursor:pointer;}
+#deleteGroupBtn{position:absolute;right:10px;top:50px;font-size:14px;background:red;color:white;padding:5px 10px;border:none;border-radius:6px;cursor:pointer;}
 #chatBox{flex:1;overflow-y:auto;padding:10px;}
-.message{padding:8px;margin:5px 0;border-radius:8px;max-width:70%;display:flex;align-items:flex-end;}
+.message{padding:6px;margin:5px 0;border-radius:8px;max-width:70%;display:flex;align-items:flex-start;word-break:break-word;}
 .message.self{background:#dcf8c6;align-self:flex-end;}
 .message img{width:30px;height:30px;border-radius:50%;margin-right:5px;}
-#inputArea{display:flex;padding:10px;gap:5px;background:white;align-items:center;position:relative;}
-#inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
-#inputArea button, .icon{padding:10px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
-#filePopup{display:none;position:absolute;bottom:60px;left:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+#inputArea{display:flex;padding:5px;gap:5px;background:white;align-items:center;position:relative;}
+#msgInput{flex:1;padding:8px;border-radius:20px;border:1px solid #ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#sendBtn{padding:8px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
+.callButtons{display:flex;gap:5px;}
+#filePopup{display:none;position:absolute;bottom:50px;left:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
 #filePopup button{display:block;margin:5px 0;width:100%;}
 #pendingInvites{margin:5px;padding:5px;background:#fff;border-radius:8px;}
-#pendingInvites button{margin-left:5px;}
 </style>
 </head>
 <body>
@@ -30,6 +32,8 @@ header img{width:60px;height:60px;border-radius:50%;display:block;margin:0 auto;
   <img id="groupPhoto" src="">
   <h2 id="groupName"></h2>
   <div id="members"></div>
+  <div id="addMemberBtn">+</div>
+  <button id="deleteGroupBtn">Delete Group</button>
 </header>
 
 <div id="pendingInvites"></div>
@@ -38,11 +42,11 @@ header img{width:60px;height:60px;border-radius:50%;display:block;margin:0 auto;
 <div id="inputArea">
   <div class="icon" onclick="toggleFilePopup()">+</div>
   <input type="text" id="msgInput" placeholder="Type a message...">
-  <div class="controls">
+  <div class="callButtons">
     <button onclick="startAudioCall()">🎤</button>
     <button onclick="startVideoCall()">📹</button>
   </div>
-  <button onclick="sendMessage()">➤</button>
+  <button id="sendBtn" onclick="sendMessage()">➤</button>
 </div>
 
 <div id="filePopup">
@@ -62,13 +66,13 @@ let group = groups[index];
 // Display group name/photo
 const groupNameEl = document.getElementById("groupName");
 const groupPhotoEl = document.getElementById("groupPhoto");
+const membersEl = document.getElementById("members");
 groupNameEl.innerText = group.name;
 groupPhotoEl.src = group.photo || "group.png";
 
-// Change group name/photo
+// Change group photo/name (members can change)
 groupPhotoEl.onclick = changePhoto;
 groupNameEl.onclick = changeName;
-
 function changePhoto(){
   const input = document.getElementById("photoInput");
   input.click();
@@ -83,47 +87,36 @@ function changePhoto(){
     reader.readAsDataURL(file);
   }
 }
-
 function changeName(){
   const newName = prompt("Enter new group name:", group.name);
-  if(newName){
-    group.name = newName;
-    groupNameEl.innerText = group.name;
-    save();
-  }
+  if(newName){ group.name = newName; groupNameEl.innerText = newName; save(); }
 }
 
-// Members
+// Delete group (admin only)
+const deleteBtn = document.getElementById("deleteGroupBtn");
+deleteBtn.style.display = group.admin==="You"?"block":"none";
+deleteBtn.onclick = ()=>{
+  if(confirm("Delete this group?")){ groups.splice(index,1); localStorage.setItem("groups", JSON.stringify(groups)); window.location="groups.html"; }
+}
+
+// Render members
 function renderMembers(){
-  const div = document.getElementById("members");
-  div.innerHTML = "";
-  group.members.filter(m=>m.accepted).forEach(m=>{
-    div.innerHTML += `<div>${m.name}</div>`;
-  });
+  membersEl.innerHTML = "";
+  group.members.filter(m=>m.accepted).forEach(m=>{ membersEl.innerHTML += `<div>${m.name}</div>`; });
 }
 renderMembers();
 
 // Pending invites
+const pendingDiv = document.getElementById("pendingInvites");
 function renderPending(){
-  const div = document.getElementById("pendingInvites");
-  div.innerHTML = "";
+  pendingDiv.innerHTML = "";
   group.pending.forEach((p,i)=>{
-    div.innerHTML += `<span>${p}<button onclick="acceptInvite(${i})">✔</button><button onclick="rejectInvite(${i})">✖</button></span>`;
+    pendingDiv.innerHTML += `<span>${p} <button onclick="acceptInvite(${i})">✔</button><button onclick="rejectInvite(${i})">✖</button></span>`;
   });
 }
 renderPending();
-
-function acceptInvite(i){
-  const member = group.pending[i];
-  group.members.push({name:member, accepted:true});
-  group.pending.splice(i,1);
-  save(); renderMembers(); renderPending();
-}
-
-function rejectInvite(i){
-  group.pending.splice(i,1);
-  save(); renderPending();
-}
+function acceptInvite(i){ const member = group.pending[i]; group.members.push({name:member, accepted:true}); group.pending.splice(i,1); save(); renderMembers(); renderPending(); }
+function rejectInvite(i){ group.pending.splice(i,1); save(); renderPending(); }
 
 // Messages
 const chatBox = document.getElementById("chatBox");
@@ -142,7 +135,7 @@ function renderMessages(){
 }
 renderMessages();
 
-// Send text
+// Send message
 function sendMessage(){
   const input = document.getElementById("msgInput");
   const text = input.value.trim();
@@ -156,58 +149,26 @@ function sendMessage(){
 }
 
 // File popup
-function toggleFilePopup(){
-  const popup = document.getElementById("filePopup");
-  popup.style.display = popup.style.display==="none"?"block":"none";
-}
-
-function sendFile(){
-  const content = prompt("Enter file description or URL");
-  if(content) { group.messages.push({sender:"You", type:"file", content}); save(); renderMessages(); toggleFilePopup(); }
-}
-function sendPhoto(){
-  const input = document.createElement("input");
-  input.type="file"; input.accept="image/*";
-  input.onchange = function(e){
-    const file = e.target.files[0]; const reader = new FileReader();
-    reader.onload = function(ev){
-      group.messages.push({sender:"You", type:"photo", content:ev.target.result});
-      save(); renderMessages();
-    }
-    reader.readAsDataURL(file);
-  }
-  input.click();
-}
-function sendVideo(){
-  const input = document.createElement("input");
-  input.type="file"; input.accept="video/*";
-  input.onchange = function(e){
-    const file = e.target.files[0]; const reader = new FileReader();
-    reader.onload = function(ev){
-      group.messages.push({sender:"You", type:"video", content:ev.target.result});
-      save(); renderMessages();
-    }
-    reader.readAsDataURL(file);
-  }
-  input.click();
-}
-function sendLocation(){
-  const loc = prompt("Enter location URL or text");
-  if(loc){ group.messages.push({sender:"You", type:"location", text:loc}); save(); renderMessages(); }
-}
+function toggleFilePopup(){ const popup=document.getElementById("filePopup"); popup.style.display=popup.style.display==="none"?"block":"none"; }
+function sendFile(){ const content=prompt("Enter file description or URL"); if(content){ group.messages.push({sender:"You", type:"file", content}); save(); renderMessages(); toggleFilePopup(); } }
+function sendPhoto(){ const input=document.createElement("input"); input.type="file"; input.accept="image/*"; input.onchange=function(e){ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(ev){ group.messages.push({sender:"You", type:"photo", content:ev.target.result}); save(); renderMessages(); } reader.readAsDataURL(file); } input.click(); }
+function sendVideo(){ const input=document.createElement("input"); input.type="file"; input.accept="video/*"; input.onchange=function(e){ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(ev){ group.messages.push({sender:"You", type:"video", content:ev.target.result}); save(); renderMessages(); } reader.readAsDataURL(file); } input.click(); }
+function sendLocation(){ const loc=prompt("Enter location URL/text"); if(loc){ group.messages.push({sender:"You", type:"location", text:loc}); save(); renderMessages(); } }
 
 // Calls placeholders
 function startAudioCall(){ alert("Audio call placeholder"); }
 function startVideoCall(){ alert("Video call placeholder"); }
 
-// Save
-function save(){
-  groups[index] = group;
-  localStorage.setItem("groups", JSON.stringify(groups));
+// Add member button
+document.getElementById("addMemberBtn").onclick=()=>{
+  const name=prompt("Enter friend name to add:");
+  if(name){ group.pending.push(name); save(); renderPending(); alert(name+" added as pending."); }
 }
 
-group.unread = false;
-save();
+// Save group
+function save(){ groups[index] = group; localStorage.setItem("groups", JSON.stringify(groups)); }
+
+group.unread=false; save();
 </script>
 </body>
 </html>
