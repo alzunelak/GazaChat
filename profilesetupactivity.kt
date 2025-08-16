@@ -8,7 +8,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
 
-class ProfileSetupActivity : AppCompatActivity() {
+class profilesetupactivity : AppCompatActivity() {
     private lateinit var db: AppDatabase
     private lateinit var profileImage: ImageView
     private var imageUri: Uri? = null
