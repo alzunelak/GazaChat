@@ -22,11 +22,6 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
 .chat-input {display:flex;padding:10px;background:#f0f0f0;align-items:center;position:sticky;bottom:0;z-index:10;}
 .chat-input input {flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
 .chat-input button {padding:0 12px;border:none;background:#25D366;color:white;border-radius:50%;font-size:22px;cursor:pointer;margin-left:5px;}
-.attach-popup{position:absolute;background:white;padding:10px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);display:none;flex-direction:column;z-index:20;}
-.attach-popup button{margin:5px 0;padding:8px;border:none;background:#075E54;color:white;border-radius:8px;cursor:pointer;}
-.msg-options {position:absolute;background:white;padding:5px 10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);display:none;z-index:100;}
-.msg-options button {border:none;background:none;color:#075E54;padding:5px 10px;cursor:pointer;}
-.preview{max-width:200px;border-radius:10px;margin-top:5px;}
 </style>
 </head>
 <body>
@@ -45,27 +40,27 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
 
 <div class="chat-messages" id="chatMessages"></div>
 
-<!-- Attachment popup -->
-<div class="attach-popup" id="attachPopup">
-  <button id="attachPhotoGallery">📷 Photo (Gallery)</button>
-  <button id="attachPhotoCamera">📸 Camera</button>
-  <button id="attachVideo">🎥 Video</button>
-  <button id="attachFile">📄 File</button>
-</div>
-
 <div class="chat-input">
-  <button id="plusBtn">➕</button>
   <input type="text" id="messageInput" placeholder="Type a message...">
   <button id="sendBtn">➡</button>
 </div>
 
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
-// --- Setup ---
+// --- User Profile from localStorage ---
+const myName = localStorage.getItem("username") || "Me";
+const myPic = localStorage.getItem("profilePic") || "default-profile.png";
+const myId  = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
+
+// --- Friend info (from URL) ---
 const params = new URLSearchParams(window.location.search);
 const friend = params.get('friend') ? decodeURIComponent(params.get('friend')) : 'John Doe';
 const profile = params.get('profile') ? decodeURIComponent(params.get('profile')) : 'default-profile.png';
 document.getElementById('friendName').innerText = friend;
 document.getElementById('friendProfile').src = profile;
+
+// --- Socket.IO connection ---
+const socket = io("http://localhost:3000"); // change to your server URL
 
 // --- Chat Storage ---
 function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
@@ -76,25 +71,38 @@ function formatTime(){ const d=new Date(); return `${d.getHours().toString().pad
 const chatContainer = document.getElementById('chatMessages');
 function loadChat(){
   chatContainer.innerHTML = '';
-  getChat().forEach((msg, i)=>{
+  getChat().forEach((msg)=>{
     const container = document.createElement('div');
-    container.className = 'message-container ' + (msg.sender==='me'?'sent':'received');
+    container.className = 'message-container ' + (msg.senderId===myId?'sent':'received');
 
-    const div = document.createElement('div'); div.className='message';
-    if(msg.type==='text'){ div.innerText = msg.text; }
-    else if(msg.type==='photo'){ div.innerHTML = `<img src="${msg.data}" class="preview">`; }
-    else if(msg.type==='video'){ div.innerHTML = `<video src="${msg.data}" class="preview" controls></video>`; }
-    else if(msg.type==='file'){ div.innerHTML = `📄 <a href="${msg.data}" download>Download File</a>`; }
-
-    const ts = document.createElement('div'); ts.className='timestamp'; ts.innerText = msg.time;
-    div.appendChild(ts);
-
-    if(msg.sender==='me'){ container.appendChild(div); }
-    else { 
-      const img = document.createElement('img'); img.src = profile; container.appendChild(img); container.appendChild(div);
+    // profile for received messages
+    if(msg.senderId !== myId){
+      const img = document.createElement('img');
+      img.src = msg.profile || "default-profile.png";
+      container.appendChild(img);
     }
 
-    attachMessageOptions(container,i);
+    // message bubble
+    const div = document.createElement('div');
+    div.className='message';
+
+    // show sender name (for received)
+    if(msg.senderId !== myId){
+      div.innerHTML = `<strong>${msg.senderName}</strong><br>`;
+    }
+
+    if(msg.type==='text'){ div.innerHTML += msg.text; }
+    else if(msg.type==='photo'){ div.innerHTML += `<img src="${msg.data}" class="preview">`; }
+    else if(msg.type==='video'){ div.innerHTML += `<video src="${msg.data}" class="preview" controls></video>`; }
+    else if(msg.type==='file'){ div.innerHTML += `📄 <a href="${msg.data}" download>Download File</a>`; }
+
+    // timestamp
+    const ts = document.createElement('div');
+    ts.className='timestamp';
+    ts.innerText = msg.time;
+    div.appendChild(ts);
+
+    container.appendChild(div);
     chatContainer.appendChild(container);
   });
   chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -107,66 +115,29 @@ sendBtn.addEventListener('click', sendMessage);
 input.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage(); });
 
 function sendMessage(){
-  const text = input.value.trim(); if(!text) return;
-  const messages = getChat();
-  messages.push({sender:'me', type:'text', text:text, time:formatTime()});
-  saveChat(messages); input.value=''; loadChat();
+  const text = input.value.trim(); 
+  if(!text) return;
+
+  const msg = {
+    senderId: myId,
+    senderName: myName,
+    profile: myPic,
+    type: "text",
+    text: text,
+    time: formatTime()
+  };
+
+  socket.emit("chat message", msg);
+  input.value = "";
 }
 
-// --- Plus button and attachments ---
-const plusBtn = document.getElementById('plusBtn');
-const attachPopup = document.getElementById('attachPopup');
-plusBtn.addEventListener('click', ()=>{
-  attachPopup.style.display = attachPopup.style.display==='flex'?'none':'flex';
-  attachPopup.style.flexDirection='column';
-  const inputRect = document.querySelector('.chat-input').getBoundingClientRect();
-  attachPopup.style.bottom = `${window.innerHeight - inputRect.top + 10}px`;
+// --- Receive Message ---
+socket.on("chat message", (msg) => {
+  const messages = getChat();
+  messages.push(msg);
+  saveChat(messages);
+  loadChat();
 });
-
-function attachFileHandler(type,accept,capture){
-  const file = document.createElement('input'); file.type='file'; file.accept=accept||'*'; if(capture) file.capture=capture;
-  file.onchange = e=>{
-    const reader = new FileReader();
-    reader.onload = ()=>{ const messages=getChat(); messages.push({sender:'me',type:type,data:reader.result,time:formatTime()}); saveChat(messages); loadChat(); };
-    reader.readAsDataURL(file.files[0]);
-  }
-  file.click();
-}
-
-document.getElementById('attachPhotoGallery').addEventListener('click', ()=>attachFileHandler('photo','image/*'));
-document.getElementById('attachPhotoCamera').addEventListener('click', ()=>attachFileHandler('photo','image/*','environment'));
-document.getElementById('attachVideo').addEventListener('click', ()=>attachFileHandler('video','video/*'));
-document.getElementById('attachFile').addEventListener('click', ()=>attachFileHandler('file'));
-
-// --- Message Options ---
-function attachMessageOptions(msgDiv,index){
-  const msgContent = msgDiv.querySelector('.message');
-  msgContent.addEventListener('contextmenu', e=>{ e.preventDefault(); showOptions(msgDiv,index); });
-  let pressTimer;
-  msgContent.addEventListener('touchstart', e=>{ pressTimer = setTimeout(()=>showOptions(msgDiv,index),600); });
-  msgContent.addEventListener('touchend', e=>clearTimeout(pressTimer));
-  msgContent.addEventListener('touchmove', e=>clearTimeout(pressTimer));
-}
-
-function showOptions(msgDiv,index){
-  document.querySelectorAll('.msg-options').forEach(o=>o.remove());
-  const options = document.createElement('div'); options.className='msg-options';
-  const messages = getChat();
-
-  const delAll = document.createElement('button'); delAll.innerText='Delete for everyone';
-  delAll.onclick = ()=>{ messages.splice(index,1); saveChat(messages); loadChat(); options.remove(); };
-  const delMe = document.createElement('button'); delMe.innerText='Delete for me';
-  delMe.onclick = ()=>{ if(messages[index].sender==='me'){ messages.splice(index,1); saveChat(messages); loadChat(); } else alert('Cannot delete others message'); options.remove(); };
-  const editBtn = document.createElement('button'); editBtn.innerText='Edit';
-  editBtn.onclick = ()=>{ if(messages[index].sender==='me'){ let n=prompt('Edit:',messages[index].text); if(n){ messages[index].text=n; saveChat(messages); loadChat(); } } else alert('Cannot edit others'); options.remove(); };
-
-  options.appendChild(delAll); options.appendChild(delMe); options.appendChild(editBtn);
-
-  const rect = msgDiv.getBoundingClientRect();
-  options.style.top = rect.top + 'px'; options.style.left = rect.left + 'px';
-  document.body.appendChild(options);
-  document.addEventListener('click', function hide(e){ if(!options.contains(e.target)){ options.remove(); document.removeEventListener('click',hide); } });
-}
 
 // --- Initial load ---
 loadChat();
