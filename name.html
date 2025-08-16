@@ -58,6 +58,13 @@ continueBtn.addEventListener('click', () => {
     window.location.href = 'home.html';
   }
 });
+
+// Register service worker for offline support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(() => console.log('Service Worker registered'))
+    .catch(err => console.error('Service Worker registration failed', err));
+}
 </script>
 
 </body>
