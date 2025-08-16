@@ -21,7 +21,6 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
 #inputArea button{margin-left:5px;padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
 #popup{display:none;position:absolute;bottom:50px;right:15px;background:white;padding:10px;border-radius:10px;box-shadow:0 0 5px #888;flex-direction:column;}
 #popup button{margin:3px;padding:8px;border:none;border-radius:6px;background:#128C7E;color:white;cursor:pointer;}
-.controls{display:none;} /* hide original controls */
 #topAdd{position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;background:white;color:#25d366;border-radius:6px;padding:3px 6px;}
 </style>
 </head>
@@ -58,6 +57,9 @@ const myName="You";
 
 document.getElementById("groupName").innerText = group.name;
 document.getElementById("groupPhoto").src = group.photo;
+
+// Mark group as read on open
+if(group.unread){ group.unread=false; saveGroup(); }
 
 // Change group name/photo
 document.getElementById("groupName").onclick = ()=>{
@@ -111,8 +113,8 @@ document.getElementById("sendBtn").onclick=()=>{
   if(!txt) return;
   if(group.blocked.includes(myName)){ alert("You are blocked"); return; }
   group.messages.push({sender:myName,text:txt});
+  group.unread = false; // your messages don’t trigger unread
   document.getElementById("msgInput").value="";
-  group.unread=true;
   saveGroup();
   renderMessages();
 }
@@ -130,18 +132,9 @@ document.getElementById("topAdd").onclick = ()=>{
     if(confirm("Are you sure you want to delete this group?")){
       groups.splice(currentIndex,1);
       localStorage.setItem("groups",JSON.stringify(groups));
-      alert("Group deleted"); location.reload();
+      alert("Group deleted");
+      window.location.href="groups.html";
     }
-  }
-}
-} else if(action==="delete"){
-  if(confirm("Are you sure you want to delete this group?")){
-    // Remove the group from localStorage
-    groups.splice(currentIndex,1);
-    localStorage.setItem("groups",JSON.stringify(groups));
-    alert("Group deleted");
-    // Redirect back to groups list page
-    window.location.href = "groups.html";
   }
 }
 
@@ -163,8 +156,6 @@ function saveGroup(){
 
 renderMembers();
 renderMessages();
-group.unread=false; saveGroup();
 </script>
-
 </body>
 </html>
