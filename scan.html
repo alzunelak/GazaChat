@@ -8,7 +8,7 @@
 <style>
 body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
 #reader { width:300px; margin:auto; }
-#message { margin-top:20px; font-size:16px; color:red; }
+#message { margin-top:20px; font-size:16px; }
 </style>
 </head>
 <body>
@@ -19,9 +19,19 @@ body { font-family: Arial, sans-serif; text-align:center; padding:20px; backgrou
 <script>
 const messageDiv = document.getElementById('message');
 const channel = new BroadcastChannel('chatapp');
-
-// Default profile picture
 const defaultProfile = "default-profile.png";
+
+function addFriendObject(name, profile){
+  let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+  if(!friends.some(f=>f.name===name)){
+    const newFriend = {name, profile};
+    friends.push(newFriend);
+    localStorage.setItem('friends', JSON.stringify(friends));
+    channel.postMessage({type:'addFriend', friend:newFriend});
+    return true;
+  }
+  return false;
+}
 
 const qrCodeReader = new Html5Qrcode("reader");
 qrCodeReader.start(
@@ -29,36 +39,18 @@ qrCodeReader.start(
   { fps:10, qrbox:250 },
   (decodedText) => {
     try {
-      // Expect JSON data like: {"name":"Mimah","profile":"mimah.png"}
-      const friendData = JSON.parse(decodedText);
-
-      if(friendData.name){
+      const data = JSON.parse(decodedText);
+      if(data.name){
+        const added = addFriendObject(data.name, data.profile || defaultProfile);
         messageDiv.style.color = "green";
-        messageDiv.innerText = "Friend found! Adding...";
-
-        // Add friend to localStorage
-        let friends = JSON.parse(localStorage.getItem('friends') || '[]');
-        if(!friends.some(f => f.name === friendData.name)){
-          // if no profile provided, fallback to default
-          if(!friendData.profile) friendData.profile = defaultProfile;
-
-          friends.push(friendData);
-          localStorage.setItem('friends', JSON.stringify(friends));
-
-          // Send full friend object to home
-          channel.postMessage({type:'addFriend', friend: friendData});
-        }
-
-        qrCodeReader.stop().then(() => {
-          messageDiv.innerText = `Friend "${friendData.name}" added!`;
-        });
+        messageDiv.innerText = added ? "Friend added!" : "Friend already exists";
+        qrCodeReader.stop();
       } else {
-        messageDiv.style.color = "red";
-        messageDiv.innerText = "Invalid QR code (missing name)";
+        throw new Error("Invalid QR");
       }
     } catch(e){
       messageDiv.style.color = "red";
-      messageDiv.innerText = "Invalid QR code format";
+      messageDiv.innerText = "Invalid QR code";
     }
   },
   (err) => { console.log(err); }
