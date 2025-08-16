@@ -55,3 +55,56 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" } // allow all origins for testing
+});
+
+// Store connected users: { username: socket.id }
+let users = {};
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  // Save username when client joins
+  socket.on("join", (username) => {
+    users[username] = socket.id;
+    console.log("Users:", users);
+  });
+
+  // Send call request to friend
+  socket.on("call-user", ({ to, from, type }) => {
+    if (users[to]) {
+      io.to(users[to]).emit("incoming-call", { from, type });
+    }
+  });
+
+  // Notify that call is accepted
+  socket.on("accept-call", ({ to }) => {
+    if (users[to]) {
+      io.to(users[to]).emit("call-accepted");
+    }
+  });
+
+  // Notify that call is ended
+  socket.on("end-call", ({ to }) => {
+    if (users[to]) {
+      io.to(users[to]).emit("call-ended");
+    }
+  });
+
+  socket.on("disconnect", () => {
+    // Remove user from list
+    for (let name in users) {
+      if (users[name] === socket.id) delete users[name];
+    }
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+server.listen(3000, () => console.log("Server running on port 3000"));
