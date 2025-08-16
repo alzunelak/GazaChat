@@ -22,7 +22,10 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 .popup-options a:hover { background:#f0f0f0; }
 #qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
 #qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
-.friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+.friend { display:flex; align-items:center; padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); transition:0.2s; }
+.friend:hover { background:#eee; }
+.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; }
+.friend span { font-weight:bold; }
 </style>
 </head>
 <body>
@@ -36,10 +39,7 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 </div>
 
 <div class="main-content" id="mainContent">
-  <div class="no-msg">
-    No messages yet<br>
-    Add a friend using the + button
-  </div>
+  <div class="no-msg">No messages yet<br>Add a friend using the + button</div>
 </div>
 
 <div id="qrContainer">
@@ -64,7 +64,7 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
- <script>
+<script>
 // --- Profile setup ---
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
@@ -109,7 +109,7 @@ function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]');
 function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
 function addFriend(friend){
   let friends = getFriends();
-  // friend is now an object: {name, profile}
+  // friend = {name, profile}
   if(!friends.some(f => f.name === friend.name)){
     friends.push(friend);
     saveFriends(friends);
@@ -134,10 +134,8 @@ function renderFriends(){
     friends.forEach(f => {
       const div = document.createElement('div');
       div.className='friend';
-      div.innerHTML = `
-        <img src="${f.profile}" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
-        <span>${f.name}</span>
-      `;
+      const profilePic = f.profile || 'default-profile.png';
+      div.innerHTML = `<img src="${profilePic}"><span>${f.name}</span>`;
       div.onclick = () => {
         localStorage.setItem('currentChat', f.name);
         window.location.href = 'chat.html';
