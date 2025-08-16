@@ -23,7 +23,7 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 #qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
 #qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
 .friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; }
-.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; }
+.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover; }
 .three-dots-menu { position:absolute; top:45px; right:15px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:none; min-width:140px; z-index:500; }
 .three-dots-menu a { display:block; padding:10px 15px; color:#333; text-decoration:none; font-weight:500; }
 .three-dots-menu a:hover { background:#f0f0f0; }
@@ -121,6 +121,8 @@ function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(fr
 function addFriend(friend){
   let friends = getFriends();
   if(!friends.some(f => f.name === friend.name)){
+    // Ensure photo exists, fallback to default
+    if(!friend.profile) friend.profile = 'default-profile.png';
     friends.push(friend);
     saveFriends(friends);
     renderFriends();
@@ -144,12 +146,12 @@ function renderFriends(){
     friends.forEach(f => {
       const div = document.createElement('div');
       div.className='friend';
-      div.innerHTML = `<img src="${f.profile}"><span>${f.name}</span>`;
+      div.innerHTML = `<img src="${f.profile || 'default-profile.png'}"><span>${f.name}</span>`;
 
       // Open chat with real info
       div.onclick = () => {
         const friendName = encodeURIComponent(f.name);
-        const friendProfile = encodeURIComponent(f.profile);
+        const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
         window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
       };
 
@@ -161,15 +163,8 @@ function renderFriends(){
 // --- Three-dots menu ---
 const threeDots = document.querySelector('.three-dots');
 const threeDotsMenu = document.getElementById('threeDotsMenu');
-
-threeDots.addEventListener('click', e => {
-  e.stopPropagation();
-  threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block';
-});
-
-document.addEventListener('click', () => {
-  threeDotsMenu.style.display = 'none';
-});
+threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; });
+document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
 
 // Render friends on load
 document.addEventListener('DOMContentLoaded', renderFriends);
