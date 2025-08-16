@@ -33,8 +33,6 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
     <span id="friendName">Friend</span>
   </div>
   <div class="chat-header-right">
-    <button id="audioCallBtn">☏</button>
-    <button id="videoCallBtn">📹</button>
     <button id="blockBtn">🚫</button>
   </div>
 </div>
@@ -45,6 +43,82 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
   <input type="text" id="messageInput" placeholder="Type a message...">
   <button id="sendBtn">➡</button>
 </div>
+  <script>
+// --- Existing variables ---
+const chatContainer = document.getElementById('chatMessages');
+const blockBtn = document.getElementById('blockBtn');
+
+// --- Check if friend is blocked ---
+function isBlocked(friendName){
+  const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")||"[]");
+  return blockedUsers.includes(friendName);
+}
+
+// --- Disable input if blocked ---
+function updateInputState(){
+  if(isBlocked(friend)){
+    input.disabled = true;
+    input.placeholder = "You have blocked this user.";
+    sendBtn.disabled = true;
+  } else {
+    input.disabled = false;
+    input.placeholder = "Type a message...";
+    sendBtn.disabled = false;
+  }
+}
+
+// --- Block Button Click ---
+blockBtn.addEventListener('click', () => {
+  let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")||"[]");
+  if(!blockedUsers.includes(friend)){
+    blockedUsers.push(friend);
+    localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
+
+    // Remove friend from main friend list
+    let friends = JSON.parse(localStorage.getItem("friends")||"[]");
+    friends = friends.filter(f => f.name !== friend);
+    localStorage.setItem("friends", JSON.stringify(friends));
+
+    alert(friend + " is blocked. You cannot send messages until unblocked.");
+    updateInputState();
+
+    // Optionally redirect to main page
+    window.location.href = "main.html"; 
+  }
+});
+
+// --- Send Message ---
+function sendMessage(){
+  if(isBlocked(friend)) return alert("You cannot send messages to a blocked user!");
+
+  const text = input.value.trim(); 
+  if(!text) return;
+
+  const msg = {
+    senderId: myId,
+    senderName: myName,
+    profile: myPic,
+    recipient: friend,
+    type: "text",
+    text: text,
+    time: formatTime()
+  };
+
+  const messages = getChat();
+  messages.push(msg);
+  saveChat(messages);
+  loadChat();
+
+  socket.emit("private message", msg);
+  input.value = "";
+}
+
+// --- On Load ---
+updateInputState();
+loadChat();
+
+</script>
+
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
