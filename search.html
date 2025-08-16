@@ -19,45 +19,30 @@ input, button { padding:10px; margin:5px; font-size:16px; }
 <div id="result"></div>
 
 <script>
+const users = ["Alice","Bob","Charlie"];
+const channel = new BroadcastChannel('chatapp');
 const defaultProfile = "default-profile.png";
 
-// Users as objects with name + profile
-const users = [
-  {name:"Alice", profile:"alice.png"},
-  {name:"Bob", profile:"bob.png"},
-  {name:"Charlie", profile:"charlie.png"}
-];
-
-const channel = new BroadcastChannel('chatapp');
-
-function addFriend(friend){
+function addFriendObject(name){
   let friends = JSON.parse(localStorage.getItem('friends')||'[]');
-  if(!friends.some(f => f.name === friend.name)){
-    friends.push(friend);
-    localStorage.setItem('friends',JSON.stringify(friends));
-    channel.postMessage({type:'addFriend', friend:friend});
+  if(!friends.some(f=>f.name===name)){
+    const newFriend = {name, profile: defaultProfile};
+    friends.push(newFriend);
+    localStorage.setItem('friends', JSON.stringify(friends));
+    channel.postMessage({type:'addFriend', friend:newFriend});
+    return true;
   }
+  return false;
 }
 
-document.getElementById('searchBtn').addEventListener('click',()=>{
+document.getElementById('searchBtn').addEventListener('click', ()=>{
   const name = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
-  if(name===""){ 
-    resultDiv.className="error"; 
-    resultDiv.innerText="Enter a name"; 
-    return; 
-  }
+  if(name===""){ resultDiv.className="error"; resultDiv.innerText="Enter a name"; return; }
 
-  const user = users.find(u => u.name.toLowerCase() === name.toLowerCase());
-  if(user){
-    // fallback if profile missing
-    if(!user.profile) user.profile = defaultProfile;
-
+  if(users.includes(name)){
     resultDiv.className="success";
-    resultDiv.innerHTML=`${user.name} found! <button onclick="addAndClose('${user.name}')">Add Friend</button>`;
-    
-    // Store the object for later add
-    window.foundUser = user;
+    resultDiv.innerHTML=`${name} found! <button onclick="addAndClose('${name}')">Add Friend</button>`;
   } else {
     resultDiv.className="error";
     resultDiv.innerText="No user exists";
@@ -65,10 +50,8 @@ document.getElementById('searchBtn').addEventListener('click',()=>{
 });
 
 function addAndClose(name){
-  if(window.foundUser && window.foundUser.name === name){
-    addFriend(window.foundUser);
-    document.getElementById('result').innerText="Friend added!";
-  }
+  addFriendObject(name);
+  document.getElementById('result').innerText="Friend added!";
 }
 </script>
 </body>
