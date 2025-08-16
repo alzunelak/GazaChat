@@ -13,23 +13,41 @@ button{padding:10px 20px;background:#075E54;color:white;border:none;border-radiu
 </head>
 <body>
 
-<div class="block-container">
+<div class="block-container" id="blockContainer">
   <img id="blockedProfile" src="">
   <h2 id="blockedName">Blocked User</h2>
-  <p>You have blocked this user. You won't be able to send or receive messages until you unblock them.</p>
+  <p id="blockMsg">You have blocked this user. You won't be able to send or receive messages until you unblock them.</p>
   <button id="unblockBtn">Unblock User</button>
 </div>
 
 <script>
 // Get blocked friend info from URL
 const params = new URLSearchParams(window.location.search);
-const friend = params.get('friend');
-document.getElementById('blockedName').innerText = friend;
-document.getElementById('blockedProfile').src = params.get('profile') || '';
+let friend = params.get('friend');
+
+// Fetch blocked users list
+let blockedUsers = JSON.parse(localStorage.getItem('blockedUsers')||'[]');
+const blockContainer = document.getElementById('blockContainer');
+
+if(friend && blockedUsers.includes(friend)){
+  // Show blocked user
+  document.getElementById('blockedName').innerText = friend;
+  document.getElementById('blockedProfile').src = params.get('profile') || '';
+  document.getElementById('blockMsg').innerText = 
+    "You have blocked this user. Messages will not be visible until you unblock them.";
+  
+  // Optionally clear chat for blocked user
+  localStorage.removeItem(`chat_${friend}`);
+} else if(blockedUsers.length === 0){
+  // No user blocked
+  blockContainer.innerHTML = "<h2>No user blocked</h2><p>You haven't blocked anyone.</p>";
+} else {
+  // There are blocked users but URL friend param not set
+  blockContainer.innerHTML = "<h2>Blocked Users</h2><p>You have blocked some users. Open chat to see who.</p>";
+}
 
 // Unblock function
-document.getElementById('unblockBtn').addEventListener('click', ()=>{
-  let blockedUsers = JSON.parse(localStorage.getItem('blockedUsers')||'[]');
+document.getElementById('unblockBtn')?.addEventListener('click', ()=>{
   blockedUsers = blockedUsers.filter(u => u !== friend);
   localStorage.setItem('blockedUsers', JSON.stringify(blockedUsers));
   alert(`${friend} is unblocked!`);
