@@ -24,11 +24,11 @@ body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
 <button id="createGroupBtn">+ Create Group</button>
 <div id="groupsList"></div>
 
-<div id="newGroupPopup">
+<div id="newGroupPopup" style="display:none;">
   <h3>New Group</h3>
   <input type="text" id="newGroupName" placeholder="Group Name"><br>
   <input type="file" id="newGroupPhoto" accept="image/*"><br>
-  <div style="display:flex; justify-content:flex-end; gap:10px;">
+  <div style="display:flex;">
     <button onclick="createGroup()">Create</button>
     <button onclick="closeNewGroupPopup()">Cancel</button>
   </div>
@@ -38,8 +38,17 @@ body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
 <script>
 let groups = JSON.parse(localStorage.getItem("groups") || "[]");
 const groupsListDiv = document.getElementById("groupsList");
+  
+createGroupBtn.onclick = ()=>{ newGroupPopup.style.display="block"; }
+
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
+
+  // Show popup when clicking "Create Group"
+createGroupBtn.onclick = () => {
+  newGroupPopup.style.display = "block";
+};
+
 
 // Render all groups
 function renderGroups(){
