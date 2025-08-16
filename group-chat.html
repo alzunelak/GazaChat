@@ -3,64 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Chat</title>
+<title>WhatsApp-like Group Chat</title>
 <style>
-body{font-family:Arial;margin:0;padding:0;background:#f5f5f5;display:flex;flex-direction:column;height:100vh;}
-header{background:#25d366;color:white;padding:10px;display:flex;flex-direction:column;}
-#chatArea{flex:1;padding:10px;overflow-y:auto;}
-.message{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;max-width:70%;}
+body{font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-direction:column;height:100vh;}
+header{background:#25d366;color:white;padding:10px;display:flex;flex-direction:column;align-items:center;position:relative;}
+header img{width:60px;height:60px;border-radius:50%;margin-bottom:5px;}
+header h2{margin:0;font-size:18px;}
+header #members{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;}
+header #members div{background:#128C7E;padding:5px 10px;border-radius:15px;font-size:12px;color:white;display:flex;align-items:center;}
+header #members div span{margin-left:5px;cursor:pointer;}
+header #addMember{position:absolute;right:10px;top:10px;font-size:24px;cursor:pointer;}
+#chatArea{flex:1;padding:10px;overflow-y:auto;background:#ece5dd;display:flex;flex-direction:column;}
+.message{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;max-width:70%;display:flex;gap:5px;align-items:flex-end;}
 .message.self{background:#dcf8c6;align-self:flex-end;}
-#inputArea{display:flex;padding:10px;background:#fff;}
+.message img{width:30px;height:30px;border-radius:50%;}
+.message strong{margin-right:5px;}
+#inputArea{display:flex;padding:10px;background:#fff;gap:5px;align-items:center;}
 #inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
-#inputArea button{margin-left:5px;padding:10px 15px;border:none;border-radius:20px;background:#25d366;color:white;cursor:pointer;}
+#inputArea button, #inputArea .icon{padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+#filePopup{display:none;position:absolute;bottom:60px;left:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+#filePopup button{display:block;margin:5px 0;width:100%;}
+.callButtons{display:flex;gap:10px;margin-left:5px;}
+#friendPopup{display:none;position:absolute;top:60px;right:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+#friendPopup input{width:150px;margin-bottom:5px;padding:5px;}
+#friendPopup button{padding:5px;cursor:pointer;}
 </style>
 </head>
 <body>
 
 <header>
-  <h2 id="groupName">Group</h2>
+  <img src="group.png" alt="Group Photo">
+  <h2 id="groupName">Group Name</h2>
+  <div id="members"></div>
+  <div id="addMember">+</div>
 </header>
 
 <div id="chatArea"></div>
 
 <div id="inputArea">
+  <div class="icon" onclick="toggleFilePopup()">+</div>
   <input type="text" id="msgInput" placeholder="Type a message...">
+  <div class="callButtons">
+    <button onclick="startAudioCall()">🎤</button>
+    <button onclick="startVideoCall()">📹</button>
+  </div>
   <button onclick="sendMessage()">Send</button>
 </div>
 
-<script>
-// User info
-const myName = localStorage.getItem("username") || "You";
-let currentGroup = JSON.parse(localStorage.getItem("currentGroup") || '{"name":"Group","members":[],"id":"group_default"}');
-document.getElementById("groupName").innerText = currentGroup.name;
+<div id="filePopup">
+  <button onclick="sendFile('photo')">Photo</button>
+  <button onclick="sendFile('video')">Video</button>
+  <button onclick="sendFile('file')">File</button>
+  <button onclick="sendFile('location')">Location</button>
+</div>
 
-// Messages
-let messages = JSON.parse(localStorage.getItem("groupMessages_"+currentGroup.id) || "[]");
-const chatArea = document.getElementById("chatArea");
-function saveMessages(){ localStorage.setItem("groupMessages_"+currentGroup.id, JSON.stringify(messages)); }
+<div id="friendPopup">
+  <input type="text" id="newFriend" placeholder="Friend name">
+  <button onclick="addFriend()">Add</button>
+</div>
+
+<script>
+const myName = "You";
+let currentGroup = JSON.parse(localStorage.getItem("groupData") || JSON.stringify({
+  name:"Group Name",
+  members:[
+    {name:"Alice", accepted:true},
+    {name:"Bob", accepted:true},
+    {name:"Charlie", accepted:false}
+  ],
+  admin:"You",
+  blocked:[],
+  messages:[]
+}));
+
+function saveGroup(){ localStorage.setItem("groupData", JSON.stringify(currentGroup)); }
+
+// Render members
+function renderMembers(){
+  const membersDiv=document.getElementById("members");
+  membersDiv.innerHTML="";
+  currentGroup.members.filter(m=>m.accepted).forEach(m=>{
+    const div=document.createElement("div");
+    div.innerHTML=`<strong>${m.name}</strong>`;
+    if(currentGroup.admin===myName && m.name!==myName){
+      const blockSpan=document.createElement("span");
+      blockSpan.innerText="🚫";
+      blockSpan.onclick=()=>{blockUser(m.name)};
+      div.appendChild(blockSpan);
+    }
+    membersDiv.appendChild(div);
+  });
+}
+
+// Block/unblock
+function blockUser(name){
+  if(currentGroup.blocked.includes(name)){
+    currentGroup.blocked=currentGroup.blocked.filter(u=>u!==name);
+  }else{
+    currentGroup.blocked.push(name);
+  }
+  saveGroup();
+  renderMembers();
+  renderMessages();
+}
+
+// Friend add popup
+document.getElementById("addMember").onclick=()=>{
+  const popup=document.getElementById("friendPopup");
+  popup.style.display=popup.style.display==="none"?"block":"none";
+}
+function addFriend(){
+  const name=document.getElementById("newFriend").value.trim();
+  if(!name) return;
+  currentGroup.members.push({name, accepted:false});
+  document.getElementById("newFriend").value="";
+  saveGroup();
+  alert(name+" added! Waiting for acceptance.");
+  document.getElementById("friendPopup").style.display="none";
+  renderMembers();
+}
+
+// Chat messages
+const chatArea=document.getElementById("chatArea");
 function renderMessages(){
   chatArea.innerHTML="";
-  messages.forEach(m=>{
-    const div = document.createElement("div");
-    div.className="message" + (m.sender===myName?" self":"");
-    div.innerHTML=`<strong>${m.sender}</strong>: ${m.text}`;
+  currentGroup.messages.forEach(m=>{
+    if(currentGroup.blocked.includes(m.sender)) return;
+    const div=document.createElement("div");
+    div.className="message"+(m.sender===myName?" self":"");
+    div.innerHTML=`<img src="profile.png"><strong>${m.sender}</strong>: ${m.text}`;
     chatArea.appendChild(div);
   });
-  chatArea.scrollTop = chatArea.scrollHeight;
+  chatArea.scrollTop=chatArea.scrollHeight;
 }
-renderMessages();
 
-// Send message
 function sendMessage(){
-  const input = document.getElementById("msgInput");
-  const text = input.value.trim();
+  const input=document.getElementById("msgInput");
+  const text=input.value.trim();
   if(!text) return;
-  const msg={sender:myName,text,time:new Date().toLocaleTimeString()};
-  messages.push(msg);
-  saveMessages();
-  renderMessages();
+  if(currentGroup.blocked.includes(myName)){ alert("You are blocked!"); return; }
+  currentGroup.messages.push({sender:myName,text});
   input.value="";
+  saveGroup();
+  renderMessages();
 }
+
+// File popup
+function toggleFilePopup(){
+  const popup=document.getElementById("filePopup");
+  popup.style.display = popup.style.display==="none"?"block":"none";
+}
+function sendFile(type){
+  currentGroup.messages.push({sender:myName,text:"[Sent "+type+"]"});
+  saveGroup();
+  renderMessages();
+  toggleFilePopup();
+}
+
+// Calls
+function startAudioCall(){ alert("Audio call (placeholder)"); }
+function startVideoCall(){ alert("Video call (placeholder)"); }
+
+// Initial render
+renderMembers();
+renderMessages();
 </script>
 
 </body>
