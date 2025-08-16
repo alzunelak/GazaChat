@@ -107,7 +107,7 @@ blockBtn.addEventListener('click', () => {
     blockedUsers.push(friend);
     localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
 
-    // Remove friend from main list
+    // Remove friend from home list
     let friends = JSON.parse(localStorage.getItem("friends")||"[]");
     friends = friends.filter(f => f.name !== friend);
     localStorage.setItem("friends", JSON.stringify(friends));
@@ -126,11 +126,7 @@ function loadChat(){
   getChat().forEach((msg)=>{
     const container = document.createElement('div');
     container.className = 'message-container ' + (msg.senderId===myId?'sent':'received');
-    if(msg.senderId !== myId){
-      const img = document.createElement('img');
-      img.src = msg.profile || "default-profile.png";
-      container.appendChild(img);
-    }
+  }
     const div = document.createElement('div');
     div.className='message';
     if(msg.senderId !== myId){
@@ -210,21 +206,40 @@ document.getElementById('sendFileBtn').addEventListener('click', ()=>{
   inputFile.click();
 });
 
-// --- Photo ---
+// --- Photo with camera or gallery ---
 document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
+  const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
   const inputPhoto = document.createElement('input');
-  inputPhoto.type='file'; inputPhoto.accept='image/*'; inputPhoto.capture='environment';
-  inputPhoto.onchange = e => { const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>sendAttachment('photo', reader.result, file.name); reader.readAsDataURL(file);}
+  inputPhoto.type = 'file';
+  inputPhoto.accept = 'image/*';
+  if(choice) inputPhoto.capture = 'environment'; // Camera
+  inputPhoto.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>sendAttachment('photo', reader.result, file.name);
+    reader.readAsDataURL(file);
+  };
   inputPhoto.click();
 });
 
-// --- Video ---
+// --- Video with recording or gallery ---
 document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
+  const choice = confirm("Press record to record video, pick to pick from gallery");
   const inputVideo = document.createElement('input');
-  inputVideo.type='file'; inputVideo.accept='video/*'; inputVideo.capture='camcorder';
-  inputVideo.onchange = e => { const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>sendAttachment('video', reader.result, file.name); reader.readAsDataURL(file);}
+  inputVideo.type = 'file';
+  inputVideo.accept = 'video/*';
+  if(choice) inputVideo.capture = 'camcorder'; // Record video
+  inputVideo.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>sendAttachment('video', reader.result, file.name);
+    reader.readAsDataURL(file);
+  };
   inputVideo.click();
 });
+
 
 // --- Location ---
 document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
