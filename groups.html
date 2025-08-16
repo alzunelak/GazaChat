@@ -5,84 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Groups</title>
 <style>
-body { font-family: Arial,sans-serif; margin:0; padding:20px; background:#f5f5f5; }
-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-header h2 { margin:0; }
-button { cursor:pointer; }
-.group { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; }
-.group-name { font-weight:bold; }
-.delete-btn { background:#f44336; color:white; border:none; padding:5px 8px; border-radius:5px; }
+body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
+.group{display:flex;align-items:center;background:white;padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;position:relative;}
+.group img{width:50px;height:50px;border-radius:50%;margin-right:10px;}
+.group .info{flex:1;}
+.group .info h3{margin:0;font-size:16px;}
+.group .info p{margin:0;font-size:12px;color:gray;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.red-dot{position:absolute;right:10px;top:15px;width:10px;height:10px;background:red;border-radius:50%;}
 </style>
 </head>
 <body>
 
-<header>
-  <h2>Groups</h2>
-  <button id="createGroupBtn">Create Group</button>
-</header>
-
+<h1>Your Groups</h1>
 <div id="groupsList"></div>
 
 <script>
-// Friends & groups from localStorage
-const friends = JSON.parse(localStorage.getItem('friends')||'[]');
-let groups = JSON.parse(localStorage.getItem('groups')||'[]');
-function saveGroups(){ localStorage.setItem('groups', JSON.stringify(groups)); }
+const groupsListDiv = document.getElementById("groupsList");
 
-// Render existing groups
+// Load all groups from localStorage (for simplicity, only one group here)
+let groups = JSON.parse(localStorage.getItem("allGroups") || "[]");
+
+// For testing: add a group if none exists
+if(groups.length===0){
+  const groupData = JSON.parse(localStorage.getItem("groupData") || "{}");
+  if(Object.keys(groupData).length>0){
+    groupData.lastRead = null; // Track last read time
+    groups.push(groupData);
+    localStorage.setItem("allGroups", JSON.stringify(groups));
+  }
+}
+
+// Render groups
 function renderGroups(){
-  const list = document.getElementById('groupsList');
-  list.innerHTML='';
-  if(groups.length===0){ list.innerHTML='<p>No groups yet</p>'; return; }
-
-  groups.forEach((g, idx)=>{
-    const div = document.createElement('div');
-    div.className='group';
-    div.innerHTML=`<span class="group-name">${g.name}</span>
-      <button class="delete-btn">Delete</button>`;
-
-    // Click group to open chat
-    div.onclick = e=>{
-      if(!e.target.classList.contains('delete-btn')){
-        localStorage.setItem('currentGroup', JSON.stringify(g));
-        window.location.href='group-chat.html';
-      }
+  groupsListDiv.innerHTML="";
+  groups.forEach((g,index)=>{
+    const div = document.createElement("div");
+    div.className="group";
+    div.onclick = ()=>{
+      // Open chat
+      localStorage.setItem("currentGroupIndex", index);
+      g.lastRead = new Date().toISOString(); // Reset unread
+      localStorage.setItem("allGroups", JSON.stringify(groups));
+      window.location="groupChat.html";
     };
+    const latestMsg = g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
 
-    // Delete group
-    div.querySelector('.delete-btn').onclick = ()=>{
-      if(confirm(`Delete group "${g.name}"?`)){
-        groups.splice(idx,1);
-        saveGroups();
-        renderGroups();
-      }
-    };
-
-    list.appendChild(div);
+    div.innerHTML = `
+      <img src="${g.img||'group.png'}">
+      <div class="info">
+        <h3>${g.name}</h3>
+        <p>${latestMsg}</p>
+      </div>
+      ${hasUnread(g) ? '<div class="red-dot"></div>' : ''}
+    `;
+    groupsListDiv.appendChild(div);
   });
 }
+
+// Check unread messages
+function hasUnread(group){
+  if(!group.lastRead) return group.messages.length>0;
+  const lastReadTime = new Date(group.lastRead).getTime();
+  const lastMsgTime = group.messages.length>0 ? new Date(group.messages[group.messages.length-1].time || new Date()).getTime() : 0;
+  return lastMsgTime > lastReadTime;
+}
+
 renderGroups();
-
-// Create group
-document.getElementById('createGroupBtn').addEventListener('click', ()=>{
-  if(friends.length===0){ alert('Add friends first'); return; }
-
-  const name = prompt('Enter group name:');
-  if(!name) return;
-
-  // Select members (multiple)
-  const memberSelection = prompt('Enter friend names separated by comma:\nAvailable: '+friends.map(f=>f.name).join(','));
-  if(!memberSelection) return;
-  const members = memberSelection.split(',').map(f=>f.trim()).filter(f=>friends.some(fr=>fr.name===f));
-  if(members.length===0){ alert('No valid members selected'); return; }
-
-  const group = {id:'group_'+Date.now(), name, members};
-  groups.push(group);
-  saveGroups();
-  renderGroups();
-  alert('Group created! Click group to chat.');
-});
 </script>
-
 </body>
 </html>
