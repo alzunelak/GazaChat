@@ -5,11 +5,15 @@ const urlsToCache = [
   '/profile.html',
   '/name.html',
   '/home.html',
-  '/offline.html',
+  '/scan.html',
+  '/search.html',
+  '/settings.html',
+  '/block.html',
   '/style.css',
-  '/script.js',
+  '/js/home.js',
+  '/js/qrious.min.js',
   '/default-profile.png',
-  // Add any other assets you need
+  '/offline.html'
 ];
 
 // Install service worker and cache files
