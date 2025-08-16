@@ -8,18 +8,19 @@
 body{margin:0;padding:0;font-family:Arial;background:#e5ddd5;}
 .chat-header{background:#075E54;color:white;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;}
 .chat-header img{width:40px;height:40px;border-radius:50%;margin-right:10px;}
-.chat-messages{padding:10px;height:calc(100vh-180px);overflow-y:auto;display:flex;flex-direction:column;}
-.chat-input{display:flex;padding:10px;background:#f0f0f0;position:sticky;bottom:0;}
-.chat-input input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
-.chat-input button{padding:0 12px;border:none;background:#25D366;color:white;border-radius:50%;font-size:18px;cursor:pointer;margin-left:2px;}
+.chat-messages{padding:10px;height:calc(100vh-120px);overflow-y:auto;display:flex;flex-direction:column;}
+.chat-input-container{position:sticky;bottom:0;padding:10px;background:#f0f0f0;display:flex;align-items:center;border-top:1px solid #ccc;}
+.chat-input-container input{flex:1;padding:10px 45px 10px 12px;border-radius:20px;border:1px solid #ccc;}
+.chat-input-container button{position:absolute;right:20px;background:#25D366;border:none;color:white;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;}
 .message{max-width:70%;padding:8px 12px;border-radius:18px;margin:5px 0;position:relative;word-wrap:break-word;}
 .sent{background:#dcf8c6;align-self:flex-end;}
 .received{background:white;align-self:flex-start;}
 .timestamp{font-size:10px;color:#888;margin-top:2px;text-align:right;}
-.attachment-menu{position:absolute;bottom:60px;left:10px;display:none;flex-direction:column;gap:10px;background:#fff;padding:10px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.attachment-menu{position:absolute;bottom:60px;right:10px;display:none;flex-direction:column;gap:10px;background:#fff;padding:10px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
 .attachment-btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:#f0f0f0;}
 .attachment-btn:hover{background:#e0e0e0;}
-video, img{border-radius:8px;max-width:200px;margin-top:5px;}
+video,img{border-radius:8px;max-width:200px;margin-top:5px;}
+.header-buttons button{margin-left:5px;background:#128C7E;border:none;color:white;font-size:16px;padding:6px 10px;border-radius:6px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -29,25 +30,24 @@ video, img{border-radius:8px;max-width:200px;margin-top:5px;}
     <img id="friendProfile" src="">
     <span id="friendName"></span>
   </div>
-  <div>
+  <div class="header-buttons">
     <button id="audioCallBtn">🎤</button>
     <button id="videoCallBtn">📹</button>
+    <button id="blockBtn">🚫 Block</button>
   </div>
 </div>
 
 <div class="chat-messages" id="chatMessages"></div>
 
-<div class="chat-input">
-  <button id="plusBtn">+</button>
+<div class="chat-input-container">
   <input type="text" id="messageInput" placeholder="Type a message...">
-  <button id="sendBtn">➡</button>
-</div>
-
-<div id="attachmentMenu" class="attachment-menu">
-  <button class="attachment-btn" id="sendFileBtn">📄 File</button>
-  <button class="attachment-btn" id="takePhotoBtn">📸 Take Photo</button>
-  <button class="attachment-btn" id="choosePhotoBtn">🖼️ Gallery</button>
-  <button class="attachment-btn" id="sendLocationBtn">📍 Location</button>
+  <button id="plusBtn">+</button>
+  <div id="attachmentMenu" class="attachment-menu">
+    <button class="attachment-btn" id="sendFileBtn">📄 File</button>
+    <button class="attachment-btn" id="takePhotoBtn">📸 Take Photo</button>
+    <button class="attachment-btn" id="choosePhotoBtn">🖼️ Gallery</button>
+    <button class="attachment-btn" id="sendLocationBtn">📍 Location</button>
+  </div>
 </div>
 
 <video id="localVideo" autoplay muted style="display:none;position:fixed;bottom:80px;right:10px;width:150px;height:150px;"></video>
@@ -87,8 +87,7 @@ async function connectBluetooth(){
 // Chat storage
 const messagesDiv = document.getElementById('chatMessages');
 const input = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-const plusBtn = document.getElementById('plusBtn');
+const sendBtn = document.getElementById('plusBtn'); // use plus button as primary to open attachments
 const attachmentMenu = document.getElementById('attachmentMenu');
 
 function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
@@ -122,16 +121,18 @@ async function sendBluetoothMessage(msgObj){
   }
 }
 
-sendBtn.addEventListener('click',async ()=>{
-  if(blockedUsers.includes(friend)){ alert('Cannot send to blocked user'); return; }
-  const text=input.value.trim(); if(!text) return;
-  const msgObj={type:'text',data:text,sender:'me',time:formatTime()};
-  const messages=getChat(); messages.push(msgObj); saveChat(messages); input.value=''; loadChat();
-  await sendBluetoothMessage(msgObj);
+input.addEventListener('keypress', async (e)=>{
+  if(e.key==='Enter'){
+    if(blockedUsers.includes(friend)){ alert('Cannot send to blocked user'); return; }
+    const text=input.value.trim(); if(!text) return;
+    const msgObj={type:'text',data:text,sender:'me',time:formatTime()};
+    const messages=getChat(); messages.push(msgObj); saveChat(messages); input.value=''; loadChat();
+    await sendBluetoothMessage(msgObj);
+  }
 });
 
-// --- Attachment Menu ---
-plusBtn.addEventListener('click', ()=>attachmentMenu.style.display = attachmentMenu.style.display==='flex'?'none':'flex');
+// Attachment menu toggle
+sendBtn.addEventListener('click', ()=>attachmentMenu.style.display = attachmentMenu.style.display==='flex'?'none':'flex');
 
 function sendFile(callback){
   const fileInput=document.createElement('input');
@@ -178,22 +179,17 @@ document.getElementById('sendLocationBtn').addEventListener('click',()=>{
   } else alert("Geolocation not supported");
 });
 
-// --- Audio/Video Call ---
-let localStream, remoteVideoEl=document.getElementById('remoteVideo'), localVideoEl=document.getElementById('localVideo');
-async function startCall(isVideo){
-  localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:isVideo});
-  localVideoEl.srcObject = localStream; localVideoEl.style.display='block';
-  // Note: full streaming over Bluetooth may need custom chunking and decoding
-  alert('Audio/Video call started (demo, low-res over Bluetooth)');
-}
+// --- Block User ---
+document.getElementById('blockBtn').onclick=()=>{
+  blockedUsers.push(friend);
+  localStorage.setItem('blockedUsers',JSON.stringify(blockedUsers));
+  alert(`${friend} is now blocked`);
+  window.location.href=`blockuser.html?friend=${friend}`;
+};
 
-document.getElementById('audioCallBtn').onclick=()=>startCall(false);
-document.getElementById('videoCallBtn').onclick=()=>startCall(true);
-
-// --- Initialize ---
+// Initialize
 loadChat();
 connectBluetooth();
 </script>
-
 </body>
 </html>
