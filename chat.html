@@ -57,8 +57,7 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
   <button class="attachment-btn" id="sendLocationBtn">📍</button>
 </div>
 
-
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
 // --- User Profile ---
 const myName = localStorage.getItem("username") || "Me";
@@ -110,7 +109,8 @@ blockBtn.addEventListener('click', () => {
     localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
 
     let friends = JSON.parse(localStorage.getItem("friends") || "[]");
-    friends = friends.filter(f => f !== friend); // assuming array of names
+    // Update based on your array structure: names or objects
+    friends = friends.filter(f => (typeof f === 'string' ? f !== friend : f.name !== friend));
     localStorage.setItem("friends", JSON.stringify(friends));
 
     alert(friend + " is blocked. You cannot send messages until unblocked.");
@@ -129,9 +129,7 @@ function loadChat(){
 
     const div = document.createElement('div');
     div.className='message';
-    if(msg.senderId !== myId){
-      div.innerHTML = `<strong>${msg.senderName}</strong><br>`;
-    }
+    div.innerHTML = ""; // remove sender name, only message content
 
     if(msg.type==='text'){
       if(msg.text === "My Location" && msg.data && msg.data.startsWith("https://maps.google.com/")){
@@ -192,12 +190,17 @@ loadChat();
 const attachmentToggle = document.getElementById('attachmentToggle');
 const attachmentMenu = document.getElementById('attachmentMenu');
 attachmentToggle.addEventListener('click', () => {
-  if(attachmentMenu.style.display === 'flex') attachmentMenu.style.display = 'none';
-  else attachmentMenu.style.display = 'flex';
+  attachmentMenu.style.display = (attachmentMenu.style.display==='flex') ? 'none' : 'flex';
 });
+
+// Function to close attachment menu
+function closeAttachmentMenu() {
+  attachmentMenu.style.display = 'none';
+}
 
 // --- File ---
 document.getElementById('sendFileBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
   const inputFile = document.createElement('input');
   inputFile.type='file';
   inputFile.onchange = e => {
@@ -212,6 +215,7 @@ document.getElementById('sendFileBtn').addEventListener('click', ()=>{
 
 // --- Photo ---
 document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
   const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
   const inputPhoto = document.createElement('input');
   inputPhoto.type = 'file';
@@ -229,6 +233,7 @@ document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
 
 // --- Video ---
 document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
   const choice = confirm("Press OK to record video, Cancel to pick from gallery");
   const inputVideo = document.createElement('input');
   inputVideo.type = 'file';
@@ -246,12 +251,14 @@ document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
 
 // --- Location ---
 document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
   if(!navigator.geolocation) return alert("Geolocation not supported.");
   navigator.geolocation.getCurrentPosition(pos=>{
     const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
     sendAttachment('text', url, 'My Location');
   }, err=>alert("Location error: "+err.message));
 });
+
 
 // --- Send Attachment Function ---
 function sendAttachment(type, data, name){
@@ -260,4 +267,3 @@ function sendAttachment(type, data, name){
   socket.emit("private message", msg);
 }
 </script>
-
