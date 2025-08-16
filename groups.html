@@ -13,7 +13,7 @@ body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
 .group .info p{margin:0;font-size:12px;color:gray;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .red-dot{position:absolute;right:10px;top:15px;width:10px;height:10px;background:red;border-radius:50%;}
 #createGroupBtn{padding:10px 15px;background:#25d366;color:white;border:none;border-radius:8px;cursor:pointer;margin-bottom:10px;}
-#newGroupPopup{display:none;position:absolute;top:50px;left:50%;transform:translateX(-50%);background:white;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+#newGroupPopup{display:none;position:absolute;top:50px;left:50%;transform:translateX(-50%);background:white;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);display:flex;flex-direction:column;}
 #newGroupPopup input{width:200px;margin-bottom:10px;padding:5px;}
 #newGroupPopup button{padding:5px 10px;margin-right:5px;}
 </style>
@@ -41,11 +41,20 @@ const newGroupPopup = document.getElementById("newGroupPopup");
 // Render all groups
 function renderGroups(){
   groupsListDiv.innerHTML = "";
-  groups.forEach((g,index)=>{
+
+  // Sort groups: unread first
+  const sortedGroups = groups.slice().sort((a,b)=>{
+    if(a.unread && !b.unread) return -1;
+    if(!a.unread && b.unread) return 1;
+    return 0;
+  });
+
+  sortedGroups.forEach(g=>{
     const div = document.createElement("div");
     div.className="group";
-    div.onclick = ()=>{ // go to chat
-      localStorage.setItem("currentGroupIndex", index);
+    div.onclick = ()=>{
+      const originalIndex = groups.findIndex(gr=>gr.name===g.name && gr.photo===g.photo);
+      localStorage.setItem("currentGroupIndex", originalIndex);
       window.location="group-chat.html";
     };
     const latestMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
@@ -62,7 +71,7 @@ function renderGroups(){
 }
 
 // Create group popup
-createGroupBtn.onclick = ()=>{ newGroupPopup.style.display="block"; }
+createGroupBtn.onclick = ()=>{ newGroupPopup.style.display="flex"; }
 function closeNewGroupPopup(){ newGroupPopup.style.display="none"; }
 
 // Create new group
@@ -96,6 +105,12 @@ function saveGroup(name,img){
   document.getElementById("newGroupName").value="";
   document.getElementById("newGroupPhoto").value="";
 }
+
+// Listen for localStorage changes to auto-refresh
+window.addEventListener('storage', ()=>{
+  groups = JSON.parse(localStorage.getItem("groups") || "[]");
+  renderGroups();
+});
 
 renderGroups();
 </script>
