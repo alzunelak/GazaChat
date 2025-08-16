@@ -1,107 +1,67 @@
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script>
-// --- User Info ---
-const myName = localStorage.getItem("username") || "You";
-const myPic = localStorage.getItem("profilePic") || "default-profile.png";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Chat</title>
+<style>
+body{font-family:Arial;margin:0;padding:0;background:#f5f5f5;display:flex;flex-direction:column;height:100vh;}
+header{background:#25d366;color:white;padding:10px;display:flex;flex-direction:column;}
+#chatArea{flex:1;padding:10px;overflow-y:auto;}
+.message{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;max-width:70%;}
+.message.self{background:#dcf8c6;align-self:flex-end;}
+#inputArea{display:flex;padding:10px;background:#fff;}
+#inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
+#inputArea button{margin-left:5px;padding:10px 15px;border:none;border-radius:20px;background:#25d366;color:white;cursor:pointer;}
+</style>
+</head>
+<body>
 
-// --- Current Group ---
+<header>
+  <h2 id="groupName">Group</h2>
+</header>
+
+<div id="chatArea"></div>
+
+<div id="inputArea">
+  <input type="text" id="msgInput" placeholder="Type a message...">
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+// User info
+const myName = localStorage.getItem("username") || "You";
 let currentGroup = JSON.parse(localStorage.getItem("currentGroup") || '{"name":"Group","members":[],"id":"group_default"}');
 document.getElementById("groupName").innerText = currentGroup.name;
 
-// --- Socket.IO connection ---
-const socket = io("http://localhost:3000");
-
-// Join group room
-socket.emit("join group", currentGroup.id);
-
-// --- Messages ---
+// Messages
 let messages = JSON.parse(localStorage.getItem("groupMessages_"+currentGroup.id) || "[]");
 const chatArea = document.getElementById("chatArea");
-
 function saveMessages(){ localStorage.setItem("groupMessages_"+currentGroup.id, JSON.stringify(messages)); }
-
 function renderMessages(){
-  chatArea.innerHTML = "";
-  messages.forEach((m, idx)=>{
-    const container = document.createElement("div");
-    container.className = "message" + (m.senderName===myName?' self':'');
-    
-    // Add profile pic and name
-    const profileImg = document.createElement("img");
-    profileImg.src = m.profilePic || "default-profile.png";
-    profileImg.style.width = "30px";
-    profileImg.style.height = "30px";
-    profileImg.style.borderRadius = "50%";
-    profileImg.style.verticalAlign = "middle";
-    profileImg.style.marginRight = "5px";
-
-    const content = document.createElement("span");
-    content.innerHTML = `<strong>${m.senderName}</strong>: ${m.text}<div class="message-time">${m.time}</div>`;
-
-    container.appendChild(profileImg);
-    container.appendChild(content);
-
-    // Delete options for own messages
-    if(m.senderName===myName){
-      const del = document.createElement("span");
-      del.className="message-options";
-      del.innerText="⋮";
-      del.onclick = ()=>{
-        const choice = prompt("Delete message:\n1=Delete for me\n2=Delete for everyone");
-        if(choice==='1'){
-          messages.splice(idx,1); saveMessages(); renderMessages();
-        } else if(choice==='2'){
-          socket.emit("delete group message", { groupId: currentGroup.id, index: idx });
-        }
-      };
-      container.appendChild(del);
-    }
-
-    chatArea.appendChild(container);
+  chatArea.innerHTML="";
+  messages.forEach(m=>{
+    const div = document.createElement("div");
+    div.className="message" + (m.sender===myName?" self":"");
+    div.innerHTML=`<strong>${m.sender}</strong>: ${m.text}`;
+    chatArea.appendChild(div);
   });
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 renderMessages();
 
-// --- Send Group Message ---
+// Send message
 function sendMessage(){
   const input = document.getElementById("msgInput");
   const text = input.value.trim();
   if(!text) return;
-
-  const msg = { senderName: myName, profilePic: myPic, text, time: new Date().toLocaleTimeString() };
+  const msg={sender:myName,text,time:new Date().toLocaleTimeString()};
   messages.push(msg);
   saveMessages();
   renderMessages();
-
-  socket.emit("group message", { groupId: currentGroup.id, message: msg });
-  input.value = "";
-}
-
-// --- Receive Group Messages ---
-socket.on("group message", ({ groupId, message })=>{
-  if(groupId === currentGroup.id){
-    messages.push(message);
-    saveMessages();
-    renderMessages();
-  }
-});
-
-// --- Delete for everyone ---
-socket.on("delete group message", ({ groupId, index })=>{
-  if(groupId===currentGroup.id){
-    messages.splice(index,1);
-    saveMessages();
-    renderMessages();
-  }
-});
-
-// --- Call simulation ---
-function startGroupCall(mode){
-  if(currentGroup.members.length===0){
-    alert("No members to call");
-    return;
-  }
-  alert(`${mode==='audio'?'Audio':'Video'} call started with: ${currentGroup.members.join(', ')}`);
+  input.value="";
 }
 </script>
+
+</body>
+</html>
