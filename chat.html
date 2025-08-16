@@ -22,8 +22,11 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
 .chat-input {display:flex;padding:10px;background:#f0f0f0;align-items:center;position:sticky;bottom:0;z-index:10;}
 .chat-input input {flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
 .chat-input button {padding:0 12px;border:none;background:#25D366;color:white;border-radius:50%;font-size:22px;cursor:pointer;margin-left:5px;}
+.attach-popup{position:absolute;background:white;padding:10px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);display:none;flex-direction:column;z-index:20;}
+.attach-popup button{margin:5px 0;padding:8px;border:none;background:#075E54;color:white;border-radius:8px;cursor:pointer;}
 .msg-options {position:absolute;background:white;padding:5px 10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);display:none;z-index:100;}
 .msg-options button {border:none;background:none;color:#075E54;padding:5px 10px;cursor:pointer;}
+.preview{max-width:200px;border-radius:10px;margin-top:5px;}
 </style>
 </head>
 <body>
@@ -42,7 +45,16 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
 
 <div class="chat-messages" id="chatMessages"></div>
 
+<!-- Attachment popup -->
+<div class="attach-popup" id="attachPopup">
+  <button id="attachPhotoGallery">📷 Photo (Gallery)</button>
+  <button id="attachPhotoCamera">📸 Camera</button>
+  <button id="attachVideo">🎥 Video</button>
+  <button id="attachFile">📄 File</button>
+</div>
+
 <div class="chat-input">
+  <button id="plusBtn">➕</button>
   <input type="text" id="messageInput" placeholder="Type a message...">
   <button id="sendBtn">➡</button>
 </div>
@@ -68,22 +80,21 @@ function loadChat(){
     const container = document.createElement('div');
     container.className = 'message-container ' + (msg.sender==='me'?'sent':'received');
 
-    if(msg.sender==='me'){
-      const div = document.createElement('div'); div.className='message'; div.innerText = msg.text;
-      const ts = document.createElement('div'); ts.className='timestamp'; ts.innerText = msg.time;
-      div.appendChild(ts);
-      container.appendChild(div);
-    } else {
-      const img = document.createElement('img'); img.src = profile;
-      const div = document.createElement('div'); div.className='message'; div.innerText = msg.text;
-      const ts = document.createElement('div'); ts.className='timestamp'; ts.innerText = msg.time;
-      div.appendChild(ts);
-      container.appendChild(img);
-      container.appendChild(div);
+    const div = document.createElement('div'); div.className='message';
+    if(msg.type==='text'){ div.innerText = msg.text; }
+    else if(msg.type==='photo'){ div.innerHTML = `<img src="${msg.data}" class="preview">`; }
+    else if(msg.type==='video'){ div.innerHTML = `<video src="${msg.data}" class="preview" controls></video>`; }
+    else if(msg.type==='file'){ div.innerHTML = `📄 <a href="${msg.data}" download>Download File</a>`; }
+
+    const ts = document.createElement('div'); ts.className='timestamp'; ts.innerText = msg.time;
+    div.appendChild(ts);
+
+    if(msg.sender==='me'){ container.appendChild(div); }
+    else { 
+      const img = document.createElement('img'); img.src = profile; container.appendChild(img); container.appendChild(div);
     }
 
-    // Attach message options
-    attachMessageOptions(container, i);
+    attachMessageOptions(container,i);
     chatContainer.appendChild(container);
   });
   chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -92,20 +103,42 @@ function loadChat(){
 // --- Send Message ---
 const sendBtn = document.getElementById('sendBtn');
 const input = document.getElementById('messageInput');
-sendBtn.addEventListener('click', ()=>{ sendMessage(); });
+sendBtn.addEventListener('click', sendMessage);
 input.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage(); });
 
 function sendMessage(){
-  const text = input.value.trim();
-  if(!text) return;
+  const text = input.value.trim(); if(!text) return;
   const messages = getChat();
-  messages.push({sender:'me', text:text, time:formatTime()});
-  saveChat(messages);
-  input.value='';
-  loadChat();
+  messages.push({sender:'me', type:'text', text:text, time:formatTime()});
+  saveChat(messages); input.value=''; loadChat();
 }
 
-// --- Message Options (Delete/Edit) ---
+// --- Plus button and attachments ---
+const plusBtn = document.getElementById('plusBtn');
+const attachPopup = document.getElementById('attachPopup');
+plusBtn.addEventListener('click', ()=>{
+  attachPopup.style.display = attachPopup.style.display==='flex'?'none':'flex';
+  attachPopup.style.flexDirection='column';
+  const inputRect = document.querySelector('.chat-input').getBoundingClientRect();
+  attachPopup.style.bottom = `${window.innerHeight - inputRect.top + 10}px`;
+});
+
+function attachFileHandler(type,accept,capture){
+  const file = document.createElement('input'); file.type='file'; file.accept=accept||'*'; if(capture) file.capture=capture;
+  file.onchange = e=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{ const messages=getChat(); messages.push({sender:'me',type:type,data:reader.result,time:formatTime()}); saveChat(messages); loadChat(); };
+    reader.readAsDataURL(file.files[0]);
+  }
+  file.click();
+}
+
+document.getElementById('attachPhotoGallery').addEventListener('click', ()=>attachFileHandler('photo','image/*'));
+document.getElementById('attachPhotoCamera').addEventListener('click', ()=>attachFileHandler('photo','image/*','environment'));
+document.getElementById('attachVideo').addEventListener('click', ()=>attachFileHandler('video','video/*'));
+document.getElementById('attachFile').addEventListener('click', ()=>attachFileHandler('file'));
+
+// --- Message Options ---
 function attachMessageOptions(msgDiv,index){
   const msgContent = msgDiv.querySelector('.message');
   msgContent.addEventListener('contextmenu', e=>{ e.preventDefault(); showOptions(msgDiv,index); });
@@ -120,49 +153,19 @@ function showOptions(msgDiv,index){
   const options = document.createElement('div'); options.className='msg-options';
   const messages = getChat();
 
-  // Delete for everyone
   const delAll = document.createElement('button'); delAll.innerText='Delete for everyone';
-  delAll.onclick = ()=>{
-    messages.splice(index,1);
-    saveChat(messages);
-    loadChat();
-    options.remove();
-  };
-
-  // Delete for me
+  delAll.onclick = ()=>{ messages.splice(index,1); saveChat(messages); loadChat(); options.remove(); };
   const delMe = document.createElement('button'); delMe.innerText='Delete for me';
-  delMe.onclick = ()=>{
-    if(messages[index].sender==='me'){ messages.splice(index,1); saveChat(messages); loadChat(); }
-    else alert('Cannot delete others message for you.');
-    options.remove();
-  };
-
-  // Edit
+  delMe.onclick = ()=>{ if(messages[index].sender==='me'){ messages.splice(index,1); saveChat(messages); loadChat(); } else alert('Cannot delete others message'); options.remove(); };
   const editBtn = document.createElement('button'); editBtn.innerText='Edit';
-  editBtn.onclick = ()=>{
-    if(messages[index].sender==='me'){
-      let newText = prompt('Edit your message:', messages[index].text);
-      if(newText!==null && newText.trim()!==''){
-        messages[index].text = newText;
-        saveChat(messages);
-        loadChat();
-      }
-    } else alert('Cannot edit others message.');
-    options.remove();
-  };
+  editBtn.onclick = ()=>{ if(messages[index].sender==='me'){ let n=prompt('Edit:',messages[index].text); if(n){ messages[index].text=n; saveChat(messages); loadChat(); } } else alert('Cannot edit others'); options.remove(); };
 
-  options.appendChild(delAll);
-  options.appendChild(delMe);
-  options.appendChild(editBtn);
+  options.appendChild(delAll); options.appendChild(delMe); options.appendChild(editBtn);
 
   const rect = msgDiv.getBoundingClientRect();
-  options.style.top = rect.top + 'px';
-  options.style.left = rect.left + 'px';
+  options.style.top = rect.top + 'px'; options.style.left = rect.left + 'px';
   document.body.appendChild(options);
-
-  document.addEventListener('click', function hide(e){
-    if(!options.contains(e.target)){ options.remove(); document.removeEventListener('click',hide); }
-  });
+  document.addEventListener('click', function hide(e){ if(!options.contains(e.target)){ options.remove(); document.removeEventListener('click',hide); } });
 }
 
 // --- Initial load ---
