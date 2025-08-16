@@ -47,7 +47,7 @@ function renderGroups(){
       localStorage.setItem("currentGroupIndex", i);
       g.unread=false;
       saveGroups();
-      window.location="group-chat.html";
+      window.location="groupChat.html";
     };
     const lastMsg = g.messages.length>0 ? g.messages[g.messages.length-1].text || `[${g.messages[g.messages.length-1].type}]` : "No messages yet";
     div.innerHTML = `<img src="${g.photo || 'group.png'}">
