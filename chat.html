@@ -1,12 +1,38 @@
-<!-- Only content for mainContent -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChatApp</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#e5ddd5; }
+.chat-header { background:#075E54; color:white; padding:15px; font-size:18px; position:sticky; top:0; display:flex; align-items:center; justify-content:space-between; }
+.chat-messages { padding:10px; height:calc(100vh - 150px); overflow-y:auto; display:flex; flex-direction:column; }
+.chat-input { display:flex; padding:10px; background:#f0f0f0; position:sticky; bottom:0; }
+.chat-input input { flex:1; padding:10px; border-radius:20px; border:1px solid #ccc; margin-right:5px; }
+.chat-input button { padding:0 15px; border:none; background:#25D366; color:white; border-radius:50%; font-size:18px; cursor:pointer; }
+.message { max-width:70%; padding:8px 12px; border-radius:18px; margin:5px 0; position:relative; word-wrap:break-word; }
+.sent { background:#dcf8c6; align-self:flex-end; }
+.received { background:white; align-self:flex-start; }
+.timestamp { font-size:10px; color:#888; margin-top:2px; text-align:right; }
+.comment-text { font-size:12px; color:#555; margin-top:2px; cursor:pointer; }
+.comment-btn { font-size:12px; cursor:pointer; margin-left:5px; color:#555; }
+.attachment-menu { position:absolute; bottom:60px; left:10px; display:none; flex-direction:column; gap:10px; background:#fff; padding:10px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+.attachment-btn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; background:#f0f0f0; }
+.attachment-btn:hover { background:#e0e0e0; }
+</style>
+</head>
+<body>
+
 <div class="chat-header" id="chatHeader">Chat</div>
 <div class="chat-messages" id="chatMessages"></div>
+
 <div class="chat-input">
+  <button id="plusBtn">+</button>
   <input type="text" id="messageInput" placeholder="Type a message...">
-  <button id="sendBtn">Send</button>
+  <button id="sendBtn">➡</button>
 </div>
 
-<!-- Attachment Menu -->
 <div id="attachmentMenu" class="attachment-menu">
   <button class="attachment-btn" id="sendFileBtn">📄 File</button>
   <button class="attachment-btn" id="takePhotoBtn">📸 Take Photo</button>
@@ -14,118 +40,114 @@
   <button class="attachment-btn" id="sendLocationBtn">📍 Location</button>
 </div>
 
-<style>
-.attachment-menu {
-  position: absolute;
-  bottom: 60px;
-  left: 10px;
-  display: none;
-  flex-direction: column;
-  gap: 10px;
-  background: #fff;
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.attachment-btn {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background: #f0f0f0;
-}
-
-.attachment-btn:hover { background: #e0e0e0; }
-
-.comment-btn {
-  position: absolute;
-  top: 2px;
-  right: -25px;
-  display: none;
-  font-size: 12px;
-  cursor: pointer;
-  padding: 2px 4px;
-  border: none;
-  border-radius: 4px;
-  background: #eee;
-}
-
-.message:hover .comment-btn { display: block; }
-.comment-text { font-size: 12px; color:#555; margin-top:2px; cursor:pointer; }
-.message { position: relative; padding:5px; margin:5px 0; border-radius:6px; max-width:70%; }
-.sent { background:#dcf8c6; margin-left:auto; }
-.received { background:#fff; margin-right:auto; }
-</style>
-
 <script>
-// ===== Existing code =====
-
-// Get current friend from localStorage
-const friend = localStorage.getItem('selectedFriend') || 'UnknownFriend';
+// ===== Setup =====
+const friend = localStorage.getItem('selectedFriend') || 'Friend';
 document.getElementById('chatHeader').innerText = `Chat with ${friend}`;
 
 const messagesDiv = document.getElementById('chatMessages');
 const input = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
+const plusBtn = document.getElementById('plusBtn');
+const attachmentMenu = document.getElementById('attachmentMenu');
 
-// Load chat from localStorage
+const chatChannel = new BroadcastChannel('chat_channel');
+
+// ===== Helpers =====
+function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
+function saveChat(messages){ localStorage.setItem(`chat_${friend}`, JSON.stringify(messages)); }
+
+function formatTime(){ 
+  const d = new Date(); 
+  return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+
+// ===== Load Chat =====
 function loadChat(){
   messagesDiv.innerHTML = '';
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.forEach(msg => {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', msg.type === 'text' ? 'sent' : 'received'); // style
-    if(msg.type === 'text'){
-      msgDiv.innerText = msg.data;
-    } else if(msg.type === 'image'){
+  const messages = getChat();
+  messages.forEach((msg, index)=>{
+    const div = document.createElement('div');
+    div.classList.add('message', msg.sender==='me' ? 'sent' : 'received');
+
+    if(msg.type==='text') div.innerText = msg.data;
+    if(msg.type==='image'){
       const img = document.createElement('img');
       img.src = msg.data;
       img.style.maxWidth = '200px';
-      msgDiv.appendChild(img);
-    } else if(msg.type === 'video'){
-      const video = document.createElement('video');
-      video.src = msg.data;
-      video.controls = true;
-      video.style.maxWidth = '200px';
-      msgDiv.appendChild(video);
+      div.appendChild(img);
     }
-    messagesDiv.appendChild(msgDiv);
+    if(msg.type==='file'){
+      const a = document.createElement('a');
+      a.href = msg.data;
+      a.download = msg.name;
+      a.innerText = '📄 ' + msg.name;
+      div.appendChild(a);
+    }
+    if(msg.type==='location'){
+      const a = document.createElement('a');
+      a.href = `https://www.google.com/maps?q=${msg.data.lat},${msg.data.lng}`;
+      a.target='_blank';
+      a.innerText = '📍 Shared Location';
+      div.appendChild(a);
+    }
+
+    // Timestamp
+    const ts = document.createElement('div');
+    ts.className = 'timestamp';
+    ts.innerText = msg.time || formatTime();
+    div.appendChild(ts);
+
+    // Comments
+    if(msg.comments) msg.comments.forEach(c=>{
+      const cDiv = document.createElement('div');
+      cDiv.className='comment-text';
+      cDiv.innerText='💬 '+c;
+      div.appendChild(cDiv);
+    });
+
+    messagesDiv.appendChild(div);
   });
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// Send message
-sendBtn.addEventListener('click', () => {
+// ===== Send Message =====
+sendBtn.addEventListener('click',()=>{
   const text = input.value.trim();
   if(!text) return;
+  const msgObj = { type:'text', data:text, sender:'me', time: formatTime() };
+  const messages = getChat();
+  messages.push(msgObj);
+  saveChat(messages);
 
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({ type:'text', data: text });
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-
-  input.value = '';
+  chatChannel.postMessage({ friend, message: msgObj });
+  input.value='';
   loadChat();
 });
 
-// ===== Attachment Menu =====
-const plusBtn = document.createElement('button');
-plusBtn.innerText = '+';
-plusBtn.style.marginRight = '5px';
-input.before(plusBtn);
+// ===== Receive Messages =====
+chatChannel.onmessage = (e)=>{
+  const { friend: msgFriend, message } = e.data;
+  if(msgFriend===friend){
+    const messages = getChat();
+    messages.push({...message, sender:'friend'});
+    saveChat(messages);
+    loadChat();
+  }
+};
 
-const attachmentMenu = document.getElementById('attachmentMenu');
-plusBtn.addEventListener('click', () => attachmentMenu.style.display = attachmentMenu.style.display === 'flex' ? 'none' : 'flex');
+// ===== Attachment Menu =====
+plusBtn.addEventListener('click', ()=>attachmentMenu.style.display = attachmentMenu.style.display==='flex'?'none':'flex');
 
 function sendFile(callback){
   const fileInput = document.createElement('input');
   fileInput.type='file';
-  fileInput.onchange = e => {
+  fileInput.onchange = e=>{
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = ()=>{
       callback(file.name, reader.result);
-      attachmentMenu.style.display = 'none';
+      attachmentMenu.style.display='none';
     };
     reader.readAsDataURL(file);
   };
@@ -133,23 +155,23 @@ function sendFile(callback){
 }
 
 document.getElementById('sendFileBtn').addEventListener('click', ()=>sendFile((name,data)=>{
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({type:'file',data,name});
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
+  const msgObj = { type:'file', data, name, sender:'me', time:formatTime() };
+  const messages = getChat(); messages.push(msgObj); saveChat(messages);
+  chatChannel.postMessage({ friend, message: msgObj });
   loadChat();
 }));
 
 document.getElementById('takePhotoBtn').addEventListener('click', ()=>sendFile((name,data)=>{
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({type:'image',data});
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
+  const msgObj = { type:'image', data, sender:'me', time:formatTime() };
+  const messages = getChat(); messages.push(msgObj); saveChat(messages);
+  chatChannel.postMessage({ friend, message: msgObj });
   loadChat();
 }));
 
 document.getElementById('choosePhotoBtn').addEventListener('click', ()=>sendFile((name,data)=>{
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  storedMessages.push({type:'image',data});
-  localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
+  const msgObj = { type:'image', data, sender:'me', time:formatTime() };
+  const messages = getChat(); messages.push(msgObj); saveChat(messages);
+  chatChannel.postMessage({ friend, message: msgObj });
   loadChat();
 }));
 
@@ -157,101 +179,17 @@ document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(pos=>{
       const {latitude,longitude} = pos.coords;
-      const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-      storedMessages.push({type:'location', data:{lat:latitude,lng:longitude}});
-      localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
+      const msgObj = { type:'location', data:{lat:latitude,lng:longitude}, sender:'me', time:formatTime() };
+      const messages = getChat(); messages.push(msgObj); saveChat(messages);
+      chatChannel.postMessage({ friend, message: msgObj });
       loadChat();
-      attachmentMenu.style.display = 'none';
+      attachmentMenu.style.display='none';
     });
   } else alert("Geolocation not supported");
 });
 
-// ===== Comment Feature =====
-function addCommentFeature(){
-  const messages = document.querySelectorAll('.message');
-  messages.forEach((msgDiv, index)=>{
-    if(msgDiv.querySelector('.comment-btn')) return;
-    const btn = document.createElement('button');
-    btn.innerText = '💬';
-    btn.className = 'comment-btn';
-    btn.onclick = () => {
-      const comment = prompt('Enter comment:');
-      if(comment){
-        const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-        if(!storedMessages[index].comments) storedMessages[index].comments = [];
-        storedMessages[index].comments.push(comment);
-        localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-        loadChat();
-      }
-    };
-    msgDiv.appendChild(btn);
-
-    // show existing comments
-    const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-    if(storedMessages[index].comments){
-      storedMessages[index].comments.forEach((c,cIndex)=>{
-        const cDiv = document.createElement('div');
-        cDiv.className = 'comment-text';
-        cDiv.innerText = '💬 ' + c;
-        cDiv.onclick = () => {
-          const action = prompt("Type 'edit' or 'delete':");
-          if(action==='edit'){
-            const newC = prompt("Edit comment:", c);
-            if(newC){
-              storedMessages[index].comments[cIndex] = newC;
-              localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-              loadChat();
-            }
-          } else if(action==='delete'){
-            storedMessages[index].comments.splice(cIndex,1);
-            localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-            loadChat();
-          }
-        };
-        msgDiv.appendChild(cDiv);
-      });
-    }
-  });
-}
-
-// ===== Message Edit/Delete Feature =====
-function handleMessageAction(msgIndex){
-  const storedMessages = JSON.parse(localStorage.getItem(`chat_${friend}`) || '[]');
-  const msg = storedMessages[msgIndex];
-  let action = prompt(msg.type === 'text' ? "Type 'edit' or 'delete':" : "Type 'delete' to remove message:");
-  
-  if(action === 'edit' && msg.type === 'text'){
-    const newText = prompt("Edit your message:", msg.data);
-    if(newText){
-      storedMessages[msgIndex].data = newText;
-      localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-      loadChat();
-    }
-  } else if(action === 'delete'){
-    if(confirm("Delete this message for everyone?")){
-      storedMessages.splice(msgIndex,1);
-      localStorage.setItem(`chat_${friend}`, JSON.stringify(storedMessages));
-      loadChat();
-    }
-  }
-}
-
-function addMessageActions(){
-  const messages = document.querySelectorAll('.message');
-  messages.forEach((msgDiv,index)=>{
-    if(msgDiv.dataset.hasAction) return;
-    msgDiv.dataset.hasAction = 'true';
-    msgDiv.addEventListener('click', ()=>handleMessageAction(index));
-  });
-}
-
-// Wrap loadChat to include comment and message actions
-const oldLoadChat = loadChat;
-loadChat = function(){
-  oldLoadChat();
-  addCommentFeature();
-  addMessageActions();
-};
-
 loadChat();
 </script>
+
+</body>
+</html>
