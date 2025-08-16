@@ -20,35 +20,13 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 .popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:5px 0; text-align:left; min-width:140px; }
 .popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
 .popup-options a:hover { background:#f0f0f0; }
+#qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
+#qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
 .friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; }
 .friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; }
-/* Three-dots dropdown style */
-.three-dots-menu {
-  position:absolute;
-  top:45px;
-  right:15px;
-  background:#fff;
-  border:1px solid #ddd;
-  border-radius:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
-  display:none;
-  min-width:140px;
-  z-index:500;
-}
-.three-dots-menu a {
-  display:block;
-  padding:10px 15px;
-  color:#333;
-  text-decoration:none;
-  font-weight:500;
-}
+.three-dots-menu { position:absolute; top:45px; right:15px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:none; min-width:140px; z-index:500; }
+.three-dots-menu a { display:block; padding:10px 15px; color:#333; text-decoration:none; font-weight:500; }
 .three-dots-menu a:hover { background:#f0f0f0; }
-.friend div span { font-weight:bold; }
-.friend div small { font-size:12px; color:#888; }
-.badge {
-  position:absolute; top:0; right:0; background:red; color:white;
-  font-size:12px; padding:2px 6px; border-radius:12px;
-}
 </style>
 </head>
 <body>
@@ -61,7 +39,6 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
   <div class="three-dots">&#8942;</div>
 </div>
 
-<!-- Three-dots menu -->
 <div class="three-dots-menu" id="threeDotsMenu">
   <a href="settings.html">Settings</a>
   <a href="blockuser.html">Block User</a>
@@ -72,6 +49,12 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
     No messages yet<br>
     Add a friend using the + button
   </div>
+</div>
+
+<div id="qrContainer">
+  <button id="closeQR">X</button>
+  <canvas id="userQRCode"></canvas>
+  <p>Your QR Code</p>
 </div>
 
 <div class="add-button-container">
@@ -109,21 +92,8 @@ document.addEventListener('click', e => {
 
 // --- QR popup ---
 const showQRCodeLink = document.getElementById('showQRCode');
-const qrContainer = document.createElement('div');
-qrContainer.id = 'qrContainer';
-qrContainer.style.display = 'none';
-qrContainer.style.position = 'fixed';
-qrContainer.style.top = '50%';
-qrContainer.style.left = '50%';
-qrContainer.style.transform = 'translate(-50%, -50%)';
-qrContainer.style.background = '#fff';
-qrContainer.style.padding = '20px';
-qrContainer.style.borderRadius = '12px';
-qrContainer.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
-qrContainer.style.zIndex = '200';
-qrContainer.innerHTML = `<button id="closeQR">X</button><canvas id="userQRCode"></canvas><p>Your QR Code</p>`;
-document.body.appendChild(qrContainer);
-
+const qrContainer = document.getElementById('qrContainer');
+const noMsg = document.querySelector('.no-msg');
 const closeQR = document.getElementById('closeQR');
 let qrGenerated = false;
 const savedName = localStorage.getItem('username') || 'User';
@@ -132,6 +102,7 @@ const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
 showQRCodeLink.addEventListener('click', e => {
   e.preventDefault();
   qrContainer.style.display = 'block';
+  noMsg.style.display = 'none';
   if(!qrGenerated){
     const qrData = JSON.stringify({name: savedName, profile: profilePic});
     new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
@@ -139,7 +110,10 @@ showQRCodeLink.addEventListener('click', e => {
   }
 });
 
-closeQR.addEventListener('click', () => { qrContainer.style.display='none'; });
+closeQR.addEventListener('click', () => {
+  qrContainer.style.display='none';
+  noMsg.style.display='block';
+});
 
 // --- Friends management ---
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
@@ -147,14 +121,19 @@ function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(fr
 function addFriend(friend){
   let friends = getFriends();
   if(!friends.some(f => f.name === friend.name)){
-    friend.unread = 0; // initialize unread
     friends.push(friend);
     saveFriends(friends);
     renderFriends();
   }
 }
 
-// --- Render friends with last message and unread badge ---
+// --- Real-time updates ---
+const channel = new BroadcastChannel('chatapp');
+channel.onmessage = (e) => {
+  if(e.data.type === 'addFriend') addFriend(e.data.friend);
+}
+
+// --- Render friends ---
 function renderFriends(){
   const mainContent = document.getElementById('mainContent');
   const friends = getFriends();
@@ -165,60 +144,34 @@ function renderFriends(){
     friends.forEach(f => {
       const div = document.createElement('div');
       div.className='friend';
-      div.innerHTML = `
-        <img src="${f.profile}">
-        <div style="flex:1; position:relative;">
-          <span>${f.name}</span>
-          <small style="display:block; color:#888;">${f.lastMessage || ''}</small>
-          ${f.unread>0?`<span class="badge">${f.unread}</span>`:''}
-        </div>
-      `;
+      div.innerHTML = `<img src="${f.profile}"><span>${f.name}</span>`;
+
+      // Open chat with real info
       div.onclick = () => {
-        f.unread = 0; // reset unread
-        saveFriends(friends);
-        renderFriends();
-        localStorage.setItem('currentChat', f.name);
-        window.location.href = `chat.html?friend=${encodeURIComponent(f.name)}&profile=${encodeURIComponent(f.profile)}`;
+        const friendName = encodeURIComponent(f.name);
+        const friendProfile = encodeURIComponent(f.profile);
+        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
       };
+
       mainContent.appendChild(div);
     });
-  }
-}
-
-// --- Real-time updates ---
-const channel = new BroadcastChannel('chatapp');
-channel.onmessage = (e) => {
-  if(e.data.type === 'addFriend') addFriend(e.data.friend);
-
-  if(e.data.type === 'newMessage'){
-    let friends = getFriends();
-    const idx = friends.findIndex(f => f.name === e.data.friend);
-    if(idx !== -1){
-      friends[idx].lastMessage = e.data.msg.type==='text'?e.data.msg.text:`[${e.data.msg.type}]`;
-      // increment unread if not in chat
-      if(localStorage.getItem('currentChat') !== e.data.friend){
-        friends[idx].unread = (friends[idx].unread || 0) + 1;
-      }
-      saveFriends(friends);
-      renderFriends();
-    } else {
-      addFriend({
-        name:e.data.friend,
-        profile:e.data.msg.profile,
-        lastMessage:e.data.msg.type==='text'?e.data.msg.text:`[${e.data.msg.type}]`,
-        unread:1
-      });
-    }
   }
 }
 
 // --- Three-dots menu ---
 const threeDots = document.querySelector('.three-dots');
 const threeDotsMenu = document.getElementById('threeDotsMenu');
-threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display==='block'?'none':'block'; });
-document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
 
-// --- Initial render ---
+threeDots.addEventListener('click', e => {
+  e.stopPropagation();
+  threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block';
+});
+
+document.addEventListener('click', () => {
+  threeDotsMenu.style.display = 'none';
+});
+
+// Render friends on load
 document.addEventListener('DOMContentLoaded', renderFriends);
 </script>
 </body>
