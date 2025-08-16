@@ -1,141 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Group Chat</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#eee; }
-    .header { background:#007bff; color:white; padding:10px; text-align:center; }
-    #chatBox { height:300px; overflow-y:auto; padding:10px; background:white; margin:10px; border-radius:8px; }
-    .msg { padding:6px; margin:4px 0; border-radius:6px; background:#f1f1f1; }
-    .msg strong { color:#007bff; }
-    #msgInput { width:80%; padding:10px; border-radius:20px; border:1px solid #ccc; }
-    #sendBtn { padding:10px; border:none; background:#007bff; color:white; border-radius:50%; margin-left:-40px; cursor:pointer; }
-    .controls { display:flex; justify-content:space-around; margin:10px; }
-    .controls button { padding:8px; border:none; border-radius:6px; cursor:pointer; }
-    #members { margin:10px; padding:10px; background:white; border-radius:8px; }
-    #groupPhoto { width:100px; height:100px; border-radius:50%; display:block; margin:10px auto; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Chat</title>
+<style>
+body{font-family:Arial;margin:0;background:#e5ddd5;}
+.header{background:#25d366;color:white;text-align:center;padding:10px;position:relative;}
+.header img{width:80px;height:80px;border-radius:50%;margin-top:5px;}
+.header h2{margin:5px 0;}
+#members{display:flex;flex-wrap:wrap;justify-content:center;margin:5px;}
+#members div{background:#128C7E;color:white;padding:5px 10px;border-radius:15px;margin:2px;position:relative;}
+#members div span{cursor:pointer;margin-left:5px;}
+#chatBox{height:300px;overflow-y:auto;padding:10px;background:#ece5dd;margin:10px;border-radius:8px;display:flex;flex-direction:column;}
+.msg{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;display:flex;align-items:center;}
+.msg.self{background:#dcf8c6;align-self:flex-end;}
+.msg img{width:30px;height:30px;border-radius:50%;margin-right:5px;}
+#inputArea{display:flex;padding:10px;background:white;border-radius:25px;margin:10px;align-items:center;}
+#inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
+#inputArea button{margin-left:5px;padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
+.controls{display:flex;justify-content:space-around;margin:5px;}
+.controls button{padding:8px;border:none;border-radius:6px;cursor:pointer;}
+</style>
 </head>
 <body>
-  <div class="header">
-    <h2 id="groupName"></h2>
-    <img id="groupPhoto" src="" alt="">
-  </div>
 
-  <div id="chatBox"></div>
-
-  <div style="display:flex; align-items:center; margin:10px;">
-    <input id="msgInput" placeholder="Type a message...">
-    <button id="sendBtn">➤</button>
-  </div>
-
-  <div class="controls">
-    <button onclick="sendFile()">📎 File</button>
-    <button onclick="sendPhoto()">🖼️ Photo</button>
-    <button onclick="sendVideo()">🎥 Video</button>
-    <button onclick="sendLocation()">📍 Location</button>
-    <button onclick="alert('Voice call coming soon')">📞 Call</button>
-    <button onclick="alert('Video call coming soon')">🎥 Video Call</button>
-  </div>
-
+<div class="header">
+  <h2 id="groupName"></h2>
+  <img id="groupPhoto" src="">
   <div id="members"></div>
+  <div id="addMember" style="position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;">+</div>
+</div>
 
-  <script>
-    let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-    let currentIndex = localStorage.getItem("currentGroup");
-    let group = groups[currentIndex];
+<div id="chatBox"></div>
 
-    document.getElementById("groupName").innerText = group.name;
-    document.getElementById("groupPhoto").src = group.photo || "default-group.png";
+<div id="inputArea">
+  <input id="msgInput" placeholder="Type a message...">
+  <button id="sendBtn">➤</button>
+</div>
 
-    function renderMessages(){
-      let box = document.getElementById("chatBox");
-      box.innerHTML = "";
-      group.messages.forEach(m => {
-        let div = document.createElement("div");
-        div.className = "msg";
-        div.innerHTML = `<strong>${m.sender}:</strong> ${m.text}`;
-        box.appendChild(div);
-      });
-      box.scrollTop = box.scrollHeight;
+<div class="controls">
+  <button onclick="sendFile()">📎 File</button>
+  <button onclick="sendPhoto()">🖼️ Photo</button>
+  <button onclick="sendVideo()">🎥 Video</button>
+  <button onclick="sendLocation()">📍 Location</button>
+  <button onclick="alert('Voice call coming soon')">📞 Call</button>
+  <button onclick="alert('Video call coming soon')">🎥 Video Call</button>
+</div>
+
+<script>
+let groups = JSON.parse(localStorage.getItem("groups")||"[]");
+let currentIndex = localStorage.getItem("currentGroupIndex");
+let group = groups[currentIndex];
+const myName="You";
+
+document.getElementById("groupName").innerText = group.name;
+document.getElementById("groupPhoto").src = group.photo;
+
+// Render members
+function renderMembers(){
+  const div=document.getElementById("members");
+  div.innerHTML="";
+  group.members.filter(m=>m.accepted).forEach(m=>{
+    const mDiv=document.createElement("div");
+    mDiv.textContent=m.name;
+    if(group.admin===myName && m.name!==myName){
+      const blockSpan=document.createElement("span");
+      blockSpan.textContent="🚫";
+      blockSpan.onclick=()=>blockMember(m.name);
+      mDiv.appendChild(blockSpan);
     }
+    div.appendChild(mDiv);
+  });
+}
+function blockMember(name){
+  if(group.blocked.includes(name)){
+    group.blocked=group.blocked.filter(x=>x!==name);
+  }else{ group.blocked.push(name); }
+  saveGroup();
+  renderMembers();
+}
 
-    function renderMembers(){
-      let div = document.getElementById("members");
-      div.innerHTML = `<h3>Members</h3>`;
-      group.members.forEach(m => {
-        div.innerHTML += `<p>${m}</p>`;
-      });
-      if(group.admin === "me"){
-        div.innerHTML += `
-          <button onclick="blockMember()">Block/Unblock Member</button>
-          <button onclick="deleteGroup()">Delete Group</button>
-          <button onclick="changePhoto()">Change Group Photo</button>
-        `;
-      }
-    }
+// Chat messages
+const chatBox=document.getElementById("chatBox");
+function renderMessages(){
+  chatBox.innerHTML="";
+  group.messages.forEach(m=>{
+    if(group.blocked.includes(m.sender)) return;
+    const div=document.createElement("div");
+    div.className="msg"+(m.sender===myName?" self":"");
+    div.innerHTML=`<img src="profile.png"><strong>${m.sender}:</strong> ${m.text}`;
+    chatBox.appendChild(div);
+  });
+  chatBox.scrollTop=chatBox.scrollHeight;
+}
+document.getElementById("sendBtn").onclick=()=>{
+  const txt=document.getElementById("msgInput").value.trim();
+  if(!txt) return;
+  if(group.blocked.includes(myName)){ alert("You are blocked"); return; }
+  group.messages.push({sender:myName,text:txt});
+  document.getElementById("msgInput").value="";
+  group.unread=true;
+  saveGroup();
+  renderMessages();
+}
 
-    document.getElementById("sendBtn").onclick = () => {
-      let txt = document.getElementById("msgInput").value;
-      if(!txt) return;
-      if(group.blocked.includes("me")) {
-        alert("You are blocked by the admin!");
-        return;
-      }
-      group.messages.push({sender:"me", text:txt});
-      group.lastMsg = txt;
-      group.unread = true;
-      document.getElementById("msgInput").value = "";
-      save();
-      renderMessages();
-    };
+// Add friend
+document.getElementById("addMember").onclick=()=>{
+  const name=prompt("Friend name to add:");
+  if(!name) return;
+  group.members.push({name,accepted:false});
+  saveGroup();
+  alert(name+" added. Waiting for acceptance.");
+  renderMembers();
+}
 
-    function blockMember(){
-      let name = prompt("Enter member name to block/unblock:");
-      if(!name) return;
-      if(group.blocked.includes(name)){
-        group.blocked = group.blocked.filter(x => x !== name);
-        alert(name + " unblocked");
-      } else {
-        group.blocked.push(name);
-        alert(name + " blocked");
-      }
-      save();
-    }
+// File/photo/video/location placeholders
+function sendFile(){ group.messages.push({sender:myName,text:"[Sent File]"}); saveGroup(); renderMessages();}
+function sendPhoto(){ group.messages.push({sender:myName,text:"[Sent Photo]"}); saveGroup(); renderMessages();}
+function sendVideo(){ group.messages.push({sender:myName,text:"[Sent Video]"}); saveGroup(); renderMessages();}
+function sendLocation(){ group.messages.push({sender:myName,text:"[Sent Location]"}); saveGroup(); renderMessages();}
 
-    function deleteGroup(){
-      if(confirm("Delete this group?")){
-        groups.splice(currentIndex,1);
-        save();
-        window.location.href = "groups.html";
-      }
-    }
+function saveGroup(){
+  groups[currentIndex]=group;
+  localStorage.setItem("groups",JSON.stringify(groups));
+}
 
-    function changePhoto(){
-      let url = prompt("Enter new photo URL:");
-      if(url){
-        group.photo = url;
-        save();
-        document.getElementById("groupPhoto").src = url;
-      }
-    }
+renderMembers();
+renderMessages();
+group.unread=false; saveGroup();
+</script>
 
-    function sendFile(){ alert("File sent!"); }
-    function sendPhoto(){ alert("Photo sent!"); }
-    function sendVideo(){ alert("Video sent!"); }
-    function sendLocation(){ alert("Location shared!"); }
-
-    function save(){
-      groups[currentIndex] = group;
-      localStorage.setItem("groups", JSON.stringify(groups));
-    }
-
-    renderMessages();
-    renderMembers();
-    group.unread = false; // clear unread when opened
-    save();
-  </script>
 </body>
 </html>
