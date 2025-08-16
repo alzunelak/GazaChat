@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WhatsApp-like Group Chat</title>
+<title>Group Chat</title>
 <style>
 body{font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-direction:column;height:100vh;}
 header{background:#25d366;color:white;padding:10px;display:flex;flex-direction:column;align-items:center;position:relative;}
 header img{width:60px;height:60px;border-radius:50%;margin-bottom:5px;}
 header h2{margin:0;font-size:18px;}
-header #members{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;}
-header #members div{background:#128C7E;padding:5px 10px;border-radius:15px;font-size:12px;color:white;display:flex;align-items:center;}
-header #members div span{margin-left:5px;cursor:pointer;}
+#members, #pendingRequests{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;}
+#members div, #pendingRequests div{background:#128C7E;padding:5px 10px;border-radius:15px;font-size:12px;color:white;display:flex;align-items:center;}
+#members div span, #pendingRequests div span{margin-left:5px;cursor:pointer;}
 header #addMember{position:absolute;right:10px;top:10px;font-size:24px;cursor:pointer;}
 #chatArea{flex:1;padding:10px;overflow-y:auto;background:#ece5dd;display:flex;flex-direction:column;}
 .message{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;max-width:70%;display:flex;gap:5px;align-items:flex-end;}
 .message.self{background:#dcf8c6;align-self:flex-end;}
 .message img{width:30px;height:30px;border-radius:50%;}
 .message strong{margin-right:5px;}
-#inputArea{display:flex;padding:10px;background:#fff;gap:5px;align-items:center;}
+#inputArea{display:flex;padding:10px;background:#fff;gap:5px;align-items:center;border-top:1px solid #ccc;}
 #inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
 #inputArea button, #inputArea .icon{padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 #filePopup{display:none;position:absolute;bottom:60px;left:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
@@ -32,9 +32,10 @@ header #addMember{position:absolute;right:10px;top:10px;font-size:24px;cursor:po
 <body>
 
 <header>
-  <img src="group.png" alt="Group Photo">
+  <img id="groupPhoto" src="group.png" alt="Group Photo">
   <h2 id="groupName">Group Name</h2>
   <div id="members"></div>
+  <div id="pendingRequests"></div>
   <div id="addMember">+</div>
 </header>
 
@@ -43,11 +44,11 @@ header #addMember{position:absolute;right:10px;top:10px;font-size:24px;cursor:po
 <div id="inputArea">
   <div class="icon" onclick="toggleFilePopup()">+</div>
   <input type="text" id="msgInput" placeholder="Type a message...">
+  <button onclick="sendMessage()">Send</button>
   <div class="callButtons">
     <button onclick="startAudioCall()">🎤</button>
     <button onclick="startVideoCall()">📹</button>
   </div>
-  <button onclick="sendMessage()">Send</button>
 </div>
 
 <div id="filePopup">
@@ -63,64 +64,102 @@ header #addMember{position:absolute;right:10px;top:10px;font-size:24px;cursor:po
 </div>
 
 <script>
-const myName = "You";
-let currentGroup = JSON.parse(localStorage.getItem("groupData") || JSON.stringify({
-  name:"Group Name",
-  members:[
-    {name:"Alice", accepted:true},
-    {name:"Bob", accepted:true},
-    {name:"Charlie", accepted:false}
-  ],
-  admin:"You",
-  blocked:[],
-  messages:[]
-}));
 
+  // Load current group by index
+let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "0");
+let allGroups = JSON.parse(localStorage.getItem("allGroups") || "[]");
+let currentGroup = allGroups[currentGroupIndex];
+
+// Reset unread on opening
+currentGroup.lastRead = new Date().toISOString();
+allGroups[currentGroupIndex] = currentGroup;
+localStorage.setItem("allGroups", JSON.stringify(allGroups));
+
+const myName = "You";
+let currentGroup = JSON.parse(localStorage.getItem("groupData") || "{}");
+
+// Load group info
+document.getElementById("groupName").innerText = currentGroup.name || "Group";
+document.getElementById("groupPhoto").src = currentGroup.img || "group.png";
+
+// Save group
 function saveGroup(){ localStorage.setItem("groupData", JSON.stringify(currentGroup)); }
 
 // Render members
 function renderMembers(){
-  const membersDiv=document.getElementById("members");
-  membersDiv.innerHTML="";
-  currentGroup.members.filter(m=>m.accepted).forEach(m=>{
-    const div=document.createElement("div");
-    div.innerHTML=`<strong>${m.name}</strong>`;
-    if(currentGroup.admin===myName && m.name!==myName){
-      const blockSpan=document.createElement("span");
-      blockSpan.innerText="🚫";
-      blockSpan.onclick=()=>{blockUser(m.name)};
+  const membersDiv = document.getElementById("members");
+  membersDiv.innerHTML = "";
+  currentGroup.members.filter(m => m.accepted).forEach(m => {
+    const div = document.createElement("div");
+    div.innerHTML = `<strong>${m.name}</strong>`;
+
+    // Admin can block/unblock
+    if(currentGroup.admin === myName && m.name !== myName){
+      const blockSpan = document.createElement("span");
+      blockSpan.innerText = currentGroup.blocked.includes(m.name) ? "🔓" : "🚫";
+      blockSpan.title = currentGroup.blocked.includes(m.name) ? "Unblock" : "Block";
+      blockSpan.style.marginLeft="5px";
+      blockSpan.style.cursor="pointer";
+      blockSpan.onclick = ()=>{ toggleBlock(m.name); };
       div.appendChild(blockSpan);
     }
     membersDiv.appendChild(div);
   });
 }
 
-// Block/unblock
-function blockUser(name){
-  if(currentGroup.blocked.includes(name)){
-    currentGroup.blocked=currentGroup.blocked.filter(u=>u!==name);
-  }else{
-    currentGroup.blocked.push(name);
-  }
-  saveGroup();
-  renderMembers();
-  renderMessages();
+// Render pending requests (admin only)
+function renderPendingRequests(){
+  const pendingDiv = document.getElementById("pendingRequests");
+  pendingDiv.innerHTML = "";
+  if(currentGroup.admin !== myName) return;
+
+  currentGroup.members.filter(m => !m.accepted).forEach(m => {
+    const div = document.createElement("div");
+    div.innerHTML = `<strong>${m.name}</strong>`;
+    const acceptBtn = document.createElement("span"); acceptBtn.innerText="✅"; acceptBtn.title="Accept";
+    acceptBtn.onclick = ()=>{ acceptRequest(m.name); };
+    const rejectBtn = document.createElement("span"); rejectBtn.innerText="❌"; rejectBtn.title="Reject";
+    rejectBtn.onclick = ()=>{ rejectRequest(m.name); };
+    div.appendChild(acceptBtn); div.appendChild(rejectBtn);
+    pendingDiv.appendChild(div);
+  });
 }
 
-// Friend add popup
-document.getElementById("addMember").onclick=()=>{
-  const popup=document.getElementById("friendPopup");
-  popup.style.display=popup.style.display==="none"?"block":"none";
+// Accept/Reject
+function acceptRequest(name){
+  currentGroup.members.find(m=>m.name===name).accepted = true;
+  saveGroup(); renderMembers(); renderPendingRequests();
 }
+
+function rejectRequest(name){
+  currentGroup.members = currentGroup.members.filter(m=>m.name!==name);
+  saveGroup(); renderMembers(); renderPendingRequests();
+}
+
+// Block/unblock
+function toggleBlock(name){
+  if(currentGroup.admin !== myName) return;
+  if(currentGroup.blocked.includes(name)){
+    currentGroup.blocked = currentGroup.blocked.filter(u=>u!==name);
+  } else currentGroup.blocked.push(name);
+  saveGroup(); renderMembers(); renderMessages();
+}
+
+// Add friend request (appears in pending for admin)
+document.getElementById("addMember").onclick = ()=> {
+  const popup = document.getElementById("friendPopup");
+  popup.style.display = popup.style.display==="none"?"block":"none";
+}
+
 function addFriend(){
-  const name=document.getElementById("newFriend").value.trim();
+  const name = document.getElementById("newFriend").value.trim();
   if(!name) return;
   currentGroup.members.push({name, accepted:false});
   document.getElementById("newFriend").value="";
   saveGroup();
-  alert(name+" added! Waiting for acceptance.");
+  alert(name+" added! Pending approval.");
   document.getElementById("friendPopup").style.display="none";
-  renderMembers();
+  renderPendingRequests();
 }
 
 // Chat messages
@@ -129,6 +168,7 @@ function renderMessages(){
   chatArea.innerHTML="";
   currentGroup.messages.forEach(m=>{
     if(currentGroup.blocked.includes(m.sender)) return;
+    if(!currentGroup.members.find(mem=>mem.name===m.sender && mem.accepted)) return;
     const div=document.createElement("div");
     div.className="message"+(m.sender===myName?" self":"");
     div.innerHTML=`<img src="profile.png"><strong>${m.sender}</strong>: ${m.text}`;
@@ -137,37 +177,38 @@ function renderMessages(){
   chatArea.scrollTop=chatArea.scrollHeight;
 }
 
+// Send real message
 function sendMessage(){
   const input=document.getElementById("msgInput");
   const text=input.value.trim();
   if(!text) return;
   if(currentGroup.blocked.includes(myName)){ alert("You are blocked!"); return; }
-  currentGroup.messages.push({sender:myName,text});
+
+  const msg={sender:myName,text,time:new Date().toLocaleTimeString()};
+  currentGroup.messages.push(msg);
+  saveGroup(); renderMessages();
   input.value="";
-  saveGroup();
-  renderMessages();
+
+  // Simulate reply from first accepted member that is not me
+  const replyMember=currentGroup.members.find(m=>m.accepted && m.name!==myName && !currentGroup.blocked.includes(m.name));
+  if(replyMember){
+    setTimeout(()=>{
+      const reply={sender:replyMember.name,text:"Hello "+myName+"!",time:new Date().toLocaleTimeString()};
+      currentGroup.messages.push(reply); saveGroup(); renderMessages();
+    },1500);
+  }
 }
 
 // File popup
-function toggleFilePopup(){
-  const popup=document.getElementById("filePopup");
-  popup.style.display = popup.style.display==="none"?"block":"none";
-}
-function sendFile(type){
-  currentGroup.messages.push({sender:myName,text:"[Sent "+type+"]"});
-  saveGroup();
-  renderMessages();
-  toggleFilePopup();
-}
+function toggleFilePopup(){ const popup=document.getElementById("filePopup"); popup.style.display=popup.style.display==="none"?"block":"none"; }
+function sendFile(type){ currentGroup.messages.push({sender:myName,text:"[Sent "+type+"]"}); saveGroup(); renderMessages(); toggleFilePopup(); }
 
-// Calls
-function startAudioCall(){ alert("Audio call (placeholder)"); }
-function startVideoCall(){ alert("Video call (placeholder)"); }
+// Calls placeholders
+function startAudioCall(){ alert("Audio call placeholder"); }
+function startVideoCall(){ alert("Video call placeholder"); }
 
 // Initial render
-renderMembers();
-renderMessages();
+renderMembers(); renderPendingRequests(); renderMessages();
 </script>
-
 </body>
 </html>
