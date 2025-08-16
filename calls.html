@@ -3,87 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Video Call</title>
+<title>Calls</title>
 <style>
 body {
   font-family: Arial;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background: #f0f0f0;
+  background: #f5f5f5;
 }
-.call-container {
+.main-content {
+  padding: 20px;
+  min-height: 70vh;
+}
+.call-item {
+  padding: 10px;
+  background: #fff;
+  margin: 5px 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.call-item-left {
+  display: flex;
+  align-items: center;
+}
+.call-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.call-buttons button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+}
+.call-buttons .audio-btn { background-color: #4CAF50; }
+.call-buttons .video-btn { background-color: #2196F3; }
+.call-status {
+  font-size: 12px;
+  color: #555;
+  margin-left: 10px;
+}
+
+/* Incoming call popup */
+.incoming-call {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
   background: #fff;
   padding: 20px;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+  z-index: 999;
+  display: none;
 }
-.call-container img {
-  width: 100px;
-  height: 100px;
+.incoming-call img {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   margin-bottom: 10px;
 }
-.call-container h2 {
+.incoming-call h3 {
   margin: 10px 0;
 }
-.hangup-btn {
-  background-color: #e74c3c;
-  color: #fff;
+.incoming-call button {
+  margin: 5px;
+  padding: 8px 16px;
   border: none;
-  padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-}
-.video-placeholder {
-  width: 300px;
-  height: 200px;
-  background-color: #000;
-  margin: 10px auto;
-  border-radius: 8px;
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 14px;
 }
+.accept-btn { background-color: #4CAF50; }
+.decline-btn { background-color: #e74c3c; }
 </style>
 </head>
 <body>
 
-<div class="call-container">
-  <img id="friendProfile" src="default-profile.png" alt="Profile">
-  <h2 id="friendName">Calling...</h2>
-  <div class="video-placeholder">Video Stream</div>
-  <p>Video Call</p>
-  <button class="hangup-btn" onclick="hangUp()">Hang Up</button>
+<div class="main-content" id="mainContent"></div>
+
+<!-- Incoming call popup -->
+<div class="incoming-call" id="incomingCallPopup">
+  <img id="incomingProfile" src="default-profile.png" alt="Profile">
+  <h3 id="incomingName">Friend</h3>
+  <p id="incomingType">Incoming Call...</p>
+  <button class="accept-btn" id="acceptIncoming">Accept</button>
+  <button class="decline-btn" id="declineIncoming">Decline</button>
 </div>
 
+<audio id="ringTone" loop>
+  <source src="ringtone.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-// Get friend name from URL
-const params = new URLSearchParams(window.location.search);
-const friendName = params.get('friend') || "Friend";
-
-// Display name
-document.getElementById('friendName').innerText = friendName;
-
-// Optionally, load friend's profile from localStorage
 const friends = JSON.parse(localStorage.getItem('friends')||'[]');
-const friend = friends.find(f => f.name === friendName);
-if(friend && friend.profile){
-  document.getElementById('friendProfile').src = friend.profile;
+const mainContent = document.getElementById('mainContent');
+const ringTone = document.getElementById('ringTone');
+const incomingPopup = document.getElementById('incomingCallPopup');
+const incomingProfile = document.getElementById('incomingProfile');
+const incomingName = document.getElementById('incomingName');
+const incomingType = document.getElementById('incomingType');
+const acceptBtn = document.getElementById('acceptIncoming');
+const declineBtn = document.getElementById('declineIncoming');
+
+if(friends.length === 0){
+  mainContent.innerHTML = "<div>No calls yet</div>";
+}else{
+  friends.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'call-item';
+
+    div.innerHTML = `
+      <div class="call-item-left">
+        <img src="${f.profile || 'default-profile.png'}" alt="Profile">
+        <span>${f.name}</span>
+        <span class="call-status" id="status-${f.name.replace(/\s+/g,'')}"></span>
+      </div>
+      <div class="call-buttons">
+        <button class="audio-btn">Call</button>
+        <button class="video-btn">Video</button>
+      </div>
+    `;
+
+    const audioBtn = div.querySelector('.audio-btn');
+    const videoBtn = div.querySelector('.video-btn');
+    const statusEl = div.querySelector('.call-status');
+
+    function startCall(type){
+      statusEl.innerText = "Calling...";
+      ringTone.play();
+      setTimeout(() => {
+        ringTone.pause();
+        ringTone.currentTime = 0;
+        if(type==='audio'){
+          window.location.href = `audio-call.html?friend=${encodeURIComponent(f.name)}`;
+        } else {
+          window.location.href = `video-call.html?friend=${encodeURIComponent(f.name)}`;
+        }
+      }, 2000);
+    }
+
+    audioBtn.onclick = () => startCall('audio');
+    videoBtn.onclick = () => startCall('video');
+
+    mainContent.appendChild(div);
+  });
 }
 
-// Hang up function
-function hangUp(){
-  alert("Video call ended with " + friendName);
-  window.location.href = "calls.html"; // go back to calls page
+// Simulate incoming calls randomly every 10-20 seconds
+function simulateIncomingCall(){
+  if(friends.length === 0) return;
+  const randomFriend = friends[Math.floor(Math.random() * friends.length)];
+  incomingProfile.src = randomFriend.profile || 'default-profile.png';
+  incomingName.innerText = randomFriend.name;
+  const callType = Math.random() < 0.5 ? 'Audio' : 'Video';
+  incomingType.innerText = `Incoming ${callType} Call...`;
+  incomingPopup.style.display = 'block';
+  ringTone.play();
+
+  // Accept button
+  acceptBtn.onclick = () => {
+    ringTone.pause();
+    ringTone.currentTime = 0;
+    incomingPopup.style.display = 'none';
+    if(callType === 'Audio'){
+      window.location.href = `audio-call.html?friend=${encodeURIComponent(randomFriend.name)}`;
+    } else {
+      window.location.href = `video-call.html?friend=${encodeURIComponent(randomFriend.name)}`;
+    }
+  };
+
+  // Decline button
+  declineBtn.onclick = () => {
+    ringTone.pause();
+    ringTone.currentTime = 0;
+    incomingPopup.style.display = 'none';
+  };
 }
+
+// Trigger simulated incoming calls every 15-20 seconds
+setInterval(simulateIncomingCall, 15000);
 </script>
 
 </body>
