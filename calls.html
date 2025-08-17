@@ -48,28 +48,24 @@ body {
   font-size: 12px;
   margin-left: 10px;
 }
-/* Status colors */
-.call-status.missed { color: #e74c3c; }      /* red for missed */
-.call-status.declined { color: #555; }       /* gray for declined */
-.call-status.accepted { color: #4CAF50; }    /* green for accepted */
+.call-status.missed { color: #e74c3c; }
+.call-status.declined { color: #555; }
+.call-status.accepted { color: #4CAF50; }
 
-/* Overlay for dimming background */
+/* Overlay */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(0,0,0,0.6);
   display: none;
   z-index: 9998;
 }
 
 /* Incoming call popup */
-.incoming-call {
+.incoming-call, .calling-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   background: #fff;
   padding: 20px;
@@ -79,16 +75,13 @@ body {
   z-index: 9999;
   display: none;
 }
-.incoming-call img {
-  width: 80px;
-  height: 80px;
+.incoming-call img, .calling-modal img {
+  width: 80px; height: 80px;
   border-radius: 50%;
   margin-bottom: 10px;
 }
-.incoming-call h3 {
-  margin: 10px 0;
-}
-.incoming-call button {
+.incoming-call h3, .calling-modal h3 { margin: 10px 0; }
+.incoming-call button, .calling-modal button {
   margin: 5px;
   padding: 8px 16px;
   border: none;
@@ -98,7 +91,7 @@ body {
   font-size: 14px;
 }
 .accept-btn { background-color: #4CAF50; }
-.decline-btn { background-color: #e74c3c; }
+.decline-btn, .end-btn { background-color: #e74c3c; }
 </style>
 </head>
 <body>
@@ -108,13 +101,21 @@ body {
 <!-- Overlay -->
 <div class="overlay" id="overlay"></div>
 
-<!-- Incoming call popup -->
+<!-- Incoming call popup (receiver) -->
 <div class="incoming-call" id="incomingCallPopup">
   <img id="incomingProfile" src="default-profile.png" alt="Profile">
   <h3 id="incomingName">Friend</h3>
   <p id="incomingType">Incoming Call...</p>
   <button class="accept-btn" id="acceptIncoming">Accept</button>
   <button class="decline-btn" id="declineIncoming">Decline</button>
+</div>
+
+<!-- Calling modal (caller) -->
+<div class="calling-modal" id="callingModal">
+  <img id="callingProfile" src="default-profile.png" alt="Profile">
+  <h3 id="callingName">Calling...</h3>
+  <p id="callingType"></p>
+  <button class="end-btn" id="endCallBtn">End</button>
 </div>
 
 <audio id="ringTone" loop>
@@ -130,7 +131,6 @@ const friends = JSON.parse(localStorage.getItem('friends')||JSON.stringify([
 ]));
 
 const callStatus = JSON.parse(localStorage.getItem('callStatus')||'{}'); 
-// { "Alice": "missed/accepted/declined", ... }
 
 // ---------- ELEMENTS ----------
 const mainContent = document.getElementById('mainContent');
@@ -143,16 +143,22 @@ const acceptBtn = document.getElementById('acceptIncoming');
 const declineBtn = document.getElementById('declineIncoming');
 const overlay = document.getElementById('overlay');
 
+const callingModal = document.getElementById('callingModal');
+const callingProfile = document.getElementById('callingProfile');
+const callingName = document.getElementById('callingName');
+const callingType = document.getElementById('callingType');
+const endCallBtn = document.getElementById('endCallBtn');
+
 let callTimeout;
 let currentFriend = null;
 let statusMap = {};
 let audioAllowed = false;
 
-// ---------- ALLOW AUDIO ON FIRST CLICK ----------
+// ---------- ALLOW AUDIO ----------
 document.body.addEventListener('click', () => { audioAllowed = true; }, { once:true });
-function playRingTone(){ if(audioAllowed) ringTone.play().catch(e=>console.log("Audio blocked")); }
+function playRingTone(){ if(audioAllowed) ringTone.play().catch(e=>{}); }
 
-// ---------- RENDER FRIEND LIST ----------
+// ---------- RENDER FRIENDS ----------
 function renderFriends(){
   mainContent.innerHTML = "";
   friends.forEach(f => {
@@ -160,7 +166,7 @@ function renderFriends(){
     div.className = 'call-item';
     div.innerHTML = `
       <div class="call-item-left">
-        <img src="${f.profile || 'default-profile.png'}" alt="Profile">
+        <img src="${f.profile}" alt="Profile">
         <span>${f.name}</span>
         <span class="call-status" id="status-${f.name.replace(/\s+/g,'')}"></span>
       </div>
@@ -176,88 +182,77 @@ function renderFriends(){
     const statusEl = div.querySelector('.call-status');
     statusMap[f.name] = statusEl;
 
-    // Restore saved status
     if(callStatus[f.name]){
       statusEl.innerText = callStatus[f.name].text;
       statusEl.className = "call-status "+callStatus[f.name].class;
     }
 
-    function startCall(type){
-      statusEl.innerText = "Calling...";
-      statusEl.className = "call-status";
-      playRingTone();
-      setTimeout(()=>{
-        ringTone.pause(); ringTone.currentTime=0;
-        alert(`Connecting ${type} call with ${f.name}`); // simulate real call
-      },2000);
-    }
-    audioBtn.onclick = ()=>startCall('Audio');
-    videoBtn.onclick = ()=>startCall('Video');
+    audioBtn.onclick = ()=> startCall('Audio', f);
+    videoBtn.onclick = ()=> startCall('Video', f);
   });
 }
 
-// ---------- SHOW/HIDE INCOMING CALL ----------
-function showIncoming(friend){
+// ---------- START CALL ----------
+function startCall(type, friend) {
   currentFriend = friend;
-  incomingProfile.src = friend.profile || 'default-profile.png';
-  incomingName.innerText = friend.name;
-  const callType = Math.random()<0.5 ? 'Audio':'Video';
-  incomingType.innerText = `Incoming ${callType} Call...`;
 
-  incomingPopup.style.display = 'block';
+  // Show caller modal
+  callingProfile.src = friend.profile;
+  callingName.innerText = `Calling ${friend.name}`;
+  callingType.innerText = `${type} Call...`;
+  callingModal.style.display = 'block';
   overlay.style.display = 'block';
   playRingTone();
 
-  // auto-decline after 25s
-  callTimeout = setTimeout(()=>{
-    hideIncoming("missed");
-  },25000);
+  // Show receiver popup
+  incomingProfile.src = friend.profile;
+  incomingName.innerText = friend.name;
+  incomingType.innerText = `Incoming ${type} Call...`;
+  incomingPopup.style.display = 'block';
+
+  // auto-miss after 25s
+  callTimeout = setTimeout(()=> hideIncoming("missed", type, friend),25000);
 
   // Accept
   acceptBtn.onclick = ()=>{
-    hideIncoming("accepted");
-    alert(`Connected ${callType} call with ${friend.name}`);
+    hideIncoming("accepted", type, friend);
+    alert(`Connected ${type} call with ${friend.name}`);
   };
-  // Decline / overlay
-  const declineFn = ()=> hideIncoming("declined");
+  // Decline
+  const declineFn = ()=> hideIncoming("declined", type, friend);
   declineBtn.onclick = declineFn;
   overlay.onclick = declineFn;
+
+  // Caller can also end
+  endCallBtn.onclick = ()=> hideIncoming("declined", type, friend);
 }
 
-function hideIncoming(status){
+// ---------- HIDE INCOMING / END CALL ----------
+function hideIncoming(status, type, friend){
   incomingPopup.style.display='none';
+  callingModal.style.display='none';
   overlay.style.display='none';
   ringTone.pause(); ringTone.currentTime=0;
   clearTimeout(callTimeout);
 
-  if(!currentFriend) return;
+  if(!friend) return;
 
   let cls="", txt="";
   if(status=="missed"){ cls="missed"; txt="Missed Call"; }
   else if(status=="declined"){ cls="declined"; txt="Call Declined"; }
-  else if(status=="accepted"){ cls="accepted"; txt="Call Accepted"; }
+  else if(status=="accepted"){ cls="accepted"; txt=`${type} Call Accepted`; }
 
-  const el = statusMap[currentFriend.name];
+  const el = statusMap[friend.name];
   if(el){ el.innerText=txt; el.className="call-status "+cls; }
 
-  // Save status to localStorage
-  callStatus[currentFriend.name] = {text:txt,class:cls};
+  callStatus[friend.name] = {text:txt,class:cls};
   localStorage.setItem('callStatus', JSON.stringify(callStatus));
 
   currentFriend = null;
 }
 
-// ---------- SIMULATE RANDOM INCOMING CALL ----------
-function simulateIncoming(){
-  const randomFriend = friends[Math.floor(Math.random()*friends.length)];
-  showIncoming(randomFriend);
-}
-
 // ---------- INIT ----------
 renderFriends();
-setTimeout(simulateIncoming, 3000);   // first incoming call after 3s
-setInterval(simulateIncoming, 15000);  // every 15s
 </script>
-
 </body>
 </html>
