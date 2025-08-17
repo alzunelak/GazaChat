@@ -114,6 +114,40 @@ closeQR.addEventListener('click', () => {
   qrContainer.style.display='none';
   noMsg.style.display='block';
 });
+// --- Check URL parameter for auto-chat ---
+function getQueryParam(param) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(param);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const friendNameParam = getQueryParam('friend');
+  const friendProfileParam = getQueryParam('profile');
+
+  if(friendNameParam){
+    const friends = getFriends();
+    const friend = friends.find(f => f.name === decodeURIComponent(friendNameParam));
+    if(friend){
+      // Open chat automatically
+      openChat(friend.name, friend.profile);
+    } else if(friendProfileParam){
+      // In case friend not yet in localStorage, add and open chat
+      const newFriend = {
+        name: decodeURIComponent(friendNameParam),
+        profile: decodeURIComponent(friendProfileParam)
+      };
+      addFriend(newFriend);
+      openChat(newFriend.name, newFriend.profile);
+    }
+  }
+});
+
+// --- Open chat function ---
+function openChat(name, profile){
+  // You can customize this to open your chat.html
+  // Example: redirect with parameters
+  window.location.href = `chat.html?friend=${encodeURIComponent(name)}&profile=${encodeURIComponent(profile)}`;
+}
 
 // --- Friends management ---
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
