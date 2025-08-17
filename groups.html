@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+my code is <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -17,9 +17,6 @@ body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
 #newGroupPopup{display:none;position:absolute;top:50px;left:50%;transform:translateX(-50%);background:white;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);flex-direction:column;}
 #newGroupPopup input{width:200px;margin-bottom:10px;padding:5px;}
 #newGroupPopup button{padding:5px 10px;margin-right:5px;}
-.inviteBtn, .deleteBtn{margin-left:5px;padding:2px 6px;font-size:12px;border:none;border-radius:4px;cursor:pointer;}
-.inviteBtn{background:#128C7E;color:white;}
-.deleteBtn{background:#d33;color:white;}
 </style>
 </head>
 <body>
@@ -47,22 +44,29 @@ const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
 
 // Show popup only when button is clicked
-createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
+createGroupBtn.onclick = () => {
+  newGroupPopup.style.display = "flex";
+};
 
 // Close popup
-function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
+function closeNewGroupPopup() {
+  newGroupPopup.style.display = "none";
+}
 
-// Render groups
+// Render only groups where current user is a member
 function renderGroups(){
   groupsListDiv.innerHTML = "";
   const myGroups = groups.filter(g => g.members.some(m => m.name === myName));
 
-  myGroups.forEach((g, idx)=>{
+  myGroups.forEach(g=>{
     const div = document.createElement("div");
-    div.className = "group";
-
+    div.className="group";
+    div.onclick = ()=>{
+      const originalIndex = groups.findIndex(gr=>gr.name===g.name && gr.photo===g.photo);
+      localStorage.setItem("currentGroupIndex", originalIndex);
+      window.location="group-chat.html";
+    };
     const latestMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
-
     div.innerHTML = `
       <img src="${g.photo || 'group.png'}">
       <div class="info">
@@ -71,43 +75,6 @@ function renderGroups(){
       </div>
       ${g.unread ? '<div class="red-dot"></div>' : ''}
     `;
-
-    // Open group chat
-    div.onclick = () => {
-      localStorage.setItem("currentGroupIndex", groups.findIndex(gr => gr.name === g.name && gr.photo === g.photo));
-      window.location = "group.html";
-    };
-
-    // Admin buttons: Invite & Delete
-    if(g.admin === myName){
-      const inviteBtn = document.createElement("button");
-      inviteBtn.className = "inviteBtn";
-      inviteBtn.textContent = "Invite";
-      inviteBtn.onclick = (e)=>{
-        e.stopPropagation();
-        const inviteName = prompt("Enter friend's name to invite:");
-        if(!inviteName) return;
-        if(!g.invited.includes(inviteName)) g.invited.push(inviteName);
-        localStorage.setItem("groups", JSON.stringify(groups));
-        const link = `${window.location.origin}/join.html?group=${encodeURIComponent(g.name)}&user=${encodeURIComponent(inviteName)}`;
-        alert(`Send this link to ${inviteName}:\n${link}`);
-      };
-      div.appendChild(inviteBtn);
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "deleteBtn";
-      deleteBtn.textContent = "Delete";
-      deleteBtn.onclick = (e)=>{
-        e.stopPropagation();
-        if(confirm("Are you sure you want to delete this group?")){
-          groups.splice(groups.findIndex(gr => gr.name===g.name),1);
-          localStorage.setItem("groups", JSON.stringify(groups));
-          renderGroups();
-        }
-      };
-      div.appendChild(deleteBtn);
-    }
-
     groupsListDiv.appendChild(div);
   });
 }
@@ -129,16 +96,16 @@ function createGroup(){
 function saveGroup(name,img){
   const newGroup = {
     name,
-    photo: img,
-    admin: myName,
-    members: [{name: myName, accepted: true}],
-    invited: [],
-    blocked: [],
-    messages: [],
-    unread: false
+    photo:img,
+    admin:myName,
+    members:[{name:myName,accepted:true}],
+    invited:[],
+    blocked:[],
+    messages:[],
+    unread:false
   };
   groups.push(newGroup);
-  localStorage.setItem("groups", JSON.stringify(groups));
+  localStorage.setItem("groups",JSON.stringify(groups));
   renderGroups();
   closeNewGroupPopup();
   document.getElementById("newGroupName").value="";
