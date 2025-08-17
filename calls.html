@@ -5,253 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calls</title>
 <style>
-body {
-  font-family: Arial;
-  margin: 0;
-  padding: 0;
-  background: #f5f5f5;
-}
-.main-content {
-  padding: 20px;
-  min-height: 70vh;
-}
-.call-item {
-  padding: 10px;
-  background: #fff;
-  margin: 5px 0;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.call-item-left {
-  display: flex;
-  align-items: center;
-}
-.call-item img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-.call-buttons button {
-  margin-left: 5px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  color: #fff;
-}
-.call-buttons .audio-btn { background-color: #4CAF50; }
-.call-buttons .video-btn { background-color: #2196F3; }
-.call-status {
-  font-size: 12px;
-  margin-left: 10px;
-}
-.call-status.missed { color: #e74c3c; }
-.call-status.declined { color: #555; }
-.call-status.accepted { color: #4CAF50; }
-
-/* Overlay */
-.overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  z-index: 9998;
-}
-
-/* Incoming call popup */
-.incoming-call, .calling-modal {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.3);
-  z-index: 9999;
-  display: none;
-}
-.incoming-call img, .calling-modal img {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  margin-bottom: 10px;
-}
-.incoming-call h3, .calling-modal h3 { margin: 10px 0; }
-.incoming-call button, .calling-modal button {
-  margin: 5px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #fff;
-  font-size: 14px;
-}
-.accept-btn { background-color: #4CAF50; }
-.decline-btn, .end-btn { background-color: #e74c3c; }
+body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
+.friend{display:flex;align-items:center;background:white;padding:10px;margin:10px 0;border-radius:8px;}
+.friend img{width:50px;height:50px;border-radius:50%;margin-right:15px;}
+.friend-info{flex:1;}
+.friend-buttons button{margin:0 5px;padding:6px 10px;border:none;border-radius:5px;cursor:pointer;}
+.audio{background:#25d366;color:white;}
+.video{background:#34b7f1;color:white;}
+.status{font-size:14px;margin-top:5px;}
+.accepted{color:green;}
+.declined{color:red;}
+.missed{color:orange;}
 </style>
 </head>
 <body>
-
-<div class="main-content" id="mainContent"></div>
-
-<!-- Overlay -->
-<div class="overlay" id="overlay"></div>
-
-<!-- Incoming call popup (receiver) -->
-<div class="incoming-call" id="incomingCallPopup">
-  <img id="incomingProfile" src="default-profile.png" alt="Profile">
-  <h3 id="incomingName">Friend</h3>
-  <p id="incomingType">Incoming Call...</p>
-  <button class="accept-btn" id="acceptIncoming">Accept</button>
-  <button class="decline-btn" id="declineIncoming">Decline</button>
-</div>
-
-<!-- Calling modal (caller) -->
-<div class="calling-modal" id="callingModal">
-  <img id="callingProfile" src="default-profile.png" alt="Profile">
-  <h3 id="callingName">Calling...</h3>
-  <p id="callingType"></p>
-  <button class="end-btn" id="endCallBtn">End</button>
-</div>
-
-<audio id="ringTone" loop>
-  <source src="ringtone.mp3" type="audio/mpeg">
-</audio>
+<h2>Friends & Calls</h2>
+<div id="friendsList"></div>
 
 <script>
-// ---------- DATA ----------
-const friends = JSON.parse(localStorage.getItem('friends')||JSON.stringify([
-  {name:"Alice", profile:"default-profile.png"},
-  {name:"Bob", profile:"default-profile.png"},
-  {name:"Charlie", profile:"default-profile.png"}
-]));
+const friends = [
+  {name:"Alice", img:"https://via.placeholder.com/50"},
+  {name:"Bob", img:"https://via.placeholder.com/50"},
+  {name:"Charlie", img:"https://via.placeholder.com/50"}
+];
 
-const callStatus = JSON.parse(localStorage.getItem('callStatus')||'{}'); 
-
-// ---------- ELEMENTS ----------
-const mainContent = document.getElementById('mainContent');
-const ringTone = document.getElementById('ringTone');
-const incomingPopup = document.getElementById('incomingCallPopup');
-const incomingProfile = document.getElementById('incomingProfile');
-const incomingName = document.getElementById('incomingName');
-const incomingType = document.getElementById('incomingType');
-const acceptBtn = document.getElementById('acceptIncoming');
-const declineBtn = document.getElementById('declineIncoming');
-const overlay = document.getElementById('overlay');
-
-const callingModal = document.getElementById('callingModal');
-const callingProfile = document.getElementById('callingProfile');
-const callingName = document.getElementById('callingName');
-const callingType = document.getElementById('callingType');
-const endCallBtn = document.getElementById('endCallBtn');
-
-let callTimeout;
-let currentFriend = null;
-let statusMap = {};
-let audioAllowed = false;
-
-// ---------- ALLOW AUDIO ----------
-document.body.addEventListener('click', () => { audioAllowed = true; }, { once:true });
-function playRingTone(){ if(audioAllowed) ringTone.play().catch(e=>{}); }
-
-// ---------- RENDER FRIENDS ----------
 function renderFriends(){
-  mainContent.innerHTML = "";
-  friends.forEach(f => {
-    const div = document.createElement('div');
-    div.className = 'call-item';
-    div.innerHTML = `
-      <div class="call-item-left">
-        <img src="${f.profile}" alt="Profile">
-        <span>${f.name}</span>
-        <span class="call-status" id="status-${f.name.replace(/\s+/g,'')}"></span>
+  const container=document.getElementById("friendsList");
+  container.innerHTML="";
+  const callStatus=JSON.parse(localStorage.getItem("callStatus")||"{}");
+  friends.forEach(f=>{
+    const div=document.createElement("div");
+    div.className="friend";
+    div.innerHTML=`
+      <img src="${f.img}">
+      <div class="friend-info">
+        <strong>${f.name}</strong>
+        <div class="status ${callStatus[f.name]?.class||""}">
+          ${callStatus[f.name]?.text||"No recent call"}
+        </div>
       </div>
-      <div class="call-buttons">
-        <button class="audio-btn">Call</button>
-        <button class="video-btn">Video</button>
-      </div>
-    `;
-    mainContent.appendChild(div);
-
-    const audioBtn = div.querySelector('.audio-btn');
-    const videoBtn = div.querySelector('.video-btn');
-    const statusEl = div.querySelector('.call-status');
-    statusMap[f.name] = statusEl;
-
-    if(callStatus[f.name]){
-      statusEl.innerText = callStatus[f.name].text;
-      statusEl.className = "call-status "+callStatus[f.name].class;
-    }
-
-    audioBtn.onclick = ()=> startCall('Audio', f);
-    videoBtn.onclick = ()=> startCall('Video', f);
+      <div class="friend-buttons">
+        <button class="audio">Audio</button>
+        <button class="video">Video</button>
+      </div>`;
+    const audioBtn=div.querySelector(".audio");
+    const videoBtn=div.querySelector(".video");
+    audioBtn.onclick=()=>{window.location.href=`audio-call.html?friend=${encodeURIComponent(f.name)}&img=${encodeURIComponent(f.img)}`};
+    videoBtn.onclick=()=>{window.location.href=`video-call.html?friend=${encodeURIComponent(f.name)}&img=${encodeURIComponent(f.img)}`};
+    container.appendChild(div);
   });
 }
-
-// ---------- START CALL ----------
-function startCall(type, friend) {
-  currentFriend = friend;
-
-  // Show caller modal
-  callingProfile.src = friend.profile;
-  callingName.innerText = `Calling ${friend.name}`;
-  callingType.innerText = `${type} Call...`;
-  callingModal.style.display = 'block';
-  overlay.style.display = 'block';
-  playRingTone();
-
-  // Show receiver popup
-  incomingProfile.src = friend.profile;
-  incomingName.innerText = friend.name;
-  incomingType.innerText = `Incoming ${type} Call...`;
-  incomingPopup.style.display = 'block';
-
-  // auto-miss after 25s
-  callTimeout = setTimeout(()=> hideIncoming("missed", type, friend),25000);
-
-  // Accept
-  acceptBtn.onclick = ()=>{
-    hideIncoming("accepted", type, friend);
-    alert(`Connected ${type} call with ${friend.name}`);
-  };
-  // Decline
-  const declineFn = ()=> hideIncoming("declined", type, friend);
-  declineBtn.onclick = declineFn;
-  overlay.onclick = declineFn;
-
-  // Caller can also end
-  endCallBtn.onclick = ()=> hideIncoming("declined", type, friend);
-}
-
-// ---------- HIDE INCOMING / END CALL ----------
-function hideIncoming(status, type, friend){
-  incomingPopup.style.display='none';
-  callingModal.style.display='none';
-  overlay.style.display='none';
-  ringTone.pause(); ringTone.currentTime=0;
-  clearTimeout(callTimeout);
-
-  if(!friend) return;
-
-  let cls="", txt="";
-  if(status=="missed"){ cls="missed"; txt="Missed Call"; }
-  else if(status=="declined"){ cls="declined"; txt="Call Declined"; }
-  else if(status=="accepted"){ cls="accepted"; txt=`${type} Call Accepted`; }
-
-  const el = statusMap[friend.name];
-  if(el){ el.innerText=txt; el.className="call-status "+cls; }
-
-  callStatus[friend.name] = {text:txt,class:cls};
-  localStorage.setItem('callStatus', JSON.stringify(callStatus));
-
-  currentFriend = null;
-}
-
-// ---------- INIT ----------
 renderFriends();
 </script>
 </body>
