@@ -106,10 +106,7 @@ function renderMembers(){
       span.onclick=()=>{ 
         if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); 
         else group.blocked.push(m.name); 
-        saveGroup(); 
-        renderMembers(); 
-        renderMessages(); 
-        checkBlockedStatus();
+        saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();
       };
       mDiv.appendChild(span);
     }
@@ -134,59 +131,39 @@ function renderMessages(){
 document.getElementById("sendBtn").onclick=()=>{
   const txt=document.getElementById("msgInput").value.trim();
   if(!txt || group.blocked.includes(myName)) return;
-  group.messages.push({sender:myName,text:txt}); 
-  document.getElementById("msgInput").value=""; 
-  saveGroup(); 
-  renderMessages();
+  group.messages.push({sender:myName,text:txt}); document.getElementById("msgInput").value=""; saveGroup(); renderMessages();
 }
 
 // Disable input if blocked
 function checkBlockedStatus(){
-  const input=document.getElementById("msgInput"); 
-  const btn=document.getElementById("sendBtn");
+  const input=document.getElementById("msgInput"); const btn=document.getElementById("sendBtn");
   if(group.blocked.includes(myName)){
-    input.disabled=true; input.placeholder="❌ You are blocked"; 
-    btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
-  } else { 
-    input.disabled=false; input.placeholder="Type a message..."; 
-    btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer"; 
-  }
+    input.disabled=true; input.placeholder="❌ You are blocked"; btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
+  } else { input.disabled=false; input.placeholder="Type a message..."; btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer"; }
 }
 
 // Save group
-function saveGroup(){ 
-  groups[currentIndex]=group; 
-  localStorage.setItem("groups",JSON.stringify(groups)); 
-}
+function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
 
 // Top "+" menu toggle
-const topAdd=document.getElementById("topAdd"); 
-const topMenu=document.getElementById("topMenu");
+const topAdd=document.getElementById("topAdd"); const topMenu=document.getElementById("topMenu");
 topAdd.onclick = ()=> topMenu.style.display = (topMenu.style.display==='flex')?'none':'flex';
 
-// Top menu actions
+// --- Add Friend fetches friends from home.html ---
 document.getElementById("addFriendBtn").onclick = ()=>{
-  // Fetch friends from home.html stored in localStorage
   const friends = JSON.parse(localStorage.getItem("friends")||"[]");
-  if(friends.length===0){ 
-    alert("No friends found."); 
-    return; 
-  }
-
-  const name = prompt("Select friend to add:\n" + friends.join("\n"));
+  if(friends.length === 0){ alert("No friends available."); return; }
+  const friendNames = friends.map(f => f.name);
+  const name = prompt("Select friend to add:\n"+friendNames.join("\n"));
   if(!name) return;
-
-  if(group.members.some(m=>m.name===name)){
-    alert(name + " is already a member.");
-    return;
-  }
-
-  group.members.push({name,accepted:true}); 
-  saveGroup(); 
-  renderMembers(); 
-  alert(name + " added.");
+  const friendObj = friends.find(f => f.name === name);
+  if(!friendObj){ alert("Friend not found!"); return; }
+  if(group.members.some(m=>m.name===name)){ alert(name+" is already in the group."); return; }
+  group.members.push({name:friendObj.name, accepted:true});
+  saveGroup(); renderMembers(); alert(friendObj.name+" added to the group.");
 };
 
+// Invite
 document.getElementById("inviteBtn").onclick = ()=>{
   const name = prompt("Enter user name to invite:"); if(!name) return;
   if(!group.invited.includes(name)) group.invited.push(name); saveGroup();
@@ -194,7 +171,7 @@ document.getElementById("inviteBtn").onclick = ()=>{
   prompt("Send this link to user:", link);
 };
 
-// Leave group: remove your membership and disappear from groups.html
+// Leave group: removes user and hides group from your groups.html
 document.getElementById("leaveBtn").onclick = ()=>{
   if(confirm("Leave group?")){
     group.members = group.members.filter(m=>m.name!==myName);
@@ -216,8 +193,7 @@ document.getElementById("deleteBtn").onclick = ()=>{
 };
 
 // Bottom "+" menu toggle
-const plusBtn=document.getElementById("plusBtn"); 
-const attachmentMenu=document.getElementById("attachmentMenu");
+const plusBtn=document.getElementById("plusBtn"); const attachmentMenu=document.getElementById("attachmentMenu");
 plusBtn.onclick = ()=> attachmentMenu.style.display = (attachmentMenu.style.display==='flex')?'none':'flex';
 function closeAttachmentMenu(){ attachmentMenu.style.display='none'; }
 
