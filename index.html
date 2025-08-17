@@ -9,7 +9,7 @@
   <link rel="manifest" href="/manifest.json">
 
   <!-- Optional theme color for browser -->
-  <meta name="theme-color" content="#3b82f6">
+  <meta name="theme-color" content="#000000">
 
   <style>
     body {
@@ -18,10 +18,11 @@
       height: 100vh;
       width: 100vw;
       background: url("logo.jpg") no-repeat center center;
-      background-size: cover; /* ensures it fills screen nicely */
+      background-size: cover; /* fills screen, crops if needed */
+      background-color: #000; /* fallback black */
     }
     h1 {
-      display: none; /* hide text for splash screen */
+      display: none; /* hide splash text */
     }
   </style>
 </head>
