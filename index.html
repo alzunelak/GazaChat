@@ -15,25 +15,18 @@
     body {
       margin: 0;
       padding: 0;
-      background: #000; /* fallback background (black) */
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
       width: 100vw;
+      background: url("logo.jpg") no-repeat center center;
+      background-size: cover; /* ensures it fills screen nicely */
     }
-    img { 
-      width: 100%;
-      height: 100%;
-      object-fit: cover; /* makes sure it fills the whole screen */
-    }
-    h1 { 
-      display: none; /* hide text for splash screen look */
+    h1 {
+      display: none; /* hide text for splash screen */
     }
   </style>
 </head>
 <body>
-  <img src="logo.jpg" alt="App Logo">
+  <h1>Asalam Aleikum</h1>
 
   <script>
     // Redirect to profile page after 2 seconds
