@@ -43,27 +43,29 @@ const groupsListDiv = document.getElementById("groupsList");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
 
-// Show popup only when button is clicked
-createGroupBtn.onclick = () => {
-  newGroupPopup.style.display = "flex";
-};
+// Show popup
+createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
+function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
 
-// Close popup
-function closeNewGroupPopup() {
-  newGroupPopup.style.display = "none";
-}
-
-// Render only groups where current user is a member
+// Render groups - latest message on top
 function renderGroups(){
   groupsListDiv.innerHTML = "";
   const myGroups = groups.filter(g => g.members.some(m => m.name === myName));
+  // Sort by last message timestamp descending
+  myGroups.sort((a,b)=>{
+    const aTime = a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
+    const bTime = b.messages.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
+    return bTime - aTime;
+  });
 
-  myGroups.forEach(g=>{
+  myGroups.forEach((g,index)=>{
     const div = document.createElement("div");
     div.className="group";
     div.onclick = ()=>{
-      const originalIndex = groups.findIndex(gr=>gr.name===g.name && gr.photo===g.photo);
-      localStorage.setItem("currentGroupIndex", originalIndex);
+      g.unread = false; // mark as read
+      groups = groups.map(gr=>gr.name===g.name ? g : gr);
+      localStorage.setItem("groups",JSON.stringify(groups));
+      localStorage.setItem("currentGroupIndex", groups.findIndex(gr=>gr.name===g.name));
       window.location="group-chat.html";
     };
     const latestMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
@@ -112,13 +114,28 @@ function saveGroup(name,img){
   document.getElementById("newGroupPhoto").value="";
 }
 
-// Auto-refresh if localStorage changes
+// Simulate receiving a message
+function receiveMessage(groupName, text){
+  const g = groups.find(gr=>gr.name===groupName);
+  if(!g) return;
+  g.messages.push({sender:"Friend", text, time:new Date().toISOString()});
+  if(localStorage.getItem("currentGroupIndex") != groups.findIndex(gr=>gr.name===g.name)){
+    g.unread = true; // mark as unread
+  } else g.unread = false;
+  localStorage.setItem("groups",JSON.stringify(groups));
+  renderGroups();
+}
+
+// Listen to localStorage changes (multi-tab)
 window.addEventListener('storage', ()=>{
   groups = JSON.parse(localStorage.getItem("groups") || "[]");
   renderGroups();
 });
 
 renderGroups();
+
+// Example: simulate new message every 15s (testing)
+// setInterval(()=>receiveMessage("Group 1","Hello new message!"),15000);
 </script>
 
 </body>
