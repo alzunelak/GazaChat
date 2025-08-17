@@ -3,171 +3,267 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ChatApp Home</title>
+<title>Chat</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-.header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); position:relative; }
-.profile { display:flex; align-items:center; }
-.profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; }
-.profile-name { font-weight:bold; font-size:16px; }
-.three-dots { font-size:24px; cursor:pointer; position:relative; }
-.main-content { padding:20px; min-height:70vh; }
-.no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
-.tabs { display:flex; justify-content:space-around; padding:10px 0; background:#fff; position:fixed; bottom:0; width:100%; border-top:1px solid #ccc; }
-.tabs div { font-weight:bold; cursor:pointer; }
-.add-button-container { position:fixed; bottom:60px; right:20px; z-index:100; }
-#addBtn { width:60px; height:60px; border-radius:50%; font-size:32px; cursor:pointer; background-color:#4CAF50; color:white; border:none; }
-.popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:5px 0; text-align:left; min-width:140px; }
-.popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
-.popup-options a:hover { background:#f0f0f0; }
-#qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
-#qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
-.friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; }
-.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover; }
-.three-dots-menu { position:absolute; top:45px; right:15px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:none; min-width:140px; z-index:500; }
-.three-dots-menu a { display:block; padding:10px 15px; color:#333; text-decoration:none; font-weight:500; }
-.three-dots-menu a:hover { background:#f0f0f0; }
+body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.chat-header {background:#075E54;color:white;padding:10px 15px;font-size:18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.chat-header-left {display:flex;align-items:center;}
+.chat-header-left img {width:40px;height:40px;border-radius:50%;margin-right:10px;object-fit:cover;}
+.chat-header-right button {background:none;border:none;color:white;font-size:20px;margin-left:10px;cursor:pointer;}
+.chat-messages {flex:1;padding:10px;overflow-y:auto;display:flex;flex-direction:column;}
+.message-container {display:flex;margin:5px 0;align-items:flex-end;position:relative;}
+.message-container.sent {justify-content:flex-end;}
+.message-container.received {justify-content:flex-start;}
+.message-container.received img {width:30px;height:30px;border-radius:50%;margin-right:5px;object-fit:cover;}
+.message {max-width:70%;padding:8px 12px;border-radius:18px;position:relative;word-wrap:break-word;cursor:pointer;}
+.sent .message {background:#dcf8c6;align-self:flex-end;}
+.received .message {background:white;align-self:flex-start;}
+.timestamp {font-size:10px;color:#888;margin-top:2px;text-align:right;}
+.chat-input {display:flex;padding:10px;background:#f0f0f0;align-items:center;position:sticky;bottom:0;z-index:10;}
+.chat-input input {flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
+.chat-input button {padding:0 12px;border:none;background:#25D366;color:white;border-radius:50%;font-size:22px;cursor:pointer;margin-left:5px;}
+.preview{max-width:200px;border-radius:10px;margin-top:5px;}
+
+/* Attachment menu styles */
+.circle-btn {width:40px;height:40px;border-radius:50%;border:none;background:#25D366;color:white;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:5px;}
+.attachment-menu {position:absolute;bottom:60px;left:10px;display:none;flex-direction:column;gap:10px;}
+.attachment-btn {width:50px;height:50px;border-radius:50%;border:none;background:#075E54;color:white;font-size:22px;cursor:pointer;}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="profile">
-    <img id="profilePic" src="default-profile.png" alt="Profile">
-    <div class="profile-name" id="profileName">User</div>
+<div class="chat-header">
+  <div class="chat-header-left">
+    <img id="friendProfile" src="default-profile.png">
+    <span id="friendName">Friend</span>
   </div>
-  <div class="three-dots">&#8942;</div>
-</div>
-
-<div class="three-dots-menu" id="threeDotsMenu">
-  <a href="settings.html">Settings</a>
-  <a href="blockuser.html">Block User</a>
-</div>
-
-<div class="main-content" id="mainContent">
-  <div class="no-msg">
-    No messages yet<br>
-    Add a friend using the + button
+  <div class="chat-header-right">
+    <button id="blockBtn">🚫</button>
   </div>
 </div>
 
-<div id="qrContainer">
-  <button id="closeQR">X</button>
-  <canvas id="userQRCode"></canvas>
-  <p>Your QR Code</p>
+<div class="chat-messages" id="chatMessages"></div>
+
+<div class="chat-input">
+  <button id="attachmentToggle" class="circle-btn">+</button>
+  <input type="text" id="messageInput" placeholder="Type a message...">
+  <button id="sendBtn">➡</button>
 </div>
 
-<div class="add-button-container">
-  <button id="addBtn">+</button>
-  <div id="popupOptions" class="popup-options">
-    <a href="#" id="showQRCode">My Code</a>
-    <a href="scan.html">Scan Code</a>
-    <a href="search.html">Search Friend</a>
-  </div>
+<div id="attachmentMenu" class="attachment-menu">
+  <button class="attachment-btn" id="sendFileBtn">📄</button>
+  <button class="attachment-btn" id="takePhotoBtn">📸</button>
+  <button class="attachment-btn" id="takeVideoBtn">🎥</button>
+  <button class="attachment-btn" id="sendLocationBtn">📍</button>
 </div>
 
-<div class="tabs">
-  <div id="tabChat">Chat</div>
-  <a href="groups.html"><div>Group</div></a>
-  <a href="calls.html"><div>Call</div></a>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
-// --- Profile setup ---
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
-  document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
-});
+// --- User Profile ---
+const myName = localStorage.getItem("username") || "Me";
+const myPic = localStorage.getItem("profilePic") || "default-profile.png";
+const myId  = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
 
-// --- Floating + button ---
-const addBtn = document.getElementById('addBtn');
-const popupOptions = document.getElementById('popupOptions');
-addBtn.addEventListener('click', () => {
-  popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block';
-});
-document.addEventListener('click', e => {
-  if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display = 'none';
-});
+// --- Friend Info from URL ---
+const params = new URLSearchParams(window.location.search);
+const friend = params.get('friend') ? decodeURIComponent(params.get('friend')) : 'John Doe';
+const profile = params.get('profile') ? decodeURIComponent(params.get('profile')) : 'default-profile.png';
+document.getElementById('friendName').innerText = friend;
+document.getElementById('friendProfile').src = profile;
 
-// --- QR popup ---
-const showQRCodeLink = document.getElementById('showQRCode');
-const qrContainer = document.getElementById('qrContainer');
-const noMsg = document.querySelector('.no-msg');
-const closeQR = document.getElementById('closeQR');
-let qrGenerated = false;
-const savedName = localStorage.getItem('username') || 'User';
-const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
+// --- Socket.IO connection ---
+const socket = io("http://localhost:3000");
+socket.emit("register", myName);
 
-showQRCodeLink.addEventListener('click', e => {
-  e.preventDefault();
-  qrContainer.style.display = 'block';
-  noMsg.style.display = 'none';
-  if(!qrGenerated){
-    const qrData = JSON.stringify({name: savedName, profile: profilePic});
-    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
-    qrGenerated = true;
-  }
-});
+// --- Chat Storage ---
+function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
+function saveChat(messages){ localStorage.setItem(`chat_${friend}`, JSON.stringify(messages)); }
+function formatTime(){ const d=new Date(); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
 
-closeQR.addEventListener('click', () => {
-  qrContainer.style.display='none';
-  noMsg.style.display='block';
-});
-
-// --- Friends management ---
-function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
-function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
-function addFriend(friend){
-  let friends = getFriends();
-  if(!friends.some(f => f.name === friend.name)){
-    // Ensure photo exists, fallback to default
-    if(!friend.profile) friend.profile = 'default-profile.png';
-    friends.push(friend);
-    saveFriends(friends);
-    renderFriends();
-  }
+// --- Blocked Users ---
+function isBlocked(friendName){
+  const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")||"[]");
+  return blockedUsers.includes(friendName);
 }
 
-// --- Real-time updates ---
-const channel = new BroadcastChannel('chatapp');
-channel.onmessage = (e) => {
-  if(e.data.type === 'addFriend') addFriend(e.data.friend);
-}
+const blockBtn = document.getElementById('blockBtn');
+const input = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
 
-// --- Render friends ---
-function renderFriends(){
-  const mainContent = document.getElementById('mainContent');
-  const friends = getFriends();
-  mainContent.innerHTML = '';
-  if(friends.length===0){
-    mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
+function updateInputState(){
+  if(isBlocked(friend)){
+    input.disabled = true;
+    input.placeholder = "You have blocked this user.";
+    sendBtn.disabled = true;
   } else {
-    friends.forEach(f => {
-      const div = document.createElement('div');
-      div.className='friend';
-      div.innerHTML = `<img src="${f.profile || 'default-profile.png'}"><span>${f.name}</span>`;
-
-      // Open chat with real info
-      div.onclick = () => {
-        const friendName = encodeURIComponent(f.name);
-        const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
-        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
-      };
-
-      mainContent.appendChild(div);
-    });
+    input.disabled = false;
+    input.placeholder = "Type a message...";
+    sendBtn.disabled = false;
   }
 }
 
-// --- Three-dots menu ---
-const threeDots = document.querySelector('.three-dots');
-const threeDotsMenu = document.getElementById('threeDotsMenu');
-threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; });
-document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
+blockBtn.addEventListener('click', () => {
+  let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+  if(!blockedUsers.includes(friend)){
+    blockedUsers.push(friend);
+    localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
 
-// Render friends on load
-document.addEventListener('DOMContentLoaded', renderFriends);
-</script>
-</body>
-</html>
+    let friends = JSON.parse(localStorage.getItem("friends") || "[]");
+    // Update based on your array structure: names or objects
+    friends = friends.filter(f => (typeof f === 'string' ? f !== friend : f.name !== friend));
+    localStorage.setItem("friends", JSON.stringify(friends));
+
+    alert(friend + " is blocked. You cannot send messages until unblocked.");
+    updateInputState();
+  }
+});
+updateInputState();
+
+// --- Load Chat ---
+const chatContainer = document.getElementById('chatMessages');
+function loadChat(){
+  chatContainer.innerHTML = '';
+  getChat().forEach((msg)=>{
+    const container = document.createElement('div');
+    container.className = 'message-container ' + (msg.senderId===myId?'sent':'received');
+
+    const div = document.createElement('div');
+    div.className='message';
+    div.innerHTML = ""; // remove sender name, only message content
+
+    if(msg.type==='text'){
+      if(msg.text === "My Location" && msg.data && msg.data.startsWith("https://maps.google.com/")){
+        div.innerHTML += `<a href="${msg.data}" target="_blank">📍 My Location</a>`;
+      } else { div.innerHTML += msg.text; }
+    }
+    else if(msg.type==='photo'){ div.innerHTML += `<img src="${msg.data}" class="preview">`; }
+    else if(msg.type==='video'){ div.innerHTML += `<video src="${msg.data}" class="preview" controls></video>`; }
+    else if(msg.type==='file'){ div.innerHTML += `📄 <a href="${msg.data}" download>Download File</a>`; }
+
+    const ts = document.createElement('div');
+    ts.className='timestamp';
+    ts.innerText = msg.time;
+    div.appendChild(ts);
+
+    container.appendChild(div);
+    chatContainer.appendChild(container);
+  });
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// --- Send Message ---
+function sendMessage(){
+  if(isBlocked(friend)) return alert("You cannot send messages to a blocked user!");
+  const text = input.value.trim(); 
+  if(!text) return;
+  const msg = {
+    senderId: myId,
+    senderName: myName,
+    profile: myPic,
+    recipient: friend,
+    type: "text",
+    text: text,
+    time: formatTime()
+  };
+  const messages = getChat();
+  messages.push(msg);
+  saveChat(messages);
+  loadChat();
+  socket.emit("private message", msg);
+  input.value = "";
+}
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage(); });
+
+// --- Receive Messages ---
+socket.on("private message", (msg)=>{
+  if(msg.senderName === friend || msg.senderId === myId){
+    const messages = getChat();
+    messages.push(msg);
+    saveChat(messages);
+    loadChat();
+  }
+});
+loadChat();
+
+// --- Attachment Menu Toggle ---
+const attachmentToggle = document.getElementById('attachmentToggle');
+const attachmentMenu = document.getElementById('attachmentMenu');
+attachmentToggle.addEventListener('click', () => {
+  attachmentMenu.style.display = (attachmentMenu.style.display==='flex') ? 'none' : 'flex';
+});
+
+// Function to close attachment menu
+function closeAttachmentMenu() {
+  attachmentMenu.style.display = 'none';
+}
+
+// --- File ---
+document.getElementById('sendFileBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
+  const inputFile = document.createElement('input');
+  inputFile.type='file';
+  inputFile.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => sendAttachment('file', reader.result, file.name);
+    reader.readAsDataURL(file);
+  }
+  inputFile.click();
+});
+
+// --- Photo ---
+document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
+  const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
+  const inputPhoto = document.createElement('input');
+  inputPhoto.type = 'file';
+  inputPhoto.accept = 'image/*';
+  if(choice) inputPhoto.capture = 'environment';
+  inputPhoto.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>sendAttachment('photo', reader.result, file.name);
+    reader.readAsDataURL(file);
+  };
+  inputPhoto.click();
+});
+
+// --- Video ---
+document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
+  const choice = confirm("Press OK to record video, Cancel to pick from gallery");
+  const inputVideo = document.createElement('input');
+  inputVideo.type = 'file';
+  inputVideo.accept = 'video/*';
+  if(choice) inputVideo.capture = 'camcorder';
+  inputVideo.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>sendAttachment('video', reader.result, file.name);
+    reader.readAsDataURL(file);
+  };
+  inputVideo.click();
+});
+
+// --- Location ---
+document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
+  closeAttachmentMenu(); // close menu
+  if(!navigator.geolocation) return alert("Geolocation not supported.");
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+    sendAttachment('text', url, 'My Location');
+  }, err=>alert("Location error: "+err.message));
+});
+
+
+// --- Send Attachment Function ---
+function sendAttachment(type, data, name){
+  const msg = { senderId: myId, senderName: myName, profile: myPic, recipient: friend, type:type, data:data, text:name||"", time:formatTime() };
+  const messages = getChat(); messages.push(msg); saveChat(messages); loadChat();
+  socket.emit("private message", msg);
+}
+</script> 
