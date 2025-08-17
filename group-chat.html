@@ -1,4 +1,102 @@
-<!-- Same <head> and CSS as before, no changes needed -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Chat</title>
+<style>
+body{font-family:Arial;margin:0;background:#e5ddd5;height:100vh;display:flex;flex-direction:column;}
+.header{background:#25d366;color:white;text-align:center;padding:10px;position:relative;}
+.header img{width:80px;height:80px;border-radius:50%;margin-top:5px;cursor:pointer;object-fit:cover;}
+.header h2{margin:5px 0;cursor:pointer;}
+#members{display:flex;flex-wrap:wrap;justify-content:center;margin:5px;}
+#members div{background:#128C7E;color:white;padding:5px 10px;border-radius:15px;margin:2px;position:relative;}
+#members div span{cursor:pointer;margin-left:5px;}
+#chatBox{flex:1;overflow-y:auto;padding:10px;background:#ece5dd;margin:0 10px;border-radius:8px;margin-bottom:80px;display:flex;flex-direction:column;}
+.msg{max-width:75%;background:white;padding:8px 12px;margin:5px 0;border-radius:12px;display:flex;align-items:flex-start;position:relative;cursor:pointer;gap:6px;}
+.msg.self{background:#dcf8c6;align-self:flex-end;}
+.msg .avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;margin-top:2px;}
+.msg .content{display:flex;flex-direction:column;gap:4px;word-break:break-word;}
+.msg .meta{font-size:11px;color:#666;margin-top:2px;}
+.msg.deleted{font-style:italic;color:#666;}
+.system{align-self:center;background:transparent;color:#666;font-size:12px;margin:8px 0;}
+#inputArea{
+  display:flex;
+  padding:10px;
+  background:white;
+  border-radius:25px;
+  align-items:center;
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  box-sizing:border-box;
+  z-index:100;
+  gap:6px;
+}
+#msgInput{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
+#inputArea button{padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
+#topAdd{position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;background:white;color:#25d366;border-radius:6px;padding:3px 6px;}
+#topMenu{display:none;position:absolute;top:40px;right:10px;background:white;padding:10px;border-radius:10px;box-shadow:0 0 5px #888;flex-direction:column;z-index:200;}
+#topMenu button{margin:3px;padding:8px;border:none;border-radius:6px;background:#128C7E;color:white;cursor:pointer;}
+#friendPopup{display:none;position:absolute;top:50px;right:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 0 5px #888;max-height:200px;overflow-y:auto;flex-direction:column;z-index:200;}
+#friendPopup button{width:100%;padding:6px 10px;margin:3px 0;border:none;border-radius:5px;background:#128C7E;color:white;cursor:pointer;}
+#friendPopup button:hover{background:#0d6b61;}
+/* Attachment Menu */
+#attachmentMenu {
+  display: none;
+  position: fixed;
+  bottom: 60px;
+  right: 10px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 101;
+}
+#attachmentMenu .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+#attachmentMenu button{
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #128C7E;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+#attachmentMenu button:hover{background:#0d6b61;}
+
+/* Message options menu */
+.msgOptions {
+  display:none;
+  position:absolute;
+  top:-50px;
+  right:0;
+  background:white;
+  border-radius:8px;
+  box-shadow:0 0 5px #888;
+  z-index:102;
+  flex-direction:column;
+}
+.msgOptions button{
+  padding:6px 10px;
+  border:none;
+  background:#128C7E;
+  color:white;
+  margin:2px 0;
+  border-radius:5px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.msgOptions button:hover{background:#0d6b61;}
+
+/* Simple attachment previews */
+.msg .attachment img{max-width:240px;border-radius:8px;display:block;}
+.msg .attachment video{max-width:240px;border-radius:8px;display:block;}
+.msg a.file-link{color:#0b57d0;text-decoration:none;}
+</style>
+</head>
 <body>
 
 <div class="header">
@@ -19,12 +117,12 @@
 
 <div id="inputArea">
   <input id="msgInput" placeholder="Type a message...">
-  <button id="sendBtn">➤</button>
-  <button id="plusBtn">+</button>
+  <button id="sendBtn" title="Send">➤</button>
+  <button id="plusBtn" title="Attach">+</button>
 
   <!-- Attachment Menu -->
   <div id="attachmentMenu">
-    <div>
+    <div class="grid">
       <button id="sendFileBtn">📎 File</button>
       <button id="takePhotoBtn">🖼️ Photo</button>
       <button id="takeVideoBtn">🎥 Video</button>
@@ -36,179 +134,349 @@
 </div>
 
 <script>
+/* ========= Setup / State ========= */
+const myName = "You";
 let groups = JSON.parse(localStorage.getItem("groups")||"[]");
-let currentIndex = localStorage.getItem("currentGroupIndex")||0;
-let group = groups[currentIndex]||{name:"My Group",photo:"profile.png",members:[],messages:[],admin:"You",invited:[],blocked:[]};
-const myName="You";
+let currentIndex = parseInt(localStorage.getItem("currentGroupIndex")||"0",10);
+let group = groups[currentIndex] || {
+  name:"My Group",
+  photo:"profile.png",
+  members:[{name:myName,accepted:true}],
+  messages:[],
+  admin:myName,
+  invited:[],
+  blocked:[]
+};
+function saveGroup(){
+  groups[currentIndex] = group;
+  localStorage.setItem("groups", JSON.stringify(groups));
+}
+function uid(){ return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8); }
 
-// Render group info
+/* ========= Header / Admin ========= */
 const groupNameEl = document.getElementById("groupName");
 const groupPhotoEl = document.getElementById("groupPhoto");
-groupNameEl.innerText = group.name;
+groupNameEl.textContent = group.name;
 groupPhotoEl.src = group.photo || "profile.png";
 if(group.admin===myName) document.getElementById("deleteBtn").style.display="block";
 
-// --- Edit group name/photo ---
 groupNameEl.onclick = ()=>{
   const newName = prompt("Enter new group name:", group.name);
-  if(newName && newName.trim() !== ""){
+  if(newName && newName.trim()){
     group.name = newName.trim();
     saveGroup();
-    groupNameEl.innerText = group.name;
+    groupNameEl.textContent = group.name;
   }
 };
 groupPhotoEl.onclick = ()=>{
-  const fileInput = document.createElement("input");
-  fileInput.type = "file"; fileInput.accept="image/*";
-  fileInput.onchange = e=>{
+  const input = document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  input.onchange = e=>{
     const file = e.target.files[0];
-    if(file){
-      const reader = new FileReader();
-      reader.onload = event=>{
-        group.photo = event.target.result;
-        saveGroup();
-        groupPhotoEl.src = group.photo;
-      }
-      reader.readAsDataURL(file);
-    }
-  }
-  fileInput.click();
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      group.photo = ev.target.result;
+      saveGroup();
+      groupPhotoEl.src = group.photo;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
 };
 
-// --- Members ---
+/* ========= Members (keep behavior) ========= */
 function renderMembers(){
-  const div=document.getElementById("members"); div.innerHTML="";
-  group.members.filter(m=>m.accepted).forEach(m=>{
-    const mDiv=document.createElement("div"); mDiv.textContent=m.name;
+  const wrap = document.getElementById("members");
+  wrap.innerHTML = "";
+  (group.members||[]).filter(m=>m.accepted).forEach(m=>{
+    const tag = document.createElement("div");
+    tag.textContent = m.name;
     if(group.admin===myName && m.name!==myName){
-      const span=document.createElement("span"); 
+      const span=document.createElement("span");
       span.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
       span.onclick=()=>{
-        if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name);
+        if(group.blocked.includes(m.name)) group.blocked = group.blocked.filter(x=>x!==m.name);
         else group.blocked.push(m.name);
         saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();
-      }
-      mDiv.appendChild(span);
+      };
+      tag.appendChild(span);
     }
-    div.appendChild(mDiv);
+    wrap.appendChild(tag);
   });
 }
 
-// --- Chat messages ---
+/* ========= Menus (top + bottom) ========= */
+const topAdd = document.getElementById("topAdd");
+const topMenu = document.getElementById("topMenu");
+topAdd.onclick = (e)=>{ e.stopPropagation(); topMenu.style.display = (topMenu.style.display==="flex"?"none":"flex"); };
+
+const plusBtn = document.getElementById("plusBtn");
+const attachmentMenu = document.getElementById("attachmentMenu");
+plusBtn.onclick = (e)=>{ e.stopPropagation(); attachmentMenu.style.display = (attachmentMenu.style.display==="block"?"none":"block"); };
+
+document.addEventListener("click",(e)=>{
+  if(!topMenu.contains(e.target) && e.target!==topAdd) topMenu.style.display="none";
+  if(!attachmentMenu.contains(e.target) && e.target!==plusBtn) attachmentMenu.style.display="none";
+});
+
+/* ========= Chat Rendering ========= */
 const chatBox = document.getElementById("chatBox");
+
+function renderMessageContent(m){
+  if(m.deleted) return `<i>This message was deleted</i>`;
+  const safeText = m.text || "";
+  if(m.type==="photo"){
+    return `
+      <div class="attachment"><img src="${m.data}" alt="${m.name||'Photo'}"></div>
+      ${safeText ? `<div>${safeText}</div>` : "" }
+    `;
+  }
+  if(m.type==="video"){
+    return `
+      <div class="attachment"><video src="${m.data}" controls></video></div>
+      ${safeText ? `<div>${safeText}</div>` : "" }
+    `;
+  }
+  if(m.type==="file"){
+    return `
+      <div><a class="file-link" href="${m.data}" download="${m.name||'file'}">📎 ${m.name||'Download file'}</a></div>
+      ${safeText ? `<div>${safeText}</div>` : "" }
+    `;
+  }
+  // text / location link or plain text
+  return safeText;
+}
+
 function renderMessages(){
-  chatBox.innerHTML="";
-  group.messages.forEach((m,index)=>{
+  chatBox.innerHTML = "";
+  (group.messages||[]).forEach((m)=>{
+    // hide messages "for me" if I chose Delete for me
+    if((m.hiddenBy||[]).includes(myName)) return;
     if(group.blocked.includes(m.sender)) return;
-    const div = document.createElement("div");
-    div.className = "msg" + (m.sender===myName ? " self" : "");
-    div.dataset.index = index;
-    div.innerHTML = `<img src="profile.png"><strong>${m.sender}:</strong> ${m.text||"<i>This message was deleted</i>"}`;
 
-    // Message options
-    const options = document.createElement("div");
-    options.className = "msgOptions";
-    const btnDeleteMe = document.createElement("button"); btnDeleteMe.textContent="Delete for me";
-    const btnDeleteAll = document.createElement("button"); btnDeleteAll.textContent="Delete for everyone";
+    const bubble = document.createElement("div");
+    bubble.className = "msg" + (m.sender===myName ? " self" : "");
+    if(m.deleted) bubble.classList.add("deleted");
+    bubble.dataset.id = m.id;
 
-    btnDeleteMe.onclick = e=>{
+    // avatar + content
+    const avatar = document.createElement("img");
+    avatar.className = "avatar";
+    avatar.src = "profile.png";
+
+    const content = document.createElement("div");
+    content.className = "content";
+    content.innerHTML = `<div><strong>${m.sender}:</strong> ${renderMessageContent(m)}</div>
+                         <div class="meta">${m.time || ""}</div>`;
+
+    // options menu
+    const opts = document.createElement("div");
+    opts.className = "msgOptions";
+    const btnMe = document.createElement("button"); btnMe.textContent = "Delete for me";
+    const btnAll = document.createElement("button"); btnAll.textContent = "Delete for everyone";
+
+    btnMe.onclick = (e)=>{
       e.stopPropagation();
-      group.messages.splice(index,1);
-      saveGroup();
-      renderMessages();
-    }
-    btnDeleteAll.onclick = e=>{
+      m.hiddenBy = Array.isArray(m.hiddenBy) ? m.hiddenBy : [];
+      if(!m.hiddenBy.includes(myName)) m.hiddenBy.push(myName);
+      saveGroup(); renderMessages();
+    };
+
+    btnAll.onclick = (e)=>{
       e.stopPropagation();
-      group.messages[index].text="<i>This message was deleted</i>";
-      saveGroup();
-      renderMessages();
-    }
+      m.deleted = true;
+      m.text = ""; m.data=""; m.name="";
+      saveGroup(); renderMessages();
+    };
 
-    options.appendChild(btnDeleteMe);
-    options.appendChild(btnDeleteAll);
-    div.appendChild(options);
+    opts.appendChild(btnMe);
+    opts.appendChild(btnAll);
 
-    div.onclick = e=>{
+    bubble.onclick = (e)=>{
       e.stopPropagation();
-      const visible = options.style.display==='flex';
-      document.querySelectorAll('.msgOptions').forEach(mo=>mo.style.display='none');
-      options.style.display = visible ? 'none' : 'flex';
-    }
+      const visible = opts.style.display==="flex";
+      document.querySelectorAll(".msgOptions").forEach(x=>x.style.display="none");
+      opts.style.display = visible ? "none" : "flex";
+    };
 
-    chatBox.appendChild(div);
+    bubble.appendChild(avatar);
+    bubble.appendChild(content);
+    bubble.appendChild(opts);
+    chatBox.appendChild(bubble);
   });
+
+  // scroll to bottom so latest is visible
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// --- Send message ---
-document.getElementById("sendBtn").onclick = ()=>{
-  const txt = document.getElementById("msgInput").value.trim();
+/* ========= Send Message ========= */
+const msgInput = document.getElementById("msgInput");
+document.getElementById("sendBtn").onclick = sendText;
+msgInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(); }});
+
+function sendText(){
+  const txt = msgInput.value.trim();
   if(!txt || group.blocked.includes(myName)) return;
-  group.messages.push({sender:myName,text:txt});
-  document.getElementById("msgInput").value="";
-  saveGroup();
-  renderMessages();
+  const msg = {
+    id: uid(),
+    sender: myName,
+    type: "text",
+    text: txt,
+    data: "",
+    name: "",
+    time: new Date().toLocaleTimeString(),
+    deleted: false,
+    hiddenBy: []
+  };
+  group.messages.push(msg);
+  msgInput.value = "";
+  saveGroup(); renderMessages();
 }
 
-// --- Friend leaving system message ---
-document.getElementById("leaveBtn").onclick = ()=>{
-  if(confirm("Leave group?")){
-    group.members=group.members.filter(m=>m.name!==myName);
-    group.messages.push({sender:"System", text:`${myName} left the group`});
-    saveGroup();
-    alert("You left the group."); 
-    groups=groups.filter(g=>g.members.some(m=>m.name===myName));
-    localStorage.setItem("groups",JSON.stringify(groups)); 
-    window.location.href="groups.html";
-  }
+/* ========= Attachments ========= */
+function pushAttachment({type,data,name,text}){
+  const msg = {
+    id: uid(),
+    sender: myName,
+    type, data, name: name||"",
+    text: text||"",
+    time: new Date().toLocaleTimeString(),
+    deleted:false,
+    hiddenBy:[]
+  };
+  group.messages.push(msg);
+  saveGroup(); renderMessages();
+  attachmentMenu.style.display = "none";
 }
 
-// --- Top menu + toggle ---
-const topAdd = document.getElementById("topAdd");
-const topMenu = document.getElementById("topMenu");
-topAdd.onclick = e=>{
+// File
+document.getElementById("sendFileBtn").onclick = ()=>{
+  const input = document.createElement("input");
+  input.type="file";
+  input.onchange = e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=> pushAttachment({type:"file", data:reader.result, name:file.name});
+    reader.readAsDataURL(file);
+  };
+  input.click();
+};
+
+// Photo
+document.getElementById("takePhotoBtn").onclick = ()=>{
+  const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
+  const input = document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  if(choice) input.capture="environment";
+  input.onchange = e=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=> pushAttachment({type:"photo", data:reader.result, name:file.name});
+    reader.readAsDataURL(file);
+  };
+  input.click();
+};
+
+// Video
+document.getElementById("takeVideoBtn").onclick = ()=>{
+  const choice = confirm("Press OK to record video, Cancel to pick from gallery");
+  const input = document.createElement("input");
+  input.type="file"; input.accept="video/*";
+  if(choice) input.capture="camcorder";
+  input.onchange = e=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=> pushAttachment({type:"video", data:reader.result, name:file.name});
+    reader.readAsDataURL(file);
+  };
+  input.click();
+};
+
+// Location
+document.getElementById("sendLocationBtn").onclick = ()=>{
+  if(!navigator.geolocation) return alert("Geolocation not supported.");
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+    pushAttachment({type:"text", data:"", name:"", text:url});
+  }, err=>alert("Location error: "+err.message));
+};
+
+// Calls (placeholders)
+document.getElementById("audioCallBtn").onclick = ()=>{ alert("📞 Audio Call coming soon"); attachmentMenu.style.display="none"; };
+document.getElementById("videoCallBtn").onclick = ()=>{ alert("🎥 Video Call coming soon"); attachmentMenu.style.display="none"; };
+
+/* ========= Friend / Invite / Leave / Delete ========= */
+const friendPopup = document.getElementById("friendPopup");
+document.getElementById("addFriendBtn").onclick = (e)=>{
   e.stopPropagation();
-  topMenu.style.display = (topMenu.style.display==='flex')?'none':'flex';
-}
+  const friends = JSON.parse(localStorage.getItem("friends")||"[]");
+  const available = friends.map(f=>f.name).filter(n=>!group.members.some(m=>m.name===n));
+  if(available.length===0){ alert("All friends are already in the group."); return; }
+  friendPopup.innerHTML = "";
+  available.forEach(name=>{
+    const b = document.createElement("button");
+    b.textContent = name;
+    b.onclick = ()=>{
+      group.members.push({name,accepted:true});
+      saveGroup(); renderMembers(); friendPopup.style.display="none";
+      // optional system message
+      group.messages.push({id:uid(), sender:"System", type:"text", text:`${name} joined the group`, data:"", name:"", time:new Date().toLocaleTimeString(), deleted:false, hiddenBy:[]});
+      saveGroup(); renderMessages();
+    };
+    friendPopup.appendChild(b);
+  });
+  friendPopup.style.display="flex"; friendPopup.style.flexDirection="column";
+};
 
-// --- Bottom + attachment menu ---
-const plusBtn = document.getElementById("plusBtn");
-const attachmentMenu = document.getElementById("attachmentMenu");
-plusBtn.onclick = e=>{
-  e.stopPropagation();
-  attachmentMenu.style.display = (attachmentMenu.style.display==='flex')?'none':'flex';
-}
-
-// --- Click outside closes menus ---
 document.addEventListener("click",(e)=>{
-  if(!topMenu.contains(e.target) && e.target.id!=="topAdd") topMenu.style.display="none";
-  if(!attachmentMenu.contains(e.target) && e.target.id!=="plusBtn") attachmentMenu.style.display="none";
-  if(!document.getElementById("friendPopup").contains(e.target) && e.target.id!=="addFriendBtn") document.getElementById("friendPopup").style.display="none";
+  if(!friendPopup.contains(e.target) && e.target.id!=="addFriendBtn") friendPopup.style.display="none";
 });
 
-// --- Blocked check ---
+document.getElementById("inviteBtn").onclick = ()=>{
+  const name = prompt("Enter user name to invite:"); if(!name) return;
+  if(!group.invited.includes(name)) group.invited.push(name);
+  saveGroup();
+  const link = `${window.location.origin}/join.html?group=${encodeURIComponent(group.name)}&user=${encodeURIComponent(name)}`;
+  prompt("Send this link to user:", link);
+};
+
+document.getElementById("leaveBtn").onclick = ()=>{
+  if(confirm("Leave group?")){
+    group.members = (group.members||[]).filter(m=>m.name!==myName);
+    group.messages.push({id:uid(), sender:"System", type:"text", text:`${myName} left the group`, data:"", name:"", time:new Date().toLocaleTimeString(), deleted:false, hiddenBy:[]});
+    saveGroup();
+    alert("You left the group.");
+    groups = groups.filter(g=> (g.members||[]).some(m=>m.name===myName));
+    localStorage.setItem("groups", JSON.stringify(groups));
+    window.location.href = "groups.html";
+  }
+};
+
+document.getElementById("deleteBtn").onclick = ()=>{
+  if(confirm("Delete group?")){
+    groups.splice(currentIndex,1);
+    localStorage.setItem("groups", JSON.stringify(groups));
+    alert("Group deleted.");
+    window.location.href = "groups.html";
+  }
+};
+
+/* ========= Blocked input state ========= */
 function checkBlockedStatus(){
   const input = document.getElementById("msgInput");
   const btn = document.getElementById("sendBtn");
   if(group.blocked.includes(myName)){
-    input.disabled = true;
-    input.placeholder="❌ You are blocked";
-    btn.disabled=true;
-    btn.style.opacity="0.5";
-    btn.style.cursor="not-allowed";
+    input.disabled=true; input.placeholder="❌ You are blocked";
+    btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
   } else {
-    input.disabled = false;
-    input.placeholder="Type a message...";
-    btn.disabled=false;
-    btn.style.opacity="1";
-    btn.style.cursor="pointer";
+    input.disabled=false; input.placeholder="Type a message...";
+    btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer";
   }
 }
 
-// --- Save group ---
-function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
-
-// Initial render
+/* ========= Init ========= */
 renderMembers();
 renderMessages();
 checkBlockedStatus();
