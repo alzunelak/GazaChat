@@ -5,18 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Groups</title>
 <style>
-body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
-.group{display:flex;align-items:center;background:white;padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;position:relative;}
-.group img{width:50px;height:50px;border-radius:50%;margin-right:10px;object-fit:cover;}
-.group .info{flex:1;}
-.group .info h3{margin:0;font-size:16px;}
-.group .info p{margin:0;font-size:12px;color:gray;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.red-dot{position:absolute;right:10px;top:15px;width:10px;height:10px;background:red;border-radius:50%;}
+body{
+  font-family: Arial;
+  margin: 0;
+  padding: 20px;
+  background: #f5f5f5;
+}
 
-#createGroupBtn{padding:10px 15px;background:#25d366;color:white;border:none;border-radius:8px;cursor:pointer;margin-bottom:10px;}
-#newGroupPopup{display:none;position:absolute;top:50px;left:50%;transform:translateX(-50%);background:white;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.2);flex-direction:column;}
-#newGroupPopup input{width:200px;margin-bottom:10px;padding:5px;}
-#newGroupPopup button{padding:5px 10px;margin-right:5px;}
+.group{
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.group img{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.group .info{
+  flex: 1;
+}
+
+.group .info h3{
+  margin: 0;
+  font-size: 16px;
+}
+
+.group .info p{
+  margin: 0;
+  font-size: 12px;
+  color: gray;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* show only 1 line */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.red-dot{
+  position: absolute;
+  right: 10px;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+}
+
+#createGroupBtn{
+  padding: 10px 15px;
+  background: #25d366;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+#newGroupPopup{
+  display: none;
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  flex-direction: column;
+}
+
+#newGroupPopup input{
+  width: 200px;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+#newGroupPopup button{
+  padding: 5px 10px;
+  margin-right: 5px;
+}
 </style>
 </head>
 <body>
@@ -51,6 +129,7 @@ function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
 function renderGroups(){
   groupsListDiv.innerHTML = "";
   const myGroups = groups.filter(g => g.members.some(m => m.name === myName));
+  
   // Sort by last message timestamp descending
   myGroups.sort((a,b)=>{
     const aTime = a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
@@ -68,12 +147,14 @@ function renderGroups(){
       localStorage.setItem("currentGroupIndex", groups.findIndex(gr=>gr.name===g.name));
       window.location="group-chat.html";
     };
+
     const latestMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
+    
     div.innerHTML = `
       <img src="${g.photo || 'group.png'}">
       <div class="info">
         <h3>${g.name}</h3>
-        <p>${latestMsg}</p>
+        <p title="${latestMsg}">${latestMsg}</p>
       </div>
       ${g.unread ? '<div class="red-dot"></div>' : ''}
     `;
@@ -133,9 +214,6 @@ window.addEventListener('storage', ()=>{
 });
 
 renderGroups();
-
-// Example: simulate new message every 15s (testing)
-// setInterval(()=>receiveMessage("Group 1","Hello new message!"),15000);
 </script>
 
 </body>
