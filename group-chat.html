@@ -189,15 +189,15 @@ document.getElementById("inviteBtn").onclick = ()=>{
   prompt("Send this link to user:", link);
 };
 
-// Leave group
+// Leave group: remove only this user, group remains
 document.getElementById("leaveBtn").onclick = ()=>{
   if(confirm("Are you sure you want to leave this group?")){
-    group.members = group.members.filter(m=>m.name!==myName);
-    group.invited = group.invited.filter(u=>u!==myName);
-    group.blocked = group.blocked.filter(b=>b!==myName);
-    group.messages = group.messages.filter(m=>m.sender!==myName);
+    group.members = group.members.filter(m => m.name !== myName);
+    group.invited = group.invited.filter(u => u !== myName);
+    group.blocked = group.blocked.filter(b => b !== myName);
+    group.messages = group.messages.filter(m => m.sender !== myName);
     saveGroup();
-    alert("You left the group. Your messages and data are removed.");
+    alert("You left the group. Your messages and data are removed, but the group remains for others.");
     window.location.href="groups.html";
   }
 };
