@@ -15,31 +15,26 @@
     body {
       margin: 0;
       padding: 0;
-      background: #25d366;
+      background: #000; /* fallback background (black) */
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      font-family: Arial, sans-serif;
-      color: #fff;
       height: 100vh;
-      text-align: center;
+      width: 100vw;
     }
     img { 
-      width: 150px; 
-      height: 150px; 
-      margin-bottom: 20px; 
-      border-radius: 20px; 
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* makes sure it fills the whole screen */
     }
     h1 { 
-      font-size: 32px; 
+      display: none; /* hide text for splash screen look */
     }
   </style>
 </head>
 <body>
   <img src="logo.jpg" alt="App Logo">
-  <h1>Asalam Aleikum</h1>
-
+<h1> Asalam Aleikum </h1>
   <script>
     // Redirect to profile page after 2 seconds
     setTimeout(() => {
@@ -47,13 +42,13 @@
     }, 2000);
 
     // Register service worker for offline caching
-  if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered:', reg.scope))
-      .catch(err => console.error('SW registration failed:', err));
-  });
-}
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('Service Worker registered:', reg.scope))
+          .catch(err => console.error('SW registration failed:', err));
+      });
+    }
   </script>
 </body>
 </html>
