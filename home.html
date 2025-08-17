@@ -8,8 +8,8 @@
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
 .header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); position:relative; }
 .profile { display:flex; align-items:center; }
-.profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; cursor:pointer; }
-.profile-name { font-weight:bold; font-size:16px; cursor:pointer; }
+.profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; }
+.profile-name { font-weight:bold; font-size:16px; }
 .three-dots { font-size:24px; cursor:pointer; position:relative; }
 .main-content { padding:20px; min-height:70vh; }
 .no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
@@ -31,36 +31,32 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="profile">
     <img id="profilePic" src="default-profile.png" alt="Profile">
-    <div>
-      <div class="profile-name" id="profileName">User</div>
-    </div>
+    <div class="profile-name" id="profileName">User</div>
   </div>
   <div class="three-dots">&#8942;</div>
 </div>
 
-<!-- Three dots menu -->
 <div class="three-dots-menu" id="threeDotsMenu">
   <a href="settings.html">Settings</a>
   <a href="blockuser.html">Block User</a>
 </div>
 
-<!-- Main content -->
 <div class="main-content" id="mainContent">
-  <div class="no-msg">No messages yet<br>Add a friend using the + button</div>
+  <div class="no-msg">
+    No messages yet<br>
+    Add a friend using the + button
+  </div>
 </div>
 
-<!-- QR code popup -->
 <div id="qrContainer">
   <button id="closeQR">X</button>
   <canvas id="userQRCode"></canvas>
   <p>Your QR Code</p>
 </div>
 
-<!-- Floating + button -->
 <div class="add-button-container">
   <button id="addBtn">+</button>
   <div id="popupOptions" class="popup-options">
@@ -70,152 +66,117 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
   </div>
 </div>
 
-<!-- Tabs -->
 <div class="tabs">
   <div id="tabChat">Chat</div>
-  <a href="groups.html"><div>Groups</div></a>
+  <a href="groups.html"><div>Group</div></a>
   <a href="calls.html"><div>Call</div></a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 <script>
-const profilePicEl = document.getElementById('profilePic');
-const profileNameEl = document.getElementById('profileName');
-const mainContent = document.getElementById('mainContent');
-const qrContainer = document.getElementById('qrContainer');
-const showQRCodeLink = document.getElementById('showQRCode');
-const closeQR = document.getElementById('closeQR');
+// --- Profile setup ---
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
+  document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+});
+
+// --- Floating + button ---
 const addBtn = document.getElementById('addBtn');
 const popupOptions = document.getElementById('popupOptions');
-const threeDots = document.querySelector('.three-dots');
-const threeDotsMenu = document.getElementById('threeDotsMenu');
-const noMsgDiv = document.querySelector('.no-msg');
-const defaultProfile = "default-profile.png";
-
-const channel = new BroadcastChannel('chatapp');
-
-// Render my profile
-function renderMyProfile(){
-  profileNameEl.innerText = localStorage.getItem('username') || 'User';
-  profilePicEl.src = localStorage.getItem('profilePic') || defaultProfile;
-}
-renderMyProfile();
-
-// Click to change profile pic
-profilePicEl.addEventListener('click', ()=>{
-  const input = document.createElement('input');
-  input.type='file'; input.accept='image/*';
-  input.onchange = e=>{
-    const file = e.target.files[0];
-    if(file){
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        localStorage.setItem('profilePic', reader.result);
-        renderMyProfile();
-        channel.postMessage({type:'updateProfile',name:localStorage.getItem('username'),profile:reader.result});
-      }
-      reader.readAsDataURL(file);
-    }
-  }
-  input.click();
+addBtn.addEventListener('click', () => {
+  popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block';
+});
+document.addEventListener('click', e => {
+  if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display = 'none';
 });
 
-// Click to change name
-profileNameEl.addEventListener('click', ()=>{
-  const newName = prompt("Enter your new name:", localStorage.getItem('username')||'User');
-  if(newName){
-    localStorage.setItem('username', newName);
-    renderMyProfile();
-    channel.postMessage({type:'updateProfile',name:newName,profile:localStorage.getItem('profilePic')||defaultProfile});
+// --- QR popup ---
+const showQRCodeLink = document.getElementById('showQRCode');
+const qrContainer = document.getElementById('qrContainer');
+const noMsg = document.querySelector('.no-msg');
+const closeQR = document.getElementById('closeQR');
+let qrGenerated = false;
+const savedName = localStorage.getItem('username') || 'User';
+const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
+
+showQRCodeLink.addEventListener('click', e => {
+  e.preventDefault();
+  qrContainer.style.display = 'block';
+  noMsg.style.display = 'none';
+  if(!qrGenerated){
+    const qrData = JSON.stringify({name: savedName, profile: profilePic});
+    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    qrGenerated = true;
   }
 });
 
-// Friends functions
+closeQR.addEventListener('click', () => {
+  qrContainer.style.display='none';
+  noMsg.style.display='block';
+});
+
+// --- Friends management ---
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
-function saveFriends(f){ localStorage.setItem('friends',JSON.stringify(f)); }
-function getBlocked(){ return JSON.parse(localStorage.getItem('blocked')||'[]'); }
-function saveBlocked(b){ localStorage.setItem('blocked',JSON.stringify(b)); }
-
-function addFriendObject(name,profile){
+function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
+function addFriend(friend){
   let friends = getFriends();
-  if(!friends.some(f=>f.name===name)){
-    friends.push({name,profile});
+  if(!friends.some(f => f.name === friend.name)){
+    // Ensure friend.profile exists
+    friend.profile = friend.profile || localStorage.getItem('profilePic_' + friend.name) || 'default-profile.png';
+
+    // Save friend profile for future use
+    localStorage.setItem('profilePic_' + friend.name, friend.profile);
+
+    // Add friend to friends array and save
+    friends.push(friend);
     saveFriends(friends);
+
+    // Render the friends immediately
     renderFriends();
   }
 }
 
-// Render friends excluding blocked
-function renderFriends(){
-  mainContent.innerHTML = '';
-  const friends = getFriends();
-  const blocked = getBlocked();
-  const visibleFriends = friends.filter(f=>!blocked.includes(f.name));
-  if(visibleFriends.length===0){
-    mainContent.innerHTML = '<div class="no-msg">No messages yet<br>Add a friend using the + button</div>';
-  } else {
-    visibleFriends.forEach(f=>{
-      const div=document.createElement('div');
-      const profile = f.profile || defaultProfile;
-      div.className='friend';
-      div.innerHTML=`<img src="${profile}"><span>${f.name}</span>`;
+// --- Real-time updates ---
+const channel = new BroadcastChannel('chatapp');
+channel.onmessage = (e) => {
+  if(e.data.type === 'addFriend') addFriend(e.data.friend);
+}
 
-      // Right-click to block/unblock
-      div.oncontextmenu = e=>{
-        e.preventDefault();
-        let blocked = getBlocked();
-        if(blocked.includes(f.name)){
-          blocked = blocked.filter(b=>b!==f.name);
-        } else {
-          blocked.push(f.name);
-        }
-        saveBlocked(blocked);
-        channel.postMessage({type:'blockUpdate'});
-        renderFriends();
+// --- Render friends ---
+function renderFriends(){
+  const mainContent = document.getElementById('mainContent');
+  const friends = getFriends();
+  mainContent.innerHTML = '';
+
+  if(friends.length === 0){
+    mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
+  } else {
+    friends.forEach(f => {
+      const div = document.createElement('div');
+      const profile = f.profile || localStorage.getItem('profilePic_' + f.name) || 'default-profile.png';
+      div.className = 'friend';
+      div.innerHTML = `<img src="${profile}"><span>${f.name}</span>`;
+
+      // Click to open chat with friend info
+      div.onclick = () => {
+        const friendName = encodeURIComponent(f.name);
+        const friendProfile = encodeURIComponent(profile);
+        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
       };
 
-      // Click to open chat
-      div.onclick=()=>window.location.href=`chat.html?friend=${encodeURIComponent(f.name)}&profile=${encodeURIComponent(profile)}`;
       mainContent.appendChild(div);
     });
   }
 }
 
-// Floating + button
-addBtn.addEventListener('click',()=>{popupOptions.style.display = popupOptions.style.display==='block'?'none':'block';});
-document.addEventListener('click',e=>{if(!addBtn.contains(e.target)&&!popupOptions.contains(e.target)) popupOptions.style.display='none';});
+// --- Three-dots menu ---
+const threeDots = document.querySelector('.three-dots');
+const threeDotsMenu = document.getElementById('threeDotsMenu');
+threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; });
+document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
 
-// QR code popup
-let qrGenerated = false;
-showQRCodeLink.addEventListener('click', e=>{
-  e.preventDefault();
-  qrContainer.style.display='block';
-  noMsgDiv.style.display='none';
-  if(!qrGenerated){
-    const qrData = JSON.stringify({name:localStorage.getItem('username')||'User',profile:localStorage.getItem('profilePic')||defaultProfile});
-    new QRious({element:document.getElementById('userQRCode'),value:qrData,size:150});
-    qrGenerated = true;
-  }
-});
-closeQR.addEventListener('click', ()=>{qrContainer.style.display='none'; noMsgDiv.style.display='block';});
-
-// Three-dots menu
-threeDots.addEventListener('click', e=>{e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display==='block'?'none':'block';});
-document.addEventListener('click',()=>{threeDotsMenu.style.display='none';});
-
-// Broadcast updates
-channel.onmessage = e=>{
-  if(e.data.type==='addFriend') addFriendObject(e.data.friend.name,e.data.friend.profile);
-  if(e.data.type==='updateProfile'){
-    const friends = getFriends();
-    const idx = friends.findIndex(f=>f.name===e.data.name);
-    if(idx>=0){ friends[idx].profile = e.data.profile; saveFriends(friends); renderFriends(); }
-  }
-  if(e.data.type==='blockUpdate'){ renderFriends(); }
-}
-
-// Initialize
-renderFriends();
+// Render friends on load
+document.addEventListener('DOMContentLoaded', renderFriends);
 </script>
 </body>
 </html>
