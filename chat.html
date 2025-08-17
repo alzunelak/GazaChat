@@ -57,7 +57,7 @@ body {font-family:Arial;margin:0;padding:0;background:#e5ddd5;display:flex;flex-
   <button class="attachment-btn" id="sendLocationBtn">📍</button>
 </div>
 
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
 // --- User Profile ---
 const myName = localStorage.getItem("username") || "Me";
@@ -67,22 +67,17 @@ const myId  = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.rand
 // --- Friend Info ---
 const params = new URLSearchParams(window.location.search);
 const friend = params.get('friend') ? decodeURIComponent(params.get('friend')) : 'John Doe';
-
-// Get friend profile from localStorage friends list
 const friendsList = JSON.parse(localStorage.getItem('friends') || '[]');
 const friendObj = friendsList.find(f => f.name === friend);
-
 const friendName = friendObj ? friendObj.name : friend;
 const friendProfile = friendObj && friendObj.profile ? friendObj.profile : 'default-profile.png';
 
 // Set header
 const friendNameEl = document.getElementById('friendName');
 const friendProfileEl = document.getElementById('friendProfile');
-
 friendNameEl.innerText = friendName;
 friendProfileEl.src = friendProfile;
 friendProfileEl.onerror = () => { friendProfileEl.src = 'default-profile.png'; }
-
 
 // --- Socket.IO connection ---
 const socket = io("http://localhost:3000");
@@ -122,7 +117,6 @@ blockBtn.addEventListener('click', () => {
     localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
 
     let friends = JSON.parse(localStorage.getItem("friends") || "[]");
-    // Update based on your array structure: names or objects
     friends = friends.filter(f => (typeof f === 'string' ? f !== friend : f.name !== friend));
     localStorage.setItem("friends", JSON.stringify(friends));
 
@@ -136,20 +130,21 @@ updateInputState();
 const chatContainer = document.getElementById('chatMessages');
 function loadChat(){
   chatContainer.innerHTML = '';
-  getChat().forEach((msg)=>{
+  getChat().forEach((msg, index)=>{
     const container = document.createElement('div');
     container.className = 'message-container ' + (msg.senderId===myId?'sent':'received');
 
     const div = document.createElement('div');
     div.className='message';
-    div.innerHTML = ""; // remove sender name, only message content
+    div.dataset.index = index;
 
-    if(msg.type==='text'){
+    if(msg.deleted){
+      div.innerHTML = "<i>This message was deleted</i>";
+    } else if(msg.type==='text'){
       if(msg.text === "My Location" && msg.data && msg.data.startsWith("https://maps.google.com/")){
         div.innerHTML += `<a href="${msg.data}" target="_blank">📍 My Location</a>`;
-      } else { div.innerHTML += msg.text; }
-    }
-    else if(msg.type==='photo'){ div.innerHTML += `<img src="${msg.data}" class="preview">`; }
+      } else div.innerHTML += msg.text;
+    } else if(msg.type==='photo'){ div.innerHTML += `<img src="${msg.data}" class="preview">`; }
     else if(msg.type==='video'){ div.innerHTML += `<video src="${msg.data}" class="preview" controls></video>`; }
     else if(msg.type==='file'){ div.innerHTML += `📄 <a href="${msg.data}" download>Download File</a>`; }
 
@@ -160,24 +155,60 @@ function loadChat(){
 
     container.appendChild(div);
     chatContainer.appendChild(container);
+
+    // --- Right click / long press to delete ---
+    div.addEventListener('contextmenu', e=>{
+      e.preventDefault();
+      if(msg.deleted) return;
+      showDeleteMenu(msg, index);
+    });
   });
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
+
+// --- Delete Menu ---
+function showDeleteMenu(msg, index){
+  const choice = prompt("Delete message:\n1️⃣ Delete for me\n2️⃣ Delete for everyone\nCancel to abort");
+  if(choice === "1"){ 
+    deleteForMe(index);
+  } else if(choice === "2" && msg.senderId === myId){ 
+    deleteForEveryone(index);
+  } else if(choice === "2"){
+    alert("Only sender can delete for everyone!");
+  }
+}
+
+function deleteForMe(index){
+  const messages = getChat();
+  messages.splice(index, 1);
+  saveChat(messages);
+  loadChat();
+}
+
+function deleteForEveryone(index){
+  const messages = getChat();
+  messages[index].deleted = true;
+  saveChat(messages);
+  loadChat();
+  socket.emit("delete message", {friend: friend, index: index});
+}
+
+// --- Receive deleted messages ---
+socket.on("delete message", ({index})=>{
+  const messages = getChat();
+  if(messages[index]){
+    messages[index].deleted = true;
+    saveChat(messages);
+    loadChat();
+  }
+});
 
 // --- Send Message ---
 function sendMessage(){
   if(isBlocked(friend)) return alert("You cannot send messages to a blocked user!");
   const text = input.value.trim(); 
   if(!text) return;
-  const msg = {
-    senderId: myId,
-    senderName: myName,
-    profile: myPic,
-    recipient: friend,
-    type: "text",
-    text: text,
-    time: formatTime()
-  };
+  const msg = { senderId: myId, senderName: myName, profile: myPic, recipient: friend, type: "text", text: text, time: formatTime() };
   const messages = getChat();
   messages.push(msg);
   saveChat(messages);
@@ -205,15 +236,11 @@ const attachmentMenu = document.getElementById('attachmentMenu');
 attachmentToggle.addEventListener('click', () => {
   attachmentMenu.style.display = (attachmentMenu.style.display==='flex') ? 'none' : 'flex';
 });
+function closeAttachmentMenu() { attachmentMenu.style.display = 'none'; }
 
-// Function to close attachment menu
-function closeAttachmentMenu() {
-  attachmentMenu.style.display = 'none';
-}
-
-// --- File ---
+// --- File / Photo / Video / Location ---
 document.getElementById('sendFileBtn').addEventListener('click', ()=>{
-  closeAttachmentMenu(); // close menu
+  closeAttachmentMenu();
   const inputFile = document.createElement('input');
   inputFile.type='file';
   inputFile.onchange = e => {
@@ -225,10 +252,8 @@ document.getElementById('sendFileBtn').addEventListener('click', ()=>{
   }
   inputFile.click();
 });
-
-// --- Photo ---
 document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
-  closeAttachmentMenu(); // close menu
+  closeAttachmentMenu();
   const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
   const inputPhoto = document.createElement('input');
   inputPhoto.type = 'file';
@@ -243,10 +268,8 @@ document.getElementById('takePhotoBtn').addEventListener('click', ()=>{
   };
   inputPhoto.click();
 });
-
-// --- Video ---
 document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
-  closeAttachmentMenu(); // close menu
+  closeAttachmentMenu();
   const choice = confirm("Press OK to record video, Cancel to pick from gallery");
   const inputVideo = document.createElement('input');
   inputVideo.type = 'file';
@@ -261,10 +284,8 @@ document.getElementById('takeVideoBtn').addEventListener('click', ()=>{
   };
   inputVideo.click();
 });
-
-// --- Location ---
 document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
-  closeAttachmentMenu(); // close menu
+  closeAttachmentMenu();
   if(!navigator.geolocation) return alert("Geolocation not supported.");
   navigator.geolocation.getCurrentPosition(pos=>{
     const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
@@ -272,11 +293,12 @@ document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
   }, err=>alert("Location error: "+err.message));
 });
 
-
-// --- Send Attachment Function ---
+// --- Send Attachment ---
 function sendAttachment(type, data, name){
   const msg = { senderId: myId, senderName: myName, profile: myPic, recipient: friend, type:type, data:data, text:name||"", time:formatTime() };
   const messages = getChat(); messages.push(msg); saveChat(messages); loadChat();
   socket.emit("private message", msg);
 }
 </script>
+</body>
+</html>
