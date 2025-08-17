@@ -104,8 +104,15 @@ showQRCodeLink.addEventListener('click', e => {
   qrContainer.style.display = 'block';
   noMsg.style.display = 'none';
   if(!qrGenerated){
-    const qrData = JSON.stringify({name: savedName, profile: profilePic});
-    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    const qrData = {
+      name: localStorage.getItem('username') || 'User',
+      profile: localStorage.getItem('profilePic') || 'default-profile.png'
+    };
+    new QRious({ 
+      element: document.getElementById('userQRCode'), 
+      value: JSON.stringify(qrData), 
+      size: 150 
+    });
     qrGenerated = true;
   }
 });
