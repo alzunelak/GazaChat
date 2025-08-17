@@ -83,8 +83,23 @@ document.getElementById("groupPhoto").src = group.photo || "profile.png";
 if(group.admin===myName) document.getElementById("deleteBtn").style.display="block";
 
 // Change group name/photo
-document.getElementById("groupName").onclick = ()=>{ const newName = prompt("Enter new group name:", group.name); if(newName){ group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName; } };
-document.getElementById("groupPhoto").onclick = ()=>{ const fileInput = document.createElement("input"); fileInput.type="file"; fileInput.accept="image/*"; fileInput.onchange = e => { const file = e.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = event => { group.photo = event.target.result; saveGroup(); document.getElementById("groupPhoto").src = group.photo; } reader.readAsDataURL(file); } }; fileInput.click(); };
+document.getElementById("groupName").onclick = ()=>{
+  const newName = prompt("Enter new group name:", group.name);
+  if(newName){ group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName; }
+};
+document.getElementById("groupPhoto").onclick = ()=>{
+  const fileInput = document.createElement("input");
+  fileInput.type="file"; fileInput.accept="image/*";
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = event => { group.photo = event.target.result; saveGroup(); document.getElementById("groupPhoto").src = group.photo; }
+      reader.readAsDataURL(file);
+    }
+  };
+  fileInput.click();
+};
 
 // Render members
 function renderMembers(){
@@ -92,8 +107,13 @@ function renderMembers(){
   group.members.filter(m=>m.accepted).forEach(m=>{
     const mDiv=document.createElement("div"); mDiv.textContent=m.name;
     if(group.admin===myName && m.name!==myName){
-      const span=document.createElement("span"); span.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
-      span.onclick=()=>{ if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); else group.blocked.push(m.name); saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();};
+      const span=document.createElement("span");
+      span.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
+      span.onclick=()=>{ 
+        if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); 
+        else group.blocked.push(m.name); 
+        saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();
+      };
       mDiv.appendChild(span);
     }
     div.appendChild(mDiv);
@@ -106,7 +126,8 @@ function renderMessages(){
   chatBox.innerHTML="";
   group.messages.forEach(m=>{
     if(group.blocked.includes(m.sender)) return;
-    const div=document.createElement("div"); div.className="msg"+(m.sender===myName?" self":"");
+    const div=document.createElement("div"); 
+    div.className="msg"+(m.sender===myName?" self":"");
     div.innerHTML=`<img src="profile.png"><strong>${m.sender}:</strong> ${m.text}`;
     chatBox.appendChild(div);
   });
@@ -117,12 +138,16 @@ function renderMessages(){
 document.getElementById("sendBtn").onclick=()=>{
   const txt=document.getElementById("msgInput").value.trim();
   if(!txt || group.blocked.includes(myName)) return;
-  group.messages.push({sender:myName,text:txt}); document.getElementById("msgInput").value=""; saveGroup(); renderMessages();
+  group.messages.push({sender:myName,text:txt}); 
+  document.getElementById("msgInput").value=""; 
+  saveGroup(); 
+  renderMessages();
 }
 
 // Disable input if blocked
 function checkBlockedStatus(){
-  const input=document.getElementById("msgInput"); const btn=document.getElementById("sendBtn");
+  const input=document.getElementById("msgInput"); 
+  const btn=document.getElementById("sendBtn");
   if(group.blocked.includes(myName)){
     input.disabled=true; input.placeholder="❌ You are blocked"; btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
   } else { input.disabled=false; input.placeholder="Type a message..."; btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer"; }
@@ -132,27 +157,44 @@ function checkBlockedStatus(){
 function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
 
 // Top "+" menu toggle
-const topAdd=document.getElementById("topAdd"); const topMenu=document.getElementById("topMenu");
-topAdd.onclick = ()=> topMenu.style.display = (topMenu.style.display==='flex')?'none':'flex';
+const topAdd=document.getElementById("topAdd"); 
+const topMenu=document.getElementById("topMenu");
+topAdd.onclick = (e)=> { e.stopPropagation(); topMenu.style.display = (topMenu.style.display==='flex')?'none':'flex'; }
 
 // Top menu actions
 
 // Add friend popup
 const friendPopup = document.getElementById("friendPopup");
-document.getElementById("addFriendBtn").onclick = () => {
+document.getElementById("addFriendBtn").onclick = (e) => {
+  e.stopPropagation(); // prevent immediate close
+
   const friends = JSON.parse(localStorage.getItem("friends") || "[]");
-  const availableFriends = friends.map(f => f.name).filter(n => !group.members.some(m => m.name===n));
-  if(availableFriends.length === 0){ alert("All friends are already in the group."); return; }
+  const availableFriends = friends
+    .map(f => f.name)
+    .filter(n => !group.members.some(m => m.name === n));
+
+  if (availableFriends.length === 0) { alert("All friends are already in the group."); return; }
+
   friendPopup.innerHTML = "";
-  availableFriends.forEach(name=>{
-    const btn=document.createElement("button"); btn.textContent=name;
-    btn.onclick = ()=>{
-      group.members.push({name,accepted:true}); saveGroup(); renderMembers(); friendPopup.style.display="none"; alert(name+" added.");
+  availableFriends.forEach(name => {
+    const btn = document.createElement("button"); btn.textContent = name;
+    btn.onclick = () => { 
+      group.members.push({name,accepted:true}); 
+      saveGroup(); renderMembers(); 
+      friendPopup.style.display="none"; 
+      alert(name+" added.");
     };
     friendPopup.appendChild(btn);
   });
-  friendPopup.style.display = (friendPopup.style.display==="flex") ? "none":"flex";
+
+  friendPopup.style.display="flex"; friendPopup.style.flexDirection="column";
 };
+
+// Close friend popup if clicked outside
+document.addEventListener("click", (e)=>{
+  if(!friendPopup.contains(e.target) && e.target.id!=="addFriendBtn") friendPopup.style.display="none";
+  if(!topMenu.contains(e.target) && e.target.id!=="topAdd") topMenu.style.display="none";
+});
 
 // Invite link
 document.getElementById("inviteBtn").onclick = ()=>{
@@ -162,14 +204,13 @@ document.getElementById("inviteBtn").onclick = ()=>{
   prompt("Send this link to user:", link);
 };
 
-// Leave group (delete only your membership)
+// Leave group (only your membership)
 document.getElementById("leaveBtn").onclick = ()=>{
   if(confirm("Leave group?")){
     group.members = group.members.filter(m=>m.name!==myName);
     group.invited = group.invited.filter(u=>u!==myName);
     saveGroup();
     alert("You left the group.");
-    // Remove group from groups list page
     groups = groups.filter(g=>g.members.some(m=>m.name===myName));
     localStorage.setItem("groups",JSON.stringify(groups));
     window.location.href="groups.html";
@@ -187,7 +228,8 @@ document.getElementById("deleteBtn").onclick = ()=>{
 };
 
 // Bottom "+" menu toggle
-const plusBtn=document.getElementById("plusBtn"); const attachmentMenu=document.getElementById("attachmentMenu");
+const plusBtn=document.getElementById("plusBtn"); 
+const attachmentMenu=document.getElementById("attachmentMenu");
 plusBtn.onclick = ()=> attachmentMenu.style.display = (attachmentMenu.style.display==='flex')?'none':'flex';
 function closeAttachmentMenu(){ attachmentMenu.style.display='none'; }
 
@@ -197,7 +239,14 @@ document.getElementById("takePhotoBtn").onclick = ()=>{ closeAttachmentMenu(); g
 document.getElementById("takeVideoBtn").onclick = ()=>{ closeAttachmentMenu(); group.messages.push({sender:myName,text:"[Sent Video]"}); saveGroup(); renderMessages(); };
 document.getElementById("audioCallBtn").onclick = ()=>{ closeAttachmentMenu(); alert("📞 Audio Call coming soon"); };
 document.getElementById("videoCallBtn").onclick = ()=>{ closeAttachmentMenu(); alert("🎥 Video Call coming soon"); };
-document.getElementById("sendLocationBtn").onclick = ()=>{ closeAttachmentMenu(); if(!navigator.geolocation) alert("Geolocation not supported."); else navigator.geolocation.getCurrentPosition(pos=>{ group.messages.push({sender:myName,text:`📍 Location: ${pos.coords.latitude},${pos.coords.longitude}`}); saveGroup(); renderMessages();}); };
+document.getElementById("sendLocationBtn").onclick = ()=>{ 
+  closeAttachmentMenu(); 
+  if(!navigator.geolocation) alert("Geolocation not supported."); 
+  else navigator.geolocation.getCurrentPosition(pos=>{ 
+    group.messages.push({sender:myName,text:`📍 Location: ${pos.coords.latitude},${pos.coords.longitude}`}); 
+    saveGroup(); renderMessages();
+  }); 
+};
 
 // Initial render
 renderMembers(); renderMessages(); checkBlockedStatus();
