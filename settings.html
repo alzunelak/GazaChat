@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f5f5f5; }
+.container { max-width:400px; margin:50px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); text-align:center; }
+h2 { margin-bottom:20px; }
+button { padding:12px 20px; font-size:16px; border:none; border-radius:6px; cursor:pointer; }
+.delete-btn { background:#f44336; color:white; }
+.delete-btn:hover { background:#d32f2f; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Settings</h2>
+  <p>Click the button below to delete your account. This will remove all your data from this device.</p>
+  <button class="delete-btn" id="deleteAccountBtn">Delete Account</button>
+</div>
+
+<script>
+const deleteBtn = document.getElementById('deleteAccountBtn');
+
+deleteBtn.addEventListener('click', () => {
+  const confirmDelete = confirm("Are you sure you want to delete your account? This cannot be undone.");
+  if(confirmDelete){
+    // Clear all user data
+    localStorage.clear();
+    alert("Account deleted successfully!");
+    // Redirect to index page
+    window.location.href = "index.html"; // replace with your index page URL
+  }
+});
+</script>
+
+</body>
+</html>
