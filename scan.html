@@ -21,18 +21,29 @@ const messageDiv = document.getElementById('message');
 const channel = new BroadcastChannel('chatapp');
 const defaultProfile = "default-profile.png";
 
+// Add friend and save profile for future use
 function addFriendObject(name, profile){
-  let friends = JSON.parse(localStorage.getItem('friends')||'[]');
-  if(!friends.some(f=>f.name===name)){
-    const newFriend = {name, profile};
+  let friends = JSON.parse(localStorage.getItem('friends') || '[]');
+
+  // Check if friend already exists
+  if(!friends.some(f => f.name === name)){
+    const newFriend = { name, profile };
     friends.push(newFriend);
+
+    // Save updated friends array
     localStorage.setItem('friends', JSON.stringify(friends));
-    channel.postMessage({type:'addFriend', friend:newFriend});
+
+    // Save individual profile for this friend
+    localStorage.setItem('profilePic_' + name, profile);
+
+    // Notify other tabs/pages
+    channel.postMessage({ type: 'addFriend', friend: newFriend });
     return true;
   }
   return false;
 }
 
+// Initialize QR code scanner
 const qrCodeReader = new Html5Qrcode("reader");
 qrCodeReader.start(
   { facingMode: "environment" },
@@ -41,9 +52,14 @@ qrCodeReader.start(
     try {
       const data = JSON.parse(decodedText);
       if(data.name){
-        const added = addFriendObject(data.name, data.profile || defaultProfile);
+        // Use profile from QR code or default
+        const profile = data.profile || defaultProfile;
+        const added = addFriendObject(data.name, profile);
+
         messageDiv.style.color = "green";
-        messageDiv.innerText = added ? "Friend added!" : "Friend already exists";
+        messageDiv.innerText = added ? "Friend added successfully!" : "Friend already exists";
+
+        // Stop scanning once a friend is added
         qrCodeReader.stop();
       } else {
         throw new Error("Invalid QR");
@@ -53,7 +69,9 @@ qrCodeReader.start(
       messageDiv.innerText = "Invalid QR code";
     }
   },
-  (err) => { console.log(err); }
+  (err) => {
+    console.log(err);
+  }
 );
 </script>
 </body>
