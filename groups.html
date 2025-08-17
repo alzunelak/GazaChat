@@ -146,7 +146,7 @@ function renderGroups(){
     };
 
     const fullMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
-    const latestMsg = fullMsg.length > 20 ? fullMsg.slice(0,50) + "..." : fullMsg;
+    const latestMsg = fullMsg.length > 10 ? fullMsg.slice(0,10) + "..." : fullMsg;
 
     div.innerHTML = `
       <img src="${g.photo || 'group.png'}">
