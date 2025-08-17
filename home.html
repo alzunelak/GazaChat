@@ -121,17 +121,10 @@ function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(fr
 function addFriend(friend){
   let friends = getFriends();
   if(!friends.some(f => f.name === friend.name)){
-    // Ensure friend.profile exists
-    friend.profile = friend.profile || localStorage.getItem('profilePic_' + friend.name) || 'default-profile.png';
-
-    // Save friend profile for future use
-    localStorage.setItem('profilePic_' + friend.name, friend.profile);
-
-    // Add friend to friends array and save
+    // Ensure photo exists, fallback to default
+    if(!friend.profile) friend.profile = 'default-profile.png';
     friends.push(friend);
     saveFriends(friends);
-
-    // Render the friends immediately
     renderFriends();
   }
 }
@@ -147,20 +140,18 @@ function renderFriends(){
   const mainContent = document.getElementById('mainContent');
   const friends = getFriends();
   mainContent.innerHTML = '';
-
-  if(friends.length === 0){
+  if(friends.length===0){
     mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
   } else {
     friends.forEach(f => {
       const div = document.createElement('div');
-      const profile = f.profile || localStorage.getItem('profilePic_' + f.name) || 'default-profile.png';
-      div.className = 'friend';
-      div.innerHTML = `<img src="${profile}"><span>${f.name}</span>`;
+      div.className='friend';
+      div.innerHTML = `<img src="${f.profile || 'default-profile.png'}"><span>${f.name}</span>`;
 
-      // Click to open chat with friend info
+      // Open chat with real info
       div.onclick = () => {
         const friendName = encodeURIComponent(f.name);
-        const friendProfile = encodeURIComponent(profile);
+        const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
         window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
       };
 
