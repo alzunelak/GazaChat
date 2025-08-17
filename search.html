@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Search Friend</title>
+<title>Friend Requests</title>
 <style>
 body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
 input, button { padding:10px; margin:5px; font-size:16px; }
 #result { margin-top:20px; font-size:16px; }
 .error { color:red; }
 .success { color:green; }
+.friend-request { margin:10px; padding:10px; border:1px solid #ccc; background:#fff; border-radius:5px; }
 </style>
 </head>
 <body>
@@ -18,40 +19,89 @@ input, button { padding:10px; margin:5px; font-size:16px; }
 <button id="searchBtn">Search</button>
 <div id="result"></div>
 
+<h3>Friend Requests</h3>
+<div id="requests"></div>
+
 <script>
 const users = ["Alice","Bob","Charlie"];
 const channel = new BroadcastChannel('chatapp');
 const defaultProfile = "default-profile.png";
+const myName = "You"; // replace with actual logged-in user
 
-function addFriendObject(name){
+function addFriend(name){
   let friends = JSON.parse(localStorage.getItem('friends')||'[]');
   if(!friends.some(f=>f.name===name)){
-    const newFriend = {name, profile: defaultProfile};
-    friends.push(newFriend);
+    friends.push({name, profile: defaultProfile});
     localStorage.setItem('friends', JSON.stringify(friends));
-    channel.postMessage({type:'addFriend', friend:newFriend});
     return true;
   }
   return false;
 }
 
+function isFriend(name){
+  let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+  return friends.some(f=>f.name===name);
+}
+
+// Handle incoming friend requests
+channel.onmessage = (event) => {
+  if(event.data.type === 'friendRequest' && event.data.to === myName){
+    const requestsDiv = document.getElementById('requests');
+    const div = document.createElement('div');
+    div.className = 'friend-request';
+    div.innerHTML = `
+      Friend request from ${event.data.from} 
+      <button onclick="acceptRequest('${event.data.from}', this)">Accept</button>
+    `;
+    requestsDiv.appendChild(div);
+  }
+
+  // Handle acceptance notification
+  if(event.data.type === 'friendAccepted' && event.data.to === myName){
+    addFriend(event.data.from);
+    alert(`${event.data.from} accepted your friend request!`);
+    window.location.href = "home.html"; // redirect if now friends
+  }
+};
+
+// Accept friend request
+function acceptRequest(name, btn){
+  addFriend(name);
+  channel.postMessage({type:'friendAccepted', from: myName, to: name});
+  btn.parentElement.innerHTML = `You are now friends with ${name}! Redirecting...`;
+  setTimeout(()=>{ window.location.href = "home.html"; }, 1000);
+}
+
+// Search button logic
 document.getElementById('searchBtn').addEventListener('click', ()=>{
   const name = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
-  if(name===""){ resultDiv.className="error"; resultDiv.innerText="Enter a name"; return; }
+  if(name===""){ 
+    resultDiv.className="error"; 
+    resultDiv.innerText="Enter a name"; 
+    return; 
+  }
 
   if(users.includes(name)){
-    resultDiv.className="success";
-    resultDiv.innerHTML=`${name} found! <button onclick="addAndClose('${name}')">Add Friend</button>`;
+    if(isFriend(name)){
+      // Already friends → redirect to home.html
+      resultDiv.className="success";
+      resultDiv.innerText=`You are already friends with ${name}. Redirecting...`;
+      setTimeout(()=>{ window.location.href = "home.html"; }, 1000);
+    } else {
+      resultDiv.className="success";
+      resultDiv.innerHTML=`${name} found! <button onclick="sendRequest('${name}')">Connect</button>`;
+    }
   } else {
     resultDiv.className="error";
     resultDiv.innerText="No user exists";
   }
 });
 
-function addAndClose(name){
-  addFriendObject(name);
-  document.getElementById('result').innerText="Friend added!";
+// Send friend request
+function sendRequest(name){
+  channel.postMessage({type:'friendRequest', from: myName, to: name});
+  document.getElementById('result').innerText = `Friend request sent to ${name}`;
 }
 </script>
 </body>
