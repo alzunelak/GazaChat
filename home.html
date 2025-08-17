@@ -79,7 +79,6 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 <script>
-// --- Profile setup ---
 const profilePicEl = document.getElementById('profilePic');
 const profileNameEl = document.getElementById('profileName');
 const mainContent = document.getElementById('mainContent');
@@ -102,7 +101,7 @@ function renderMyProfile(){
 }
 renderMyProfile();
 
-// --- Click to change profile pic ---
+// Click to change profile pic
 profilePicEl.addEventListener('click', ()=>{
   const input = document.createElement('input');
   input.type='file'; input.accept='image/*';
@@ -121,7 +120,7 @@ profilePicEl.addEventListener('click', ()=>{
   input.click();
 });
 
-// --- Click to change name ---
+// Click to change name
 profileNameEl.addEventListener('click', ()=>{
   const newName = prompt("Enter your new name:", localStorage.getItem('username')||'User');
   if(newName){
@@ -131,9 +130,12 @@ profileNameEl.addEventListener('click', ()=>{
   }
 });
 
-// --- Friends functions ---
+// Friends functions
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
 function saveFriends(f){ localStorage.setItem('friends',JSON.stringify(f)); }
+function getBlocked(){ return JSON.parse(localStorage.getItem('blocked')||'[]'); }
+function saveBlocked(b){ localStorage.setItem('blocked',JSON.stringify(b)); }
+
 function addFriendObject(name,profile){
   let friends = getFriends();
   if(!friends.some(f=>f.name===name)){
@@ -143,29 +145,47 @@ function addFriendObject(name,profile){
   }
 }
 
-// --- Render friends ---
+// Render friends excluding blocked
 function renderFriends(){
   mainContent.innerHTML = '';
   const friends = getFriends();
-  if(friends.length===0){
+  const blocked = getBlocked();
+  const visibleFriends = friends.filter(f=>!blocked.includes(f.name));
+  if(visibleFriends.length===0){
     mainContent.innerHTML = '<div class="no-msg">No messages yet<br>Add a friend using the + button</div>';
   } else {
-    friends.forEach(f=>{
+    visibleFriends.forEach(f=>{
       const div=document.createElement('div');
       const profile = f.profile || defaultProfile;
       div.className='friend';
       div.innerHTML=`<img src="${profile}"><span>${f.name}</span>`;
+
+      // Right-click to block/unblock
+      div.oncontextmenu = e=>{
+        e.preventDefault();
+        let blocked = getBlocked();
+        if(blocked.includes(f.name)){
+          blocked = blocked.filter(b=>b!==f.name);
+        } else {
+          blocked.push(f.name);
+        }
+        saveBlocked(blocked);
+        channel.postMessage({type:'blockUpdate'});
+        renderFriends();
+      };
+
+      // Click to open chat
       div.onclick=()=>window.location.href=`chat.html?friend=${encodeURIComponent(f.name)}&profile=${encodeURIComponent(profile)}`;
       mainContent.appendChild(div);
     });
   }
 }
 
-// --- Floating + button ---
+// Floating + button
 addBtn.addEventListener('click',()=>{popupOptions.style.display = popupOptions.style.display==='block'?'none':'block';});
 document.addEventListener('click',e=>{if(!addBtn.contains(e.target)&&!popupOptions.contains(e.target)) popupOptions.style.display='none';});
 
-// --- QR code popup ---
+// QR code popup
 let qrGenerated = false;
 showQRCodeLink.addEventListener('click', e=>{
   e.preventDefault();
@@ -179,11 +199,11 @@ showQRCodeLink.addEventListener('click', e=>{
 });
 closeQR.addEventListener('click', ()=>{qrContainer.style.display='none'; noMsgDiv.style.display='block';});
 
-// --- Three-dots menu ---
+// Three-dots menu
 threeDots.addEventListener('click', e=>{e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display==='block'?'none':'block';});
 document.addEventListener('click',()=>{threeDotsMenu.style.display='none';});
 
-// --- Listen for updates from other tabs/friends ---
+// Broadcast updates
 channel.onmessage = e=>{
   if(e.data.type==='addFriend') addFriendObject(e.data.friend.name,e.data.friend.profile);
   if(e.data.type==='updateProfile'){
@@ -191,9 +211,10 @@ channel.onmessage = e=>{
     const idx = friends.findIndex(f=>f.name===e.data.name);
     if(idx>=0){ friends[idx].profile = e.data.profile; saveFriends(friends); renderFriends(); }
   }
+  if(e.data.type==='blockUpdate'){ renderFriends(); }
 }
 
-// --- Initialize friends ---
+// Initialize
 renderFriends();
 </script>
 </body>
