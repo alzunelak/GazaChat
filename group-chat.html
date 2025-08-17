@@ -103,7 +103,14 @@ function renderMembers(){
     const mDiv=document.createElement("div"); mDiv.textContent=m.name;
     if(group.admin===myName && m.name!==myName){
       const span=document.createElement("span"); span.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
-      span.onclick=()=>{ if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); else group.blocked.push(m.name); saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();};
+      span.onclick=()=>{ 
+        if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); 
+        else group.blocked.push(m.name); 
+        saveGroup(); 
+        renderMembers(); 
+        renderMessages(); 
+        checkBlockedStatus();
+      };
       mDiv.appendChild(span);
     }
     div.appendChild(mDiv);
@@ -127,32 +134,57 @@ function renderMessages(){
 document.getElementById("sendBtn").onclick=()=>{
   const txt=document.getElementById("msgInput").value.trim();
   if(!txt || group.blocked.includes(myName)) return;
-  group.messages.push({sender:myName,text:txt}); document.getElementById("msgInput").value=""; saveGroup(); renderMessages();
+  group.messages.push({sender:myName,text:txt}); 
+  document.getElementById("msgInput").value=""; 
+  saveGroup(); 
+  renderMessages();
 }
 
 // Disable input if blocked
 function checkBlockedStatus(){
-  const input=document.getElementById("msgInput"); const btn=document.getElementById("sendBtn");
+  const input=document.getElementById("msgInput"); 
+  const btn=document.getElementById("sendBtn");
   if(group.blocked.includes(myName)){
-    input.disabled=true; input.placeholder="❌ You are blocked"; btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
-  } else { input.disabled=false; input.placeholder="Type a message..."; btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer"; }
+    input.disabled=true; input.placeholder="❌ You are blocked"; 
+    btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
+  } else { 
+    input.disabled=false; input.placeholder="Type a message..."; 
+    btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer"; 
+  }
 }
 
 // Save group
-function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
+function saveGroup(){ 
+  groups[currentIndex]=group; 
+  localStorage.setItem("groups",JSON.stringify(groups)); 
+}
 
 // Top "+" menu toggle
-const topAdd=document.getElementById("topAdd"); const topMenu=document.getElementById("topMenu");
+const topAdd=document.getElementById("topAdd"); 
+const topMenu=document.getElementById("topMenu");
 topAdd.onclick = ()=> topMenu.style.display = (topMenu.style.display==='flex')?'none':'flex';
 
 // Top menu actions
 document.getElementById("addFriendBtn").onclick = ()=>{
-  // Fetch friends from home.html saved in localStorage
+  // Fetch friends from home.html stored in localStorage
   const friends = JSON.parse(localStorage.getItem("friends")||"[]");
-  if(friends.length===0){ alert("No friends found."); return; }
-  const name = prompt("Select friend to add:\n"+friends.join("\n"));
+  if(friends.length===0){ 
+    alert("No friends found."); 
+    return; 
+  }
+
+  const name = prompt("Select friend to add:\n" + friends.join("\n"));
   if(!name) return;
-  if(!group.members.some(m=>m.name===name)) { group.members.push({name,accepted:true}); saveGroup(); renderMembers(); alert(name+" added."); }
+
+  if(group.members.some(m=>m.name===name)){
+    alert(name + " is already a member.");
+    return;
+  }
+
+  group.members.push({name,accepted:true}); 
+  saveGroup(); 
+  renderMembers(); 
+  alert(name + " added.");
 };
 
 document.getElementById("inviteBtn").onclick = ()=>{
@@ -184,7 +216,8 @@ document.getElementById("deleteBtn").onclick = ()=>{
 };
 
 // Bottom "+" menu toggle
-const plusBtn=document.getElementById("plusBtn"); const attachmentMenu=document.getElementById("attachmentMenu");
+const plusBtn=document.getElementById("plusBtn"); 
+const attachmentMenu=document.getElementById("attachmentMenu");
 plusBtn.onclick = ()=> attachmentMenu.style.display = (attachmentMenu.style.display==='flex')?'none':'flex';
 function closeAttachmentMenu(){ attachmentMenu.style.display='none'; }
 
@@ -195,16 +228,19 @@ document.getElementById("takeVideoBtn").onclick = ()=>{ closeAttachmentMenu(); g
 document.getElementById("audioCallBtn").onclick = ()=>{ closeAttachmentMenu(); alert("📞 Audio Call coming soon"); };
 document.getElementById("videoCallBtn").onclick = ()=>{ closeAttachmentMenu(); alert("🎥 Video Call coming soon"); };
 document.getElementById("sendLocationBtn").onclick = ()=>{
-  closeAttachmentMenu();
+  closeAttachmentMenu(); 
   if(!navigator.geolocation) alert("Geolocation not supported."); 
   else navigator.geolocation.getCurrentPosition(pos=>{
-    group.messages.push({sender:myName,text:`📍 Location: ${pos.coords.latitude},${pos.coords.longitude}`});
-    saveGroup(); renderMessages();
+    group.messages.push({sender:myName,text:`📍 Location: ${pos.coords.latitude},${pos.coords.longitude}`}); 
+    saveGroup(); 
+    renderMessages();
   });
 };
 
 // Initial render
-renderMembers(); renderMessages(); checkBlockedStatus();
+renderMembers(); 
+renderMessages(); 
+checkBlockedStatus();
 </script>
 
 </body>
