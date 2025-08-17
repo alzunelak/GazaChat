@@ -19,10 +19,11 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
 #inputArea{display:flex;padding:10px;background:white;border-radius:25px;margin:10px;align-items:center;position:relative;}
 #inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
 #inputArea button{margin-left:5px;padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
-#attachmentMenu{display:none; flex-direction:column; position:absolute; bottom:60px; right:15px; background:white; padding:10px; border-radius:10px; box-shadow:0 0 5px #888;}
-#attachmentMenu button{padding:8px 12px; border:none; border-radius:6px; background:#128C7E; color:white; cursor:pointer; flex:1; margin:3px;}
-#attachmentMenu button:hover{background:#0d6b61;}
+#popup{display:none;position:absolute;bottom:50px;right:15px;background:white;padding:10px;border-radius:10px;box-shadow:0 0 5px #888;flex-direction:column;}
+#popup button{margin:3px;padding:8px;border:none;border-radius:6px;background:#128C7E;color:white;cursor:pointer;}
 #topAdd{position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;background:white;color:#25d366;border-radius:6px;padding:3px 6px;}
+#attachmentMenu button { padding:8px 12px; border:none; border-radius:6px; background:#128C7E; color:white; cursor:pointer; flex:1; }
+#attachmentMenu button:hover { background:#0d6b61; }
 </style>
 </head>
 <body>
@@ -31,7 +32,7 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
   <h2 id="groupName"></h2>
   <img id="groupPhoto" src="">
   <div id="members"></div>
-  <div id="topAdd">Add</div>
+  <div id="topAdd">Add/Delete</div>
 </div>
 
 <div id="chatBox"></div>
@@ -42,7 +43,7 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
   <button id="plusBtn">+</button>
 
   <!-- Attachment Menu -->
-  <div id="attachmentMenu">
+  <div id="attachmentMenu" style="display:none; flex-direction:column; position:absolute; bottom:60px; right:15px; background:white; padding:10px; border-radius:10px; box-shadow:0 0 5px #888;">
     <div style="display:flex; gap:6px; margin-bottom:6px;">
       <button id="sendFileBtn">📎 File</button>
       <button id="takePhotoBtn">🖼️ Photo</button>
@@ -59,59 +60,45 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
 </div>
 
 <script>
+let groups = JSON.parse(localStorage.getItem("groups")||"[]");
+let currentIndex = localStorage.getItem("currentGroupIndex");
+let group = groups[currentIndex] || {name:"New Group",photo:"",members:[],messages:[],blocked:[],invited:[],admin:"You"};
 const myName = "You";
-let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-let currentIndex = localStorage.getItem("currentGroupIndex") || 0;
-let group = groups[currentIndex];
 
-// Initialize arrays
-if(!group.invited) group.invited = [];
-if(!group.blocked) group.blocked = [];
-if(!group.left) group.left = [];
-
-// Redirect if user left group
-if(group.left.includes(myName)){
-  alert("You have left this group. You need an invite link to rejoin.");
-  window.location.href="groups.html";
-}
-
-// Display group info
 document.getElementById("groupName").innerText = group.name;
 document.getElementById("groupPhoto").src = group.photo;
 
-// Mark as read
-if(group.unread){ group.unread=false; saveGroup(); }
-
-// Change group name/photo
+// Change name/photo
 document.getElementById("groupName").onclick = ()=>{
   const newName = prompt("Enter new group name:", group.name);
   if(newName){ group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName; }
 };
+
 document.getElementById("groupPhoto").onclick = ()=>{
-  const fileInput = document.createElement("input"); fileInput.type="file"; fileInput.accept="image/*";
-  fileInput.onchange = e=>{
+  const input = document.createElement("input"); input.type="file"; input.accept="image/*";
+  input.onchange = e => {
     const file = e.target.files[0];
     if(file){
       const reader = new FileReader();
-      reader.onload = event => { group.photo = event.target.result; saveGroup(); document.getElementById("groupPhoto").src = group.photo; }
+      reader.onload = ()=>{ group.photo = reader.result; saveGroup(); document.getElementById("groupPhoto").src = group.photo; }
       reader.readAsDataURL(file);
     }
-  }; fileInput.click();
+  };
+  input.click();
 };
 
 // Render members
 function renderMembers(){
   const div = document.getElementById("members");
-  div.innerHTML = "";
+  div.innerHTML="";
   group.members.filter(m=>m.accepted).forEach(m=>{
     const mDiv = document.createElement("div");
     mDiv.textContent = m.name;
 
-    // Admin block option
     if(group.admin===myName && m.name!==myName){
       const blockSpan = document.createElement("span");
       blockSpan.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
-      blockSpan.onclick = ()=>blockMember(m.name);
+      blockSpan.onclick = ()=>{ toggleBlock(m.name); }
       mDiv.appendChild(blockSpan);
     }
 
@@ -120,20 +107,20 @@ function renderMembers(){
 }
 
 // Block/unblock
-function blockMember(name){
+function toggleBlock(name){
   if(group.blocked.includes(name)) group.blocked = group.blocked.filter(x=>x!==name);
   else group.blocked.push(name);
   saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();
 }
 
-// Render chat
+// Chat messages
 const chatBox = document.getElementById("chatBox");
 function renderMessages(){
-  chatBox.innerHTML = "";
+  chatBox.innerHTML="";
   group.messages.forEach(m=>{
     if(group.blocked.includes(m.sender)) return;
     const div = document.createElement("div");
-    div.className = "msg"+(m.sender===myName?" self":"");
+    div.className="msg"+(m.sender===myName?" self":"");
     div.innerHTML = `<img src="profile.png"><strong>${m.sender}:</strong> ${m.text}`;
     chatBox.appendChild(div);
   });
@@ -146,10 +133,10 @@ document.getElementById("sendBtn").onclick = ()=>{
   if(!txt) return;
   if(group.blocked.includes(myName)) return;
   group.messages.push({sender:myName,text:txt});
-  group.unread=false; document.getElementById("msgInput").value=""; saveGroup(); renderMessages();
+  document.getElementById("msgInput").value=""; saveGroup(); renderMessages();
 }
 
-// Disable input if blocked
+// Check blocked
 function checkBlockedStatus(){
   const input = document.getElementById("msgInput");
   const sendBtn = document.getElementById("sendBtn");
@@ -164,7 +151,7 @@ function checkBlockedStatus(){
 
 // Invite user
 function inviteUser(){
-  const name = prompt("Enter user name to invite:");
+  const name = prompt("Enter friend name to invite:");
   if(!name) return;
   if(!group.invited.includes(name)) group.invited.push(name);
   saveGroup();
@@ -176,42 +163,43 @@ function inviteUser(){
 function leaveGroup(){
   if(confirm("Are you sure you want to leave the group?")){
     group.members = group.members.filter(m=>m.name!==myName);
-    group.left.push(myName);
+    group.invited = group.invited.filter(x=>x!==myName);
     saveGroup();
-    alert("You have left the group. You need a new invite to rejoin.");
+    alert("You left the group. You need a new invite to rejoin.");
     window.location.href="groups.html";
   }
 }
 
-// Save group
-function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
+// Delete group
+document.getElementById("topAdd").onclick = ()=>{
+  const action = prompt("Type 'add' to invite, 'delete' to delete group:");
+  if(action==="add") inviteUser();
+  else if(action==="delete" && confirm("Are you sure to delete group?")){
+    groups.splice(currentIndex,1); localStorage.setItem("groups",JSON.stringify(groups));
+    alert("Group deleted"); window.location.href="groups.html";
+  }
+}
 
 // Attachment menu toggle
-const plusBtn = document.getElementById('plusBtn');
-const attachmentMenu = document.getElementById('attachmentMenu');
-plusBtn.addEventListener('click', ()=>{ attachmentMenu.style.display = (attachmentMenu.style.display==='flex')?'none':'flex'; });
+const plusBtn = document.getElementById("plusBtn");
+const attachmentMenu = document.getElementById("attachmentMenu");
+plusBtn.onclick = ()=>{ attachmentMenu.style.display = (attachmentMenu.style.display==='flex') ? 'none' : 'flex'; }
 function closeAttachmentMenu(){ attachmentMenu.style.display='none'; }
 
-// Attachment actions
-document.getElementById('sendFileBtn').addEventListener('click', ()=>{ closeAttachmentMenu(); group.messages.push({sender:myName,text:"[File]"}); saveGroup(); renderMessages(); });
-document.getElementById('takePhotoBtn').addEventListener('click', ()=>{ closeAttachmentMenu(); group.messages.push({sender:myName,text:"[Photo]"}); saveGroup(); renderMessages(); });
-document.getElementById('takeVideoBtn').addEventListener('click', ()=>{ closeAttachmentMenu(); group.messages.push({sender:myName,text:"[Video]"}); saveGroup(); renderMessages(); });
-document.getElementById('audioCallBtn').addEventListener('click', ()=>{ closeAttachmentMenu(); alert("📞 Audio Call coming soon!"); });
-document.getElementById('videoCallBtn').addEventListener('click', ()=>{ closeAttachmentMenu(); alert("🎥 Video Call coming soon!"); });
-document.getElementById('sendLocationBtn').addEventListener('click', ()=>{
-  closeAttachmentMenu();
-  if(!navigator.geolocation) return alert("Geolocation not supported.");
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-    group.messages.push({sender:myName,text:`[Location] ${url}`}); saveGroup(); renderMessages();
-  });
-});
-document.getElementById('inviteBtn').addEventListener('click', ()=>{ closeAttachmentMenu(); inviteUser(); });
-document.getElementById('leaveBtn').addEventListener('click', ()=>{ closeAttachmentMenu(); leaveGroup(); });
+// Placeholder attachment actions
+document.getElementById('sendFileBtn').onclick = ()=>{ closeAttachmentMenu(); alert("[File sent]"); }
+document.getElementById('takePhotoBtn').onclick = ()=>{ closeAttachmentMenu(); alert("[Photo sent]"); }
+document.getElementById('takeVideoBtn').onclick = ()=>{ closeAttachmentMenu(); alert("[Video sent]"); }
+document.getElementById('sendLocationBtn').onclick = ()=>{ closeAttachmentMenu(); alert("[Location sent]"); }
+document.getElementById('audioCallBtn').onclick = ()=>{ closeAttachmentMenu(); alert("Audio Call coming soon!"); }
+document.getElementById('videoCallBtn').onclick = ()=>{ closeAttachmentMenu(); alert("Video Call coming soon!"); }
+document.getElementById('inviteBtn').onclick = ()=>{ closeAttachmentMenu(); inviteUser(); }
+document.getElementById('leaveBtn').onclick = ()=>{ closeAttachmentMenu(); leaveGroup(); }
 
-// Initial render
+// Save
+function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
+
 renderMembers(); renderMessages(); checkBlockedStatus();
 </script>
-
 </body>
 </html>
