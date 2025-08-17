@@ -5,18 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Group Chat</title>
 <style>
-body{font-family:Arial;margin:0;background:#e5ddd5;}
+body{font-family:Arial;margin:0;background:#e5ddd5;height:100vh;display:flex;flex-direction:column;}
 .header{background:#25d366;color:white;text-align:center;padding:10px;position:relative;}
 .header img{width:80px;height:80px;border-radius:50%;margin-top:5px;cursor:pointer;}
 .header h2{margin:5px 0;cursor:pointer;}
 #members{display:flex;flex-wrap:wrap;justify-content:center;margin:5px;}
 #members div{background:#128C7E;color:white;padding:5px 10px;border-radius:15px;margin:2px;position:relative;}
 #members div span{cursor:pointer;margin-left:5px;}
-#chatBox{height:300px;overflow-y:auto;padding:10px;background:#ece5dd;margin:10px;border-radius:8px;display:flex;flex-direction:column;}
+#chatBox{flex:1;overflow-y:auto;padding:10px;background:#ece5dd;margin:0 10px;border-radius:8px; margin-bottom:80px;}
 .msg{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;display:flex;align-items:center;}
 .msg.self{background:#dcf8c6;align-self:flex-end;}
 .msg img{width:30px;height:30px;border-radius:50%;margin-right:5px;}
-#inputArea{display:flex;padding:10px;background:white;border-radius:25px;margin:10px;align-items:center;position:relative;}
+#inputArea{
+  display:flex;
+  padding:10px;
+  background:white;
+  border-radius:25px;
+  align-items:center;
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  box-sizing:border-box;
+  z-index:100;
+}
 #inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
 #inputArea button{margin-left:5px;padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
 #topAdd{position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;background:white;color:#25d366;border-radius:6px;padding:3px 6px;}
@@ -28,14 +40,14 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
 /* Attachment Menu */
 #attachmentMenu {
   display: none;
-  position: absolute;
+  position: fixed;
   bottom: 60px;
   right: 10px;
   background: #fff;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 100;
+  z-index: 101;
 }
 #attachmentMenu div{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
 #attachmentMenu button{
@@ -186,65 +198,51 @@ document.getElementById("addFriendBtn").onclick = (e) => {
   e.stopPropagation();
   const friends = JSON.parse(localStorage.getItem("friends") || "[]");
   const availableFriends = friends.map(f => f.name).filter(n => !group.members.some(m => m.name === n));
-  if (availableFriends.length === 0) { alert("All friends are already in the group."); return; }
-  friendPopup.innerHTML = "";
-  availableFriends.forEach(name => {
-    const btn = document.createElement("button"); btn.textContent = name;
-    btn.onclick = () => { group.members.push({name,accepted:true}); saveGroup(); renderMembers(); friendPopup.style.display="none"; alert(name+" added."); };
+  if(availableFriends.length===0){ alert("All friends are already in the group."); return; }
+  friendPopup.innerHTML=""; 
+  availableFriends.forEach(name=>{ 
+    const btn=document.createElement("button"); 
+    btn.textContent=name;
+    btn.onclick=()=>{ group.members.push({name,accepted:true}); saveGroup(); renderMembers(); friendPopup.style.display="none"; alert(name+" added."); };
     friendPopup.appendChild(btn);
   });
   friendPopup.style.display="flex"; friendPopup.style.flexDirection="column";
 };
 
-// Close popups if clicked outside
-document.addEventListener("click", (e)=>{
+// Close friend/top menu on click outside
+document.addEventListener("click",(e)=>{
   if(!friendPopup.contains(e.target) && e.target.id!=="addFriendBtn") friendPopup.style.display="none";
   if(!topMenu.contains(e.target) && e.target.id!=="topAdd") topMenu.style.display="none";
-  if(!attachmentMenu.contains(e.target) && e.target.id!=="plusBtn") attachmentMenu.style.display="none";
 });
 
-// Invite / Leave / Delete
+// Invite, Leave, Delete
 document.getElementById("inviteBtn").onclick = ()=>{
-  const name = prompt("Enter user name to invite:");
-  if(!name) return;
-  if(!group.invited.includes(name)) group.invited.push(name);
-  saveGroup();
+  const name = prompt("Enter user name to invite:"); if(!name) return;
+  if(!group.invited.includes(name)) group.invited.push(name); saveGroup();
   const link = `${window.location.origin}/join.html?group=${encodeURIComponent(group.name)}&user=${encodeURIComponent(name)}`;
   prompt("Send this link to user:", link);
 };
 document.getElementById("leaveBtn").onclick = ()=>{
   if(confirm("Leave group?")){
-    group.members = group.members.filter(m=>m.name!==myName);
-    group.invited = group.invited.filter(u=>u!==myName);
-    saveGroup();
-    alert("You left the group.");
-    groups = groups.filter(g=>g.members.some(m=>m.name===myName));
-    localStorage.setItem("groups",JSON.stringify(groups));
-    window.location.href="groups.html";
+    group.members=group.members.filter(m=>m.name!==myName); group.invited=group.invited.filter(u=>u!==myName);
+    saveGroup(); alert("You left the group."); groups=groups.filter(g=>g.members.some(m=>m.name===myName));
+    localStorage.setItem("groups",JSON.stringify(groups)); window.location.href="groups.html";
   }
 };
 document.getElementById("deleteBtn").onclick = ()=>{
-  if(confirm("Delete group?")){
-    groups.splice(currentIndex,1);
-    localStorage.setItem("groups",JSON.stringify(groups));
-    alert("Group deleted.");
-    window.location.href="groups.html";
-  }
-};
+  if(confirm("Delete group?")){ groups.splice(currentIndex,1); localStorage.setItem("groups",JSON.stringify(groups)); alert("Group deleted."); window.location.href="groups.html"; }
+}
 
-// Attachment menu toggle
+// Bottom "+" menu toggle
 const plusBtn=document.getElementById("plusBtn");
 const attachmentMenu=document.getElementById("attachmentMenu");
-plusBtn.onclick = (e)=> { e.stopPropagation(); attachmentMenu.style.display = (attachmentMenu.style.display==='flex' || attachmentMenu.style.display==='grid')?'none':'grid'; }
+plusBtn.onclick = ()=> attachmentMenu.style.display = (attachmentMenu.style.display==='flex')?'none':'flex';
 function closeAttachmentMenu(){ attachmentMenu.style.display='none'; }
 
-// --- Send Attachment Functions ---
+// --- Send Attachments ---
 function sendAttachment(type,data,name){
-  const msg = { sender: myName, type:type, text:name||"", data:data, time:new Date().toLocaleTimeString() };
-  group.messages.push(msg);
-  saveGroup();
-  renderMessages();
-  closeAttachmentMenu();
+  const msg={sender:myName,type:type,text:name||"",data:data,time:new Date().toLocaleTimeString()};
+  group.messages.push(msg); saveGroup(); renderMessages(); closeAttachmentMenu();
 }
 
 // File
@@ -253,41 +251,38 @@ document.getElementById("sendFileBtn").onclick = ()=>{
   inputFile.onchange = e => { const file = e.target.files[0]; if(!file) return;
     const reader = new FileReader(); reader.onload = ()=>sendAttachment('file',reader.result,file.name);
     reader.readAsDataURL(file);
-  };
-  inputFile.click();
+  }; inputFile.click();
 }
 
 // Photo
 document.getElementById("takePhotoBtn").onclick = ()=>{
   const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
   const inputPhoto = document.createElement("input"); inputPhoto.type="file"; inputPhoto.accept="image/*";
-  if(choice) inputPhoto.capture = "environment";
+  if(choice) inputPhoto.capture="environment";
   inputPhoto.onchange = e => { const file = e.target.files[0]; if(!file) return;
     const reader = new FileReader(); reader.onload = ()=>sendAttachment('photo',reader.result,file.name);
     reader.readAsDataURL(file);
-  };
-  inputPhoto.click();
+  }; inputPhoto.click();
 }
 
 // Video
 document.getElementById("takeVideoBtn").onclick = ()=>{
   const choice = confirm("Press OK to record video, Cancel to pick from gallery");
   const inputVideo = document.createElement("input"); inputVideo.type="file"; inputVideo.accept="video/*";
-  if(choice) inputVideo.capture = "camcorder";
+  if(choice) inputVideo.capture="camcorder";
   inputVideo.onchange = e => { const file = e.target.files[0]; if(!file) return;
     const reader = new FileReader(); reader.onload = ()=>sendAttachment('video',reader.result,file.name);
     reader.readAsDataURL(file);
-  };
-  inputVideo.click();
+  }; inputVideo.click();
 }
 
 // Location
 document.getElementById("sendLocationBtn").onclick = ()=>{
   if(!navigator.geolocation) return alert("Geolocation not supported.");
   navigator.geolocation.getCurrentPosition(pos=>{
-    const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+    const url=`https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
     sendAttachment('text',url,'My Location');
-  }, err=>alert("Location error: "+err.message));
+  },err=>alert("Location error: "+err.message));
 }
 
 // Audio / Video Call
@@ -295,9 +290,8 @@ document.getElementById("audioCallBtn").onclick = ()=>{ alert("📞 Audio Call c
 document.getElementById("videoCallBtn").onclick = ()=>{ alert("🎥 Video Call coming soon"); closeAttachmentMenu(); }
 
 // Initial render
-renderMembers();
-renderMessages();
-checkBlockedStatus();
+renderMembers(); renderMessages(); checkBlockedStatus();
 </script>
+
 </body>
 </html>
