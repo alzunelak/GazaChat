@@ -69,21 +69,6 @@ function renderFriends(){
   });
 }
 
-// Add new friend
-document.getElementById("addFriendBtn").onclick=()=>{
-  const name=document.getElementById("newFriendName").value.trim();
-  const img=document.getElementById("newFriendImg").value.trim()||"https://via.placeholder.com/50";
-  if(name){
-    friends.push({name,img});
-    localStorage.setItem("friends",JSON.stringify(friends));
-    renderFriends();
-    document.getElementById("newFriendName").value="";
-    document.getElementById("newFriendImg").value="";
-  }else{
-    alert("Please enter a friend name.");
-  }
-}
-
 renderFriends();
 </script>
 </body>
