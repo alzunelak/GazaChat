@@ -121,13 +121,20 @@ function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(fr
 function addFriend(friend){
   let friends = getFriends();
   if(!friends.some(f => f.name === friend.name)){
-    // Ensure photo exists, fallback to default
-    if(!friend.profile) friend.profile = 'default-profile.png';
+    // If friend.profile is missing, try to get it from localStorage
+    if(!friend.profile){
+      friend.profile = localStorage.getItem('profilePic_' + friend.name) || 'default-profile.png';
+    }
+    // Save friend profile in localStorage for future use
+    localStorage.setItem('profilePic_' + friend.name, friend.profile);
+
     friends.push(friend);
     saveFriends(friends);
     renderFriends();
   }
 }
+
+
 
 // --- Real-time updates ---
 const channel = new BroadcastChannel('chatapp');
