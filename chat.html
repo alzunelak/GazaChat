@@ -176,16 +176,31 @@ const deletePopup = document.getElementById('deletePopup');
 let currentMsgIndex = null;
 let currentMsg = null;
 
-function showDeleteMenu(msg, index, x, y){
+function showDeleteMenu(msg, index, x, y, msgDiv){
   currentMsgIndex = index;
   currentMsg = msg;
 
+  // Only show "Delete for everyone" if sender
   document.getElementById('deleteForEveryoneBtn').style.display = (msg.senderId === myId) ? 'block' : 'none';
 
-  deletePopup.style.top = y + 'px';
-  deletePopup.style.left = x + 'px';
+  // Get message position
+  const rect = msgDiv.getBoundingClientRect();
+  const chatRect = chatContainer.getBoundingClientRect();
+
+  // Center popup horizontally over the message
+  const popupWidth = deletePopup.offsetWidth || 150;
+  let left = rect.left + rect.width/2 - popupWidth/2;
+  // Prevent going out of chat container
+  left = Math.max(chatRect.left + 5, Math.min(left, chatRect.right - popupWidth - 5));
+
+  // Place popup above message
+  const top = rect.top - deletePopup.offsetHeight - 5;
+
+  deletePopup.style.left = left + 'px';
+  deletePopup.style.top = top + 'px';
   deletePopup.style.display = 'block';
 }
+
 
 document.addEventListener('click', e=>{
   if(!deletePopup.contains(e.target)) deletePopup.style.display = 'none';
@@ -321,17 +336,14 @@ function sendAttachment(type, data, name){
 }
 
 // --- Long-press for mobile ---
-let longPressTimer = null;
 chatContainer.addEventListener('touchstart', e=>{
   const msgDiv = e.target.closest('.message');
   if(!msgDiv) return;
   const index = parseInt(msgDiv.dataset.index);
   const msg = getChat()[index];
   if(msg.deleted) return;
-  longPressTimer = setTimeout(()=> showDeleteMenu(msg, index, e.touches[0].pageX, e.touches[0].pageY), 600);
+  longPressTimer = setTimeout(()=> showDeleteMenu(msg, index, 0, 0, msgDiv), 600);
 });
-chatContainer.addEventListener('touchend', e=> clearTimeout(longPressTimer));
-chatContainer.addEventListener('touchmove', e=> clearTimeout(longPressTimer));
 
 // --- Right-click for desktop ---
 chatContainer.addEventListener('contextmenu', e=>{
@@ -340,7 +352,7 @@ chatContainer.addEventListener('contextmenu', e=>{
   const index = parseInt(msgDiv.dataset.index);
   const msg = getChat()[index];
   if(msg.deleted) return;
-  showDeleteMenu(msg, index, e.pageX, e.pageY);
+  showDeleteMenu(msg, index, 0, 0, msgDiv);
   e.preventDefault();
 });
 </script>
