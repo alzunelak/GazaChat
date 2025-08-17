@@ -48,7 +48,6 @@ body {
   font-size: 12px;
   margin-left: 10px;
 }
-
 /* Status colors */
 .call-status.missed { color: #e74c3c; }      /* red for missed */
 .call-status.declined { color: #555; }       /* gray for declined */
@@ -123,7 +122,17 @@ body {
 </audio>
 
 <script>
-const friends = JSON.parse(localStorage.getItem('friends')||'[]');
+// ---------- DATA ----------
+const friends = JSON.parse(localStorage.getItem('friends')||JSON.stringify([
+  {name:"Alice", profile:"default-profile.png"},
+  {name:"Bob", profile:"default-profile.png"},
+  {name:"Charlie", profile:"default-profile.png"}
+]));
+
+const callStatus = JSON.parse(localStorage.getItem('callStatus')||'{}'); 
+// { "Alice": "missed/accepted/declined", ... }
+
+// ---------- ELEMENTS ----------
 const mainContent = document.getElementById('mainContent');
 const ringTone = document.getElementById('ringTone');
 const incomingPopup = document.getElementById('incomingCallPopup');
@@ -135,16 +144,20 @@ const declineBtn = document.getElementById('declineIncoming');
 const overlay = document.getElementById('overlay');
 
 let callTimeout;
-let currentCallFriend = null;
+let currentFriend = null;
 let statusMap = {};
+let audioAllowed = false;
 
-if(friends.length === 0){
-  mainContent.innerHTML = "<div>No calls yet</div>";
-}else{
+// ---------- ALLOW AUDIO ON FIRST CLICK ----------
+document.body.addEventListener('click', () => { audioAllowed = true; }, { once:true });
+function playRingTone(){ if(audioAllowed) ringTone.play().catch(e=>console.log("Audio blocked")); }
+
+// ---------- RENDER FRIEND LIST ----------
+function renderFriends(){
+  mainContent.innerHTML = "";
   friends.forEach(f => {
     const div = document.createElement('div');
     div.className = 'call-item';
-
     div.innerHTML = `
       <div class="call-item-left">
         <img src="${f.profile || 'default-profile.png'}" alt="Profile">
@@ -156,100 +169,94 @@ if(friends.length === 0){
         <button class="video-btn">Video</button>
       </div>
     `;
+    mainContent.appendChild(div);
 
     const audioBtn = div.querySelector('.audio-btn');
     const videoBtn = div.querySelector('.video-btn');
     const statusEl = div.querySelector('.call-status');
     statusMap[f.name] = statusEl;
 
-    function startCall(type){
-      statusEl.innerText = "Calling...";
-      ringTone.play().catch(()=>console.log("Autoplay blocked until user interaction"));
-      setTimeout(() => {
-        ringTone.pause();
-        ringTone.currentTime = 0;
-        if(type==='audio'){
-          window.location.href = `audio-call.html?friend=${encodeURIComponent(f.name)}`;
-        } else {
-          window.location.href = `video-call.html?friend=${encodeURIComponent(f.name)}`;
-        }
-      }, 2000);
+    // Restore saved status
+    if(callStatus[f.name]){
+      statusEl.innerText = callStatus[f.name].text;
+      statusEl.className = "call-status "+callStatus[f.name].class;
     }
 
-    audioBtn.onclick = () => startCall('audio');
-    videoBtn.onclick = () => startCall('video');
-
-    mainContent.appendChild(div);
+    function startCall(type){
+      statusEl.innerText = "Calling...";
+      statusEl.className = "call-status";
+      playRingTone();
+      setTimeout(()=>{
+        ringTone.pause(); ringTone.currentTime=0;
+        alert(`Connecting ${type} call with ${f.name}`); // simulate real call
+      },2000);
+    }
+    audioBtn.onclick = ()=>startCall('Audio');
+    videoBtn.onclick = ()=>startCall('Video');
   });
 }
 
-function showIncomingPopup(friend){
-  currentCallFriend = friend;
+// ---------- SHOW/HIDE INCOMING CALL ----------
+function showIncoming(friend){
+  currentFriend = friend;
   incomingProfile.src = friend.profile || 'default-profile.png';
   incomingName.innerText = friend.name;
-  const callType = Math.random() < 0.5 ? 'Audio' : 'Video';
+  const callType = Math.random()<0.5 ? 'Audio':'Video';
   incomingType.innerText = `Incoming ${callType} Call...`;
 
   incomingPopup.style.display = 'block';
   overlay.style.display = 'block';
-
-  ringTone.play().catch(()=>console.log("Autoplay blocked, will play after click"));
+  playRingTone();
 
   // auto-decline after 25s
-  callTimeout = setTimeout(() => {
-    hideIncomingPopup();
-    if(statusMap[friend.name]){
-      statusMap[friend.name].innerText = "Missed Call";
-      statusMap[friend.name].className = "call-status missed";
-    }
-  }, 25000);
+  callTimeout = setTimeout(()=>{
+    hideIncoming("missed");
+  },25000);
 
   // Accept
-  acceptBtn.onclick = () => {
-    hideIncomingPopup();
-    if(statusMap[friend.name]){
-      statusMap[friend.name].innerText = "Call Accepted";
-      statusMap[friend.name].className = "call-status accepted";
-    }
-    if(callType === 'Audio'){
-      window.location.href = `audio-call.html?friend=${encodeURIComponent(friend.name)}`;
-    } else {
-      window.location.href = `video-call.html?friend=${encodeURIComponent(friend.name)}`;
-    }
+  acceptBtn.onclick = ()=>{
+    hideIncoming("accepted");
+    alert(`Connected ${callType} call with ${friend.name}`);
   };
-
   // Decline / overlay
-  const declineFn = () => {
-    hideIncomingPopup();
-    if(statusMap[friend.name]){
-      statusMap[friend.name].innerText = "Call Declined";
-      statusMap[friend.name].className = "call-status declined";
-    }
-  };
-
+  const declineFn = ()=> hideIncoming("declined");
   declineBtn.onclick = declineFn;
   overlay.onclick = declineFn;
 }
 
-function hideIncomingPopup(){
-  incomingPopup.style.display = 'none';
-  overlay.style.display = 'none';
-  ringTone.pause();
-  ringTone.currentTime = 0;
+function hideIncoming(status){
+  incomingPopup.style.display='none';
+  overlay.style.display='none';
+  ringTone.pause(); ringTone.currentTime=0;
   clearTimeout(callTimeout);
+
+  if(!currentFriend) return;
+
+  let cls="", txt="";
+  if(status=="missed"){ cls="missed"; txt="Missed Call"; }
+  else if(status=="declined"){ cls="declined"; txt="Call Declined"; }
+  else if(status=="accepted"){ cls="accepted"; txt="Call Accepted"; }
+
+  const el = statusMap[currentFriend.name];
+  if(el){ el.innerText=txt; el.className="call-status "+cls; }
+
+  // Save status to localStorage
+  callStatus[currentFriend.name] = {text:txt,class:cls};
+  localStorage.setItem('callStatus', JSON.stringify(callStatus));
+
+  currentFriend = null;
 }
 
-// Simulate incoming calls
-function simulateIncomingCall(){
-  if(friends.length === 0) return;
-  const randomFriend = friends[Math.floor(Math.random() * friends.length)];
-  showIncomingPopup(randomFriend);
+// ---------- SIMULATE RANDOM INCOMING CALL ----------
+function simulateIncoming(){
+  const randomFriend = friends[Math.floor(Math.random()*friends.length)];
+  showIncoming(randomFriend);
 }
 
-// First simulated call after 3s
-setTimeout(simulateIncomingCall, 3000);
-// Every 15s
-setInterval(simulateIncomingCall, 15000);
+// ---------- INIT ----------
+renderFriends();
+setTimeout(simulateIncoming, 3000);   // first incoming call after 3s
+setInterval(simulateIncoming, 15000);  // every 15s
 </script>
 
 </body>
