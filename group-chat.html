@@ -1,108 +1,303 @@
-// --- Attachment Menu Toggle ---
-const attachmentToggle = document.getElementById('attachmentToggle');
-const attachmentMenu = document.getElementById('attachmentMenu');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Chat</title>
+<style>
+body{font-family:Arial;margin:0;background:#e5ddd5;}
+.header{background:#25d366;color:white;text-align:center;padding:10px;position:relative;}
+.header img{width:80px;height:80px;border-radius:50%;margin-top:5px;cursor:pointer;}
+.header h2{margin:5px 0;cursor:pointer;}
+#members{display:flex;flex-wrap:wrap;justify-content:center;margin:5px;}
+#members div{background:#128C7E;color:white;padding:5px 10px;border-radius:15px;margin:2px;position:relative;}
+#members div span{cursor:pointer;margin-left:5px;}
+#chatBox{height:300px;overflow-y:auto;padding:10px;background:#ece5dd;margin:10px;border-radius:8px;display:flex;flex-direction:column;}
+.msg{background:white;padding:8px 12px;margin:5px 0;border-radius:8px;display:flex;align-items:center;}
+.msg.self{background:#dcf8c6;align-self:flex-end;}
+.msg img{width:30px;height:30px;border-radius:50%;margin-right:5px;}
+#inputArea{display:flex;padding:10px;background:white;border-radius:25px;margin:10px;align-items:center;position:relative;}
+#inputArea input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
+#inputArea button{margin-left:5px;padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
+#topAdd{position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;background:white;color:#25d366;border-radius:6px;padding:3px 6px;}
+#topMenu{display:none;position:absolute;top:40px;right:10px;background:white;padding:10px;border-radius:10px;box-shadow:0 0 5px #888;flex-direction:column;}
+#topMenu button{margin:3px;padding:8px;border:none;border-radius:6px;background:#128C7E;color:white;cursor:pointer;}
+#friendPopup{display:none;position:absolute;top:50px;right:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 0 5px #888;max-height:200px;overflow-y:auto;flex-direction:column;}
+#friendPopup button{width:100%;padding:6px 10px;margin:3px 0;border:none;border-radius:5px;background:#128C7E;color:white;cursor:pointer;}
+#friendPopup button:hover{background:#0d6b61;}
+/* Attachment Menu */
+#attachmentMenu {
+  display: none;
+  position: absolute;
+  bottom: 60px;
+  right: 10px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+#attachmentMenu div{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+#attachmentMenu button{
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #128C7E;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+#attachmentMenu button:hover{background:#0d6b61;}
+</style>
+</head>
+<body>
 
-attachmentToggle.addEventListener('click', () => {
-  attachmentMenu.style.display = (attachmentMenu.style.display === 'flex' || attachmentMenu.style.display === 'grid') ? 'none' : 'grid';
-});
+<div class="header">
+  <h2 id="groupName"></h2>
+  <img id="groupPhoto" src="">
+  <div id="members"></div>
+  <div id="topAdd">+</div>
+  <div id="topMenu">
+    <button id="addFriendBtn">➕ Add Friend</button>
+    <button id="inviteBtn">📩 Invite</button>
+    <button id="leaveBtn">🚪 Leave Group</button>
+    <button id="deleteBtn" style="display:none;">🗑️ Delete Group</button>
+  </div>
+</div>
 
-// Close menu function
-function closeAttachmentMenu() {
-  attachmentMenu.style.display = 'none';
+<div id="friendPopup"></div>
+<div id="chatBox"></div>
+
+<div id="inputArea">
+  <input id="msgInput" placeholder="Type a message...">
+  <button id="sendBtn">➤</button>
+  <button id="plusBtn">+</button>
+
+  <!-- Attachment Menu -->
+  <div id="attachmentMenu">
+    <div>
+      <button id="sendFileBtn">📎 File</button>
+      <button id="takePhotoBtn">🖼️ Photo</button>
+      <button id="takeVideoBtn">🎥 Video</button>
+      <button id="sendLocationBtn">📍 Location</button>
+      <button id="audioCallBtn">📞 Audio Call</button>
+      <button id="videoCallBtn">🎥 Video Call</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Sample group & user
+let groups = JSON.parse(localStorage.getItem("groups")||"[]");
+let currentIndex = localStorage.getItem("currentGroupIndex")||0;
+let group = groups[currentIndex]||{name:"My Group",photo:"profile.png",members:[],messages:[],admin:"You",invited:[],blocked:[]};
+const myName="You";
+
+// Render group info
+document.getElementById("groupName").innerText = group.name;
+document.getElementById("groupPhoto").src = group.photo || "profile.png";
+if(group.admin===myName) document.getElementById("deleteBtn").style.display="block";
+
+// Change group name/photo
+document.getElementById("groupName").onclick = ()=>{ 
+  const newName = prompt("Enter new group name:", group.name); 
+  if(newName){ group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName; } 
+};
+document.getElementById("groupPhoto").onclick = ()=>{ 
+  const fileInput = document.createElement("input"); fileInput.type="file"; fileInput.accept="image/*";
+  fileInput.onchange = e => { 
+    const file = e.target.files[0]; 
+    if(file){ 
+      const reader = new FileReader(); 
+      reader.onload = event => { group.photo = event.target.result; saveGroup(); document.getElementById("groupPhoto").src = group.photo; } 
+      reader.readAsDataURL(file); 
+    } 
+  }; 
+  fileInput.click(); 
+};
+
+// Render members
+function renderMembers(){
+  const div=document.getElementById("members"); div.innerHTML="";
+  group.members.filter(m=>m.accepted).forEach(m=>{
+    const mDiv=document.createElement("div"); mDiv.textContent=m.name;
+    if(group.admin===myName && m.name!==myName){
+      const span=document.createElement("span"); 
+      span.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
+      span.onclick=()=>{ 
+        if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); 
+        else group.blocked.push(m.name); 
+        saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus(); 
+      }; 
+      mDiv.appendChild(span);
+    }
+    div.appendChild(mDiv);
+  });
 }
 
-// --- File ---
-document.getElementById('sendFileBtn').addEventListener('click', () => {
-  closeAttachmentMenu(); 
-  const inputFile = document.createElement('input');
-  inputFile.type = 'file';
-  inputFile.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => sendAttachment('file', reader.result, file.name);
-    reader.readAsDataURL(file);
+// Render chat messages
+const chatBox=document.getElementById("chatBox");
+function renderMessages(){
+  chatBox.innerHTML="";
+  group.messages.forEach(m=>{
+    if(group.blocked.includes(m.sender)) return;
+    const div=document.createElement("div");
+    div.className="msg"+(m.sender===myName?" self":"");
+    div.innerHTML=`<img src="profile.png"><strong>${m.sender}:</strong> ${m.text}`;
+    chatBox.appendChild(div);
+  });
+  chatBox.scrollTop=chatBox.scrollHeight;
+}
+
+// Send message
+document.getElementById("sendBtn").onclick=()=>{
+  const txt=document.getElementById("msgInput").value.trim();
+  if(!txt || group.blocked.includes(myName)) return;
+  group.messages.push({sender:myName,text:txt});
+  document.getElementById("msgInput").value="";
+  saveGroup(); renderMessages();
+}
+
+// Disable input if blocked
+function checkBlockedStatus(){
+  const input=document.getElementById("msgInput");
+  const btn=document.getElementById("sendBtn");
+  if(group.blocked.includes(myName)){
+    input.disabled=true; input.placeholder="❌ You are blocked";
+    btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
+  } else {
+    input.disabled=false; input.placeholder="Type a message...";
+    btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer";
   }
-  inputFile.click();
+}
+
+// Save group
+function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",JSON.stringify(groups)); }
+
+// Top "+" menu toggle
+const topAdd=document.getElementById("topAdd");
+const topMenu=document.getElementById("topMenu");
+topAdd.onclick = (e)=> { e.stopPropagation(); topMenu.style.display = (topMenu.style.display==='flex')?'none':'flex'; }
+
+// Friend popup
+const friendPopup = document.getElementById("friendPopup");
+document.getElementById("addFriendBtn").onclick = (e) => { 
+  e.stopPropagation();
+  const friends = JSON.parse(localStorage.getItem("friends") || "[]");
+  const availableFriends = friends.map(f => f.name).filter(n => !group.members.some(m => m.name === n));
+  if (availableFriends.length === 0) { alert("All friends are already in the group."); return; }
+  friendPopup.innerHTML = "";
+  availableFriends.forEach(name => {
+    const btn = document.createElement("button"); btn.textContent = name;
+    btn.onclick = () => { group.members.push({name,accepted:true}); saveGroup(); renderMembers(); friendPopup.style.display="none"; alert(name+" added."); };
+    friendPopup.appendChild(btn);
+  });
+  friendPopup.style.display="flex"; friendPopup.style.flexDirection="column";
+};
+
+// Close popups if clicked outside
+document.addEventListener("click", (e)=>{
+  if(!friendPopup.contains(e.target) && e.target.id!=="addFriendBtn") friendPopup.style.display="none";
+  if(!topMenu.contains(e.target) && e.target.id!=="topAdd") topMenu.style.display="none";
+  if(!attachmentMenu.contains(e.target) && e.target.id!=="plusBtn") attachmentMenu.style.display="none";
 });
 
-// --- Photo ---
-document.getElementById('takePhotoBtn').addEventListener('click', () => {
+// Invite / Leave / Delete
+document.getElementById("inviteBtn").onclick = ()=>{
+  const name = prompt("Enter user name to invite:");
+  if(!name) return;
+  if(!group.invited.includes(name)) group.invited.push(name);
+  saveGroup();
+  const link = `${window.location.origin}/join.html?group=${encodeURIComponent(group.name)}&user=${encodeURIComponent(name)}`;
+  prompt("Send this link to user:", link);
+};
+document.getElementById("leaveBtn").onclick = ()=>{
+  if(confirm("Leave group?")){
+    group.members = group.members.filter(m=>m.name!==myName);
+    group.invited = group.invited.filter(u=>u!==myName);
+    saveGroup();
+    alert("You left the group.");
+    groups = groups.filter(g=>g.members.some(m=>m.name===myName));
+    localStorage.setItem("groups",JSON.stringify(groups));
+    window.location.href="groups.html";
+  }
+};
+document.getElementById("deleteBtn").onclick = ()=>{
+  if(confirm("Delete group?")){
+    groups.splice(currentIndex,1);
+    localStorage.setItem("groups",JSON.stringify(groups));
+    alert("Group deleted.");
+    window.location.href="groups.html";
+  }
+};
+
+// Attachment menu toggle
+const plusBtn=document.getElementById("plusBtn");
+const attachmentMenu=document.getElementById("attachmentMenu");
+plusBtn.onclick = (e)=> { e.stopPropagation(); attachmentMenu.style.display = (attachmentMenu.style.display==='flex' || attachmentMenu.style.display==='grid')?'none':'grid'; }
+function closeAttachmentMenu(){ attachmentMenu.style.display='none'; }
+
+// --- Send Attachment Functions ---
+function sendAttachment(type,data,name){
+  const msg = { sender: myName, type:type, text:name||"", data:data, time:new Date().toLocaleTimeString() };
+  group.messages.push(msg);
+  saveGroup();
+  renderMessages();
   closeAttachmentMenu();
+}
+
+// File
+document.getElementById("sendFileBtn").onclick = ()=>{
+  const inputFile = document.createElement("input"); inputFile.type="file";
+  inputFile.onchange = e => { const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader(); reader.onload = ()=>sendAttachment('file',reader.result,file.name);
+    reader.readAsDataURL(file);
+  };
+  inputFile.click();
+}
+
+// Photo
+document.getElementById("takePhotoBtn").onclick = ()=>{
   const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
-  const inputPhoto = document.createElement('input');
-  inputPhoto.type = 'file';
-  inputPhoto.accept = 'image/*';
-  if (choice) inputPhoto.capture = 'environment';
-  inputPhoto.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => sendAttachment('photo', reader.result, file.name);
+  const inputPhoto = document.createElement("input"); inputPhoto.type="file"; inputPhoto.accept="image/*";
+  if(choice) inputPhoto.capture = "environment";
+  inputPhoto.onchange = e => { const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader(); reader.onload = ()=>sendAttachment('photo',reader.result,file.name);
     reader.readAsDataURL(file);
   };
   inputPhoto.click();
-});
+}
 
-// --- Video ---
-document.getElementById('takeVideoBtn').addEventListener('click', () => {
-  closeAttachmentMenu();
+// Video
+document.getElementById("takeVideoBtn").onclick = ()=>{
   const choice = confirm("Press OK to record video, Cancel to pick from gallery");
-  const inputVideo = document.createElement('input');
-  inputVideo.type = 'file';
-  inputVideo.accept = 'video/*';
-  if (choice) inputVideo.capture = 'camcorder';
-  inputVideo.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => sendAttachment('video', reader.result, file.name);
+  const inputVideo = document.createElement("input"); inputVideo.type="file"; inputVideo.accept="video/*";
+  if(choice) inputVideo.capture = "camcorder";
+  inputVideo.onchange = e => { const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader(); reader.onload = ()=>sendAttachment('video',reader.result,file.name);
     reader.readAsDataURL(file);
   };
   inputVideo.click();
-});
-
-// --- Location ---
-document.getElementById('sendLocationBtn').addEventListener('click', () => {
-  closeAttachmentMenu();
-  if (!navigator.geolocation) return alert("Geolocation not supported.");
-  navigator.geolocation.getCurrentPosition(pos => {
-    const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-    sendAttachment('text', url, 'My Location');
-  }, err => alert("Location error: " + err.message));
-});
-
-// --- Send Attachment Function ---
-function sendAttachment(type, data, name) {
-  const msg = {
-    senderId: myId,
-    senderName: myName,
-    profile: myPic,
-    recipient: friend,
-    type: type,
-    data: data,
-    text: name || "",
-    time: formatTime()
-  };
-
-  const messages = getChat();
-  messages.push(msg);
-  saveChat(messages);
-  loadChat();
-
-  socket.emit("private message", msg);
 }
 
-// --- Video Call ---
-document.getElementById('startVideoCallBtn').addEventListener('click', () => {
-  closeAttachmentMenu();
-  socket.emit('start video call', { from: myId, to: friend });
-  alert('Video call initiated');
-});
+// Location
+document.getElementById("sendLocationBtn").onclick = ()=>{
+  if(!navigator.geolocation) return alert("Geolocation not supported.");
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+    sendAttachment('text',url,'My Location');
+  }, err=>alert("Location error: "+err.message));
+}
 
-// --- Audio Call ---
-document.getElementById('startAudioCallBtn').addEventListener('click', () => {
-  closeAttachmentMenu();
-  socket.emit('start audio call', { from: myId, to: friend });
-  alert('Audio call initiated');
-});
+// Audio / Video Call
+document.getElementById("audioCallBtn").onclick = ()=>{ alert("📞 Audio Call coming soon"); closeAttachmentMenu(); }
+document.getElementById("videoCallBtn").onclick = ()=>{ alert("🎥 Video Call coming soon"); closeAttachmentMenu(); }
+
+// Initial render
+renderMembers();
+renderMessages();
+checkBlockedStatus();
+</script>
+</body>
+</html>
