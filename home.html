@@ -121,20 +121,20 @@ function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(fr
 function addFriend(friend){
   let friends = getFriends();
   if(!friends.some(f => f.name === friend.name)){
-    // If friend.profile is missing, try to get it from localStorage
-    if(!friend.profile){
-      friend.profile = localStorage.getItem('profilePic_' + friend.name) || 'default-profile.png';
-    }
-    // Save friend profile in localStorage for future use
+    // Ensure friend.profile exists
+    friend.profile = friend.profile || localStorage.getItem('profilePic_' + friend.name) || 'default-profile.png';
+
+    // Save friend profile for future use
     localStorage.setItem('profilePic_' + friend.name, friend.profile);
 
+    // Add friend to friends array and save
     friends.push(friend);
     saveFriends(friends);
+
+    // Render the friends immediately
     renderFriends();
   }
 }
-
-
 
 // --- Real-time updates ---
 const channel = new BroadcastChannel('chatapp');
@@ -147,18 +147,20 @@ function renderFriends(){
   const mainContent = document.getElementById('mainContent');
   const friends = getFriends();
   mainContent.innerHTML = '';
-  if(friends.length===0){
+
+  if(friends.length === 0){
     mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
   } else {
     friends.forEach(f => {
       const div = document.createElement('div');
-      div.className='friend';
-      div.innerHTML = `<img src="${f.profile || 'default-profile.png'}"><span>${f.name}</span>`;
+      const profile = f.profile || localStorage.getItem('profilePic_' + f.name) || 'default-profile.png';
+      div.className = 'friend';
+      div.innerHTML = `<img src="${profile}"><span>${f.name}</span>`;
 
-      // Open chat with real info
+      // Click to open chat with friend info
       div.onclick = () => {
         const friendName = encodeURIComponent(f.name);
-        const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
+        const friendProfile = encodeURIComponent(profile);
         window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
       };
 
