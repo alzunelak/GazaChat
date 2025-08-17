@@ -67,7 +67,7 @@ document.getElementById("groupName").onclick = ()=>{
   if(newName) { group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName;}
 };
 
-  document.getElementById("groupPhoto").onclick = ()=>{
+document.getElementById("groupPhoto").onclick = ()=>{
   const fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = "image/*";
@@ -93,21 +93,32 @@ function renderMembers(){
   group.members.filter(m=>m.accepted).forEach(m=>{
     const mDiv=document.createElement("div");
     mDiv.textContent=m.name;
+
     if(group.admin===myName && m.name!==myName){
       const blockSpan=document.createElement("span");
-      blockSpan.textContent="🚫";
+
+      // 🚫 if blocked, ⭕ if unblocked
+      blockSpan.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
+
       blockSpan.onclick=()=>blockMember(m.name);
       mDiv.appendChild(blockSpan);
     }
     div.appendChild(mDiv);
   });
 }
+
 function blockMember(name){
   if(group.blocked.includes(name)){
+    // Unblock
     group.blocked=group.blocked.filter(x=>x!==name);
-  }else{ group.blocked.push(name); }
+  } else {
+    // Block
+    group.blocked.push(name);
+  }
   saveGroup();
   renderMembers();
+  renderMessages();
+  checkBlockedStatus();
 }
 
 // Chat messages
@@ -115,6 +126,7 @@ const chatBox=document.getElementById("chatBox");
 function renderMessages(){
   chatBox.innerHTML="";
   group.messages.forEach(m=>{
+    // Hide messages from blocked users
     if(group.blocked.includes(m.sender)) return;
     const div=document.createElement("div");
     div.className="msg"+(m.sender===myName?" self":"");
@@ -123,15 +135,36 @@ function renderMessages(){
   });
   chatBox.scrollTop=chatBox.scrollHeight;
 }
+
 document.getElementById("sendBtn").onclick=()=>{
   const txt=document.getElementById("msgInput").value.trim();
   if(!txt) return;
-  if(group.blocked.includes(myName)){ alert("You are blocked"); return; }
+  if(group.blocked.includes(myName)){ return; } // can't send while blocked
   group.messages.push({sender:myName,text:txt});
   group.unread = false; // your messages don’t trigger unread
   document.getElementById("msgInput").value="";
   saveGroup();
   renderMessages();
+}
+
+// Disable/enable input if user blocked
+function checkBlockedStatus() {
+  const input = document.getElementById("msgInput");
+  const sendBtn = document.getElementById("sendBtn");
+
+  if (group.blocked.includes(myName)) {
+    input.disabled = true;
+    input.placeholder = "❌ You are blocked";
+    sendBtn.disabled = true;
+    sendBtn.style.opacity = "0.5";
+    sendBtn.style.cursor = "not-allowed";
+  } else {
+    input.disabled = false;
+    input.placeholder = "Type a message...";
+    sendBtn.disabled = false;
+    sendBtn.style.opacity = "1";
+    sendBtn.style.cursor = "pointer";
+  }
 }
 
 // Add or delete group
@@ -171,6 +204,7 @@ function saveGroup(){
 
 renderMembers();
 renderMessages();
+checkBlockedStatus();
 </script>
 </body>
 </html>
