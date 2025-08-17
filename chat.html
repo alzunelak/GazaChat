@@ -64,12 +64,25 @@ const myName = localStorage.getItem("username") || "Me";
 const myPic = localStorage.getItem("profilePic") || "default-profile.png";
 const myId  = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
 
-// --- Friend Info from URL ---
+// --- Friend Info ---
 const params = new URLSearchParams(window.location.search);
 const friend = params.get('friend') ? decodeURIComponent(params.get('friend')) : 'John Doe';
-const profile = params.get('profile') ? decodeURIComponent(params.get('profile')) : 'default-profile.png';
-document.getElementById('friendName').innerText = friend;
-document.getElementById('friendProfile').src = profile;
+
+// Get friend profile from localStorage friends list
+const friendsList = JSON.parse(localStorage.getItem('friends') || '[]');
+const friendObj = friendsList.find(f => f.name === friend);
+
+const friendName = friendObj ? friendObj.name : friend;
+const friendProfile = friendObj && friendObj.profile ? friendObj.profile : 'default-profile.png';
+
+// Set header
+const friendNameEl = document.getElementById('friendName');
+const friendProfileEl = document.getElementById('friendProfile');
+
+friendNameEl.innerText = friendName;
+friendProfileEl.src = friendProfile;
+friendProfileEl.onerror = () => { friendProfileEl.src = 'default-profile.png'; }
+
 
 // --- Socket.IO connection ---
 const socket = io("http://localhost:3000");
