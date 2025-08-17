@@ -25,6 +25,9 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
 #attachmentMenu{display:none;position:absolute;bottom:60px;right:15px;background:white;padding:10px;border-radius:10px;box-shadow:0 0 5px #888;flex-direction:column;}
 #attachmentMenu button{padding:8px 12px;border:none;border-radius:6px;background:#128C7E;color:white;cursor:pointer;margin:3px;}
 #attachmentMenu button:hover{background:#0d6b61;}
+#friendPopup{display:none;position:absolute;top:50px;right:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 0 5px #888;max-height:200px;overflow-y:auto;flex-direction:column;}
+#friendPopup button{width:100%;padding:6px 10px;margin:3px 0;border:none;border-radius:5px;background:#128C7E;color:white;cursor:pointer;}
+#friendPopup button:hover{background:#0d6b61;}
 </style>
 </head>
 <body>
@@ -41,6 +44,8 @@ body{font-family:Arial;margin:0;background:#e5ddd5;}
     <button id="deleteBtn" style="display:none;">🗑️ Delete Group</button>
   </div>
 </div>
+
+<div id="friendPopup"></div>
 
 <div id="chatBox"></div>
 
@@ -78,23 +83,8 @@ document.getElementById("groupPhoto").src = group.photo || "profile.png";
 if(group.admin===myName) document.getElementById("deleteBtn").style.display="block";
 
 // Change group name/photo
-document.getElementById("groupName").onclick = ()=>{
-  const newName = prompt("Enter new group name:", group.name);
-  if(newName){ group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName; }
-};
-document.getElementById("groupPhoto").onclick = ()=>{
-  const fileInput = document.createElement("input");
-  fileInput.type="file"; fileInput.accept="image/*";
-  fileInput.onchange = e => {
-    const file = e.target.files[0];
-    if(file){
-      const reader = new FileReader();
-      reader.onload = event => { group.photo = event.target.result; saveGroup(); document.getElementById("groupPhoto").src = group.photo; }
-      reader.readAsDataURL(file);
-    }
-  };
-  fileInput.click();
-};
+document.getElementById("groupName").onclick = ()=>{ const newName = prompt("Enter new group name:", group.name); if(newName){ group.name=newName; saveGroup(); document.getElementById("groupName").innerText=newName; } };
+document.getElementById("groupPhoto").onclick = ()=>{ const fileInput = document.createElement("input"); fileInput.type="file"; fileInput.accept="image/*"; fileInput.onchange = e => { const file = e.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = event => { group.photo = event.target.result; saveGroup(); document.getElementById("groupPhoto").src = group.photo; } reader.readAsDataURL(file); } }; fileInput.click(); };
 
 // Render members
 function renderMembers(){
@@ -103,11 +93,7 @@ function renderMembers(){
     const mDiv=document.createElement("div"); mDiv.textContent=m.name;
     if(group.admin===myName && m.name!==myName){
       const span=document.createElement("span"); span.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
-      span.onclick=()=>{ 
-        if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); 
-        else group.blocked.push(m.name); 
-        saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();
-      };
+      span.onclick=()=>{ if(group.blocked.includes(m.name)) group.blocked=group.blocked.filter(x=>x!==m.name); else group.blocked.push(m.name); saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();};
       mDiv.appendChild(span);
     }
     div.appendChild(mDiv);
@@ -149,21 +135,26 @@ function saveGroup(){ groups[currentIndex]=group; localStorage.setItem("groups",
 const topAdd=document.getElementById("topAdd"); const topMenu=document.getElementById("topMenu");
 topAdd.onclick = ()=> topMenu.style.display = (topMenu.style.display==='flex')?'none':'flex';
 
-// --- Add Friend fetches friends from home.html ---
-document.getElementById("addFriendBtn").onclick = ()=>{
-  const friends = JSON.parse(localStorage.getItem("friends")||"[]");
-  if(friends.length === 0){ alert("No friends available."); return; }
-  const friendNames = friends.map(f => f.name);
-  const name = prompt("Select friend to add:\n"+friendNames.join("\n"));
-  if(!name) return;
-  const friendObj = friends.find(f => f.name === name);
-  if(!friendObj){ alert("Friend not found!"); return; }
-  if(group.members.some(m=>m.name===name)){ alert(name+" is already in the group."); return; }
-  group.members.push({name:friendObj.name, accepted:true});
-  saveGroup(); renderMembers(); alert(friendObj.name+" added to the group.");
+// Top menu actions
+
+// Add friend popup
+const friendPopup = document.getElementById("friendPopup");
+document.getElementById("addFriendBtn").onclick = () => {
+  const friends = JSON.parse(localStorage.getItem("friends") || "[]");
+  const availableFriends = friends.map(f => f.name).filter(n => !group.members.some(m => m.name===n));
+  if(availableFriends.length === 0){ alert("All friends are already in the group."); return; }
+  friendPopup.innerHTML = "";
+  availableFriends.forEach(name=>{
+    const btn=document.createElement("button"); btn.textContent=name;
+    btn.onclick = ()=>{
+      group.members.push({name,accepted:true}); saveGroup(); renderMembers(); friendPopup.style.display="none"; alert(name+" added.");
+    };
+    friendPopup.appendChild(btn);
+  });
+  friendPopup.style.display = (friendPopup.style.display==="flex") ? "none":"flex";
 };
 
-// Invite
+// Invite link
 document.getElementById("inviteBtn").onclick = ()=>{
   const name = prompt("Enter user name to invite:"); if(!name) return;
   if(!group.invited.includes(name)) group.invited.push(name); saveGroup();
@@ -171,18 +162,21 @@ document.getElementById("inviteBtn").onclick = ()=>{
   prompt("Send this link to user:", link);
 };
 
-// Leave group: removes user and hides group from your groups.html
+// Leave group (delete only your membership)
 document.getElementById("leaveBtn").onclick = ()=>{
   if(confirm("Leave group?")){
     group.members = group.members.filter(m=>m.name!==myName);
     group.invited = group.invited.filter(u=>u!==myName);
     saveGroup();
     alert("You left the group.");
+    // Remove group from groups list page
+    groups = groups.filter(g=>g.members.some(m=>m.name===myName));
+    localStorage.setItem("groups",JSON.stringify(groups));
     window.location.href="groups.html";
   }
 };
 
-// Delete group for admin
+// Delete group (admin)
 document.getElementById("deleteBtn").onclick = ()=>{
   if(confirm("Delete group?")){
     groups.splice(currentIndex,1);
@@ -197,26 +191,16 @@ const plusBtn=document.getElementById("plusBtn"); const attachmentMenu=document.
 plusBtn.onclick = ()=> attachmentMenu.style.display = (attachmentMenu.style.display==='flex')?'none':'flex';
 function closeAttachmentMenu(){ attachmentMenu.style.display='none'; }
 
-// File / Photo / Video / Audio / Video Call / Location placeholders
+// Placeholder buttons
 document.getElementById("sendFileBtn").onclick = ()=>{ closeAttachmentMenu(); group.messages.push({sender:myName,text:"[Sent File]"}); saveGroup(); renderMessages(); };
 document.getElementById("takePhotoBtn").onclick = ()=>{ closeAttachmentMenu(); group.messages.push({sender:myName,text:"[Sent Photo]"}); saveGroup(); renderMessages(); };
 document.getElementById("takeVideoBtn").onclick = ()=>{ closeAttachmentMenu(); group.messages.push({sender:myName,text:"[Sent Video]"}); saveGroup(); renderMessages(); };
 document.getElementById("audioCallBtn").onclick = ()=>{ closeAttachmentMenu(); alert("📞 Audio Call coming soon"); };
 document.getElementById("videoCallBtn").onclick = ()=>{ closeAttachmentMenu(); alert("🎥 Video Call coming soon"); };
-document.getElementById("sendLocationBtn").onclick = ()=>{
-  closeAttachmentMenu(); 
-  if(!navigator.geolocation) alert("Geolocation not supported."); 
-  else navigator.geolocation.getCurrentPosition(pos=>{
-    group.messages.push({sender:myName,text:`📍 Location: ${pos.coords.latitude},${pos.coords.longitude}`}); 
-    saveGroup(); 
-    renderMessages();
-  });
-};
+document.getElementById("sendLocationBtn").onclick = ()=>{ closeAttachmentMenu(); if(!navigator.geolocation) alert("Geolocation not supported."); else navigator.geolocation.getCurrentPosition(pos=>{ group.messages.push({sender:myName,text:`📍 Location: ${pos.coords.latitude},${pos.coords.longitude}`}); saveGroup(); renderMessages();}); };
 
 // Initial render
-renderMembers(); 
-renderMessages(); 
-checkBlockedStatus();
+renderMembers(); renderMessages(); checkBlockedStatus();
 </script>
 
 </body>
