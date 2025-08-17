@@ -4,29 +4,67 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Join Group</title>
+<style>
+body{font-family:Arial;background:#ece5dd;display:flex;justify-content:center;align-items:center;height:100vh;}
+.container{background:white;padding:20px;border-radius:10px;box-shadow:0 0 10px #888;text-align:center;}
+button{padding:10px 15px;border:none;border-radius:6px;background:#25d366;color:white;cursor:pointer;margin-top:10px;}
+</style>
 </head>
 <body>
-<h2>Join Group</h2>
-<div id="message"></div>
-<script>
-let groups = JSON.parse(localStorage.getItem("groups")||"[]");
-const params = new URLSearchParams(window.location.search);
-const groupName = params.get("group");
-const userName = params.get("user");
-const msgDiv = document.getElementById("message");
+<div class="container">
+  <h2 id="groupName"></h2>
+  <p id="message"></p>
+  <input id="userName" placeholder="Enter your name" style="padding:8px;border-radius:6px;border:1px solid #ccc;">
+  <br>
+  <button id="joinBtn">Join Group</button>
+</div>
 
-if(!groupName || !userName){ msgDiv.innerText="Invalid invite link."; }
+<script>
+// Get URL params
+const urlParams = new URLSearchParams(window.location.search);
+const groupNameParam = urlParams.get("group");
+const invitedUser = urlParams.get("user");
+
+let groups = JSON.parse(localStorage.getItem("groups")||"[]");
+let groupIndex = groups.findIndex(g=>g.name===groupNameParam);
+const groupNameEl = document.getElementById("groupName");
+const messageEl = document.getElementById("message");
+const userNameInput = document.getElementById("userName");
+const joinBtn = document.getElementById("joinBtn");
+
+if(groupIndex===-1){ groupNameEl.innerText="Group not found"; messageEl.innerText="Invalid link."; joinBtn.style.display="none"; }
 else{
-  const group = groups.find(g=>g.name===groupName);
-  if(!group) msgDiv.innerText="Group does not exist.";
-  else if(group.members.some(m=>m.name===userName)) msgDiv.innerText="You are already a member.";
-  else if(!group.invited.includes(userName)) msgDiv.innerText="You were not invited or invite expired.";
-  else{
-    group.members.push({name:userName,accepted:true});
-    group.invited = group.invited.filter(x=>x!==userName);
-    localStorage.setItem("groups",JSON.stringify(groups));
-    msgDiv.innerHTML=`Welcome ${userName}! You joined <strong>${groupName}</strong>.<br><a href="chat.html">Go to Chat</a>`;
-  }
+  const group = groups[groupIndex];
+  groupNameEl.innerText = group.name;
+
+  joinBtn.onclick = ()=>{
+    const name = userNameInput.value.trim();
+    if(!name){ alert("Enter your name"); return; }
+
+    // Check if invited
+    if(!group.invited.includes(name) && group.admin!==name){
+      alert("You are not invited to this group!");
+      return;
+    }
+
+    // Add member if not already in
+    if(!group.members.find(m=>m.name===name)){
+      group.members.push({name,accepted:true});
+    }
+
+    // First member is admin
+    if(!group.admin) group.admin = name;
+
+    // Remove from invited
+    group.invited = group.invited.filter(u=>u!==name);
+
+    groups[groupIndex] = group;
+    localStorage.setItem("groups", JSON.stringify(groups));
+
+    alert(`Welcome ${name}!\nYou joined ${group.name}`);
+    localStorage.setItem("currentGroupIndex", groupIndex); // set current group
+    window.location.href="group.html"; // redirect to group chat
+  };
 }
 </script>
 </body>
