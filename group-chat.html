@@ -81,6 +81,48 @@ body {
 @media (min-width:768px){
   #chatPage, #groupInfoPage { max-width:600px; margin:auto; border:1px solid #ccc; border-radius:10px; }
 }
+
+.msg audio {
+  max-width: 300px;   /* scales for laptop and phone */
+  width: 100%;
+  border-radius: 8px;
+  outline: none;
+}
+@media (min-width: 768px){
+  .msg { max-width: 60%; }
+}
+
+  .poll {
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.poll ul {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+}
+
+.poll li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.poll button {
+  background: #128C7E;
+  color: white;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.poll .votes {
+  margin-left: 5px;
+}
+
 </style>
 </head>
 <body>
@@ -118,7 +160,12 @@ body {
       <button id="galleryBtn"><i class="fa-solid fa-image"></i>Photo</button>
       <button id="cameraBtn"><i class="fa-solid fa-camera"></i>Camera</button>
       <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i>Location</button>
-      <button id="audioBtn"><i class="fa-solid fa-phone"></i>Audio</button>
+      <!-- Audio Button -->
+<button id="audioBtn"><i class="fa-solid fa-music"></i>Audio</button>
+<!-- Hidden file input -->
+<input type="file" id="audioInput" accept="audio/*" style="display:none;">
+<button id="pollBtn"><i class="fa-solid fa-chart-simple"></i>Poll</button>
+
       <button id="contactBtn"><i class="fa-solid fa-user"></i>Contact</button>
       <button id="distanceBtn"><i class="fa-solid fa-location-crosshairs"></i>Distance</button>
     </div>
@@ -274,7 +321,50 @@ document.getElementById("sendLocationBtn").onclick = ()=>{
     const {latitude, longitude}=pos.coords; addMessage(`📍 Location: ${latitude}, ${longitude}`);
   }); }
 };
-document.getElementById("audioBtn").onclick = ()=> addMessage("📞 [Audio call started]");
+// Audio button opens file picker
+document.getElementById("audioBtn").onclick = () => {
+  document.getElementById("audioInput").click();
+};
+
+// When a file is selected
+document.getElementById("audioInput").onchange = (e) => {
+  const file = e.target.files[0];
+  if(file){
+    const audioURL = URL.createObjectURL(file);
+    addMessage(`<audio controls src="${audioURL}"></audio>`);
+  }
+};
+
+  document.getElementById("pollBtn").onclick = () => {
+  const question = prompt("Enter your poll question:");
+  if(!question) return;
+
+  const options = prompt("Enter options separated by commas (e.g. Yes,No,Maybe):");
+  if(!options) return;
+
+  const optionList = options.split(",").map(o => o.trim()).filter(o => o);
+  if(optionList.length === 0) return;
+
+  // Create poll message
+  let pollHTML = `<div class="poll"><strong>${question}</strong><ul>`;
+  optionList.forEach(o => {
+    pollHTML += `<li>${o} <button onclick="vote(this)">Vote</button> <span class="votes">0</span></li>`;
+  });
+  pollHTML += `</ul></div>`;
+
+  addMessage(pollHTML);
+
+  // Scroll chat to bottom
+  chatBox.scrollTop = chatBox.scrollHeight;
+};
+
+// Voting function
+function vote(btn){
+  const votesSpan = btn.nextElementSibling;
+  votesSpan.textContent = parseInt(votesSpan.textContent)+1;
+}
+
+  
 document.getElementById("contactBtn").onclick = ()=> addMessage("👤 [Contact shared]");
 document.getElementById("distanceBtn").onclick = ()=> addMessage("📏 [Distance info]");
 
