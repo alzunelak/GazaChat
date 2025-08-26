@@ -7,7 +7,7 @@
 <style>
 body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
 input, button { padding:10px; margin:5px; font-size:16px; }
-#result, #registerResult { margin-top:20px; font-size:16px; }
+#result { margin-top:20px; font-size:16px; }
 .error { color:red; }
 .success { color:green; }
 .friend-request { margin:10px; padding:10px; border:1px solid #ccc; background:#fff; border-radius:5px; }
@@ -32,7 +32,6 @@ input, button { padding:10px; margin:5px; font-size:16px; }
 <script>
 const defaultProfile = "default-profile.png";
 const myName = "You"; // fixed logged-in user
-document.getElementById("me").innerText = myName;
 
 // Initialize users if empty
 if(!localStorage.getItem('users')){
@@ -40,7 +39,7 @@ if(!localStorage.getItem('users')){
     { name: "Alice", profile: "alice.png" },
     { name: "Bob", profile: "bob.png" },
     { name: "Charlie", profile: "charlie.png" },
-    { name: myName, profile: defaultProfile } // add logged-in user
+    { name: myName, profile: defaultProfile }
   ];
   localStorage.setItem('users', JSON.stringify(initialUsers));
 }
@@ -135,33 +134,6 @@ function sendRequest(name){
   channel.postMessage({type:'friendRequest', from: myName, to: name});
   document.getElementById('result').innerText = `Friend request sent to ${name}`;
 }
-
-// ---------- REGISTER NEW USER ----------
-document.getElementById('registerBtn').addEventListener('click', ()=>{
-  const name = document.getElementById('newName').value.trim();
-  const profile = document.getElementById('newProfile').value.trim() || defaultProfile;
-  const registerResult = document.getElementById('registerResult');
-
-  if(name===""){
-    registerResult.className = "error";
-    registerResult.innerText = "Enter a name to register";
-    return;
-  }
-
-  let users = getUsers();
-  if(users.some(u=>u.name.toLowerCase()===name.toLowerCase())){
-    registerResult.className = "error";
-    registerResult.innerText = "User already exists";
-    return;
-  }
-
-  users.push({name, profile});
-  localStorage.setItem('users', JSON.stringify(users));
-  registerResult.className = "success";
-  registerResult.innerText = `${name} registered successfully!`;
-  document.getElementById('newName').value = '';
-  document.getElementById('newProfile').value = '';
-});
 
 // ---------- DISPLAY FRIENDS ----------
 function renderFriends(){
