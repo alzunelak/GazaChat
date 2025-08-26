@@ -247,21 +247,70 @@ body {
 
 <script>
 // ===== DATA =====
-// Fetch friends saved from home.html
 let allFriends = JSON.parse(localStorage.getItem("friendsList") || "[]");
+let currentGroupMembers = JSON.parse(localStorage.getItem("groupMembers") || "[]");
 
-// Fetch saved group members or start with defaults
-let savedMembers = localStorage.getItem("groupMembers");
-let currentGroupMembers = savedMembers ? JSON.parse(savedMembers) : [];
-
-// Other group data
 let messages = [];
 let currentGroup = "My Group";
 let groupData = {
-  "My Group": {
-    photo: "profile.png",
-    members: [...currentGroupMembers],
-    admin: true
+  "My Group": { photo: "profile.png", members: [...currentGroupMembers], admin: true }
+};
+
+  function renderGroupMembers() {
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+
+  if (currentGroupMembers.length === 0) {
+    const div = document.createElement("div");
+    div.textContent = "No members yet";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    currentGroupMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.textContent = name;
+      div.className = "memberBox";
+      membersDiv.appendChild(div);
+    });
+  }
+
+  // Show message if no friends to add
+  const addBtn = document.getElementById("addMemberBtn");
+  let msg = document.getElementById("noFriendsMsg");
+  if (msg) msg.remove();
+
+  const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
+  if (friendsToAdd.length === 0) {
+    const noFriendMsg = document.createElement("div");
+    noFriendMsg.id = "noFriendsMsg";
+    noFriendMsg.style.fontSize = "14px";
+    noFriendMsg.style.color = "#555";
+    noFriendMsg.style.marginTop = "5px";
+    noFriendMsg.textContent = "No friends to add yet.";
+    addBtn.insertAdjacentElement("afterend", noFriendMsg);
+  }
+
+  // Save current members to localStorage
+  localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
+}
+
+// Call once on page load
+renderGroupMembers();
+
+  document.getElementById("addMemberBtn").onclick = () => {
+  const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
+
+  if (friendsToAdd.length === 0) {
+    renderGroupMembers(); // show "No friends to add yet"
+    return;
+  }
+
+  const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
+
+  if (friend && friendsToAdd.includes(friend)) {
+    currentGroupMembers.push(friend);
+    renderGroupMembers();
   }
 };
 
