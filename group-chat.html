@@ -67,9 +67,21 @@ body {
 .infoItem input { margin-left:10px; }
 
 /* MEMBERS LIST */
-#groupMembersList { display:flex; flex-direction:column; gap:5px; }
-.memberBox { padding:5px 10px; background:#eee; border-radius:8px; cursor:pointer; }
-
+#groupMembersList { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+  padding: 10px;
+  border-top: 1px solid #ccc;   /* line on top */
+  border-bottom: 1px solid #ccc;/* line on bottom */
+}
+}
+.memberBox { 
+  padding: 5px 10px; 
+  background: #eee; 
+  border-radius: 8px; 
+  cursor: pointer; 
+}
 
 
 /* GROUP LINKS CONTAINER */
@@ -235,11 +247,26 @@ body {
 
 <script>
 // ===== DATA =====
-let storedFriends = ["Alia","Shradha","Maya","Rhea"];
-let currentGroupMembers = ["Alia","Shradha"];
+
+// Friends you can add
+let storedFriends = ["Alia", "Shradha", "Maya", "Rhea"];
+
+// Current group members (load from localStorage if available)
+let savedMembers = localStorage.getItem("groupMembers");
+let currentGroupMembers = savedMembers ? JSON.parse(savedMembers) : ["Alia", "Shradha"];
+
+// Chat messages
 let messages = [];
+
+// Current group info
 let currentGroup = "My Group";
-let groupData = { "My Group": { photo:"profile.png", members:[...currentGroupMembers], admin:true } };
+let groupData = {
+  "My Group": {
+    photo: "profile.png",
+    members: [...currentGroupMembers], // use saved members
+    admin: true
+  }
+};
 
 // ===== RENDER CHAT MEMBERS =====
 function renderChatMembers() {
@@ -250,25 +277,45 @@ renderChatMembers();
 // ===== RENDER GROUP MEMBERS =====
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
-  membersDiv.innerHTML="";
-  currentGroupMembers.forEach(name=>{
+  membersDiv.innerHTML = "";
+  currentGroupMembers.forEach(name => {
     const div = document.createElement("div");
-    div.textContent=name;
-    div.className="memberBox";
+    div.textContent = name;
+    div.className = "memberBox";
     membersDiv.appendChild(div);
   });
+
+  // If no more friends to add, show a message under the button
+  const addBtn = document.getElementById("addMemberBtn");
+  const existingMsg = document.getElementById("noFriendsMsg");
+  if (existingMsg) existingMsg.remove();
+
+  const friendsToAdd = storedFriends.filter(f => !currentGroupMembers.includes(f));
+  if (friendsToAdd.length === 0) {
+    const msg = document.createElement("div");
+    msg.id = "noFriendsMsg";
+    msg.style.fontSize = "14px";
+    msg.style.color = "#555";
+    msg.style.marginTop = "5px";
+    msg.textContent = "No friends to add yet.";
+    addBtn.insertAdjacentElement("afterend", msg);
+  }
 }
 renderGroupMembers();
 
 // ===== ADD MEMBER =====
-document.getElementById("addMemberBtn").onclick = ()=>{
-  const friendsToAdd = storedFriends.filter(f=>!currentGroupMembers.includes(f));
-  if(friendsToAdd.length===0){ alert("No more friends to add."); return; }
-  const friend = prompt("Add member:\n"+friendsToAdd.join("\n"));
-  if(friend && friendsToAdd.includes(friend)){
+document.getElementById("addMemberBtn").onclick = () => {
+  const friendsToAdd = storedFriends.filter(f => !currentGroupMembers.includes(f));
+  if (friendsToAdd.length === 0) {
+    renderGroupMembers(); // show "No friends to add yet" message
+    return;
+  }
+
+  const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
+  if (friend && friendsToAdd.includes(friend)) {
     currentGroupMembers.push(friend);
+    localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers)); // save to localStorage
     renderGroupMembers();
-    renderChatMembers();
   }
 };
 
