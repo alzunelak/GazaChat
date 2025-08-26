@@ -94,51 +94,33 @@ body {
   text-align: left;
 }
 
-
-/* RED ACTIONS */
-/* GROUP ACTIONS CONTAINER */
-#groupActions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-top: 1px solid #ccc;   /* line on top */
-  border-bottom: 1px solid #ccc;/* line on bottom */
-  margin-top: 15px;
-}
-
-/* RED ACTION BUTTONS */
-/* GROUP ACTIONS CONTAINER */
+/*red
+/* CONTAINER WITH TOP & BOTTOM LINES */
 .groupActions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
+  background: #fff;
+  padding: 5px 0;
 }
 
-/* RED ACTION BUTTONS */
+/* BUTTON STYLING */
 .groupActions button {
   width: 100%;
   padding: 10px;
   border: none;
-  border-radius: 5px;
   background: #fff;
   color: red;
-  cursor: pointer;
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 10px; /* space between icon and text */
+  gap: 10px;   /* space between icon and text */
   font-size: 15px;
+  cursor: pointer;
 }
 
-/* OPTIONAL: style admin section separately */
-#adminActions {
-  margin-top: 10px;
-  border-top: 1px solid #ddd;
-  padding-top: 8px;
+/* OPTIONAL: Make icons gray */
+.groupActions i {
+  color: #555;
 }
 
 
