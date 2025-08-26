@@ -275,19 +275,64 @@ body {
 // ===== DATA =====
 let allFriends = JSON.parse(localStorage.getItem("friendsList") || '["Alice","Bob","Charlie"]'); 
 let currentGroupMembers = JSON.parse(localStorage.getItem("groupMembers") || '[]');
-
 let messages = [];
 let currentGroup = "My Group";
 let groupData = {
   "My Group": { photo: "profile.png", members: [...currentGroupMembers], admin: true }
 };
 
-// ===== RENDER CHAT MEMBERS =====
+// ===== CHAT MEMBERS =====
 function renderChatMembers(){
   document.getElementById("members").textContent = currentGroupMembers.join(", ");
 }
+<script>
+// ===== EMOJI PICKER =====
+const emojiBtn = document.getElementById("emojiBtn");
+const emojiPicker = document.getElementById("emojiPicker");
 
-// ===== RENDER GROUP MEMBERS =====
+// List of emojis (you can expand)
+const emojis = ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😍","🥰","😘","😗","😙","😚"];
+
+function renderEmojis(){
+  emojiPicker.innerHTML = "";
+  emojis.forEach(e=>{
+    const span = document.createElement("span");
+    span.textContent = e;
+    span.style.cursor = "pointer";
+    span.style.fontSize = "20px";
+    span.addEventListener("click", ()=>{
+      msgInput.value += e;
+      msgInput.focus();
+    });
+    emojiPicker.appendChild(span);
+  });
+}
+renderEmojis();
+
+// Toggle emoji picker
+emojiBtn.onclick = () => {
+  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
+};
+
+// Close emoji picker if clicked outside
+document.addEventListener("click", (e)=>{
+  if(!emojiPicker.contains(e.target) && e.target !== emojiBtn){
+    emojiPicker.style.display = "none";
+  }
+});
+
+// ===== MIC BUTTON (Voice Simulation) =====
+const micBtn = document.getElementById("micBtn");
+micBtn.onclick = () => {
+  const txt = prompt("Simulate voice input (type your message):");
+  if(txt && txt.trim() !== ""){
+    messages.push({id:Date.now(), text:txt, self:true, time:new Date().toLocaleTimeString()});
+    renderMessages();
+  }
+};
+</script>
+
+// ===== GROUP MEMBERS =====
 function renderGroupMembers(){
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
@@ -307,7 +352,7 @@ function renderGroupMembers(){
     });
   }
 
-  // Update member count
+  // Member count
   document.getElementById("memberCount").textContent = `${currentGroupMembers.length} Member${currentGroupMembers.length !== 1 ? 's' : ''}`;
 
   // Check if friends are left to add
@@ -325,13 +370,9 @@ function renderGroupMembers(){
     addBtn.insertAdjacentElement("afterend", msg);
   }
 
-  // Save to localStorage
   localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
-
-  // Update chat header
   renderChatMembers();
 }
-
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = () => {
@@ -343,7 +384,6 @@ document.getElementById("addMemberBtn").onclick = () => {
   const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
   if(friend && friendsToAdd.includes(friend)){
     currentGroupMembers.push(friend);
-    localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
     renderGroupMembers();
   }
 };
@@ -351,8 +391,10 @@ document.getElementById("addMemberBtn").onclick = () => {
 // ===== CHAT =====
 const chatBox=document.getElementById("chatBox");
 const msgInput=document.getElementById("msgInput");
+
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-msgInput.addEventListener("keydown",e=>{
+
+msgInput.addEventListener("keydown", e=>{
   if(e.key==="Enter"){
     e.preventDefault();
     const txt=msgInput.value.trim();
@@ -362,6 +404,7 @@ msgInput.addEventListener("keydown",e=>{
     renderMessages();
   }
 });
+
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
@@ -370,47 +413,25 @@ function renderMessages(){
     div.innerHTML=`<div class="content">${m.text}</div><div class="meta">${m.time}</div>`;
     chatBox.appendChild(div);
   });
-}
-const chatBox = document.getElementById("chatBox");
-
-// Helper to add messages
-function addMessage(content, type="sent"){
-  const msg = document.createElement("div");
-  msg.classList.add("message", type);
-  msg.innerHTML = content;
-  chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Toggle attachment menu
-function toggleMenu(){
+// ===== ATTACHMENT MENU =====
+document.getElementById("plusBtn").onclick = () => {
   const menu = document.getElementById("attachmentMenu");
   menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-// Send text message
-function sendMessage(){
-  const input = document.getElementById("messageInput");
-  if(input.value.trim() !== ""){
-    addMessage(input.value, "sent");
-    input.value = "";
-  }
-}
-
-// File button
-document.getElementById("sendDocumentBtn").onclick = () => {
-  document.getElementById("fileInput").click();
 };
-document.getElementById("fileInput").onchange = (e) => {
+
+// File
+document.getElementById("sendDocumentBtn").onclick = () => document.getElementById("fileInput").click();
+document.getElementById("fileInput").onchange = e => {
   const file = e.target.files[0];
   if(file) addMessage(`📎 File: ${file.name}`);
 };
 
-// Gallery button
-document.getElementById("galleryBtn").onclick = () => {
-  document.getElementById("galleryInput").click();
-};
-document.getElementById("galleryInput").onchange = (e) => {
+// Gallery
+document.getElementById("galleryBtn").onclick = () => document.getElementById("galleryInput").click();
+document.getElementById("galleryInput").onchange = e => {
   const file = e.target.files[0];
   if(file){
     const imgURL = URL.createObjectURL(file);
@@ -419,9 +440,7 @@ document.getElementById("galleryInput").onchange = (e) => {
 };
 
 // Camera
-document.getElementById("cameraBtn").onclick = () => {
-  addMessage("📷 [Camera opened]");
-};
+document.getElementById("cameraBtn").onclick = () => addMessage("📷 [Camera opened]");
 
 // Location
 document.getElementById("sendLocationBtn").onclick = () => {
@@ -434,22 +453,26 @@ document.getElementById("sendLocationBtn").onclick = () => {
 };
 
 // Audio
-document.getElementById("audioBtn").onclick = () => {
-  addMessage("📞 [Audio call started]");
-};
+document.getElementById("audioBtn").onclick = () => addMessage("📞 [Audio call started]");
 
 // Contact
-document.getElementById("contactBtn").onclick = () => {
-  addMessage("👤 [Contact shared]");
-};
+document.getElementById("contactBtn").onclick = () => addMessage("👤 [Contact shared]");
 
 // Distance
-document.getElementById("distanceBtn").onclick = () => {
-  addMessage("📏 [Distance info]");
-};
+document.getElementById("distanceBtn").onclick = () => addMessage("📏 [Distance info]");
+
+// Helper to add messages
+function addMessage(content){
+  const div = document.createElement("div");
+  div.className = "msg self";
+  div.innerHTML = `<div class="content">${content}</div><div class="meta">${new Date().toLocaleTimeString()}</div>`;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
 // ===== GROUP INFO =====
 document.getElementById("groupName").onclick = ()=> openGroupInfo(currentGroup);
+
 function openGroupInfo(groupName){
   currentGroup=groupName;
   document.getElementById("groupInfoPage").style.display="block";
@@ -466,16 +489,16 @@ function backToChat(){
 }
 
 // ===== GROUP PHOTO =====
-document.getElementById("infoGroupPhoto").onclick = ()=>{ document.getElementById("groupPhotoFile").click(); };
+document.getElementById("infoGroupPhoto").onclick = ()=> document.getElementById("groupPhotoFile").click();
 document.getElementById("groupPhotoFile").addEventListener("change", e=>{
-  const file=e.target.files[0];
+  const file = e.target.files[0];
   if(file){
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const url=reader.result;
-      document.getElementById("infoGroupPhoto").src=url;
-      document.getElementById("groupPhoto").src=url;
-      groupData[currentGroup].photo=url;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = reader.result;
+      document.getElementById("infoGroupPhoto").src = url;
+      document.getElementById("groupPhoto").src = url;
+      groupData[currentGroup].photo = url;
     };
     reader.readAsDataURL(file);
   }
@@ -483,18 +506,69 @@ document.getElementById("groupPhotoFile").addEventListener("change", e=>{
 
 // ===== EDIT GROUP NAME =====
 document.getElementById("infoGroupName").addEventListener("input", ()=>{
-  const newName=document.getElementById("infoGroupName").textContent.trim();
+  const newName = document.getElementById("infoGroupName").textContent.trim();
   if(newName && newName!==currentGroup){
-    groupData[newName]={...groupData[currentGroup]};
+    groupData[newName] = {...groupData[currentGroup]};
     delete groupData[currentGroup];
-    currentGroup=newName;
-    document.getElementById("groupName").textContent=newName;
+    currentGroup = newName;
+    document.getElementById("groupName").textContent = newName;
   }
 });
 
-// INITIAL RENDER
+// ===== GROUP ACTION BUTTONS =====
+document.querySelectorAll(".actionBox button").forEach(btn => {
+  btn.onclick = () => {
+    const action = btn.textContent.trim();
+    switch(action){
+      case "Leave Group":
+        if(confirm("Are you sure you want to leave the group?")){
+          alert("You left the group.");
+          currentGroupMembers = [];
+          renderGroupMembers();
+          backToChat();
+        }
+        break;
+      case "Block Group":
+        alert("Group blocked.");
+        break;
+      case "Report Group":
+        alert("Group reported.");
+        break;
+      case "Delete Group":
+        if(confirm("Are you sure you want to delete this group?")){
+          alert("Group deleted.");
+          currentGroupMembers = [];
+          renderGroupMembers();
+          backToChat();
+        }
+        break;
+      case "Block Member":
+        const member = prompt("Enter member name to block:\n" + currentGroupMembers.join("\n"));
+        if(member && currentGroupMembers.includes(member)){
+          currentGroupMembers = currentGroupMembers.filter(m=>m!==member);
+          renderGroupMembers();
+          alert(`${member} has been blocked.`);
+        }
+        break;
+    }
+  };
+});
+
+// ===== GROUP LINK =====
+document.getElementById("showGroupLink").onclick = () => {
+  document.getElementById("linkPopup").style.display="block";
+};
+document.getElementById("closePopup").onclick = () => document.getElementById("linkPopup").style.display="none";
+function copyLink(){
+  const input = document.getElementById("groupLinkInput");
+  input.select();
+  navigator.clipboard.writeText(input.value).then(()=>alert("Copied to clipboard!"));
+}
+
+// ===== INITIAL RENDER =====
 renderGroupMembers();
 renderChatMembers();
 </script>
+
 </body>
 </html>
