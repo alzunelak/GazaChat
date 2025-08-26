@@ -65,7 +65,37 @@ body {
 .container { background:#fff; padding:10px; margin:10px; border-radius:10px; }
 .infoItem { margin:5px 0; font-size:14px; }
 .infoItem input { margin-left:10px; }
+#settingsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+}
 
+#settingsContainer button {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 5px;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* keeps checkbox on the right */
+  font-size: 14px;
+}
+
+#settingsContainer button input[type="checkbox"] {
+  margin-left: auto; /* pushes checkbox to the right */
+}
+
+  
 /* MEMBERS LIST */
 #groupMembersList { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
 .memberBox { padding: 5px 10px; background: #eee; border-radius: 8px; cursor: pointer; }
@@ -136,12 +166,13 @@ body {
   </div>
 
   <div class="container">
-    <div class="infoItem">End-to-end Encryption</div>
-    <div class="infoItem">Disappearing Messages <input type="checkbox" id="disappearToggle"></div>
-    <div class="infoItem">Chat Color & Wallpaper</div>
-    <div class="infoItem">Chat Lock</div>
-    <div class="infoItem">Advanced Chat Privacy</div>
-  </div>
+  <div class="infoItem">🔒 End-to-end Encryption</div>
+  <div class="infoItem">⏳ Disappearing Messages <input type="checkbox" id="disappearToggle"></div>
+  <div class="infoItem">🎨 Chat Color & Wallpaper</div>
+  <div class="infoItem">🔐 Chat Lock <input type="checkbox" id="chatLockToggle"></div>
+  <div class="infoItem">🛡️ Advanced Chat Privacy <input type="checkbox" id="privacyToggle"></div>
+</div>
+
 
   <div class="container">
     <button id="addMemberBtn">Add Member</button>
