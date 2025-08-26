@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp-like Chat</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -34,29 +42,45 @@ body {
 }
 
 .header-info h2 {
-  margin: 0; font-size: 16px; font-weight: 500;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-info #members {
-  font-size: 12px; color: #d0f0e3;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 12px;
+  color: #d0f0e3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-actions {
-  display: flex; gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .header-actions button {
-  background: transparent; border: none; color: white;
-  font-size: 20px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ===== CHAT BOX ===== */
 #chatBox {
-  flex: 1; overflow-y: auto;
-  padding: 10px; display: flex; flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 120px;
 }
 #chatBox::-webkit-scrollbar { width: 6px; }
@@ -86,11 +110,25 @@ body {
 .msgOptions button { border: none; background: transparent; color: white; padding: 5px 10px; cursor: pointer; text-align: left; font-size: 12px; }
 .msgOptions button:hover { background: rgba(255,255,255,0.2); }
 
+/* ===== ATTACHMENTS ===== */
+.msg .attachment img,
+.msg .attachment video { max-width: 240px; border-radius: 8px; display: block; margin-top: 5px; }
+.msg .attachment audio { width: 200px; margin-top: 5px; }
+
 /* ===== INPUT AREA ===== */
 #inputArea {
-  display: flex; padding: 8px 10px; background: #fff; border-radius: 25px;
-  align-items: center; position: fixed; bottom: 10px; left: 10px; width: calc(100% - 20px);
-  gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 100;
+  display: flex;
+  padding: 8px 10px;
+  background: #fff;
+  border-radius: 25px;
+  align-items: center;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: calc(100% - 20px);
+  gap: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  z-index: 100;
 }
 #msgInput { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; font-size: 14px; }
 #inputArea button { width: 40px; height: 40px; border-radius: 50%; border: none; background: #25D366; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -111,3 +149,123 @@ body {
   #inputArea { width: calc(100% - 16px); padding: 6px; bottom: 6px; left: 6px; gap: 4px; }
   #chatBox { padding: 8px; margin-bottom: 100px; }
 }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img id="groupPhoto" src="profile.png" alt="Group Photo">
+  <div class="header-info">
+    <h2 id="groupName">My Group</h2>
+    <div id="members">Alice, Bob, Charlie</div>
+  </div>
+  <div class="header-actions">
+    <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
+    <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+  </div>
+</div>
+
+<div id="chatBox"></div>
+
+<div id="inputArea">
+  <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+  <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+  <input id="msgInput" placeholder="Type a message...">
+  <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+  <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
+
+  <div id="attachmentMenu">
+    <div class="grid">
+      <button id="sendFileBtn"><i class="fa-solid fa-file"></i></button>
+      <button id="takePhotoBtn"><i class="fa-solid fa-camera"></i></button>
+      <button id="takeVideoBtn"><i class="fa-solid fa-video"></i></button>
+      <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i></button>
+    </div>
+  </div>
+
+  <div id="emojiPicker"></div>
+</div>
+
+<script>
+const chatBox = document.getElementById("chatBox");
+const msgInput = document.getElementById("msgInput");
+const emojiPicker = document.getElementById("emojiPicker");
+
+let messages = [];
+function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
+
+function renderMessages(){
+  chatBox.innerHTML="";
+  messages.forEach(m=>{
+    const div = document.createElement("div");
+    div.className = "msg"+(m.self?" self":"");
+    let content="";
+    if(m.type==="text"){ content=m.text; }
+    if(m.type==="photo"){ content=`<div class="attachment"><img src="${m.data}"></div>`; }
+    if(m.type==="video"){ content=`<div class="attachment"><video src="${m.data}" controls></video></div>`; }
+    if(m.type==="audio"){ content=`<div class="attachment"><audio controls src="${m.data}"></audio></div>`; }
+    div.innerHTML = `<div class="content">${content}</div><div class="meta">${m.time}</div>`;
+    const opts=document.createElement("div"); opts.className="msgOptions";
+    const btn1=document.createElement("button"); btn1.textContent="Delete for me";
+    const btn2=document.createElement("button"); btn2.textContent="Delete for everyone";
+    btn1.onclick=()=>{ messages=messages.filter(x=>x.id!==m.id); renderMessages(); };
+    btn2.onclick=()=>{ m.text="This message was deleted"; renderMessages(); };
+    opts.appendChild(btn1); opts.appendChild(btn2);
+    div.appendChild(opts); chatBox.appendChild(div);
+  });
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ===== SEND TEXT =====
+document.getElementById("sendBtn").onclick = ()=>{
+  const txt=msgInput.value.trim(); if(!txt) return;
+  messages.push({id:uid(), type:"text", text:txt, self:true, time:new Date().toLocaleTimeString()});
+  msgInput.value=""; renderMessages();
+};
+
+// ===== ENTER KEY =====
+msgInput.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){ e.preventDefault(); document.getElementById("sendBtn").click(); }
+});
+
+// ===== ATTACHMENT MENU =====
+document.getElementById("plusBtn").onclick = ()=>{
+  const menu=document.getElementById("attachmentMenu");
+  menu.style.display=menu.style.display==="block"?"none":"block";
+};
+
+// ===== EMOJIS =====
+const emojis=["😀","😂","😊","😍","🤔","😎","😭","😡","👍","🙏"];
+document.getElementById("emojiBtn").onclick=()=>{
+  emojiPicker.innerHTML="";
+  emojis.forEach(e=>{
+    const btn=document.createElement("button");
+    btn.textContent=e;
+    btn.style.fontSize="20px";
+    btn.onclick=()=>{ msgInput.value+=e; };
+    emojiPicker.appendChild(btn);
+  });
+  emojiPicker.style.display = emojiPicker.style.display==="flex"?"none":"flex";
+};
+
+// ===== MIC RECORDING =====
+let mediaRecorder, audioChunks=[];
+document.getElementById("micBtn").onclick = async ()=>{
+  if(!mediaRecorder || mediaRecorder.state==="inactive"){
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e=>{ audioChunks.push(e.data); };
+    mediaRecorder.onstop=()=>{
+      const blob = new Blob(audioChunks,{type:'audio/webm'});
+      const url = URL.createObjectURL(blob);
+      messages.push({id:uid(), type:"audio", data:url, self:true, time:new Date().toLocaleTimeString()});
+      audioChunks=[];
+      renderMessages();
+    };
+    mediaRecorder.start();
+    alert("Recording started. Click mic again to stop.");
+  } else if(mediaRecorder.state==="recording"){ mediaRecorder.stop(); alert("Recording stopped."); }
+};
+</script>
+</body>
+</html>
