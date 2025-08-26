@@ -67,6 +67,113 @@ body {
   align-items: center;
   justify-content: center;
 }
+<!-- GROUP INFO PAGE -->
+<div id="groupInfoPage" style="display:none; background:#ece5dd; height:100vh; overflow-y:auto;">
+
+  <!-- HEADER -->
+  <div style="display:flex; align-items:center; padding:10px; background:#075E54; color:white;">
+    <button onclick="backToChat()" style="background:none;border:none;color:white;font-size:20px;margin-right:10px;">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <img id="infoGroupPhoto" src="profile.png" style="width:60px;height:60px;border-radius:50%;margin-right:10px;">
+    <div>
+      <h2 id="infoGroupName" style="margin:0;">Group Name</h2>
+      <p id="infoMembersCount" style="margin:0;font-size:12px;color:#d0f0e3;">3 members</p>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div style="display:flex; justify-content:space-around; padding:10px; background:#fff; margin-top:5px; border-radius:8px;">
+    <button style="background:none;border:none;display:flex;flex-direction:column;align-items:center;color:#075E54;">
+      <i class="fa-solid fa-video" style="font-size:20px;"></i>
+      <span style="font-size:12px;">Video Call</span>
+    </button>
+    <button style="background:none;border:none;display:flex;flex-direction:column;align-items:center;color:#075E54;">
+      <i class="fa-solid fa-phone" style="font-size:20px;"></i>
+      <span style="font-size:12px;">Audio Call</span>
+    </button>
+    <button style="background:none;border:none;display:flex;flex-direction:column;align-items:center;color:#075E54;">
+      <i class="fa-solid fa-magnifying-glass" style="font-size:20px;"></i>
+      <span style="font-size:12px;">Search</span>
+    </button>
+  </div>
+
+  <!-- SETTINGS -->
+  <div style="margin-top:10px;">
+    <div class="infoItem">End-to-end Encryption</div>
+    <div class="infoItem">
+      Disappearing Messages
+      <input type="checkbox" id="disappearToggle">
+    </div>
+    <div class="infoItem">Chat Color & Wallpaper</div>
+    <div class="infoItem">Chat Lock</div>
+    <div class="infoItem">Advanced Chat Privacy</div>
+  </div>
+
+  <!-- MEMBERS -->
+  <div style="margin-top:10px; background:#fff; padding:10px; border-radius:8px;">
+    <h3>Members</h3>
+    <div id="groupMembersList"></div>
+  </div>
+
+  <!-- GROUP LINKS / ACTIONS -->
+  <div style="margin-top:10px; background:#fff; padding:10px; border-radius:8px;">
+    <button style="display:block;width:100%;margin:5px 0;">Create Group Link</button>
+    <button style="display:block;width:100%;margin:5px 0;">Request / Invite</button>
+    <button style="display:block;width:100%;margin:5px 0;">Leave Group</button>
+    <button style="display:block;width:100%;margin:5px 0;">Block Group</button>
+    <button style="display:block;width:100%;margin:5px 0;">Report Group</button>
+    <div id="adminActions" style="margin-top:10px; display:none;">
+      <button style="display:block;width:100%;margin:5px 0;">Delete Group</button>
+      <button style="display:block;width:100%;margin:5px 0;">Block Member</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentGroup = null;
+let groupData = {
+  "My Group": {
+    photo:"profile.png",
+    members:["Alice","Bob","Charlie"],
+    admin:true
+  },
+  "Friends": {
+    photo:"profile.png",
+    members:["Alice","Bob"],
+    admin:false
+  }
+};
+
+function openGroupInfo(groupName){
+  currentGroup = groupName;
+  document.getElementById("groupInfoPage").style.display="block";
+  document.getElementById("chatPage").style.display="none";
+
+  const data = groupData[groupName];
+  document.getElementById("infoGroupPhoto").src = data.photo;
+  document.getElementById("infoGroupName").textContent = groupName;
+  document.getElementById("infoMembersCount").textContent = data.members.length+" members";
+
+  // Render members
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML="";
+  data.members.forEach(m=>{
+    const div = document.createElement("div");
+    div.textContent = m;
+    div.style.padding="5px";
+    membersDiv.appendChild(div);
+  });
+
+  // Show admin options
+  document.getElementById("adminActions").style.display = data.admin ? "block" : "none";
+}
+
+function backToChat(){
+  document.getElementById("groupInfoPage").style.display="none";
+  document.getElementById("chatPage").style.display="block";
+}
+</script>
 
 /* ===== CHAT BOX ===== */
 #chatBox {
