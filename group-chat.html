@@ -220,18 +220,15 @@ body {
   <button onclick="closePopup()" style="margin-top:10px;">Close</button>
 </div>
 
-<!-- OUTER LIGHT/GRAY BACKGROUND -->
-<div class="container">
-  <div class="groupActions">
-    <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
-    <button><i class="fa-solid fa-ban"></i> Block Group</button>
-    <button><i class="fa-solid fa-flag"></i> Report Group</button>
-    <div id="adminActions">
-      <button><i class="fa-solid fa-trash"></i> Delete Group</button>
-      <button><i class="fa-solid fa-user-slash"></i> Block Member</button>
-    </div>
-  </div>
+<!-- RED ACTIONS IN SINGLE CONTAINER -->
+<div class="container actionBox">
+  <button><i class="fa-solid fa-sign-out"></i><span>Leave Group</span></button>
+  <button><i class="fa-solid fa-ban"></i><span>Block Group</span></button>
+  <button><i class="fa-solid fa-flag"></i><span>Report Group</span></button>
+  <button><i class="fa-solid fa-trash"></i><span>Delete Group</span></button>
+  <button><i class="fa-solid fa-user-slash"></i><span>Block Member</span></button>
 </div>
+
   
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
