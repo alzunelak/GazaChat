@@ -7,6 +7,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; display:flex; flex-direction:column; height:100vh; }
+
 /* CHAT PAGE */
 #chatPage { display:block; flex:1; flex-direction:column; height:100vh; }
 /* HEADER */
@@ -46,29 +47,28 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
 /* GROUP INFO PAGE */
 #groupInfoPage { display:none; background:#ffffff; height:100vh; overflow-y:auto; }
 /* CENTERED PHOTO & NAME */
-.groupHeader { display:flex; flex-direction:column; align-items:center; padding:20px; background:#ffffff; color:white; }
+.groupHeader { display:flex; flex-direction:column; align-items:center; padding:20px; background:#ffffff; }
 .groupHeader img { width:80px; height:80px; border-radius:50%; cursor:pointer; margin-bottom:10px; }
 .groupHeader h2 { margin:0; font-size:18px; font-weight:500; cursor:text; }
 .groupHeader p { margin:0; font-size:12px; color:#d0f0e3; }
-/* MEMBERS */
-#groupMembersList { display:flex; flex-wrap:wrap; gap:5px; padding:5px; }
-.memberBox { padding:5px 10px; background:#eee; border-radius:12px; font-size:12px; cursor:pointer; }
+/* MEMBERS IN ROW */
+#groupMembersList { display:flex; flex-wrap:nowrap; overflow-x:auto; gap:5px; padding:5px; }
+.memberBox { padding:5px 10px; background:#eee; border-radius:12px; font-size:12px; cursor:pointer; white-space:nowrap; }
 /* ADD MEMBER BUTTON ON TOP */
 #addMemberBtn { display:block; margin-bottom:5px; padding:5px 10px; border:none; border-radius:5px; background:#128C7E; color:white; cursor:pointer; }
 /* THREE ACTION BUTTONS */
 .actionButtons {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* 3 equal columns */
+  grid-template-columns: 1fr 1fr 1fr; 
   background: #fff;
   padding: 10px;
   border-radius: 8px;
-  margin-top: 5px;
-  gap: 10px; /* space between columns */
+  margin-top: 10px;
+  gap: 10px;
 }
-
 .actionButtons button {
-  background: #fff; /* white button background */
-  border: 1px solid #eee; /* subtle border */
+  background: #fff; 
+  border: 1px solid #eee; 
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -78,16 +78,8 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
   cursor: pointer;
   transition: 0.2s;
 }
-
-.actionButtons button:hover {
-  background: #f0f0f0;
-}
-
-.actionButtons i {
-  font-size: 20px;
-  margin-bottom: 5px; /* spacing between icon and text */
-}
-
+.actionButtons button:hover { background:#f0f0f0; }
+.actionButtons i { font-size:20px; margin-bottom:5px; }
 /* ADMIN ACTIONS */
 .groupActions button { display:block; width:100%; margin:5px 0; padding:8px; border:none; border-radius:5px; background:#128C7E; color:white; cursor:pointer; }
 /* MOBILE */
@@ -96,14 +88,6 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
 </head>
 <body>
 
-  <div style="margin-top:10px;">
-    <div class="infoItem">End-to-end Encryption</div>
-    <div class="infoItem">Disappearing Messages <input type="checkbox" id="disappearToggle"></div>
-    <div class="infoItem">Chat Color & Wallpaper</div>
-    <div class="infoItem">Chat Lock</div>
-    <div class="infoItem">Advanced Chat Privacy</div>
-  </div>
-  
 <!-- CHAT PAGE -->
 <div id="chatPage">
   <div class="header">
