@@ -97,12 +97,12 @@ body {
 /*RED BUTTON*/
 /* WHITE CONTAINER WITH TOP & BOTTOM LINE ONLY */
 .actionBox {
-  background: #fff;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  padding: 0;
-  margin: 10px 0;
-  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid #ccc;   /* line on top */
+  border-bottom: 1px solid #ccc;/* line on bottom */
 }
 
 /* BUTTONS STACKED, ICON LEFT, TEXT RIGHT */
@@ -113,7 +113,7 @@ body {
   background: #fff;
   display: flex;
   align-items: center;
-  gap: 15px;          /* space between icon and text */
+  gap: 30px;          /* space between icon and text */
   color: red;
   font-size: 16px;
   cursor: pointer;
