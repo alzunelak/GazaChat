@@ -44,31 +44,32 @@ if(!localStorage.getItem('users')){
   localStorage.setItem('users', JSON.stringify(initialUsers));
 }
 
-// Add logged-in user if missing
-let users = JSON.parse(localStorage.getItem('users')||'[]');
-if(!users.some(u=>u.name===myName)){
+// Ensure logged-in user exists
+let users = JSON.parse(localStorage.getItem('users') || '[]');
+if(!users.some(u => u.name === myName)){
   users.push({name: myName, profile: defaultProfile});
   localStorage.setItem('users', JSON.stringify(users));
 }
 
+// ---------- BROADCAST CHANNEL ----------
 const channel = new BroadcastChannel('chatapp');
 
 // ---------- HELPERS ----------
-function getUsers(){ return JSON.parse(localStorage.getItem('users')||'[]'); }
-function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
+function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
+function getFriends(){ return JSON.parse(localStorage.getItem('friends') || '[]'); }
 function addFriend(name){
   let friends = getFriends();
-  if(!friends.some(f=>f.name===name)){
-    const user = getUsers().find(u => u.name===name);
+  if(!friends.some(f=>f.name.toLowerCase().trim() === name.toLowerCase().trim())){
+    const user = getUsers().find(u => u.name.toLowerCase().trim() === name.toLowerCase().trim());
     const profile = user ? user.profile : defaultProfile;
-    friends.push({name, profile});
+    friends.push({name: user.name, profile});
     localStorage.setItem('friends', JSON.stringify(friends));
     renderFriends();
     return true;
   }
   return false;
 }
-function isFriend(name){ return getFriends().some(f=>f.name===name); }
+function isFriend(name){ return getFriends().some(f=>f.name.toLowerCase().trim() === name.toLowerCase().trim()); }
 
 // ---------- FRIEND REQUESTS ----------
 channel.onmessage = (event) => {
@@ -87,6 +88,7 @@ channel.onmessage = (event) => {
     alert(`${event.data.from} accepted your friend request!`);
   }
 };
+
 function acceptRequest(name, btn){
   addFriend(name);
   channel.postMessage({type:'friendAccepted', from: myName, to: name});
@@ -95,42 +97,49 @@ function acceptRequest(name, btn){
 
 // ---------- SEARCH FRIEND ----------
 document.getElementById('searchBtn').addEventListener('click', ()=>{
-  const name = document.getElementById('friendName').value.trim();
+  const nameInput = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
-  if(name===""){ 
-    resultDiv.className="error"; 
-    resultDiv.innerText="Enter a name"; 
+
+  if(nameInput === ""){ 
+    resultDiv.className = "error"; 
+    resultDiv.innerText = "Enter a name"; 
     return; 
   }
 
   const users = getUsers();
-  const foundUser = users.find(u => u.name.toLowerCase() === name.toLowerCase());
+  const foundUser = users.find(u => u.name.toLowerCase().trim() === nameInput.toLowerCase().trim());
 
   if(foundUser){
-    if(foundUser.name === myName){
-      resultDiv.className="error";
-      resultDiv.innerText="You cannot add yourself";
+    if(foundUser.name.toLowerCase().trim() === myName.toLowerCase().trim()){
+      resultDiv.className = "error";
+      resultDiv.innerText = "You cannot add yourself";
       return;
     }
     if(isFriend(foundUser.name)){
-      resultDiv.className="success";
-      resultDiv.innerText=`You are already friends with ${foundUser.name}`;
+      resultDiv.className = "success";
+      resultDiv.innerText = `You are already friends with ${foundUser.name}`;
     } else {
-      resultDiv.className="success";
-      resultDiv.innerHTML=`
+      resultDiv.className = "success";
+      resultDiv.innerHTML = `
         <img src="${foundUser.profile}" alt="${foundUser.name}" width="40" height="40">
         <b>${foundUser.name}</b> found! 
         <button onclick="sendRequest('${foundUser.name}')">Connect</button>
       `;
     }
   } else {
-    resultDiv.className="error";
-    resultDiv.innerText="No user exists";
+    resultDiv.className = "error";
+    resultDiv.innerText = "No user exists";
   }
 });
 
 // ---------- SEND FRIEND REQUEST ----------
 function sendRequest(name){
+  const users = getUsers();
+  const exists = users.some(u => u.name.toLowerCase().trim() === name.toLowerCase().trim());
+  if(!exists){
+    alert("User does not exist!");
+    return;
+  }
   channel.postMessage({type:'friendRequest', from: myName, to: name});
   document.getElementById('result').innerText = `Friend request sent to ${name}`;
 }
