@@ -277,13 +277,14 @@ body {
     <button onclick="backToChat()" style="background:none;border:none;color:white;font-size:20px;margin-right:10px;">
       <i class="fa-solid fa-arrow-left"></i>
     </button>
-    <img id="infoGroupPhoto" src="profile.png" style="width:60px;height:60px;border-radius:50%;margin-right:10px;">
-    <div>
-      <h2 id="infoGroupName" style="margin:0;">Group Name</h2>
+    <img id="infoGroupPhoto" src="profile.png" style="width:60px;height:60px;border-radius:50%;margin-right:10px;cursor:pointer;">
+    <div style="flex:1;">
+      <h2 id="infoGroupName" contenteditable="true" style="margin:0;cursor:text;">Group Name</h2>
       <p id="infoMembersCount" style="margin:0;font-size:12px;color:#d0f0e3;">3 members</p>
     </div>
   </div>
 
+  <!-- ACTIONS -->
   <div style="display:flex; justify-content:space-around; padding:10px; background:#fff; margin-top:5px; border-radius:8px;">
     <button style="background:none;border:none;display:flex;flex-direction:column;align-items:center;color:#075E54;">
       <i class="fa-solid fa-video" style="font-size:20px;"></i><span style="font-size:12px;">Video Call</span>
@@ -296,6 +297,7 @@ body {
     </button>
   </div>
 
+  <!-- SETTINGS -->
   <div style="margin-top:10px;">
     <div class="infoItem">End-to-end Encryption</div>
     <div class="infoItem">Disappearing Messages <input type="checkbox" id="disappearToggle"></div>
@@ -304,11 +306,14 @@ body {
     <div class="infoItem">Advanced Chat Privacy</div>
   </div>
 
-  <div style="margin-top:10px; background:#fff; padding:10px; border-radius:8px;">
+  <!-- MEMBERS -->
+  <div style="margin-top:10px; background:#fff; padding:10px; border-radius:8px; max-height:200px; overflow-y:auto;">
     <h3>Members</h3>
-    <div id="groupMembersList"></div>
+    <div id="groupMembersList" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+    <button onclick="addMember()" style="margin-top:10px;width:100%;padding:5px;border:none;border-radius:5px;background:#128C7E;color:white;">Add Member</button>
   </div>
 
+  <!-- GROUP LINKS / ACTIONS -->
   <div style="margin-top:10px; background:#fff; padding:10px; border-radius:8px;">
     <button style="display:block;width:100%;margin:5px 0;">Create Group Link</button>
     <button style="display:block;width:100%;margin:5px 0;">Request / Invite</button>
@@ -323,6 +328,47 @@ body {
 </div>
 
 <script>
+// ===== EDIT GROUP PHOTO =====
+document.getElementById("infoGroupPhoto").onclick = ()=>{
+  const newPhoto = prompt("Enter URL for new group photo:");
+  if(newPhoto) document.getElementById("infoGroupPhoto").src = newPhoto;
+};
+
+// ===== MEMBERS DATA =====
+let storedFriends = JSON.parse(localStorage.getItem("friends")) || ["Alice","Bob","Charlie","David","Emma"];
+let currentGroupMembers = ["Alice","Bob","Charlie"];
+
+function renderGroupMembers(){
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+  currentGroupMembers.forEach(name=>{
+    const div = document.createElement("div");
+    div.textContent = name;
+    div.style.padding="5px 10px";
+    div.style.background="#eee";
+    div.style.borderRadius="12px";
+    div.style.fontSize="12px";
+    membersDiv.appendChild(div);
+  });
+  document.getElementById("infoMembersCount").textContent = currentGroupMembers.length+" members";
+}
+
+// ===== ADD MEMBER =====
+function addMember(){
+  let friendsToAdd = storedFriends.filter(f=>!currentGroupMembers.includes(f));
+  if(friendsToAdd.length === 0){ alert("No more friends to add."); return; }
+  const friend = prompt("Add member: "+friendsToAdd.join(", "));
+  if(friend && friendsToAdd.includes(friend)){
+    currentGroupMembers.push(friend);
+    renderGroupMembers();
+  }
+}
+
+renderGroupMembers();
+</script>
+
+
+  
 // ===== MEMBERS =====
 let storedFriends = ["Alice","Bob","Charlie"];
 const membersDiv = document.getElementById("members");
