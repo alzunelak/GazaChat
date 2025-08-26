@@ -102,32 +102,65 @@ body {
 /* ===== INPUT AREA ===== */
 #inputArea {
   display: flex;
-  padding: 8px 10px;
-  background: #fff;
-  border-radius: 25px;
   align-items: center;
   position: fixed;
   bottom: 10px;
   left: 10px;
   width: calc(100% - 20px);
-  gap: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
   z-index: 100;
 }
-#msgInput {
+
+.input-box {
+  display: flex;
+  align-items: center;
   flex: 1;
-  padding: 10px 15px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+  background: #fff;
+  border-radius: 25px;
+  padding: 6px 10px;
+  gap: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.input-box input {
+  flex: 1;
+  border: none;
   outline: none;
+  font-size: 14px;
+  padding: 6px;
+  background: transparent;
+}
+
+.input-box button {
+  background: transparent;
+  border: none;
+  color: #128C7E;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* MIC BUTTON OUTSIDE INPUT */
+#micBtn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #25D366;
+  color: white;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
 }
 
 /* ===== ATTACHMENT MENU ===== */
 #attachmentMenu {
   display: none;
   position: fixed;
-  bottom: 70px;
+  bottom: 60px;
   left: 10px;
   right: 10px;
   background: #fff;
@@ -168,7 +201,7 @@ body {
   .header-info h2{font-size:14px;}
   .header-info #members{font-size:10px;}
   .msg{max-width:85%;padding:8px 12px;font-size:14px;}
-  #inputArea{width:calc(100% - 16px);padding:6px;bottom:6px;left:6px;gap:4px;}
+  #inputArea{width:calc(100% - 16px);bottom:6px;left:6px;}
   #chatBox{padding:8px;margin-bottom:100px;}
 }
 </style>
@@ -190,9 +223,11 @@ body {
 <div id="chatBox"></div>
 
 <div id="inputArea">
-  <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
-  <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
-  <input id="msgInput" placeholder="Type a message...">
+  <div class="input-box">
+    <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+    <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+    <input id="msgInput" placeholder="Type a message...">
+  </div>
   <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
 </div>
 
