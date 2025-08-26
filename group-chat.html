@@ -94,13 +94,13 @@ body {
   text-align: left;
 }
 
-/*RED BUTTON
-/* WHITE CONTAINER WITH TOP & BOTTOM LINE */
+/*RED BUTTON*/
+/* WHITE CONTAINER WITH TOP & BOTTOM LINE ONLY */
 .actionBox {
   background: #fff;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
-  padding: 5px 0;
+  padding: 0;
   margin: 10px 0;
   border-radius: 5px;
 }
@@ -108,15 +108,14 @@ body {
 /* BUTTONS VERTICAL STACK, ICON LEFT, TEXT RIGHT */
 .actionBox button {
   width: 100%;
-  padding: 10px 15px;
+  padding: 12px 15px;
   border: none;
   background: #fff;
-  color: red;               /* TEXT RED */
-  font-size: 15px;
-  text-align: left;
   display: flex;
   align-items: center;
-  gap: 10px;                /* SPACE BETWEEN ICON & TEXT */
+  gap: 15px;        /* Space between icon and text */
+  color: red;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -125,6 +124,12 @@ body {
   color: red;
   font-size: 18px;
 }
+
+/* REMOVE HIGHLIGHT ON CLICK */
+.actionBox button:focus {
+  outline: none;
+}
+
 
 
   
