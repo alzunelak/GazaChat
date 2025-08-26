@@ -130,7 +130,12 @@ body {
   background: transparent;
 }
 
-.input-box button {
+.input-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.input-buttons button {
   background: transparent;
   border: none;
   color: #128C7E;
@@ -183,7 +188,7 @@ body {
   display:none;
   position:absolute;
   bottom: 60px;
-  left: 10px;
+  right: 10px;
   background:#fff;
   border-radius:10px;
   padding:5px;
@@ -212,7 +217,7 @@ body {
   <img id="groupPhoto" src="profile.png" alt="Group Photo">
   <div class="header-info">
     <h2 id="groupName">My Group</h2>
-    <div id="members">Alice, Bob, Charlie</div>
+    <div id="members"></div>
   </div>
   <div class="header-actions">
     <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
@@ -224,9 +229,11 @@ body {
 
 <div id="inputArea">
   <div class="input-box">
-    <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
-    <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
     <input id="msgInput" placeholder="Type a message...">
+    <div class="input-buttons">
+      <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+      <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+    </div>
   </div>
   <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
 </div>
@@ -243,11 +250,20 @@ body {
 <div id="emojiPicker"></div>
 
 <script>
+// ===== MEMBERS FROM LOCALSTORAGE =====
+let storedFriends = JSON.parse(localStorage.getItem("friends")) || [];
+const membersDiv = document.getElementById("members");
+function renderMembers(){
+  membersDiv.innerHTML = storedFriends.join(", ") || "No friends added";
+}
+renderMembers();
+
+// ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
 const emojiPicker = document.getElementById("emojiPicker");
 const attachmentMenu = document.getElementById("attachmentMenu");
-let messages = [];
+let messages = JSON.parse(localStorage.getItem("messages")) || [];
 
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
@@ -265,7 +281,9 @@ function renderMessages(){
     chatBox.appendChild(div);
   });
   chatBox.scrollTop = chatBox.scrollHeight;
+  localStorage.setItem("messages", JSON.stringify(messages));
 }
+renderMessages();
 
 // ===== SEND TEXT ON ENTER =====
 msgInput.addEventListener("keydown", e=>{
@@ -279,13 +297,13 @@ msgInput.addEventListener("keydown", e=>{
   }
 });
 
-// ===== TOGGLE ATTACHMENT MENU =====
+// ===== ATTACHMENTS =====
 document.getElementById("plusBtn").onclick = ()=>{
   attachmentMenu.classList.toggle("show");
   emojiPicker.style.display = "none";
 };
 
-// ===== EMOJI PICKER =====
+// ===== EMOJIS =====
 const emojis=["😀","😂","😊","😍","🤔","😎","😭","😡","👍","🙏"];
 document.getElementById("emojiBtn").onclick=()=>{
   emojiPicker.innerHTML="";
@@ -300,7 +318,7 @@ document.getElementById("emojiBtn").onclick=()=>{
   attachmentMenu.classList.remove("show");
 };
 
-// ===== MIC RECORDING =====
+// ===== MIC =====
 let mediaRecorder, audioChunks=[];
 document.getElementById("micBtn").onclick = async ()=>{
   if(!mediaRecorder || mediaRecorder.state==="inactive"){
@@ -319,6 +337,5 @@ document.getElementById("micBtn").onclick = async ()=>{
   } else if(mediaRecorder.state==="recording"){ mediaRecorder.stop(); alert("Recording stopped."); }
 };
 </script>
-
 </body>
 </html>
