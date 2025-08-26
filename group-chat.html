@@ -70,42 +70,25 @@ body {
 #groupMembersList { display:flex; flex-direction:column; gap:5px; }
 .memberBox { padding:5px 10px; background:#eee; border-radius:8px; cursor:pointer; }
 
+
 /* GROUP LINKS */
-document.getElementById("showGroupLink").onclick = function() {
-  document.getElementById("linkPopup").style.display = "block";
-};
-
-function closePopup() {
-  document.getElementById("linkPopup").style.display = "none";
+#groupLinks {
+  display: flex;
+  flex-direction: column;  /* stack vertically */
+  gap: 8px;                /* space between buttons */
 }
 
-function copyLink() {
-  const input = document.getElementById("groupLinkInput");
-  input.select();
-  input.setSelectionRange(0, 99999);
-  navigator.clipboard.writeText(input.value).then(() => {
-    alert("Link copied to clipboard!");
-  });
-}
-
-// Navigate to request/invite page
-document.getElementById("requestInviteBtn").onclick = function() {
-  window.location.href = "request_invite.html"; // Replace with your actual page
-};
-</script>
-
-<style>
 #groupLinks button {
-  width:100%;
-  margin:5px 0;
-  padding:8px;
-  border:none;
-  border-radius:5px;
-  background:#fff;
-  color:#000;
-  text-align:left;
-  cursor:pointer;
+  width: 100%;             /* full width */
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  text-align: left;        /* keep text aligned left */
 }
+
 
 /* RED ACTIONS */
 .groupActions button {
