@@ -7,11 +7,13 @@
 <style>
 body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
 input, button { padding:10px; margin:5px; font-size:16px; }
-#result { margin-top:20px; font-size:16px; }
+#result, #registerResult { margin-top:20px; font-size:16px; }
 .error { color:red; }
 .success { color:green; }
 .friend-request { margin:10px; padding:10px; border:1px solid #ccc; background:#fff; border-radius:5px; }
-img { border-radius:50%; vertical-align:middle; }
+.friend-list { display:flex; flex-wrap:wrap; justify-content:center; margin-top:20px; }
+.friend-card { margin:10px; padding:10px; border:1px solid #ccc; background:#fff; border-radius:5px; width:120px; text-align:center; }
+.friend-card img { width:60px; height:60px; border-radius:50%; display:block; margin:auto; }
 </style>
 </head>
 <body>
@@ -32,58 +34,52 @@ img { border-radius:50%; vertical-align:middle; }
 <h3>Friend Requests</h3>
 <div id="requests"></div>
 
-<script>
-// ----------------- INITIAL SETUP -----------------
-const defaultProfile = "default-profile.png";
+<h3>My Friends</h3>
+<div id="friends" class="friend-list"></div>
 
-// Initialize users in localStorage if empty
+<script>
+const defaultProfile = "default-profile.png";
+const myName = "You"; // fixed logged-in user
+document.getElementById("me").innerText = myName;
+
+// Initialize users if empty
 if(!localStorage.getItem('users')){
   const initialUsers = [
     { name: "Alice", profile: "alice.png" },
     { name: "Bob", profile: "bob.png" },
-    { name: "Charlie", profile: "charlie.png" }
+    { name: "Charlie", profile: "charlie.png" },
+    { name: myName, profile: defaultProfile } // add logged-in user
   ];
   localStorage.setItem('users', JSON.stringify(initialUsers));
 }
 
-// Simulate logged-in user (change as needed)
-let myName = prompt("Enter your name to log in:");
-if(!myName) myName = "You"; // default if canceled
-document.getElementById("me").innerText = myName;
-
-// Add logged-in user to users if not exists
+// Add logged-in user if missing
 let users = JSON.parse(localStorage.getItem('users')||'[]');
-if(!users.some(u=>u.name === myName)){
-  users.push({ name: myName, profile: defaultProfile });
+if(!users.some(u=>u.name===myName)){
+  users.push({name: myName, profile: defaultProfile});
   localStorage.setItem('users', JSON.stringify(users));
 }
 
-// Broadcast channel for friend requests
 const channel = new BroadcastChannel('chatapp');
 
-// ----------------- HELPER FUNCTIONS -----------------
-function getUsers(){
-  return JSON.parse(localStorage.getItem('users')||'[]');
-}
-
+// ---------- HELPERS ----------
+function getUsers(){ return JSON.parse(localStorage.getItem('users')||'[]'); }
+function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
 function addFriend(name){
-  let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+  let friends = getFriends();
   if(!friends.some(f=>f.name===name)){
-    const user = getUsers().find(u => u.name === name);
+    const user = getUsers().find(u => u.name===name);
     const profile = user ? user.profile : defaultProfile;
     friends.push({name, profile});
     localStorage.setItem('friends', JSON.stringify(friends));
+    renderFriends();
     return true;
   }
   return false;
 }
+function isFriend(name){ return getFriends().some(f=>f.name===name); }
 
-function isFriend(name){
-  let friends = JSON.parse(localStorage.getItem('friends')||'[]');
-  return friends.some(f=>f.name===name);
-}
-
-// ----------------- FRIEND REQUESTS -----------------
+// ---------- FRIEND REQUESTS ----------
 channel.onmessage = (event) => {
   if(event.data.type === 'friendRequest' && event.data.to === myName){
     const requestsDiv = document.getElementById('requests');
@@ -95,26 +91,21 @@ channel.onmessage = (event) => {
     `;
     requestsDiv.appendChild(div);
   }
-
   if(event.data.type === 'friendAccepted' && event.data.to === myName){
     addFriend(event.data.from);
     alert(`${event.data.from} accepted your friend request!`);
-    window.location.href = "home.html";
   }
 };
-
 function acceptRequest(name, btn){
   addFriend(name);
   channel.postMessage({type:'friendAccepted', from: myName, to: name});
-  btn.parentElement.innerHTML = `You are now friends with ${name}! Redirecting...`;
-  setTimeout(()=>{ window.location.href = "home.html"; }, 1000);
+  btn.parentElement.innerHTML = `You are now friends with ${name}!`;
 }
 
-// ----------------- SEARCH FRIEND -----------------
+// ---------- SEARCH FRIEND ----------
 document.getElementById('searchBtn').addEventListener('click', ()=>{
   const name = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
-
   if(name===""){ 
     resultDiv.className="error"; 
     resultDiv.innerText="Enter a name"; 
@@ -125,10 +116,14 @@ document.getElementById('searchBtn').addEventListener('click', ()=>{
   const foundUser = users.find(u => u.name.toLowerCase() === name.toLowerCase());
 
   if(foundUser){
+    if(foundUser.name === myName){
+      resultDiv.className="error";
+      resultDiv.innerText="You cannot add yourself";
+      return;
+    }
     if(isFriend(foundUser.name)){
       resultDiv.className="success";
-      resultDiv.innerText=`You are already friends with ${foundUser.name}. Redirecting...`;
-      setTimeout(()=>{ window.location.href = "home.html"; }, 1000);
+      resultDiv.innerText=`You are already friends with ${foundUser.name}`;
     } else {
       resultDiv.className="success";
       resultDiv.innerHTML=`
@@ -143,13 +138,13 @@ document.getElementById('searchBtn').addEventListener('click', ()=>{
   }
 });
 
-// ----------------- SEND FRIEND REQUEST -----------------
+// ---------- SEND FRIEND REQUEST ----------
 function sendRequest(name){
   channel.postMessage({type:'friendRequest', from: myName, to: name});
   document.getElementById('result').innerText = `Friend request sent to ${name}`;
 }
 
-// ----------------- REGISTER NEW USER -----------------
+// ---------- REGISTER NEW USER ----------
 document.getElementById('registerBtn').addEventListener('click', ()=>{
   const name = document.getElementById('newName').value.trim();
   const profile = document.getElementById('newProfile').value.trim() || defaultProfile;
@@ -175,6 +170,25 @@ document.getElementById('registerBtn').addEventListener('click', ()=>{
   document.getElementById('newName').value = '';
   document.getElementById('newProfile').value = '';
 });
+
+// ---------- DISPLAY FRIENDS ----------
+function renderFriends(){
+  const friendsDiv = document.getElementById('friends');
+  friendsDiv.innerHTML = '';
+  const friends = getFriends();
+  friends.forEach(f=>{
+    const div = document.createElement('div');
+    div.className = 'friend-card';
+    div.innerHTML = `
+      <img src="${f.profile}" alt="${f.name}">
+      <div>${f.name}</div>
+    `;
+    friendsDiv.appendChild(div);
+  });
+}
+
+// Render friends on page load
+renderFriends();
 </script>
 </body>
 </html>
