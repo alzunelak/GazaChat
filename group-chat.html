@@ -71,22 +71,27 @@ body {
 .memberBox { padding:5px 10px; background:#eee; border-radius:8px; cursor:pointer; }
 
 
-/* GROUP LINKS */
+
+/* GROUP LINKS CONTAINER */
 #groupLinks {
   display: flex;
-  flex-direction: column;  /* stack vertically */
-  gap: 8px;                /* space between buttons */
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid #ccc;   /* line on top */
+  border-bottom: 1px solid #ccc;/* line on bottom */
 }
 
+/* BUTTONS INSIDE */
 #groupLinks button {
-  width: 100%;             /* full width */
+  width: 100%;
   padding: 10px;
   border: none;
   border-radius: 5px;
   background: #fff;
   color: #000;
   cursor: pointer;
-  text-align: left;        /* keep text aligned left */
+  text-align: left;
 }
 
 
