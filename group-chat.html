@@ -9,7 +9,7 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #000;
+  background: #fff;
   color: #000;
   height: 100vh;
   display: flex;
@@ -17,7 +17,7 @@ body {
 }
 
 /* CHAT PAGE */
-#chatPage { display: block; flex: 1; flex-direction: column; background: #ece5dd; }
+#chatPage { display: block; flex: 1; flex-direction: column; background: #fff; }
 .header { display: flex; align-items: center; justify-content: space-between; background: #075E54; color: white; padding: 10px; }
 .header img { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; object-fit: cover; }
 .header-info { flex: 1; display: flex; flex-direction: column; margin-left: 10px; overflow: hidden; }
@@ -26,13 +26,13 @@ body {
 
 /* CHAT BOX */
 #chatBox { flex: 1; overflow-y: auto; padding: 10px; margin-bottom: 100px; }
-.msg { max-width: 70%; padding:10px 14px; margin:5px 0; border-radius:18px; background:#fff; align-self:flex-start; position:relative; word-break: break-word; }
+.msg { max-width: 70%; padding:10px 14px; margin:5px 0; border-radius:18px; background:#f1f1f1; align-self:flex-start; position:relative; word-break: break-word; }
 .msg.self { background:#dcf8c6; align-self:flex-end; }
 .msg .meta { font-size:10px; color:#999; text-align:right; }
 
 /* INPUT AREA */
 #inputArea { display:flex; align-items:center; position:fixed; bottom:10px; left:10px; width:calc(100%-20px); z-index:100; }
-.input-box { display:flex; flex:1; background:#fff; border-radius:25px; padding:6px 10px; gap:6px; }
+.input-box { display:flex; flex:1; background:#f1f1f1; border-radius:25px; padding:6px 10px; gap:6px; }
 .input-box input { flex:1; border:none; outline:none; font-size:14px; background:transparent; }
 .input-buttons button { background:transparent; border:none; font-size:20px; cursor:pointer; color:#128C7E; }
 
@@ -48,7 +48,7 @@ body {
 #emojiPicker { display:none; position:absolute; bottom:60px; right:10px; background:#fff; border-radius:10px; padding:5px; max-width:300px; max-height:150px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:5px; }
 
 /* GROUP INFO PAGE */
-#groupInfoPage { display:none; flex:1; overflow-y:auto; background:#000; padding-bottom:20px; }
+#groupInfoPage { display:none; flex:1; overflow-y:auto; background:#fff; padding-bottom:20px; }
 
 /* GROUP HEADER */
 .groupHeader { display:flex; flex-direction:column; align-items:center; padding:15px; background:#fff; color:#000; margin-bottom:10px; border-radius:10px; position:relative; }
@@ -57,7 +57,7 @@ body {
 .backArrow { position:absolute; left:10px; top:20px; font-size:20px; cursor:pointer; color:#000; }
 
 /* 3-COLUMN ACTIONS */
-.actionButtons { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; }
+.actionButtons { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; width:100%; }
 .actionButtons button { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 0; background:#fff; border:1px solid #eee; border-radius:8px; cursor:pointer; }
 .actionButtons i { font-size:20px; margin-bottom:5px; }
 
