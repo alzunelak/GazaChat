@@ -412,11 +412,13 @@ function vote(btn){
 document.getElementById("contactBtn").onclick = ()=> addMessage("👤 [Contact shared]");
 document.getElementById("distanceBtn").onclick = ()=> addMessage("📏 [Distance info]");
 
+
 /* ===== EMOJI PICKER ===== */
 const emojiBtn = document.getElementById("emojiBtn");
 const emojiPicker = document.getElementById("emojiPicker");
 const emojis = ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😍","🥰","😘","😗","😙","😚"];
 
+// Render emojis inside picker
 function renderEmojis() {
   emojiPicker.innerHTML = "";
   emojis.forEach(e => {
@@ -433,20 +435,25 @@ function renderEmojis() {
   });
 }
 
+// Only render once
 renderEmojis();
+
+// Ensure emojiPicker is hidden initially
+emojiPicker.style.display = "none";
 
 // Toggle emoji picker on button click
 emojiBtn.addEventListener("click", (e) => {
-  e.stopPropagation();  // Prevent document click from immediately closing it
+  e.stopPropagation();  // Prevent document click from closing immediately
   emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
 });
 
-// Close picker if clicking outside
+// Close picker when clicking outside
 document.addEventListener("click", (e) => {
-  if (!emojiPicker.contains(e.target)) {
+  if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
     emojiPicker.style.display = "none";
   }
 });
+
 
 /* ===== MIC BUTTON ===== */
 const micBtn = document.getElementById("micBtn");
