@@ -6,191 +6,42 @@
 <title>WhatsApp Group Info</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-
-
 /* ===== GENERAL ===== */
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f0f0f0;
+  background: #fff;
   color: #000;
   height: 100vh;
   display: flex;
-  justify-content: center; /* center app on larger screens */
-  align-items: flex-start;
-  padding: 20px 0;
-}
-
-/* ===== APP CONTAINERS ===== */
-#chatPage, #groupInfoPage {
-  width: 100%;
-  max-width: 900px; /* wider on laptops */
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* ===== HEADER ===== */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #075E54;
-  color: white;
-  padding: 10px 15px;
-}
-.header img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  object-fit: cover;
-}
-.header-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-left: 10px;
-  overflow: hidden;
-}
-.header-info h2 {
-  margin: 0;
-  font-size: 16px;
-  cursor: pointer;
-}
-.header-info #members {
-  font-size: 12px;
-  color: #d0f0e3;
-}
+/* ===== CHAT PAGE ===== */
+#chatPage { display: block; flex: 1; flex-direction: column; background: #fff; }
+.header { display: flex; align-items: center; justify-content: space-between; background: #075E54; color: white; padding: 10px; }
+.header img { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; object-fit: cover; }
+.header-info { flex: 1; display: flex; flex-direction: column; margin-left: 10px; overflow: hidden; }
+.header-info h2 { margin:0; font-size:16px; cursor:pointer; }
+.header-info #members { font-size:12px; color:#d0f0e3; }
 
-/* ===== CHAT BOX ===== */
-#chatBox {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 15px;
-  margin-bottom: 100px;
-}
-#chatBox::-webkit-scrollbar {
-  width: 8px;
-}
-#chatBox::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 4px;
-}
+#chatBox { flex: 1; overflow-y: auto; padding: 10px; margin-bottom: 100px; }
+.msg { max-width: 70%; padding:10px 14px; margin:5px 0; border-radius:18px; background:#f1f1f1; align-self:flex-start; position:relative; word-break: break-word; }
+.msg.self { background:#dcf8c6; align-self:flex-end; }
+.msg .meta { font-size:10px; color:#999; text-align:right; }
 
-/* ===== MESSAGES ===== */
-.msg {
-  max-width: 80%;
-  padding: 12px 16px;
-  margin: 5px 0;
-  border-radius: 18px;
-  background: #f1f1f1;
-  word-break: break-word;
-  font-size: 14px;
-  position: relative;
-}
-.msg.self {
-  background: #dcf8c6;
-  align-self: flex-end;
-}
-.msg .meta {
-  font-size: 10px;
-  color: #999;
-  text-align: right;
-}
-.msg img {
-  max-width: 200px;
-  border-radius: 8px;
-}
-.msg audio {
-  width: 100%;
-  max-width: 500px;
-  border-radius: 8px;
-  outline: none;
-}
+#inputArea { display:flex; align-items:center; position:fixed; bottom:10px; left:10px; width:calc(100% - 20px); z-index:100; }
+.input-box { display:flex; flex:1; background:#f1f1f1; border-radius:25px; padding:6px 10px; gap:6px; }
+.input-box input { flex:1; border:none; outline:none; font-size:14px; background:transparent; }
+.input-buttons button { background:transparent; border:none; font-size:20px; cursor:pointer; color:#128C7E; }
+#micBtn { width:40px; height:40px; border-radius:50%; background:#25D366; color:white; border:none; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-left:6px; }
 
-/* ===== INPUT AREA ===== */
-#inputArea {
-  display: flex;
-  align-items: center;
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 40px);
-  z-index: 100;
-  gap: 6px;
-}
-.input-box {
-  display: flex;
-  flex: 1;
-  background: #f1f1f1;
-  border-radius: 25px;
-  padding: 6px 10px;
-  gap: 6px;
-}
-.input-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-}
-.input-buttons button {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #128C7E;
-}
-#micBtn {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background: #25D366;
-  color: white;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+#attachmentMenu { display:none; position:fixed; bottom:60px; left:10px; right:10px; background:#fff; padding:10px; border-radius:10px; z-index:101; }
+#attachmentMenu .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+#attachmentMenu button { padding:10px; border:none; border-radius:8px; background:#128C7E; color:white; cursor:pointer; font-size:16px; }
 
-/* ===== ATTACHMENT MENU ===== */
-#attachmentMenu {
-  display: none;
-  position: fixed;
-  bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  z-index: 101;
-}
-#attachmentMenu .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-}
-#attachmentMenu button {
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #128C7E;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-/* ===== EMOJI PICKER ===== */
 #emojiPicker {
-  display: none;
+  display: none;           /* keep this */
   position: absolute;
   bottom: 60px;
   right: 10px;
@@ -205,56 +56,214 @@ body {
 }
 
 /* ===== GROUP INFO PAGE ===== */
-#groupInfoPage {
-  display: none;
+#groupInfoPage { display:none; flex:1; overflow-y:auto; background:#fff; padding-bottom:20px; }
+.groupHeader { display:flex; flex-direction:column; align-items:center; padding:15px; background:#fff; color:#000; margin-bottom:10px; border-radius:10px; position:relative; }
+.groupHeader img { width:80px; height:80px; border-radius:50%; cursor:pointer; margin-bottom:10px; object-fit:cover; }
+.groupHeader h2 { margin:0; font-size:18px; font-weight:500; cursor:text; }
+.backArrow { position:absolute; left:10px; top:20px; font-size:20px; cursor:pointer; color:#000; }
+
+.actionButtons { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; width:100%; }
+.actionButtons button { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 0; background:#fff; border:1px solid #eee; border-radius:8px; cursor:pointer; }
+.actionButtons i { font-size:20px; margin-bottom:5px; }
+
+.container { background:#fff; padding:10px; margin:10px; border-radius:10px; }
+.infoItem { margin:5px 0; font-size:14px; }
+
+.settingsContainer { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; background: #fff; border-radius: 8px; }
+.settingsContainer button { width: 100%; padding: 12px 15px; border: none; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #000; font-size: 16px; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
+.settingsContainer button:hover { background: #f1f1f1; }
+.settingsContainer i { color: black; font-size: 18px; }
+.settingsContainer input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+.settingsContainer button:focus { outline: none; }
+
+#groupMembersList { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+.memberBox { padding: 5px 10px; background: #eee; border-radius: 8px; cursor: pointer; }
+.membersHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+#memberCount { font-weight: 500; font-size: 16px; }
+#addMemberBtn { width: 30px; height: 30px; border-radius: 50%; background: #128C7E; color: white; font-size: 20px; border: none; cursor: pointer; }
+
+#groupLinks { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+#groupLinks button { width: 100%; padding: 10px; border: none; border-radius: 5px; background: #fff; color: #000; cursor: pointer; text-align: left; }
+
+.actionBox { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+.actionBox button { width: 100%; padding: 12px 15px; border: none; background: #fff; display: flex; align-items: center; gap: 30px; color: red; font-size: 16px; cursor: pointer; }
+.actionBox i { color: red; font-size: 18px; }
+.actionBox button:focus { outline: none; }
+
+/* CHAT BOX AND MESSAGES */
+#chatBox {
   flex: 1;
   overflow-y: auto;
-  background: #fff;
-  padding-bottom: 20px;
-}
-.groupHeader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-  background: #fff;
-  color: #000;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  position: relative;
-}
-.groupHeader img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-bottom: 10px;
-  object-fit: cover;
-}
-.groupHeader h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 500;
-  cursor: text;
+  padding: 10px;
+  margin-bottom: 100px;
 }
 
-/* ===== RESPONSIVE ===== */
+.msg {
+  max-width: 90%; /* mobile-friendly */
+  padding: 10px 14px;
+  margin: 5px 0;
+  border-radius: 18px;
+  background: #f1f1f1;
+  word-break: break-word;
+}
+
+.msg.self {
+  background: #dcf8c6;
+  align-self: flex-end;
+}
+
+/* AUDIO PLAYER */
+.msg audio {
+  width: 100%;
+  max-width: 500px; /* bigger on laptop */
+  border-radius: 8px;
+  outline: none;
+}
+
+/* POLL MESSAGES */
+.poll {
+  width: 100%;
+  max-width: 500px; /* scale on laptops */
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.poll ul {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+}
+
+.poll li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.poll button {
+  background: #128C7E;
+  color: white;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.poll .votes {
+  margin-left: 5px;
+}
+
+/* ATTACHMENT MENU GRID */
+#attachmentMenu .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+/* RESPONSIVE FOR LAPTOP */
 @media (min-width: 768px) {
+  #chatPage, #groupInfoPage {
+    max-width: 800px;
+    margin: auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+
   .msg {
-    font-size: 16px;
-    padding: 14px 18px;
-    max-width: 70%;
+    max-width: 60%;
   }
-  #chatBox {
-    padding: 15px 20px;
-  }
-  #inputArea {
-    width: calc(100% - 60px);
-  }
+
   #attachmentMenu .grid {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
+
+/* Responsive for larger screens */
+@media (min-width: 768px) {
+  body {
+    display: flex;
+    justify-content: flex-start;  /* align to top-left like an app */
+    background: #fff;             /* optional, app-like background */
+  }
+
+  #chatPage, #groupInfoPage {
+    max-width: 100%;               /* full width */
+    width: 100%;
+    margin: 0;                     /* remove auto margins */
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .msg {
+    font-size: 16px;
+    padding: 12px 16px;
+    max-width: 50%;               /* bigger message bubbles */
+  }
+
+  #inputArea {
+    width: calc(100% - 20px);
+    padding: 10px;
+  }
+
+  #attachmentMenu .grid button {
+    font-size: 18px;
+    padding: 12px;
+  }
+}
+
+
+  .msg {
+    font-size: 16px;          /* bigger text */
+    padding: 12px 16px;       /* bigger padding */
+  }
+
+  #inputArea {
+    width: calc(100% - 40px);
+  }
+
+  #attachmentMenu .grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+}
+
+  /* ===== LAPTOP SIZE ===== */
+#chatPage, #groupInfoPage {
+  width: 100%;           /* take full width of the window */
+  height: 100vh;         /* full height */
+  border-radius: 0;      /* remove rounding for app-like feel */
+  box-shadow: none;      /* remove shadow */
+}
+
+/* Increase message bubble size and fonts */
+.msg {
+  max-width: 50%;        /* wider messages */
+  font-size: 16px;       /* bigger text */
+  padding: 12px 16px;    /* larger padding */
+}
+
+/* Header bigger like WhatsApp Desktop */
+.header, .groupHeader {
+  padding: 15px 20px;
+}
+
+.header h2, .groupHeader h2 {
+  font-size: 18px;
+}
+
+#inputArea {
+  width: calc(100% - 20px);
+  padding: 10px;
+}
+
+#attachmentMenu .grid button {
+  font-size: 18px;       /* bigger attachment buttons */
+  padding: 12px;
+}
+
 
   
 </style>
