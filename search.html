@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Friend Requests</title>
+<title>Friend System</title>
 <style>
 body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
 input, button { padding:10px; margin:5px; font-size:16px; }
@@ -11,9 +11,19 @@ input, button { padding:10px; margin:5px; font-size:16px; }
 .error { color:red; }
 .success { color:green; }
 .friend-request { margin:10px; padding:10px; border:1px solid #ccc; background:#fff; border-radius:5px; }
+img { border-radius:50%; vertical-align:middle; }
 </style>
 </head>
 <body>
+
+<h2>Logged in as: <span id="me"></span></h2>
+
+<h2>Register New User</h2>
+<input type="text" id="newName" placeholder="Enter name">
+<input type="text" id="newProfile" placeholder="Profile image URL">
+<button id="registerBtn">Register</button>
+<div id="registerResult"></div>
+
 <h2>Search Friend</h2>
 <input type="text" id="friendName" placeholder="Enter friend name">
 <button id="searchBtn">Search</button>
@@ -23,15 +33,45 @@ input, button { padding:10px; margin:5px; font-size:16px; }
 <div id="requests"></div>
 
 <script>
-const users = ["Alice","Bob","Charlie"];
-const channel = new BroadcastChannel('chatapp');
+// ----------------- INITIAL SETUP -----------------
 const defaultProfile = "default-profile.png";
-const myName = "You"; // replace with actual logged-in user
+
+// Initialize users in localStorage if empty
+if(!localStorage.getItem('users')){
+  const initialUsers = [
+    { name: "Alice", profile: "alice.png" },
+    { name: "Bob", profile: "bob.png" },
+    { name: "Charlie", profile: "charlie.png" }
+  ];
+  localStorage.setItem('users', JSON.stringify(initialUsers));
+}
+
+// Simulate logged-in user (change as needed)
+let myName = prompt("Enter your name to log in:");
+if(!myName) myName = "You"; // default if canceled
+document.getElementById("me").innerText = myName;
+
+// Add logged-in user to users if not exists
+let users = JSON.parse(localStorage.getItem('users')||'[]');
+if(!users.some(u=>u.name === myName)){
+  users.push({ name: myName, profile: defaultProfile });
+  localStorage.setItem('users', JSON.stringify(users));
+}
+
+// Broadcast channel for friend requests
+const channel = new BroadcastChannel('chatapp');
+
+// ----------------- HELPER FUNCTIONS -----------------
+function getUsers(){
+  return JSON.parse(localStorage.getItem('users')||'[]');
+}
 
 function addFriend(name){
   let friends = JSON.parse(localStorage.getItem('friends')||'[]');
   if(!friends.some(f=>f.name===name)){
-    friends.push({name, profile: defaultProfile});
+    const user = getUsers().find(u => u.name === name);
+    const profile = user ? user.profile : defaultProfile;
+    friends.push({name, profile});
     localStorage.setItem('friends', JSON.stringify(friends));
     return true;
   }
@@ -43,7 +83,7 @@ function isFriend(name){
   return friends.some(f=>f.name===name);
 }
 
-// Handle incoming friend requests
+// ----------------- FRIEND REQUESTS -----------------
 channel.onmessage = (event) => {
   if(event.data.type === 'friendRequest' && event.data.to === myName){
     const requestsDiv = document.getElementById('requests');
@@ -56,15 +96,13 @@ channel.onmessage = (event) => {
     requestsDiv.appendChild(div);
   }
 
-  // Handle acceptance notification
   if(event.data.type === 'friendAccepted' && event.data.to === myName){
     addFriend(event.data.from);
     alert(`${event.data.from} accepted your friend request!`);
-    window.location.href = "home.html"; // redirect if now friends
+    window.location.href = "home.html";
   }
 };
 
-// Accept friend request
 function acceptRequest(name, btn){
   addFriend(name);
   channel.postMessage({type:'friendAccepted', from: myName, to: name});
@@ -72,25 +110,32 @@ function acceptRequest(name, btn){
   setTimeout(()=>{ window.location.href = "home.html"; }, 1000);
 }
 
-// Search button logic
+// ----------------- SEARCH FRIEND -----------------
 document.getElementById('searchBtn').addEventListener('click', ()=>{
   const name = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
+
   if(name===""){ 
     resultDiv.className="error"; 
     resultDiv.innerText="Enter a name"; 
     return; 
   }
 
-  if(users.includes(name)){
-    if(isFriend(name)){
-      // Already friends → redirect to home.html
+  const users = getUsers();
+  const foundUser = users.find(u => u.name.toLowerCase() === name.toLowerCase());
+
+  if(foundUser){
+    if(isFriend(foundUser.name)){
       resultDiv.className="success";
-      resultDiv.innerText=`You are already friends with ${name}. Redirecting...`;
+      resultDiv.innerText=`You are already friends with ${foundUser.name}. Redirecting...`;
       setTimeout(()=>{ window.location.href = "home.html"; }, 1000);
     } else {
       resultDiv.className="success";
-      resultDiv.innerHTML=`${name} found! <button onclick="sendRequest('${name}')">Connect</button>`;
+      resultDiv.innerHTML=`
+        <img src="${foundUser.profile}" alt="${foundUser.name}" width="40" height="40">
+        <b>${foundUser.name}</b> found! 
+        <button onclick="sendRequest('${foundUser.name}')">Connect</button>
+      `;
     }
   } else {
     resultDiv.className="error";
@@ -98,11 +143,38 @@ document.getElementById('searchBtn').addEventListener('click', ()=>{
   }
 });
 
-// Send friend request
+// ----------------- SEND FRIEND REQUEST -----------------
 function sendRequest(name){
   channel.postMessage({type:'friendRequest', from: myName, to: name});
   document.getElementById('result').innerText = `Friend request sent to ${name}`;
 }
+
+// ----------------- REGISTER NEW USER -----------------
+document.getElementById('registerBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('newName').value.trim();
+  const profile = document.getElementById('newProfile').value.trim() || defaultProfile;
+  const registerResult = document.getElementById('registerResult');
+
+  if(name===""){
+    registerResult.className = "error";
+    registerResult.innerText = "Enter a name to register";
+    return;
+  }
+
+  let users = getUsers();
+  if(users.some(u=>u.name.toLowerCase()===name.toLowerCase())){
+    registerResult.className = "error";
+    registerResult.innerText = "User already exists";
+    return;
+  }
+
+  users.push({name, profile});
+  localStorage.setItem('users', JSON.stringify(users));
+  registerResult.className = "success";
+  registerResult.innerText = `${name} registered successfully!`;
+  document.getElementById('newName').value = '';
+  document.getElementById('newProfile').value = '';
+});
 </script>
 </body>
 </html>
