@@ -3,484 +3,242 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Chat</title>
+<title>WhatsApp-like Chat</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body{font-family:Arial;margin:0;background:#e5ddd5;height:100vh;display:flex;flex-direction:column;}
-.header{background:#25d366;color:white;text-align:center;padding:10px;position:relative;}
-.header img{width:80px;height:80px;border-radius:50%;margin-top:5px;cursor:pointer;object-fit:cover;}
-.header h2{margin:5px 0;cursor:pointer;}
-#members{display:flex;flex-wrap:wrap;justify-content:center;margin:5px;}
-#members div{background:#128C7E;color:white;padding:5px 10px;border-radius:15px;margin:2px;position:relative;}
-#members div span{cursor:pointer;margin-left:5px;}
-#chatBox{flex:1;overflow-y:auto;padding:10px;background:#ece5dd;margin:0 10px;border-radius:8px;margin-bottom:80px;display:flex;flex-direction:column;}
-.msg{max-width:75%;background:white;padding:8px 12px;margin:5px 0;border-radius:12px;display:flex;align-items:flex-start;position:relative;cursor:pointer;gap:6px;}
-.msg.self{background:#dcf8c6;align-self:flex-end;}
-.msg .avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;margin-top:2px;}
-.msg .content{display:flex;flex-direction:column;gap:4px;word-break:break-word;}
-.msg .meta{font-size:11px;color:#666;margin-top:2px;}
-.msg.deleted{font-style:italic;color:#666;}
-.system{align-self:center;background:transparent;color:#666;font-size:12px;margin:8px 0;}
-#inputArea{
-  display:flex;
-  padding:10px;
-  background:white;
-  border-radius:25px;
-  align-items:center;
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  box-sizing:border-box;
-  z-index:100;
-  gap:6px;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #ece5dd;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
-#msgInput{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;}
-#inputArea button{padding:10px 12px;border:none;border-radius:50%;background:#25d366;color:white;cursor:pointer;}
-#topAdd{position:absolute;right:10px;top:10px;cursor:pointer;font-size:20px;background:white;color:#25d366;border-radius:6px;padding:3px 6px;}
-#topMenu{display:none;position:absolute;top:40px;right:10px;background:white;padding:10px;border-radius:10px;box-shadow:0 0 5px #888;flex-direction:column;z-index:200;}
-#topMenu button{margin:3px;padding:8px;border:none;border-radius:6px;background:#128C7E;color:white;cursor:pointer;}
-#friendPopup{display:none;position:absolute;top:50px;right:10px;background:white;padding:10px;border-radius:8px;box-shadow:0 0 5px #888;max-height:200px;overflow-y:auto;flex-direction:column;z-index:200;}
-#friendPopup button{width:100%;padding:6px 10px;margin:3px 0;border:none;border-radius:5px;background:#128C7E;color:white;cursor:pointer;}
-#friendPopup button:hover{background:#0d6b61;}
-/* Attachment Menu */
-#attachmentMenu {
-  display: none;
-  position: fixed;
-  bottom: 60px;
-  right: 10px;
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 101;
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .header { flex-direction: column; align-items: flex-start; padding: 10px; }
+  .header h2 { font-size: 16px; }
+  .header img { width: 40px; height: 40px; }
+  #members div { font-size: 10px; padding: 2px 6px; }
+  
+  #chatBox { padding: 8px; margin-bottom: 100px; }
+  .msg { max-width: 85%; padding: 8px 12px; font-size: 14px; }
+  .msg.self::after { border-top: 8px solid #dcf8c6; border-left: 5px solid transparent; }
+  .msg:not(.self)::after { border-top: 8px solid #fff; border-right: 5px solid transparent; }
+  
+  #inputArea { width: calc(100% - 16px); padding: 6px; gap: 4px; bottom: 6px; left: 6px; }
+  #msgInput { font-size: 14px; padding: 8px 12px; }
+  #attachmentMenu { right: 5px; bottom: 60px; width: 45%; }
+  #emojiPicker { left: 5px; bottom: 60px; max-width: 45%; max-height: 120px; }
+  #chatBox .attachment img,
+  #chatBox .attachment video { max-width: 80%; }
 }
-#attachmentMenu .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-#attachmentMenu button{
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #128C7E;
+
+/* ===== HEADER ===== */
+.header {
+  background: #075E54;
   color: white;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  gap: 10px;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-#attachmentMenu button:hover{background:#0d6b61;}
+.header img { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; object-fit: cover; }
+.header h2 { margin: 0; font-size: 18px; font-weight: 500; }
+#members { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+#members div { background: #128C7E; color: white; padding: 2px 8px; border-radius: 20px; font-size: 12px; }
 
-/* Message options menu */
+/* ===== CHAT BOX ===== */
+#chatBox {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 120px;
+}
+#chatBox::-webkit-scrollbar { width: 6px; }
+#chatBox::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+
+/* ===== MESSAGE BUBBLES ===== */
+.msg {
+  max-width: 70%;
+  padding: 10px 14px;
+  margin: 5px 0;
+  border-radius: 18px;
+  background: #fff;
+  align-self: flex-start;
+  position: relative;
+  word-break: break-word;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.msg:hover .msgOptions { display: flex; }
+.msg.self { background: #dcf8c6; align-self: flex-end; }
+.msg .meta { font-size: 10px; color: #999; text-align: right; }
+
+/* ===== TAILS ===== */
+.msg.self::after { content: ''; position: absolute; bottom: 0; right: -6px; width: 0; height: 0; border-top: 10px solid #dcf8c6; border-left: 6px solid transparent; }
+.msg:not(.self)::after { content: ''; position: absolute; bottom: 0; left: -6px; width: 0; height: 0; border-top: 10px solid #fff; border-right: 6px solid transparent; }
+
+/* ===== MESSAGE OPTIONS ===== */
 .msgOptions {
-  display:none;
-  position:absolute;
-  top:-50px;
-  right:0;
-  background:white;
-  border-radius:8px;
-  box-shadow:0 0 5px #888;
-  z-index:102;
-  flex-direction:column;
+  display: none;
+  position: absolute;
+  top: -35px;
+  right: 0;
+  flex-direction: column;
+  background: #128C7E;
+  border-radius: 6px;
+  padding: 4px 0;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  z-index: 10;
 }
-.msgOptions button{
-  padding:6px 10px;
-  border:none;
-  background:#128C7E;
-  color:white;
-  margin:2px 0;
-  border-radius:5px;
-  cursor:pointer;
-  white-space:nowrap;
+.msgOptions button {
+  border: none; background: transparent; color: white;
+  padding: 5px 10px; cursor: pointer; text-align: left; font-size: 12px;
 }
-.msgOptions button:hover{background:#0d6b61;}
+.msgOptions button:hover { background: rgba(255,255,255,0.2); }
 
-/* Simple attachment previews */
-.msg .attachment img{max-width:240px;border-radius:8px;display:block;}
-.msg .attachment video{max-width:240px;border-radius:8px;display:block;}
-.msg a.file-link{color:#0b57d0;text-decoration:none;}
+/* ===== ATTACHMENTS ===== */
+.msg .attachment img,
+.msg .attachment video { max-width: 240px; border-radius: 8px; display: block; margin-top: 5px; }
+
+/* ===== INPUT AREA ===== */
+#inputArea {
+  display: flex; padding: 8px 10px;
+  background: #fff; border-radius: 25px;
+  align-items: center; position: fixed;
+  bottom: 10px; left: 10px; width: calc(100% - 20px);
+  gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 100;
+}
+#msgInput { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; font-size: 14px; }
+#inputArea button { width: 40px; height: 40px; border-radius: 50%; border: none; background: #25D366; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#plusBtn { background: #075E54; }
+#emojiPicker { display:none; position:absolute; bottom: 60px; left: 10px; background:#fff; border-radius:10px; padding:5px; box-shadow:0 2px 5px rgba(0,0,0,0.2); max-width:300px; max-height:150px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:5px; }
+
+/* ===== ATTACHMENT MENU ===== */
+#attachmentMenu { display: none; position: fixed; bottom: 60px; right: 10px; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 101; }
+#attachmentMenu .grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+#attachmentMenu button { padding: 10px; border: none; border-radius: 8px; background: #128C7E; color: white; cursor: pointer; font-size: 16px; transition: 0.2s; }
+#attachmentMenu button:hover { background: #0d6b61; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h2 id="groupName"></h2>
-  <img id="groupPhoto" src="">
-  <div id="members"></div>
-  <div id="topAdd">+</div>
-  <div id="topMenu">
-    <button id="addFriendBtn">➕ Add Friend</button>
-    <button id="inviteBtn">📩 Invite</button>
-    <button id="leaveBtn">🚪 Leave Group</button>
-    <button id="deleteBtn" style="display:none;">🗑️ Delete Group</button>
+  <img id="groupPhoto" src="profile.png">
+  <div>
+    <h2 id="groupName">My Group</h2>
+    <div id="members"></div>
   </div>
+  <div id="topAdd"><i class="fa-solid fa-ellipsis-vertical"></i></div>
 </div>
 
-<div id="friendPopup"></div>
 <div id="chatBox"></div>
 
 <div id="inputArea">
+  <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+  <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
   <input id="msgInput" placeholder="Type a message...">
-  <button id="sendBtn" title="Send">➤</button>
-  <button id="plusBtn" title="Attach">+</button>
+  <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+  <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
 
-  <!-- Attachment Menu -->
   <div id="attachmentMenu">
     <div class="grid">
-      <button id="sendFileBtn">📎 File</button>
-      <button id="takePhotoBtn">🖼️ Photo</button>
-      <button id="takeVideoBtn">🎥 Video</button>
-      <button id="sendLocationBtn">📍 Location</button>
-      <button id="audioCallBtn">📞 Audio Call</button>
-      <button id="videoCallBtn">🎥 Video Call</button>
+      <button id="sendFileBtn"><i class="fa-solid fa-file"></i></button>
+      <button id="takePhotoBtn"><i class="fa-solid fa-camera"></i></button>
+      <button id="takeVideoBtn"><i class="fa-solid fa-video"></i></button>
+      <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i></button>
     </div>
   </div>
+
+  <div id="emojiPicker"></div>
 </div>
 
 <script>
-/* ========= Setup / State ========= */
-const myName = "You";
-let groups = JSON.parse(localStorage.getItem("groups")||"[]");
-let currentIndex = parseInt(localStorage.getItem("currentGroupIndex")||"0",10);
-let group = groups[currentIndex] || {
-  name:"My Group",
-  photo:"profile.png",
-  members:[{name:myName,accepted:true}],
-  messages:[],
-  admin:myName,
-  invited:[],
-  blocked:[]
-};
-function saveGroup(){
-  groups[currentIndex] = group;
-  localStorage.setItem("groups", JSON.stringify(groups));
-}
-function uid(){ return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8); }
-
-/* ========= Header / Admin ========= */
-const groupNameEl = document.getElementById("groupName");
-const groupPhotoEl = document.getElementById("groupPhoto");
-groupNameEl.textContent = group.name;
-groupPhotoEl.src = group.photo || "profile.png";
-if(group.admin===myName) document.getElementById("deleteBtn").style.display="block";
-
-groupNameEl.onclick = ()=>{
-  const newName = prompt("Enter new group name:", group.name);
-  if(newName && newName.trim()){
-    group.name = newName.trim();
-    saveGroup();
-    groupNameEl.textContent = group.name;
-  }
-};
-groupPhotoEl.onclick = ()=>{
-  const input = document.createElement("input");
-  input.type="file"; input.accept="image/*";
-  input.onchange = e=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ev=>{
-      group.photo = ev.target.result;
-      saveGroup();
-      groupPhotoEl.src = group.photo;
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-};
-
-/* ========= Members (keep behavior) ========= */
-function renderMembers(){
-  const wrap = document.getElementById("members");
-  wrap.innerHTML = "";
-  (group.members||[]).filter(m=>m.accepted).forEach(m=>{
-    const tag = document.createElement("div");
-    tag.textContent = m.name;
-    if(group.admin===myName && m.name!==myName){
-      const span=document.createElement("span");
-      span.textContent = group.blocked.includes(m.name) ? "🚫" : "⭕";
-      span.onclick=()=>{
-        if(group.blocked.includes(m.name)) group.blocked = group.blocked.filter(x=>x!==m.name);
-        else group.blocked.push(m.name);
-        saveGroup(); renderMembers(); renderMessages(); checkBlockedStatus();
-      };
-      tag.appendChild(span);
-    }
-    wrap.appendChild(tag);
-  });
-}
-
-/* ========= Menus (top + bottom) ========= */
-const topAdd = document.getElementById("topAdd");
-const topMenu = document.getElementById("topMenu");
-topAdd.onclick = (e)=>{ e.stopPropagation(); topMenu.style.display = (topMenu.style.display==="flex"?"none":"flex"); };
-
-const plusBtn = document.getElementById("plusBtn");
-const attachmentMenu = document.getElementById("attachmentMenu");
-plusBtn.onclick = (e)=>{ e.stopPropagation(); attachmentMenu.style.display = (attachmentMenu.style.display==="block"?"none":"block"); };
-
-document.addEventListener("click",(e)=>{
-  if(!topMenu.contains(e.target) && e.target!==topAdd) topMenu.style.display="none";
-  if(!attachmentMenu.contains(e.target) && e.target!==plusBtn) attachmentMenu.style.display="none";
-});
-
-/* ========= Chat Rendering ========= */
 const chatBox = document.getElementById("chatBox");
+const msgInput = document.getElementById("msgInput");
+const emojiPicker = document.getElementById("emojiPicker");
 
-function renderMessageContent(m){
-  if(m.deleted) return `<i>This message was deleted</i>`;
-  const safeText = m.text || "";
-  if(m.type==="photo"){
-    return `
-      <div class="attachment"><img src="${m.data}" alt="${m.name||'Photo'}"></div>
-      ${safeText ? `<div>${safeText}</div>` : "" }
-    `;
-  }
-  if(m.type==="video"){
-    return `
-      <div class="attachment"><video src="${m.data}" controls></video></div>
-      ${safeText ? `<div>${safeText}</div>` : "" }
-    `;
-  }
-  if(m.type==="file"){
-    return `
-      <div><a class="file-link" href="${m.data}" download="${m.name||'file'}">📎 ${m.name||'Download file'}</a></div>
-      ${safeText ? `<div>${safeText}</div>` : "" }
-    `;
-  }
-  // text / location link or plain text
-  return safeText;
-}
+// ===== MESSAGES STATE =====
+let messages = [];
+function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
 function renderMessages(){
-  chatBox.innerHTML = "";
-  (group.messages||[]).forEach((m)=>{
-    // hide messages "for me" if I chose Delete for me
-    if((m.hiddenBy||[]).includes(myName)) return;
-    if(group.blocked.includes(m.sender)) return;
-
-    const bubble = document.createElement("div");
-    bubble.className = "msg" + (m.sender===myName ? " self" : "");
-    if(m.deleted) bubble.classList.add("deleted");
-    bubble.dataset.id = m.id;
-
-    // avatar + content
-    const avatar = document.createElement("img");
-    avatar.className = "avatar";
-    avatar.src = "profile.png";
-
-    const content = document.createElement("div");
-    content.className = "content";
-    content.innerHTML = `<div><strong>${m.sender}:</strong> ${renderMessageContent(m)}</div>
-                         <div class="meta">${m.time || ""}</div>`;
-
-    // options menu
-    const opts = document.createElement("div");
-    opts.className = "msgOptions";
-    const btnMe = document.createElement("button"); btnMe.textContent = "Delete for me";
-    const btnAll = document.createElement("button"); btnAll.textContent = "Delete for everyone";
-
-    btnMe.onclick = (e)=>{
-      e.stopPropagation();
-      m.hiddenBy = Array.isArray(m.hiddenBy) ? m.hiddenBy : [];
-      if(!m.hiddenBy.includes(myName)) m.hiddenBy.push(myName);
-      saveGroup(); renderMessages();
-    };
-
-    btnAll.onclick = (e)=>{
-      e.stopPropagation();
-      m.deleted = true;
-      m.text = ""; m.data=""; m.name="";
-      saveGroup(); renderMessages();
-    };
-
-    opts.appendChild(btnMe);
-    opts.appendChild(btnAll);
-
-    bubble.onclick = (e)=>{
-      e.stopPropagation();
-      const visible = opts.style.display==="flex";
-      document.querySelectorAll(".msgOptions").forEach(x=>x.style.display="none");
-      opts.style.display = visible ? "none" : "flex";
-    };
-
-    bubble.appendChild(avatar);
-    bubble.appendChild(content);
-    bubble.appendChild(opts);
-    chatBox.appendChild(bubble);
+  chatBox.innerHTML="";
+  messages.forEach(m=>{
+    const div = document.createElement("div");
+    div.className = "msg"+(m.self?" self":"");
+    let content="";
+    if(m.type==="text"){ content=m.text; }
+    if(m.type==="photo"){ content=`<div class="attachment"><img src="${m.data}"></div>`; }
+    if(m.type==="video"){ content=`<div class="attachment"><video src="${m.data}" controls></video></div>`; }
+    if(m.type==="audio"){ content=`<div class="attachment"><audio controls src="${m.data}"></audio></div>`; }
+    div.innerHTML = `<div class="content">${content}</div><div class="meta">${m.time}</div>`;
+    const opts=document.createElement("div"); opts.className="msgOptions";
+    const btn1=document.createElement("button"); btn1.textContent="Delete for me";
+    const btn2=document.createElement("button"); btn2.textContent="Delete for everyone";
+    btn1.onclick=()=>{ messages=messages.filter(x=>x.id!==m.id); renderMessages(); };
+    btn2.onclick=()=>{ m.text="This message was deleted"; renderMessages(); };
+    opts.appendChild(btn1); opts.appendChild(btn2);
+    div.appendChild(opts); chatBox.appendChild(div);
   });
-
-  // scroll to bottom so latest is visible
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-/* ========= Send Message ========= */
-const msgInput = document.getElementById("msgInput");
-document.getElementById("sendBtn").onclick = sendText;
-msgInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(); }});
-
-function sendText(){
-  const txt = msgInput.value.trim();
-  if(!txt || group.blocked.includes(myName)) return;
-  const msg = {
-    id: uid(),
-    sender: myName,
-    type: "text",
-    text: txt,
-    data: "",
-    name: "",
-    time: new Date().toLocaleTimeString(),
-    deleted: false,
-    hiddenBy: []
-  };
-  group.messages.push(msg);
-  msgInput.value = "";
-  saveGroup(); renderMessages();
-}
-
-/* ========= Attachments ========= */
-function pushAttachment({type,data,name,text}){
-  const msg = {
-    id: uid(),
-    sender: myName,
-    type, data, name: name||"",
-    text: text||"",
-    time: new Date().toLocaleTimeString(),
-    deleted:false,
-    hiddenBy:[]
-  };
-  group.messages.push(msg);
-  saveGroup(); renderMessages();
-  attachmentMenu.style.display = "none";
-}
-
-// File
-document.getElementById("sendFileBtn").onclick = ()=>{
-  const input = document.createElement("input");
-  input.type="file";
-  input.onchange = e=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=> pushAttachment({type:"file", data:reader.result, name:file.name});
-    reader.readAsDataURL(file);
-  };
-  input.click();
+// ===== SEND TEXT =====
+document.getElementById("sendBtn").onclick = ()=>{
+  const txt=msgInput.value.trim(); if(!txt) return;
+  messages.push({id:uid(), type:"text", text:txt, self:true, time:new Date().toLocaleTimeString()});
+  msgInput.value=""; renderMessages();
 };
 
-// Photo
-document.getElementById("takePhotoBtn").onclick = ()=>{
-  const choice = confirm("Press OK to take a photo with camera, Cancel to pick from gallery");
-  const input = document.createElement("input");
-  input.type="file"; input.accept="image/*";
-  if(choice) input.capture="environment";
-  input.onchange = e=>{
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=> pushAttachment({type:"photo", data:reader.result, name:file.name});
-    reader.readAsDataURL(file);
-  };
-  input.click();
-};
-
-// Video
-document.getElementById("takeVideoBtn").onclick = ()=>{
-  const choice = confirm("Press OK to record video, Cancel to pick from gallery");
-  const input = document.createElement("input");
-  input.type="file"; input.accept="video/*";
-  if(choice) input.capture="camcorder";
-  input.onchange = e=>{
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=> pushAttachment({type:"video", data:reader.result, name:file.name});
-    reader.readAsDataURL(file);
-  };
-  input.click();
-};
-
-// Location
-document.getElementById("sendLocationBtn").onclick = ()=>{
-  if(!navigator.geolocation) return alert("Geolocation not supported.");
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-    pushAttachment({type:"text", data:"", name:"", text:url});
-  }, err=>alert("Location error: "+err.message));
-};
-
-// Calls (placeholders)
-document.getElementById("audioCallBtn").onclick = ()=>{ alert("📞 Audio Call coming soon"); attachmentMenu.style.display="none"; };
-document.getElementById("videoCallBtn").onclick = ()=>{ alert("🎥 Video Call coming soon"); attachmentMenu.style.display="none"; };
-
-/* ========= Friend / Invite / Leave / Delete ========= */
-const friendPopup = document.getElementById("friendPopup");
-document.getElementById("addFriendBtn").onclick = (e)=>{
-  e.stopPropagation();
-  const friends = JSON.parse(localStorage.getItem("friends")||"[]");
-  const available = friends.map(f=>f.name).filter(n=>!group.members.some(m=>m.name===n));
-  if(available.length===0){ alert("All friends are already in the group."); return; }
-  friendPopup.innerHTML = "";
-  available.forEach(name=>{
-    const b = document.createElement("button");
-    b.textContent = name;
-    b.onclick = ()=>{
-      group.members.push({name,accepted:true});
-      saveGroup(); renderMembers(); friendPopup.style.display="none";
-      // optional system message
-      group.messages.push({id:uid(), sender:"System", type:"text", text:`${name} joined the group`, data:"", name:"", time:new Date().toLocaleTimeString(), deleted:false, hiddenBy:[]});
-      saveGroup(); renderMessages();
-    };
-    friendPopup.appendChild(b);
-  });
-  friendPopup.style.display="flex"; friendPopup.style.flexDirection="column";
-};
-
-document.addEventListener("click",(e)=>{
-  if(!friendPopup.contains(e.target) && e.target.id!=="addFriendBtn") friendPopup.style.display="none";
+// ===== ENTER KEY =====
+msgInput.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){ e.preventDefault(); document.getElementById("sendBtn").click(); }
 });
 
-document.getElementById("inviteBtn").onclick = ()=>{
-  const name = prompt("Enter user name to invite:"); if(!name) return;
-  if(!group.invited.includes(name)) group.invited.push(name);
-  saveGroup();
-  const link = `${window.location.origin}/join.html?group=${encodeURIComponent(group.name)}&user=${encodeURIComponent(name)}`;
-  prompt("Send this link to user:", link);
+// ===== ATTACHMENT MENU =====
+document.getElementById("plusBtn").onclick = ()=>{
+  const menu=document.getElementById("attachmentMenu");
+  menu.style.display=menu.style.display==="block"?"none":"block";
 };
 
-document.getElementById("leaveBtn").onclick = ()=>{
-  if(confirm("Leave group?")){
-    group.members = (group.members||[]).filter(m=>m.name!==myName);
-    group.messages.push({id:uid(), sender:"System", type:"text", text:`${myName} left the group`, data:"", name:"", time:new Date().toLocaleTimeString(), deleted:false, hiddenBy:[]});
-    saveGroup();
-    alert("You left the group.");
-    groups = groups.filter(g=> (g.members||[]).some(m=>m.name===myName));
-    localStorage.setItem("groups", JSON.stringify(groups));
-    window.location.href = "groups.html";
-  }
+// ===== EMOJIS =====
+const emojis=["😀","😂","😊","😍","🤔","😎","😭","😡","👍","🙏"];
+const emojiBtn=document.getElementById("emojiBtn");
+emojiBtn.onclick=()=>{
+  emojiPicker.innerHTML="";
+  emojis.forEach(e=>{
+    const btn=document.createElement("button"); btn.textContent=e; btn.style.fontSize="20px"; btn.onclick=()=>{ msgInput.value+=e; };
+    emojiPicker.appendChild(btn);
+  });
+  emojiPicker.style.display=emojiPicker.style.display==="flex"?"none":"flex";
+  emojiPicker.style.flexWrap="wrap";
 };
 
-document.getElementById("deleteBtn").onclick = ()=>{
-  if(confirm("Delete group?")){
-    groups.splice(currentIndex,1);
-    localStorage.setItem("groups", JSON.stringify(groups));
-    alert("Group deleted.");
-    window.location.href = "groups.html";
-  }
+// ===== MIC RECORDING =====
+let mediaRecorder, audioChunks=[];
+document.getElementById("micBtn").onclick = async ()=>{
+  if(!mediaRecorder || mediaRecorder.state==="inactive"){
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e=>{ audioChunks.push(e.data); };
+    mediaRecorder.onstop=()=>{
+      const blob = new Blob(audioChunks,{type:'audio/webm'});
+      const url = URL.createObjectURL(blob);
+      messages.push({id:uid(), type:"audio", data:url, self:true, time:new Date().toLocaleTimeString()});
+      audioChunks=[];
+      renderMessages();
+    };
+    mediaRecorder.start();
+    alert("Recording started. Click mic again to stop.");
+  } else if(mediaRecorder.state==="recording"){ mediaRecorder.stop(); alert("Recording stopped."); }
 };
-
-/* ========= Blocked input state ========= */
-function checkBlockedStatus(){
-  const input = document.getElementById("msgInput");
-  const btn = document.getElementById("sendBtn");
-  if(group.blocked.includes(myName)){
-    input.disabled=true; input.placeholder="❌ You are blocked";
-    btn.disabled=true; btn.style.opacity="0.5"; btn.style.cursor="not-allowed";
-  } else {
-    input.disabled=false; input.placeholder="Type a message...";
-    btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer";
-  }
-}
-
-/* ========= Init ========= */
-renderMembers();
-renderMessages();
-checkBlockedStatus();
 </script>
-
 </body>
 </html>
