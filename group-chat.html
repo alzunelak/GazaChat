@@ -247,26 +247,24 @@ body {
 
 <script>
 // ===== DATA =====
+// Fetch friends saved from home.html
+let allFriends = JSON.parse(localStorage.getItem("friendsList") || "[]");
 
-// Friends you can add
-let storedFriends = ["Alia", "Shradha", "Maya", "Rhea"];
-
-// Current group members (load from localStorage if available)
+// Fetch saved group members or start with defaults
 let savedMembers = localStorage.getItem("groupMembers");
-let currentGroupMembers = savedMembers ? JSON.parse(savedMembers) : ["Alia", "Shradha"];
+let currentGroupMembers = savedMembers ? JSON.parse(savedMembers) : [];
 
-// Chat messages
+// Other group data
 let messages = [];
-
-// Current group info
 let currentGroup = "My Group";
 let groupData = {
   "My Group": {
     photo: "profile.png",
-    members: [...currentGroupMembers], // use saved members
+    members: [...currentGroupMembers],
     admin: true
   }
 };
+
 
 // ===== RENDER CHAT MEMBERS =====
 function renderChatMembers() {
@@ -274,6 +272,50 @@ function renderChatMembers() {
 }
 renderChatMembers();
 
+function renderGroupMembers() {
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+
+  if (currentGroupMembers.length === 0) {
+    const div = document.createElement("div");
+    div.textContent = "No members yet";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    currentGroupMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.textContent = name;
+      div.className = "memberBox";
+      membersDiv.appendChild(div);
+    });
+  }
+
+  // Save current group members
+  localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
+}
+
+// Call it once to render on page load
+renderGroupMembers();
+
+  document.getElementById("addMemberBtn").onclick = () => {
+  // Only allow friends not already in the group
+  const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
+
+  if (friendsToAdd.length === 0) {
+    alert("No friends to add yet.");
+    return;
+  }
+
+  const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
+
+  if (friend && friendsToAdd.includes(friend)) {
+    currentGroupMembers.push(friend);
+    renderGroupMembers();
+  }
+};
+
+  
 // ===== RENDER GROUP MEMBERS =====
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
