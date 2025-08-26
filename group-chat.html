@@ -67,11 +67,54 @@ body {
 .infoItem input { margin-left:10px; }
 
   
- /*SETTINGS*/
-.settingsContainer  { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
-.settingsContainer  { width: 100%; padding: 12px 15px; border: none; background: #fff; display: flex; align-items: center; gap: 30px; color: red; font-size: 16px; cursor: pointer; }
-.settingsContainer i { color: black; font-size: 18px; }
-.settingsContainer button:focus { outline: none; }
+/* SETTINGS CONTAINER */
+.settingsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  background: #fff;
+  border-radius: 8px;
+}
+
+/* SETTINGS ITEMS */
+.settingsContainer button {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* pushes checkbox to the right */
+  gap: 10px;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.settingsContainer button:hover {
+  background: #f1f1f1;
+}
+
+.settingsContainer i {
+  color: black;
+  font-size: 18px;
+}
+
+.settingsContainer input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* REMOVE FOCUS OUTLINE */
+.settingsContainer button:focus {
+  outline: none;
+}
+
   
 /* MEMBERS LIST */
 #groupMembersList { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
@@ -143,16 +186,26 @@ body {
   </div>
 
   
-<div id="settingsContainer">
-  <div class="settingItem">🔒 End-to-end Encryption</div>
-  <div class="settingItem">⏳ Disappearing Messages <input type="checkbox" id="disappearToggle"></div>
-  <div class="settingItem">🎨 Chat Color & Wallpaper</div>
-  <div class="settingItem">🔐 Chat Lock <input type="checkbox" id="chatLockToggle"></div>
-  <div class="settingItem">🛡️ Advanced Chat Privacy <input type="checkbox" id="privacyToggle"></div>
+<div class="settingsContainer">
+  <button>
+    <i class="fa-solid fa-lock"></i>
+    End-to-end Encryption
+  </button>
+  <button>
+    <i class="fa-solid fa-hourglass-half"></i>
+    Disappearing Messages
+    <input type="checkbox">
+  </button>
+  <button>
+    <i class="fa-solid fa-paint-roller"></i>
+    Chat Color & Wallpaper
+  </button>
+  <button>
+    <i class="fa-solid fa-shield"></i>
+    Advanced Chat Privacy
+    <input type="checkbox">
+  </button>
 </div>
-
-
-
   <div class="container">
     <button id="addMemberBtn">Add Member</button>
     <div id="groupMembersList"></div>
