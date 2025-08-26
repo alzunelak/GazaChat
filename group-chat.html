@@ -73,8 +73,19 @@ body {
 /* GROUP LINKS */
 #groupLinks button { width:100%; margin:5px 0; padding:8px; border:none; border-radius:5px; background:#fff; color:#000; text-align:left; cursor:pointer; }
 
-/* RED ACTIONS */
-.groupActions button { display:block; width:100%; margin:5px 0; padding:8px; border:none; border-radius:5px; background:red; color:white; cursor:pointer; }
+/* RED ACTIONS ALL INSIDE ONE CONTAINER */
+.groupActions button {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background: white;  /* White container */
+  color: red;         /* Red text */
+  cursor: pointer;
+}
+
 </style>
 </head>
 <body>
@@ -152,17 +163,20 @@ body {
     <button id="requestInvite">Request / Invite</button>
   </div>
 
-  <!-- Leave / Block / Report / Admin -->
-  <div class="container groupActions">
-    <button>Leave Group</button>
-    <button>Block Group</button>
-    <button>Report Group</button>
-    <div id="adminActions">
-      <button>Delete Group</button>
-      <button>Block Member</button>
-    </div>
-  </div>
 
+<!-- RED ACTIONS IN SINGLE WHITE CONTAINER -->
+<div class="container groupActions">
+  <button>Leave Group</button>
+  <button>Block Group</button>
+  <button>Report Group</button>
+  <div id="adminActions">
+    <button>Delete Group</button>
+    <button>Block Member</button>
+  </div>
+</div>
+
+
+  
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
