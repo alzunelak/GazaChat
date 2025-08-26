@@ -183,14 +183,24 @@ body {
     <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
   </div>
 
-  <div id="attachmentMenu">
-    <div class="grid">
-      <button id="sendFileBtn"><i class="fa-solid fa-file"></i></button>
-      <button id="takePhotoBtn"><i class="fa-solid fa-camera"></i></button>
-      <button id="takeVideoBtn"><i class="fa-solid fa-video"></i></button>
-      <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i></button>
-    </div>
+  <!-- Attachment Menu -->
+<div id="attachmentMenu">
+  <div class="grid">
+    <!-- Hidden file inputs -->
+    <input type="file" id="fileInput" style="display:none">
+    <input type="file" id="galleryInput" accept="image/*" style="display:none">
+
+    <!-- Buttons -->
+    <button id="sendDocumentBtn"><i class="fa-solid fa-paperclip"></i>File</button>
+    <button id="galleryBtn"><i class="fa-solid fa-image"></i>Photo</button>
+    <button id="cameraBtn"><i class="fa-solid fa-camera"></i>Camera</button>
+    <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i>Location</button>
+    <button id="audioBtn"><i class="fa-solid fa-phone"></i>Audio</button>
+    <button id="contactBtn"><i class="fa-solid fa-user"></i>Contact</button>
+    <button id="distanceBtn"><i class="fa-solid fa-location-crosshairs"></i>Distance</button>
   </div>
+</div>
+
 
   <div id="emojiPicker"></div>
 </div>
@@ -361,6 +371,82 @@ function renderMessages(){
     chatBox.appendChild(div);
   });
 }
+const chatBox = document.getElementById("chatBox");
+
+// Helper to add messages
+function addMessage(content, type="sent"){
+  const msg = document.createElement("div");
+  msg.classList.add("message", type);
+  msg.innerHTML = content;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Toggle attachment menu
+function toggleMenu(){
+  const menu = document.getElementById("attachmentMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+// Send text message
+function sendMessage(){
+  const input = document.getElementById("messageInput");
+  if(input.value.trim() !== ""){
+    addMessage(input.value, "sent");
+    input.value = "";
+  }
+}
+
+// File button
+document.getElementById("sendDocumentBtn").onclick = () => {
+  document.getElementById("fileInput").click();
+};
+document.getElementById("fileInput").onchange = (e) => {
+  const file = e.target.files[0];
+  if(file) addMessage(`📎 File: ${file.name}`);
+};
+
+// Gallery button
+document.getElementById("galleryBtn").onclick = () => {
+  document.getElementById("galleryInput").click();
+};
+document.getElementById("galleryInput").onchange = (e) => {
+  const file = e.target.files[0];
+  if(file){
+    const imgURL = URL.createObjectURL(file);
+    addMessage(`<img src="${imgURL}" style="max-width:150px; border-radius:8px;">`);
+  }
+};
+
+// Camera
+document.getElementById("cameraBtn").onclick = () => {
+  addMessage("📷 [Camera opened]");
+};
+
+// Location
+document.getElementById("sendLocationBtn").onclick = () => {
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos => {
+      const {latitude, longitude} = pos.coords;
+      addMessage(`📍 Location: ${latitude}, ${longitude}`);
+    });
+  }
+};
+
+// Audio
+document.getElementById("audioBtn").onclick = () => {
+  addMessage("📞 [Audio call started]");
+};
+
+// Contact
+document.getElementById("contactBtn").onclick = () => {
+  addMessage("👤 [Contact shared]");
+};
+
+// Distance
+document.getElementById("distanceBtn").onclick = () => {
+  addMessage("📏 [Distance info]");
+};
 
 // ===== GROUP INFO =====
 document.getElementById("groupName").onclick = ()=> openGroupInfo(currentGroup);
