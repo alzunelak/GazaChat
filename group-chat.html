@@ -6,270 +6,135 @@
 <title>WhatsApp-like Chat</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #ece5dd;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
+body { margin:0; font-family:Arial,sans-serif; background:#ece5dd; height:100vh; display:flex; flex-direction:column; }
+.page { display:none; flex-direction:column; height:100vh; }
+.active { display:flex; }
 
-/* ===== HEADER ===== */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #075E54;
-  color: white;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-.header img {
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-}
-.header-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-left: 10px;
-  overflow: hidden;
-}
-.header-info h2 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.header-info #members {
-  font-size: 12px;
-  color: #d0f0e3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.header-actions {
-  display: flex;
-  gap: 10px;
-}
-.header-actions button {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+.header { display:flex; align-items:center; padding:10px; background:#075E54; color:white; gap:10px; }
+.header img { width:50px;height:50px;border-radius:50%;object-fit:cover; }
+.header-info { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.header-info h2 { margin:0; font-size:16px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.header-info #members { font-size:12px; color:#d0f0e3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.header-actions { display:flex; gap:10px; }
+.header-actions button { background:transparent; border:none; color:white; font-size:20px; cursor:pointer; }
 
-/* ===== CHAT BOX ===== */
-#chatBox {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 100px;
-}
-#chatBox::-webkit-scrollbar { width: 6px; }
-#chatBox::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+.chat-list { flex:1; overflow-y:auto; padding:10px; }
+.chat-item { display:flex; align-items:center; gap:10px; padding:10px; background:white; margin-bottom:8px; border-radius:10px; cursor:pointer; }
+.chat-item img { width:40px; height:40px; border-radius:50%; object-fit:cover; }
 
-/* ===== MESSAGE BUBBLES ===== */
-.msg {
-  max-width: 70%;
-  padding: 10px 14px;
-  margin: 5px 0;
-  border-radius: 18px;
-  background: #fff;
-  align-self: flex-start;
-  position: relative;
-  word-break: break-word;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.msg.self { background: #dcf8c6; align-self: flex-end; }
-.msg .meta { font-size: 10px; color: #999; text-align: right; }
-.msg.self::after { content: ''; position: absolute; bottom: 0; right: -6px; border-top: 10px solid #dcf8c6; border-left: 6px solid transparent; }
-.msg:not(.self)::after { content: ''; position: absolute; bottom: 0; left: -6px; border-top: 10px solid #fff; border-right: 6px solid transparent; }
+#chatBox { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; margin-bottom:100px; }
+.msg { max-width:70%; padding:10px 14px; margin:5px 0; border-radius:18px; background:#fff; align-self:flex-start; position:relative; word-break:break-word; }
+.msg.self { background:#dcf8c6; align-self:flex-end; }
+.msg .meta { font-size:10px; color:#999; text-align:right; }
+.msg.self::after { content:''; position:absolute; bottom:0; right:-6px; border-top:10px solid #dcf8c6; border-left:6px solid transparent; }
+.msg:not(.self)::after { content:''; position:absolute; bottom:0; left:-6px; border-top:10px solid #fff; border-right:6px solid transparent; }
 
-/* ===== INPUT AREA ===== */
-#inputArea {
-  display: flex;
-  align-items: center;
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  width: calc(100% - 20px);
-  z-index: 100;
-}
+#inputArea { display:flex; align-items:center; position:fixed; bottom:10px; left:10px; width:calc(100% - 20px); z-index:100; }
+.input-box { display:flex; align-items:center; flex:1; background:#fff; border-radius:25px; padding:6px 10px; gap:6px; box-shadow:0 2px 5px rgba(0,0,0,0.15); }
+.input-box input { flex:1; border:none; outline:none; font-size:14px; padding:6px; background:transparent; }
+.input-buttons { display:flex; align-items:center; gap:6px; }
+.input-buttons button { background:transparent; border:none; color:#128C7E; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+#micBtn { width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px; }
 
-.input-box {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  background: #fff;
-  border-radius: 25px;
-  padding: 6px 10px;
-  gap: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-}
+#attachmentMenu { display:none; position:fixed; bottom:60px; left:10px; right:10px; background:#fff; padding:10px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.2); z-index:101; transition:transform 0.3s ease; transform:translateY(100%); }
+#attachmentMenu.show { transform:translateY(0); }
+#attachmentMenu .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+#attachmentMenu button { padding:10px;border:none;border-radius:8px;background:#128C7E;color:white;cursor:pointer;font-size:16px; }
+#attachmentMenu button:hover { background:#0d6b61; }
 
-.input-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  padding: 6px;
-  background: transparent;
-}
+#emojiPicker { display:none; position:absolute; bottom:60px; right:10px; background:#fff; border-radius:10px; padding:5px; box-shadow:0 2px 5px rgba(0,0,0,0.2); max-width:300px; max-height:150px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:5px; }
 
-.input-buttons {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.input-buttons button {
-  background: transparent;
-  border: none;
-  color: #128C7E;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* MIC BUTTON OUTSIDE INPUT */
-#micBtn {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: #25D366;
-  color: white;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 6px;
-}
-
-/* ===== ATTACHMENT MENU ===== */
-#attachmentMenu {
-  display: none;
-  position: fixed;
-  bottom: 60px;
-  left: 10px;
-  right: 10px;
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 101;
-  transition: transform 0.3s ease;
-  transform: translateY(100%);
-}
-#attachmentMenu.show {
-  transform: translateY(0);
-}
-#attachmentMenu .grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
-#attachmentMenu button { padding: 10px; border: none; border-radius: 8px; background: #128C7E; color: white; cursor: pointer; font-size: 16px; transition: 0.2s; }
-#attachmentMenu button:hover { background: #0d6b61; }
-
-/* ===== EMOJI PICKER ===== */
-#emojiPicker {
-  display:none;
-  position:absolute;
-  bottom: 60px;
-  right: 10px;
-  background:#fff;
-  border-radius:10px;
-  padding:5px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.2);
-  max-width:300px;
-  max-height:150px;
-  overflow-y:auto;
-  display:flex;
-  flex-wrap:wrap;
-  gap:5px;
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:600px){
-  .header-info h2{font-size:14px;}
-  .header-info #members{font-size:10px;}
-  .msg{max-width:85%;padding:8px 12px;font-size:14px;}
-  #inputArea{width:calc(100% - 16px);bottom:6px;left:6px;}
-  #chatBox{padding:8px;margin-bottom:100px;}
-}
+@media(max-width:600px){ .msg{max-width:85%;padding:8px 12px;font-size:14px;} #inputArea{width:calc(100% - 16px);bottom:6px;left:6px;} #chatBox{padding:8px;margin-bottom:100px;} }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <img id="groupPhoto" src="profile.png" alt="Group Photo">
-  <div class="header-info">
-    <h2 id="groupName">My Group</h2>
-    <div id="members"></div>
-  </div>
-  <div class="header-actions">
-    <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
-    <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-  </div>
+<!-- ===== MAIN CHAT LIST ===== -->
+<div id="mainPage" class="page active">
+  <div class="header"><h2>Chats</h2></div>
+  <div class="chat-list" id="chatList"></div>
 </div>
 
-<div id="chatBox"></div>
-
-<div id="inputArea">
-  <div class="input-box">
-    <input id="msgInput" placeholder="Type a message...">
-    <div class="input-buttons">
-      <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
-      <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+<!-- ===== CHAT PAGE ===== -->
+<div id="chatPage" class="page">
+  <div class="header">
+    <button class="backBtn" onclick="showPage('mainPage')"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="header-info">
+      <h2 id="groupNameChat"></h2>
+      <div id="membersChat"></div>
     </div>
   </div>
-  <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
-</div>
 
-<div id="attachmentMenu">
-  <div class="grid">
-    <button id="sendFileBtn"><i class="fa-solid fa-file"></i></button>
-    <button id="takePhotoBtn"><i class="fa-solid fa-camera"></i></button>
-    <button id="takeVideoBtn"><i class="fa-solid fa-video"></i></button>
-    <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i></button>
+  <div id="chatBox"></div>
+
+  <div id="inputArea">
+    <div class="input-box">
+      <input id="msgInput" placeholder="Type a message...">
+      <div class="input-buttons">
+        <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+        <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+      </div>
+    </div>
+    <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
   </div>
-</div>
 
-<div id="emojiPicker"></div>
+  <div id="attachmentMenu">
+    <div class="grid">
+      <button id="sendFileBtn"><i class="fa-solid fa-file"></i></button>
+      <button id="takePhotoBtn"><i class="fa-solid fa-camera"></i></button>
+      <button id="takeVideoBtn"><i class="fa-solid fa-video"></i></button>
+      <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i></button>
+    </div>
+  </div>
+
+  <div id="emojiPicker"></div>
+</div>
 
 <script>
-// ===== MEMBERS FROM LOCALSTORAGE =====
-let storedFriends = JSON.parse(localStorage.getItem("friends")) || [];
-const membersDiv = document.getElementById("members");
-function renderMembers(){
-  membersDiv.innerHTML = storedFriends.join(", ") || "No friends added";
-}
-renderMembers();
+// ===== DATA =====
+let friends = JSON.parse(localStorage.getItem("friends")) || ["Alice","Bob","Charlie"];
+let groups = JSON.parse(localStorage.getItem("groups")) || [{name:"My Group", members:friends}];
+let currentGroup = null;
+let messages = {}; // store messages per group
 
-// ===== CHAT =====
+// ===== PAGE NAV =====
+function showPage(pageId){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); }
+
+// ===== RENDER CHAT LIST =====
+const chatList = document.getElementById("chatList");
+function renderChatList(){
+  chatList.innerHTML="";
+  groups.forEach((g,i)=>{
+    const div=document.createElement("div");
+    div.className="chat-item";
+    div.innerHTML=`<img src="profile.png"><span>${g.name}</span>`;
+    div.onclick=()=>openChat(i);
+    chatList.appendChild(div);
+  });
+}
+renderChatList();
+
+// ===== OPEN CHAT =====
+function openChat(index){
+  currentGroup = groups[index];
+  document.getElementById("groupNameChat").textContent = currentGroup.name;
+  document.getElementById("membersChat").textContent = currentGroup.members.join(", ");
+  if(!messages[currentGroup.name]) messages[currentGroup.name] = [];
+  renderMessages();
+  showPage('chatPage');
+}
+
+// ===== CHAT FUNCTIONS =====
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
 const emojiPicker = document.getElementById("emojiPicker");
 const attachmentMenu = document.getElementById("attachmentMenu");
-let messages = JSON.parse(localStorage.getItem("messages")) || [];
 
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
 function renderMessages(){
   chatBox.innerHTML="";
-  messages.forEach(m=>{
+  messages[currentGroup.name].forEach(m=>{
     const div = document.createElement("div");
     div.className = "msg"+(m.self?" self":"");
     let content="";
@@ -283,15 +148,14 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
   localStorage.setItem("messages", JSON.stringify(messages));
 }
-renderMessages();
 
-// ===== SEND TEXT ON ENTER =====
+// ===== SEND MESSAGE =====
 msgInput.addEventListener("keydown", e=>{
   if(e.key==="Enter"){
     e.preventDefault();
     const txt = msgInput.value.trim();
     if(!txt) return;
-    messages.push({id:uid(), type:"text", text:txt, self:true, time:new Date().toLocaleTimeString()});
+    messages[currentGroup.name].push({id:uid(), type:"text", text:txt, self:true, time:new Date().toLocaleTimeString()});
     msgInput.value="";
     renderMessages();
   }
@@ -328,7 +192,7 @@ document.getElementById("micBtn").onclick = async ()=>{
     mediaRecorder.onstop=()=>{
       const blob = new Blob(audioChunks,{type:'audio/webm'});
       const url = URL.createObjectURL(blob);
-      messages.push({id:uid(), type:"audio", data:url, self:true, time:new Date().toLocaleTimeString()});
+      messages[currentGroup.name].push({id:uid(), type:"audio", data:url, self:true, time:new Date().toLocaleTimeString()});
       audioChunks=[];
       renderMessages();
     };
