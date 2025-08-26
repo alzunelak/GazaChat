@@ -25,14 +25,12 @@ body {
   padding: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-
 .header img {
   width: 50px; height: 50px;
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
 }
-
 .header-info {
   flex: 1;
   display: flex;
@@ -40,7 +38,6 @@ body {
   margin-left: 10px;
   overflow: hidden;
 }
-
 .header-info h2 {
   margin: 0;
   font-size: 16px;
@@ -49,7 +46,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .header-info #members {
   font-size: 12px;
   color: #d0f0e3;
@@ -57,12 +53,10 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .header-actions {
   display: flex;
   gap: 10px;
 }
-
 .header-actions button {
   background: transparent;
   border: none;
@@ -81,7 +75,7 @@ body {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 120px;
+  margin-bottom: 100px;
 }
 #chatBox::-webkit-scrollbar { width: 6px; }
 #chatBox::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
@@ -105,16 +99,6 @@ body {
 .msg.self::after { content: ''; position: absolute; bottom: 0; right: -6px; border-top: 10px solid #dcf8c6; border-left: 6px solid transparent; }
 .msg:not(.self)::after { content: ''; position: absolute; bottom: 0; left: -6px; border-top: 10px solid #fff; border-right: 6px solid transparent; }
 
-/* ===== MESSAGE OPTIONS ===== */
-.msgOptions { display: none; position: absolute; top: -35px; right: 0; flex-direction: column; background: #128C7E; border-radius: 6px; padding: 4px 0; box-shadow: 0 0 5px rgba(0,0,0,0.3); z-index: 10; }
-.msgOptions button { border: none; background: transparent; color: white; padding: 5px 10px; cursor: pointer; text-align: left; font-size: 12px; }
-.msgOptions button:hover { background: rgba(255,255,255,0.2); }
-
-/* ===== ATTACHMENTS ===== */
-.msg .attachment img,
-.msg .attachment video { max-width: 240px; border-radius: 8px; display: block; margin-top: 5px; }
-.msg .attachment audio { width: 200px; margin-top: 5px; }
-
 /* ===== INPUT AREA ===== */
 #inputArea {
   display: flex;
@@ -130,24 +114,62 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.15);
   z-index: 100;
 }
-#msgInput { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; font-size: 14px; }
-#inputArea button { width: 40px; height: 40px; border-radius: 50%; border: none; background: #25D366; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-#plusBtn { background: #075E54; }
-#emojiPicker { display:none; position:absolute; bottom: 60px; left: 10px; background:#fff; border-radius:10px; padding:5px; box-shadow:0 2px 5px rgba(0,0,0,0.2); max-width:300px; max-height:150px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:5px; }
+#msgInput {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+}
 
 /* ===== ATTACHMENT MENU ===== */
-#attachmentMenu { display: none; position: fixed; bottom: 60px; right: 10px; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 101; }
-#attachmentMenu .grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+#attachmentMenu {
+  display: none;
+  position: fixed;
+  bottom: 70px;
+  left: 10px;
+  right: 10px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 101;
+  transition: transform 0.3s ease;
+  transform: translateY(100%);
+}
+#attachmentMenu.show {
+  transform: translateY(0);
+}
+#attachmentMenu .grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
 #attachmentMenu button { padding: 10px; border: none; border-radius: 8px; background: #128C7E; color: white; cursor: pointer; font-size: 16px; transition: 0.2s; }
 #attachmentMenu button:hover { background: #0d6b61; }
 
-/* ===== MOBILE RESPONSIVE ===== */
-@media (max-width: 600px) {
-  .header-info h2 { font-size: 14px; }
-  .header-info #members { font-size: 10px; }
-  .msg { max-width: 85%; padding: 8px 12px; font-size: 14px; }
-  #inputArea { width: calc(100% - 16px); padding: 6px; bottom: 6px; left: 6px; gap: 4px; }
-  #chatBox { padding: 8px; margin-bottom: 100px; }
+/* ===== EMOJI PICKER ===== */
+#emojiPicker {
+  display:none;
+  position:absolute;
+  bottom: 60px;
+  left: 10px;
+  background:#fff;
+  border-radius:10px;
+  padding:5px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.2);
+  max-width:300px;
+  max-height:150px;
+  overflow-y:auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+  .header-info h2{font-size:14px;}
+  .header-info #members{font-size:10px;}
+  .msg{max-width:85%;padding:8px 12px;font-size:14px;}
+  #inputArea{width:calc(100% - 16px);padding:6px;bottom:6px;left:6px;gap:4px;}
+  #chatBox{padding:8px;margin-bottom:100px;}
 }
 </style>
 </head>
@@ -171,27 +193,27 @@ body {
   <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
   <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
   <input id="msgInput" placeholder="Type a message...">
-  <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
   <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
-
-  <div id="attachmentMenu">
-    <div class="grid">
-      <button id="sendFileBtn"><i class="fa-solid fa-file"></i></button>
-      <button id="takePhotoBtn"><i class="fa-solid fa-camera"></i></button>
-      <button id="takeVideoBtn"><i class="fa-solid fa-video"></i></button>
-      <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i></button>
-    </div>
-  </div>
-
-  <div id="emojiPicker"></div>
 </div>
+
+<div id="attachmentMenu">
+  <div class="grid">
+    <button id="sendFileBtn"><i class="fa-solid fa-file"></i></button>
+    <button id="takePhotoBtn"><i class="fa-solid fa-camera"></i></button>
+    <button id="takeVideoBtn"><i class="fa-solid fa-video"></i></button>
+    <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i></button>
+  </div>
+</div>
+
+<div id="emojiPicker"></div>
 
 <script>
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
 const emojiPicker = document.getElementById("emojiPicker");
-
+const attachmentMenu = document.getElementById("attachmentMenu");
 let messages = [];
+
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
 function renderMessages(){
@@ -205,36 +227,30 @@ function renderMessages(){
     if(m.type==="video"){ content=`<div class="attachment"><video src="${m.data}" controls></video></div>`; }
     if(m.type==="audio"){ content=`<div class="attachment"><audio controls src="${m.data}"></audio></div>`; }
     div.innerHTML = `<div class="content">${content}</div><div class="meta">${m.time}</div>`;
-    const opts=document.createElement("div"); opts.className="msgOptions";
-    const btn1=document.createElement("button"); btn1.textContent="Delete for me";
-    const btn2=document.createElement("button"); btn2.textContent="Delete for everyone";
-    btn1.onclick=()=>{ messages=messages.filter(x=>x.id!==m.id); renderMessages(); };
-    btn2.onclick=()=>{ m.text="This message was deleted"; renderMessages(); };
-    opts.appendChild(btn1); opts.appendChild(btn2);
-    div.appendChild(opts); chatBox.appendChild(div);
+    chatBox.appendChild(div);
   });
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// ===== SEND TEXT =====
-document.getElementById("sendBtn").onclick = ()=>{
-  const txt=msgInput.value.trim(); if(!txt) return;
-  messages.push({id:uid(), type:"text", text:txt, self:true, time:new Date().toLocaleTimeString()});
-  msgInput.value=""; renderMessages();
-};
-
-// ===== ENTER KEY =====
+// ===== SEND TEXT ON ENTER =====
 msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){ e.preventDefault(); document.getElementById("sendBtn").click(); }
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const txt = msgInput.value.trim();
+    if(!txt) return;
+    messages.push({id:uid(), type:"text", text:txt, self:true, time:new Date().toLocaleTimeString()});
+    msgInput.value="";
+    renderMessages();
+  }
 });
 
-// ===== ATTACHMENT MENU =====
+// ===== TOGGLE ATTACHMENT MENU =====
 document.getElementById("plusBtn").onclick = ()=>{
-  const menu=document.getElementById("attachmentMenu");
-  menu.style.display=menu.style.display==="block"?"none":"block";
+  attachmentMenu.classList.toggle("show");
+  emojiPicker.style.display = "none";
 };
 
-// ===== EMOJIS =====
+// ===== EMOJI PICKER =====
 const emojis=["😀","😂","😊","😍","🤔","😎","😭","😡","👍","🙏"];
 document.getElementById("emojiBtn").onclick=()=>{
   emojiPicker.innerHTML="";
@@ -242,10 +258,11 @@ document.getElementById("emojiBtn").onclick=()=>{
     const btn=document.createElement("button");
     btn.textContent=e;
     btn.style.fontSize="20px";
-    btn.onclick=()=>{ msgInput.value+=e; };
+    btn.onclick=()=>{ msgInput.value+=e; msgInput.focus(); };
     emojiPicker.appendChild(btn);
   });
   emojiPicker.style.display = emojiPicker.style.display==="flex"?"none":"flex";
+  attachmentMenu.classList.remove("show");
 };
 
 // ===== MIC RECORDING =====
@@ -267,5 +284,6 @@ document.getElementById("micBtn").onclick = async ()=>{
   } else if(mediaRecorder.state==="recording"){ mediaRecorder.stop(); alert("Recording stopped."); }
 };
 </script>
+
 </body>
 </html>
