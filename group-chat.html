@@ -67,85 +67,18 @@ body {
 .infoItem input { margin-left:10px; }
 
 /* MEMBERS LIST */
-#groupMembersList { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 8px; 
-  padding: 10px;
-  border-top: 1px solid #ccc;   /* line on top */
-  border-bottom: 1px solid #ccc;/* line on bottom */
-}
-}
-.memberBox { 
-  padding: 5px 10px; 
-  background: #eee; 
-  border-radius: 8px; 
-  cursor: pointer; 
-}
-
+#groupMembersList { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+.memberBox { padding: 5px 10px; background: #eee; border-radius: 8px; cursor: pointer; }
 
 /* GROUP LINKS CONTAINER */
-#groupLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-top: 1px solid #ccc;   /* line on top */
-  border-bottom: 1px solid #ccc;/* line on bottom */
-}
-
-/* BUTTONS INSIDE */
-#groupLinks button {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  background: #fff;
-  color: #000;
-  cursor: pointer;
-  text-align: left;
-}
+#groupLinks { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+#groupLinks button { width: 100%; padding: 10px; border: none; border-radius: 5px; background: #fff; color: #000; cursor: pointer; text-align: left; }
 
 /*RED BUTTON*/
-/* WHITE CONTAINER WITH TOP & BOTTOM LINE ONLY */
-.actionBox {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-top: 1px solid #ccc;   /* line on top */
-  border-bottom: 1px solid #ccc;/* line on bottom */
-}
-
-/* BUTTONS STACKED, ICON LEFT, TEXT RIGHT */
-.actionBox button {
-  width: 100%;
-  padding: 12px 15px;
-  border: none;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  gap: 30px;          /* space between icon and text */
-  color: red;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* ICONS RED */
-.actionBox i {
-  color: red;
-  font-size: 18px;
-}
-
-/* REMOVE HIGHLIGHT ON CLICK */
-.actionBox button:focus {
-  outline: none;
-}
-
-
-
-
-  
+.actionBox { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+.actionBox button { width: 100%; padding: 12px 15px; border: none; background: #fff; display: flex; align-items: center; gap: 30px; color: red; font-size: 16px; cursor: pointer; }
+.actionBox i { color: red; font-size: 18px; }
+.actionBox button:focus { outline: none; }
 </style>
 </head>
 <body>
@@ -202,7 +135,6 @@ body {
     </div>
   </div>
 
-  <!-- Encryption/Settings -->
   <div class="container">
     <div class="infoItem">End-to-end Encryption</div>
     <div class="infoItem">Disappearing Messages <input type="checkbox" id="disappearToggle"></div>
@@ -211,44 +143,39 @@ body {
     <div class="infoItem">Advanced Chat Privacy</div>
   </div>
 
-  <!-- Members -->
   <div class="container">
     <button id="addMemberBtn">Add Member</button>
     <div id="groupMembersList"></div>
   </div>
 
-<!-- Group Links Container -->
-<div class="container" id="groupLinks">
-  <button id="showGroupLink">Group Link</button>
-  <button id="requestInviteBtn">Request / Invite</button>
-</div>
+  <div class="container" id="groupLinks">
+    <button id="showGroupLink">Group Link</button>
+    <button id="requestInviteBtn">Request / Invite</button>
+  </div>
 
-<!-- Popup Modal -->
-<div id="linkPopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  <div id="linkPopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
      background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.3); z-index:100;">
-  <p>Your Group Link:</p>
-  <input type="text" value="https://example.com/join/group123" id="groupLinkInput" readonly style="width:100%; padding:5px;"/>
-  <button onclick="copyLink()" style="margin-top:10px;">Copy Link</button>
-  <button onclick="closePopup()" style="margin-top:10px;">Close</button>
-</div>
+    <p>Your Group Link:</p>
+    <input type="text" value="https://example.com/join/group123" id="groupLinkInput" readonly style="width:100%; padding:5px;"/>
+    <button onclick="copyLink()" style="margin-top:10px;">Copy Link</button>
+    <button onclick="closePopup()" style="margin-top:10px;">Close</button>
+  </div>
 
-<!-- RED ACTIONS IN SINGLE CONTAINER -->
-<div class="container actionBox">
-  <button><i class="fa-solid fa-sign-out"></i><span>Leave Group</span></button>
-  <button><i class="fa-solid fa-ban"></i><span>Block Group</span></button>
-  <button><i class="fa-solid fa-flag"></i><span>Report Group</span></button>
-  <button><i class="fa-solid fa-trash"></i><span>Delete Group</span></button>
-  <button><i class="fa-solid fa-user-slash"></i><span>Block Member</span></button>
-</div>
+  <div class="container actionBox">
+    <button><i class="fa-solid fa-sign-out"></i><span>Leave Group</span></button>
+    <button><i class="fa-solid fa-ban"></i><span>Block Group</span></button>
+    <button><i class="fa-solid fa-flag"></i><span>Report Group</span></button>
+    <button><i class="fa-solid fa-trash"></i><span>Delete Group</span></button>
+    <button><i class="fa-solid fa-user-slash"></i><span>Block Member</span></button>
+  </div>
 
-  
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
 <script>
 // ===== DATA =====
-let allFriends = JSON.parse(localStorage.getItem("friendsList") || "[]");
-let currentGroupMembers = JSON.parse(localStorage.getItem("groupMembers") || "[]");
+let allFriends = JSON.parse(localStorage.getItem("friendsList") || '["Alice","Bob","Charlie"]'); 
+let currentGroupMembers = JSON.parse(localStorage.getItem("groupMembers") || '[]');
 
 let messages = [];
 let currentGroup = "My Group";
@@ -256,83 +183,23 @@ let groupData = {
   "My Group": { photo: "profile.png", members: [...currentGroupMembers], admin: true }
 };
 
-  function renderGroupMembers() {
-  const membersDiv = document.getElementById("groupMembersList");
-  membersDiv.innerHTML = "";
-
-  if (currentGroupMembers.length === 0) {
-    const div = document.createElement("div");
-    div.textContent = "No members yet";
-    div.style.fontStyle = "italic";
-    div.style.color = "#555";
-    membersDiv.appendChild(div);
-  } else {
-    currentGroupMembers.forEach(name => {
-      const div = document.createElement("div");
-      div.textContent = name;
-      div.className = "memberBox";
-      membersDiv.appendChild(div);
-    });
-  }
-
-  // Show message if no friends to add
-  const addBtn = document.getElementById("addMemberBtn");
-  let msg = document.getElementById("noFriendsMsg");
-  if (msg) msg.remove();
-
-  const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
-  if (friendsToAdd.length === 0) {
-    const noFriendMsg = document.createElement("div");
-    noFriendMsg.id = "noFriendsMsg";
-    noFriendMsg.style.fontSize = "14px";
-    noFriendMsg.style.color = "#555";
-    noFriendMsg.style.marginTop = "5px";
-    noFriendMsg.textContent = "No friends to add yet.";
-    addBtn.insertAdjacentElement("afterend", noFriendMsg);
-  }
-
-  // Save current members to localStorage
-  localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
-}
-
-// Call once on page load
-renderGroupMembers();
-
-  document.getElementById("addMemberBtn").onclick = () => {
-  const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
-
-  if (friendsToAdd.length === 0) {
-    renderGroupMembers(); // show "No friends to add yet"
-    return;
-  }
-
-  const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
-
-  if (friend && friendsToAdd.includes(friend)) {
-    currentGroupMembers.push(friend);
-    renderGroupMembers();
-  }
-};
-
-
 // ===== RENDER CHAT MEMBERS =====
-function renderChatMembers() {
+function renderChatMembers(){
   document.getElementById("members").textContent = currentGroupMembers.join(", ");
 }
-renderChatMembers();
 
-function renderGroupMembers() {
+// ===== RENDER GROUP MEMBERS =====
+function renderGroupMembers(){
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
-
-  if (currentGroupMembers.length === 0) {
+  if(currentGroupMembers.length === 0){
     const div = document.createElement("div");
     div.textContent = "No members yet";
     div.style.fontStyle = "italic";
     div.style.color = "#555";
     membersDiv.appendChild(div);
   } else {
-    currentGroupMembers.forEach(name => {
+    currentGroupMembers.forEach(name=>{
       const div = document.createElement("div");
       div.textContent = name;
       div.className = "memberBox";
@@ -340,72 +207,36 @@ function renderGroupMembers() {
     });
   }
 
-  // Save current group members
-  localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
-}
-
-// Call it once to render on page load
-renderGroupMembers();
-
-  document.getElementById("addMemberBtn").onclick = () => {
-  // Only allow friends not already in the group
-  const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
-
-  if (friendsToAdd.length === 0) {
-    alert("No friends to add yet.");
-    return;
-  }
-
-  const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
-
-  if (friend && friendsToAdd.includes(friend)) {
-    currentGroupMembers.push(friend);
-    renderGroupMembers();
-  }
-};
-
-  
-// ===== RENDER GROUP MEMBERS =====
-function renderGroupMembers() {
-  const membersDiv = document.getElementById("groupMembersList");
-  membersDiv.innerHTML = "";
-  currentGroupMembers.forEach(name => {
-    const div = document.createElement("div");
-    div.textContent = name;
-    div.className = "memberBox";
-    membersDiv.appendChild(div);
-  });
-
-  // If no more friends to add, show a message under the button
+  // Show message if no friends left
   const addBtn = document.getElementById("addMemberBtn");
+  let friendsLeft = allFriends.filter(f => !currentGroupMembers.includes(f));
   const existingMsg = document.getElementById("noFriendsMsg");
-  if (existingMsg) existingMsg.remove();
-
-  const friendsToAdd = storedFriends.filter(f => !currentGroupMembers.includes(f));
-  if (friendsToAdd.length === 0) {
+  if(existingMsg) existingMsg.remove();
+  if(friendsLeft.length === 0){
     const msg = document.createElement("div");
-    msg.id = "noFriendsMsg";
-    msg.style.fontSize = "14px";
-    msg.style.color = "#555";
-    msg.style.marginTop = "5px";
-    msg.textContent = "No friends to add yet.";
+    msg.id="noFriendsMsg";
+    msg.textContent="No friends to add yet.";
+    msg.style.fontSize="14px";
+    msg.style.color="#555";
+    msg.style.marginTop="5px";
     addBtn.insertAdjacentElement("afterend", msg);
   }
+
+  localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
+  renderChatMembers();
 }
-renderGroupMembers();
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = () => {
-  const friendsToAdd = storedFriends.filter(f => !currentGroupMembers.includes(f));
-  if (friendsToAdd.length === 0) {
-    renderGroupMembers(); // show "No friends to add yet" message
+  const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
+  if(friendsToAdd.length === 0){
+    alert("No friends to add yet.");
     return;
   }
-
   const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
-  if (friend && friendsToAdd.includes(friend)) {
+  if(friend && friendsToAdd.includes(friend)){
     currentGroupMembers.push(friend);
-    localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers)); // save to localStorage
+    localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
     renderGroupMembers();
   }
 };
@@ -434,7 +265,7 @@ function renderMessages(){
   });
 }
 
-// ===== OPEN GROUP INFO =====
+// ===== GROUP INFO =====
 document.getElementById("groupName").onclick = ()=> openGroupInfo(currentGroup);
 function openGroupInfo(groupName){
   currentGroup=groupName;
@@ -443,11 +274,9 @@ function openGroupInfo(groupName){
   const data = groupData[groupName];
   document.getElementById("infoGroupPhoto").src = data.photo;
   document.getElementById("infoGroupName").textContent = groupName;
-  document.getElementById("adminActions").style.display = data.admin?"block":"none";
   renderGroupMembers();
 }
 
-// ===== BACK TO CHAT =====
 function backToChat(){
   document.getElementById("groupInfoPage").style.display="none";
   document.getElementById("chatPage").style.display="block";
@@ -479,6 +308,10 @@ document.getElementById("infoGroupName").addEventListener("input", ()=>{
     document.getElementById("groupName").textContent=newName;
   }
 });
+
+// INITIAL RENDER
+renderGroupMembers();
+renderChatMembers();
 </script>
 </body>
 </html>
