@@ -378,9 +378,17 @@ document.getElementById("sendLocationBtn").onclick = ()=>{
     const {latitude, longitude}=pos.coords; addMessage(`📍 Location: ${latitude}, ${longitude}`);
   }); }
 };
+  
 // Audio button opens file picker
 document.getElementById("audioBtn").onclick = () => {
-  document.getElementById("audioInput").click();
+  const input = document.getElementById("audioInput");
+
+  // For mobile, suggest using "Files" instead of recorder
+  if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    alert("Please choose 'Files' to select an existing audio instead of recording.");
+  }
+
+  input.click();
 };
 
 // When a file is selected
@@ -391,6 +399,7 @@ document.getElementById("audioInput").onchange = (e) => {
     addMessage(`<audio controls src="${audioURL}"></audio>`);
   }
 };
+
 
   document.getElementById("pollBtn").onclick = () => {
   const question = prompt("Enter your poll question:");
