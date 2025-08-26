@@ -297,16 +297,10 @@ function renderGroupMembers(){
     });
   }
 
-  // Update member count at top
+  // Update member count
   document.getElementById("memberCount").textContent = `${currentGroupMembers.length} Member${currentGroupMembers.length !== 1 ? 's' : ''}`;
 
-  // Save to localStorage
-  localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
-  renderChatMembers();
-}
-
-
-  // Show message if no friends left
+  // Check if friends are left to add
   const addBtn = document.getElementById("addMemberBtn");
   let friendsLeft = allFriends.filter(f => !currentGroupMembers.includes(f));
   const existingMsg = document.getElementById("noFriendsMsg");
@@ -321,9 +315,13 @@ function renderGroupMembers(){
     addBtn.insertAdjacentElement("afterend", msg);
   }
 
+  // Save to localStorage
   localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
+
+  // Update chat header
   renderChatMembers();
 }
+
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = () => {
