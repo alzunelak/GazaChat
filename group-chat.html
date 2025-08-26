@@ -416,11 +416,37 @@ document.getElementById("distanceBtn").onclick = ()=> addMessage("📏 [Distance
 const emojiBtn = document.getElementById("emojiBtn");
 const emojiPicker = document.getElementById("emojiPicker");
 const emojis = ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😍","🥰","😘","😗","😙","😚"];
-function renderEmojis(){ emojiPicker.innerHTML = ""; emojis.forEach(e=>{ const span = document.createElement("span"); span.textContent = e;
-span.style.cursor = "pointer"; span.style.fontSize = "20px"; span.addEventListener("click", ()=>{ msgInput.value += e; msgInput.focus(); }); emojiPicker.appendChild(span); }); }
+
+function renderEmojis() {
+  emojiPicker.innerHTML = "";
+  emojis.forEach(e => {
+    const span = document.createElement("span");
+    span.textContent = e;
+    span.style.cursor = "pointer";
+    span.style.fontSize = "20px";
+    span.addEventListener("click", () => {
+      msgInput.value += e;                 // Add emoji to input
+      msgInput.focus();                     // Focus input
+      emojiPicker.style.display = "none";  // Close picker after selection
+    });
+    emojiPicker.appendChild(span);
+  });
+}
+
 renderEmojis();
-emojiBtn.onclick = ()=>{ emojiPicker.style.display = emojiPicker.style.display==="flex"?"none":"flex"; };
-document.addEventListener("click",e=>{ if(!emojiPicker.contains(e.target) && e.target!==emojiBtn){ emojiPicker.style.display="none"; } });
+
+// Toggle emoji picker on button click
+emojiBtn.addEventListener("click", (e) => {
+  e.stopPropagation();  // Prevent document click from immediately closing it
+  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
+});
+
+// Close picker if clicking outside
+document.addEventListener("click", (e) => {
+  if (!emojiPicker.contains(e.target)) {
+    emojiPicker.style.display = "none";
+  }
+});
 
 /* ===== MIC BUTTON ===== */
 const micBtn = document.getElementById("micBtn");
