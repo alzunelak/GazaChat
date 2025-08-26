@@ -45,21 +45,24 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
 #emojiPicker { display:none; position:absolute; bottom:60px; right:10px; background:#fff; border-radius:10px; padding:5px; box-shadow:0 2px 5px rgba(0,0,0,0.2); max-width:300px; max-height:150px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:5px; }
 /* GROUP INFO PAGE */
 #groupInfoPage { display:none; background:#ece5dd; height:100vh; overflow-y:auto; }
-/* SETTINGS ITEMS */
-.infoItem { padding:10px; border-bottom:1px solid #ccc; background:#fff; margin-bottom:5px; border-radius:5px; text-align:center; }
 /* CENTERED PHOTO & NAME */
 .groupHeader { display:flex; flex-direction:column; align-items:center; padding:20px; background:#075E54; color:white; }
 .groupHeader img { width:80px; height:80px; border-radius:50%; cursor:pointer; margin-bottom:10px; }
 .groupHeader h2 { margin:0; font-size:18px; font-weight:500; cursor:text; }
 .groupHeader p { margin:0; font-size:12px; color:#d0f0e3; }
-.groupActions button { display:block; width:100%; margin:5px 0; padding:8px; border:none; border-radius:5px; background:#128C7E; color:white; cursor:pointer; }
+/* ENCRYPTION INFO */
+#encryptionInfo { font-size:12px; color:#d0f0e3; margin-top:5px; }
 /* MEMBERS */
-#groupMembersList { display:flex; flex-wrap:wrap; gap:5px; max-height:200px; overflow-y:auto; padding:5px; }
+#groupMembersList { display:flex; flex-wrap:wrap; gap:5px; padding:5px; }
 .memberBox { padding:5px 10px; background:#eee; border-radius:12px; font-size:12px; cursor:pointer; }
+/* ADD MEMBER BUTTON ON TOP */
+#addMemberBtn { display:block; margin-bottom:5px; padding:5px 10px; border:none; border-radius:5px; background:#128C7E; color:white; cursor:pointer; }
 /* THREE ACTION BUTTONS */
-.actionButtons { display:flex; justify-content:space-around; background:#fff; padding:10px; border-radius:8px; margin-top:5px; }
+.actionButtons { display:flex; justify-content:space-around; background:#fff; padding:10px; border-radius:8px; margin-top:5px; width:100%; }
 .actionButtons button { background:none; border:none; display:flex; flex-direction:column; align-items:center; color:#075E54; cursor:pointer; }
 .actionButtons i { font-size:20px; }
+/* ADMIN ACTIONS */
+.groupActions button { display:block; width:100%; margin:5px 0; padding:8px; border:none; border-radius:5px; background:#128C7E; color:white; cursor:pointer; }
 /* MOBILE */
 @media(max-width:600px){ .header-info h2{font-size:14px;} .header-info #members{font-size:10px;} .msg{max-width:85%; padding:8px 12px; font-size:14px;} #inputArea{width:calc(100% - 16px); bottom:6px; left:6px;} #chatBox{padding:8px;margin-bottom:100px;} }
 </style>
@@ -110,6 +113,7 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
   <div class="groupHeader">
     <img id="infoGroupPhoto" src="profile.png">
     <h2 id="infoGroupName" contenteditable="true">My Group</h2>
+    <p id="encryptionInfo">Messages are end-to-end encrypted</p>
     <p id="infoMembersCount">3 members</p>
     <div class="actionButtons">
       <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
@@ -119,20 +123,17 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
   </div>
 
   <div style="margin-top:10px; background:#fff; padding:10px; border-radius:8px;">
-    <h3>Members</h3>
+    <button id="addMemberBtn">Add Member</button>
     <div id="groupMembersList"></div>
-    <button onclick="addMember()" class="groupActions">Add Member</button>
   </div>
 
-  <div style="margin-top:10px;">
-    <button class="groupActions">Create Group Link</button>
-    <button class="groupActions">Request / Invite</button>
-    <button class="groupActions">Leave Group</button>
-    <button class="groupActions">Block Group</button>
-    <button class="groupActions">Report Group</button>
+  <div class="groupActions" style="margin-top:10px;">
+    <button>Leave Group</button>
+    <button>Block Group</button>
+    <button>Report Group</button>
     <div id="adminActions" style="display:none;">
-      <button class="groupActions">Delete Group</button>
-      <button class="groupActions">Block Member</button>
+      <button>Delete Group</button>
+      <button>Block Member</button>
     </div>
   </div>
 </div>
@@ -145,55 +146,48 @@ let storedFriends = JSON.parse(localStorage.getItem("friends")) || ["Alice","Bob
 let currentGroupMembers = ["Alice","Bob","Charlie"];
 let messages = [];
 let currentGroup = "My Group";
-let groupData = {
-  "My Group": { photo:"profile.png", members:["Alice","Bob","Charlie"], admin:true }
-};
+let groupData = { "My Group": { photo:"profile.png", members:[...currentGroupMembers], admin:true } };
 
 // ===== RENDER MEMBERS =====
-function renderMembers() {
-  const membersDiv = document.getElementById("members");
-  membersDiv.innerHTML = currentGroupMembers.join(", ");
-}
-function renderGroupMembers(){
+function renderMembers(){
+  document.getElementById("members").textContent = currentGroupMembers.join(", ");
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
   currentGroupMembers.forEach(name=>{
     const div = document.createElement("div");
     div.textContent = name;
-    div.className = "memberBox";
+    div.className="memberBox";
     membersDiv.appendChild(div);
   });
   document.getElementById("infoMembersCount").textContent = currentGroupMembers.length+" members";
 }
 renderMembers();
-renderGroupMembers();
 
 // ===== ADD MEMBER =====
-function addMember(){
+document.getElementById("addMemberBtn").onclick = ()=>{
   let friendsToAdd = storedFriends.filter(f=>!currentGroupMembers.includes(f));
   if(friendsToAdd.length===0){ alert("No more friends to add."); return; }
   const friend = prompt("Add member: "+friendsToAdd.join(", "));
   if(friend && friendsToAdd.includes(friend)){
     currentGroupMembers.push(friend);
     renderMembers();
-    renderGroupMembers();
   }
-}
+};
 
 // ===== CHAT =====
-const chatBox = document.getElementById("chatBox");
-const msgInput = document.getElementById("msgInput");
+const chatBox=document.getElementById("chatBox");
+const msgInput=document.getElementById("msgInput");
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
-    const div = document.createElement("div");
+    const div=document.createElement("div");
     div.className="msg"+(m.self?" self":"");
     div.innerHTML=`<div class="content">${m.text}</div><div class="meta">${m.time}</div>`;
     chatBox.appendChild(div);
   });
 }
-msgInput.addEventListener("keydown", e=>{
+msgInput.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     e.preventDefault();
     const txt=msgInput.value.trim();
@@ -216,10 +210,10 @@ document.getElementById("emojiBtn").onclick = ()=>{
   const picker = document.getElementById("emojiPicker");
   picker.innerHTML="";
   emojis.forEach(e=>{
-    const btn = document.createElement("button");
-    btn.textContent = e;
+    const btn=document.createElement("button");
+    btn.textContent=e;
     btn.style.fontSize="20px";
-    btn.onclick=()=> { msgInput.value+=e; msgInput.focus(); };
+    btn.onclick=()=>{ msgInput.value+=e; msgInput.focus(); };
     picker.appendChild(btn);
   });
   picker.style.display = picker.style.display==="flex"?"none":"flex";
@@ -227,13 +221,13 @@ document.getElementById("emojiBtn").onclick = ()=>{
 };
 
 // ===== MIC =====
-let mediaRecorder, audioChunks=[];
+let mediaRecorder,audioChunks=[];
 document.getElementById("micBtn").onclick = async ()=>{
   if(!mediaRecorder || mediaRecorder.state==="inactive"){
     const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = e=>{ audioChunks.push(e.data); };
-    mediaRecorder.onstop = ()=>{
+    mediaRecorder=new MediaRecorder(stream);
+    mediaRecorder.ondataavailable=e=>{ audioChunks.push(e.data); };
+    mediaRecorder.onstop=()=>{
       messages.push({id:uid(), text:"[Audio]", self:true, time:new Date().toLocaleTimeString()});
       audioChunks=[];
       renderMessages();
@@ -243,18 +237,17 @@ document.getElementById("micBtn").onclick = async ()=>{
   } else if(mediaRecorder.state==="recording"){ mediaRecorder.stop(); alert("Recording stopped."); }
 };
 
-// ===== GROUP INFO =====
+// ===== GROUP INFO PAGE =====
 document.getElementById("groupName").onclick = ()=> openGroupInfo(currentGroup);
 function openGroupInfo(groupName){
-  currentGroup = groupName;
+  currentGroup=groupName;
   document.getElementById("groupInfoPage").style.display="block";
   document.getElementById("chatPage").style.display="none";
   const data = groupData[groupName];
   document.getElementById("infoGroupPhoto").src = data.photo;
   document.getElementById("infoGroupName").textContent = groupName;
-  document.getElementById("infoMembersCount").textContent = data.members.length+" members";
   document.getElementById("adminActions").style.display = data.admin?"block":"none";
-  renderGroupMembers();
+  renderMembers();
 }
 function backToChat(){
   document.getElementById("groupInfoPage").style.display="none";
@@ -262,15 +255,13 @@ function backToChat(){
 }
 
 // ===== GROUP PHOTO FROM GALLERY =====
-document.getElementById("infoGroupPhoto").onclick = ()=>{
-  document.getElementById("groupPhotoFile").click();
-};
+document.getElementById("infoGroupPhoto").onclick = ()=>{ document.getElementById("groupPhotoFile").click(); };
 document.getElementById("groupPhotoFile").addEventListener("change", e=>{
-  const file = e.target.files[0];
+  const file=e.target.files[0];
   if(file){
-    const reader = new FileReader();
-    reader.onload = ()=> {
-      const url = reader.result;
+    const reader=new FileReader();
+    reader.onload=()=>{ 
+      const url=reader.result;
       document.getElementById("infoGroupPhoto").src=url;
       document.getElementById("groupPhoto").src=url;
       groupData[currentGroup].photo=url;
@@ -281,7 +272,7 @@ document.getElementById("groupPhotoFile").addEventListener("change", e=>{
 
 // ===== EDIT GROUP NAME =====
 document.getElementById("infoGroupName").addEventListener("blur", ()=>{
-  const newName = document.getElementById("infoGroupName").textContent.trim();
+  const newName=document.getElementById("infoGroupName").textContent.trim();
   if(newName && newName!==currentGroup){
     groupData[newName] = {...groupData[currentGroup]};
     delete groupData[currentGroup];
