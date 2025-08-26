@@ -45,11 +45,11 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
 /* EMOJI PICKER */
 #emojiPicker { display:none; position:absolute; bottom:60px; right:10px; background:#fff; border-radius:10px; padding:5px; box-shadow:0 2px 5px rgba(0,0,0,0.2); max-width:300px; max-height:150px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:5px; }
 /* GROUP INFO PAGE */
-#groupInfoPage { display:none; background:#ffffff; height:100vh; overflow-y:auto; }
+#groupInfoPage { display:none; background:#ffffff; height:100vh; overflow-y:auto; padding-bottom:20px; }
 /* CENTERED PHOTO & NAME */
 .groupHeader { display:flex; flex-direction:column; align-items:center; padding:20px; background:#ffffff; }
 .groupHeader img { width:80px; height:80px; border-radius:50%; cursor:pointer; margin-bottom:10px; }
-.groupHeader h2 { margin:0; font-size:18px; font-weight:500; cursor:text; }
+.groupHeader h2 { margin:0; font-size:18px; font-weight:500; cursor:text; text-align:center; }
 .groupHeader p { margin:0; font-size:12px; color:#d0f0e3; }
 /* MEMBERS IN ROW */
 #groupMembersList { display:flex; flex-wrap:nowrap; overflow-x:auto; gap:5px; padding:5px; }
@@ -57,31 +57,17 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
 /* ADD MEMBER BUTTON ON TOP */
 #addMemberBtn { display:block; margin-bottom:5px; padding:5px 10px; border:none; border-radius:5px; background:#128C7E; color:white; cursor:pointer; }
 /* THREE ACTION BUTTONS */
-.actionButtons {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr; 
-  background: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 10px;
-  gap: 10px;
-}
-.actionButtons button {
-  background: #fff; 
-  border: 1px solid #eee; 
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0;
-  cursor: pointer;
-  transition: 0.2s;
-}
+.actionButtons { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #fff; padding: 10px; border-radius: 8px; margin-top: 10px; gap: 10px; }
+.actionButtons button { background: #fff; border: 1px solid #eee; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; cursor: pointer; transition: 0.2s; }
 .actionButtons button:hover { background:#f0f0f0; }
 .actionButtons i { font-size:20px; margin-bottom:5px; }
+/* INFO ITEMS */
+.infoSection { margin-top:10px; padding:10px; }
+.infoItem { font-size:14px; color:black; margin:5px 0; display:flex; justify-content:space-between; align-items:center; }
 /* ADMIN ACTIONS */
-.groupActions button { display:block; width:100%; margin:5px 0; padding:8px; border:none; border-radius:5px; background:#128C7E; color:white; cursor:pointer; }
+.groupActions button { display:block; width:100%; margin:5px 0; padding:12px; border:none; border-radius:0; background:#fff; color:black; text-align:left; cursor:pointer; }
+/* BACK BUTTON */
+#backBtn { position:absolute; left:10px; top:15px; font-size:20px; background:none; border:none; cursor:pointer; color:#075E54; }
 /* MOBILE */
 @media(max-width:600px){ .header-info h2{font-size:14px;} .header-info #members{font-size:10px;} .msg{max-width:85%; padding:8px 12px; font-size:14px;} #inputArea{width:calc(100% - 16px); bottom:6px; left:6px;} #chatBox{padding:8px;margin-bottom:100px;} }
 </style>
@@ -129,6 +115,7 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
 
 <!-- GROUP INFO PAGE -->
 <div id="groupInfoPage">
+  <button id="backBtn"><i class="fa-solid fa-arrow-left"></i></button>
   <div class="groupHeader">
     <img id="infoGroupPhoto" src="profile.png">
     <h2 id="infoGroupName" contenteditable="true">My Group</h2>
@@ -138,6 +125,14 @@ body { margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#ece5dd; 
       <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
       <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
     </div>
+  </div>
+
+  <div class="infoSection">
+    <div class="infoItem">End-to-end Encryption</div>
+    <div class="infoItem">Disappearing Messages <input type="checkbox" id="disappearToggle"></div>
+    <div class="infoItem">Chat Color & Wallpaper</div>
+    <div class="infoItem">Chat Lock</div>
+    <div class="infoItem">Advanced Chat Privacy</div>
   </div>
 
   <div style="margin-top:10px; background:#fff; padding:10px; border-radius:8px;">
@@ -267,6 +262,7 @@ function openGroupInfo(groupName){
   document.getElementById("adminActions").style.display = data.admin?"block":"none";
   renderMembers();
 }
+document.getElementById("backBtn").onclick = ()=>{ backToChat(); };
 function backToChat(){
   document.getElementById("groupInfoPage").style.display="none";
   document.getElementById("chatPage").style.display="block";
