@@ -6,6 +6,7 @@
 <title>WhatsApp Group Info</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
+/* ===== GENERAL ===== */
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -16,7 +17,7 @@ body {
   flex-direction: column;
 }
 
-/* CHAT PAGE */
+/* ===== CHAT PAGE ===== */
 #chatPage { display: block; flex: 1; flex-direction: column; background: #fff; }
 .header { display: flex; align-items: center; justify-content: space-between; background: #075E54; color: white; padding: 10px; }
 .header img { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; object-fit: cover; }
@@ -24,134 +25,62 @@ body {
 .header-info h2 { margin:0; font-size:16px; cursor:pointer; }
 .header-info #members { font-size:12px; color:#d0f0e3; }
 
-/* CHAT BOX */
 #chatBox { flex: 1; overflow-y: auto; padding: 10px; margin-bottom: 100px; }
 .msg { max-width: 70%; padding:10px 14px; margin:5px 0; border-radius:18px; background:#f1f1f1; align-self:flex-start; position:relative; word-break: break-word; }
 .msg.self { background:#dcf8c6; align-self:flex-end; }
 .msg .meta { font-size:10px; color:#999; text-align:right; }
 
-/* INPUT AREA */
-#inputArea { display:flex; align-items:center; position:fixed; bottom:10px; left:10px; width:calc(100%-20px); z-index:100; }
+#inputArea { display:flex; align-items:center; position:fixed; bottom:10px; left:10px; width:calc(100% - 20px); z-index:100; }
 .input-box { display:flex; flex:1; background:#f1f1f1; border-radius:25px; padding:6px 10px; gap:6px; }
 .input-box input { flex:1; border:none; outline:none; font-size:14px; background:transparent; }
 .input-buttons button { background:transparent; border:none; font-size:20px; cursor:pointer; color:#128C7E; }
-
-/* MIC BUTTON */
 #micBtn { width:40px; height:40px; border-radius:50%; background:#25D366; color:white; border:none; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-left:6px; }
 
-/* ATTACHMENT MENU */
 #attachmentMenu { display:none; position:fixed; bottom:60px; left:10px; right:10px; background:#fff; padding:10px; border-radius:10px; z-index:101; }
 #attachmentMenu .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
 #attachmentMenu button { padding:10px; border:none; border-radius:8px; background:#128C7E; color:white; cursor:pointer; font-size:16px; }
 
-/* EMOJI PICKER */
 #emojiPicker { display:none; position:absolute; bottom:60px; right:10px; background:#fff; border-radius:10px; padding:5px; max-width:300px; max-height:150px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:5px; }
 
-/* GROUP INFO PAGE */
+/* ===== GROUP INFO PAGE ===== */
 #groupInfoPage { display:none; flex:1; overflow-y:auto; background:#fff; padding-bottom:20px; }
-
-/* GROUP HEADER */
 .groupHeader { display:flex; flex-direction:column; align-items:center; padding:15px; background:#fff; color:#000; margin-bottom:10px; border-radius:10px; position:relative; }
 .groupHeader img { width:80px; height:80px; border-radius:50%; cursor:pointer; margin-bottom:10px; object-fit:cover; }
 .groupHeader h2 { margin:0; font-size:18px; font-weight:500; cursor:text; }
 .backArrow { position:absolute; left:10px; top:20px; font-size:20px; cursor:pointer; color:#000; }
 
-/* 3-COLUMN ACTIONS */
 .actionButtons { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; width:100%; }
 .actionButtons button { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 0; background:#fff; border:1px solid #eee; border-radius:8px; cursor:pointer; }
 .actionButtons i { font-size:20px; margin-bottom:5px; }
 
-/* WHITE CONTAINERS */
 .container { background:#fff; padding:10px; margin:10px; border-radius:10px; }
 .infoItem { margin:5px 0; font-size:14px; }
-.infoItem input { margin-left:10px; }
 
-  
-/* SETTINGS CONTAINER */
-.settingsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  background: #fff;
-  border-radius: 8px;
-}
+.settingsContainer { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; background: #fff; border-radius: 8px; }
+.settingsContainer button { width: 100%; padding: 12px 15px; border: none; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #000; font-size: 16px; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
+.settingsContainer button:hover { background: #f1f1f1; }
+.settingsContainer i { color: black; font-size: 18px; }
+.settingsContainer input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+.settingsContainer button:focus { outline: none; }
 
-/* SETTINGS ITEMS */
-.settingsContainer button {
-  width: 100%;
-  padding: 12px 15px;
-  border: none;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* pushes checkbox to the right */
-  gap: 10px;
-  color: #000;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.settingsContainer button:hover {
-  background: #f1f1f1;
-}
-
-.settingsContainer i {
-  color: black;
-  font-size: 18px;
-}
-
-.settingsContainer input[type="checkbox"] {
-  transform: scale(1.2);
-  cursor: pointer;
-}
-
-/* REMOVE FOCUS OUTLINE */
-.settingsContainer button:focus {
-  outline: none;
-}
-
-  
-/* MEMBERS LIST */
 #groupMembersList { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
 .memberBox { padding: 5px 10px; background: #eee; border-radius: 8px; cursor: pointer; }
-  .membersHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
+.membersHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+#memberCount { font-weight: 500; font-size: 16px; }
+#addMemberBtn { width: 30px; height: 30px; border-radius: 50%; background: #128C7E; color: white; font-size: 20px; border: none; cursor: pointer; }
 
-#memberCount {
-  font-weight: 500;
-  font-size: 16px;
-}
-
-#addMemberBtn {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #128C7E;
-  color: white;
-  font-size: 20px;
-  border: none;
-  cursor: pointer;
-}
-
-
-/* GROUP LINKS CONTAINER */
 #groupLinks { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
 #groupLinks button { width: 100%; padding: 10px; border: none; border-radius: 5px; background: #fff; color: #000; cursor: pointer; text-align: left; }
 
-/*RED BUTTON*/
 .actionBox { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
 .actionBox button { width: 100%; padding: 12px 15px; border: none; background: #fff; display: flex; align-items: center; gap: 30px; color: red; font-size: 16px; cursor: pointer; }
 .actionBox i { color: red; font-size: 18px; }
 .actionBox button:focus { outline: none; }
+
+/* RESPONSIVE FOR LAPTOP */
+@media (min-width:768px){
+  #chatPage, #groupInfoPage { max-width:600px; margin:auto; border:1px solid #ccc; border-radius:10px; }
+}
 </style>
 </head>
 <body>
@@ -169,9 +98,7 @@ body {
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
     </div>
   </div>
-
   <div id="chatBox"></div>
-
   <div id="inputArea">
     <div class="input-box">
       <input id="msgInput" placeholder="Type a message...">
@@ -183,24 +110,19 @@ body {
     <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
   </div>
 
-  <!-- Attachment Menu -->
-<div id="attachmentMenu">
-  <div class="grid">
-    <!-- Hidden file inputs -->
-    <input type="file" id="fileInput" style="display:none">
-    <input type="file" id="galleryInput" accept="image/*" style="display:none">
-
-    <!-- Buttons -->
-    <button id="sendDocumentBtn"><i class="fa-solid fa-paperclip"></i>File</button>
-    <button id="galleryBtn"><i class="fa-solid fa-image"></i>Photo</button>
-    <button id="cameraBtn"><i class="fa-solid fa-camera"></i>Camera</button>
-    <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i>Location</button>
-    <button id="audioBtn"><i class="fa-solid fa-phone"></i>Audio</button>
-    <button id="contactBtn"><i class="fa-solid fa-user"></i>Contact</button>
-    <button id="distanceBtn"><i class="fa-solid fa-location-crosshairs"></i>Distance</button>
+  <div id="attachmentMenu">
+    <div class="grid">
+      <input type="file" id="fileInput" style="display:none">
+      <input type="file" id="galleryInput" accept="image/*" style="display:none">
+      <button id="sendDocumentBtn"><i class="fa-solid fa-paperclip"></i>File</button>
+      <button id="galleryBtn"><i class="fa-solid fa-image"></i>Photo</button>
+      <button id="cameraBtn"><i class="fa-solid fa-camera"></i>Camera</button>
+      <button id="sendLocationBtn"><i class="fa-solid fa-location-dot"></i>Location</button>
+      <button id="audioBtn"><i class="fa-solid fa-phone"></i>Audio</button>
+      <button id="contactBtn"><i class="fa-solid fa-user"></i>Contact</button>
+      <button id="distanceBtn"><i class="fa-solid fa-location-crosshairs"></i>Distance</button>
+    </div>
   </div>
-</div>
-
 
   <div id="emojiPicker"></div>
 </div>
@@ -218,34 +140,20 @@ body {
     </div>
   </div>
 
-  
-<div class="settingsContainer">
-  <button>
-    <i class="fa-solid fa-lock"></i>
-    End-to-end Encryption
-  </button>
-   <button>
-    <i class="fa-solid fa-network-wired"></i>
-    MESH NETWORK FORM  </button>
-  <button>
-    <i class="fa-solid fa-paint-roller"></i>
-    Chat Color & Wallpaper
-  </button>
-  <button>
-    <i class="fa-solid fa-shield"></i>
-    Advanced Chat Privacy
-    <input type="checkbox">
-  </button>
-</div>
-  
-<div class="container">
-  <div class="membersHeader">
-    <span id="memberCount">0 Members</span>
-    <button id="addMemberBtn">+</button>
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i>End-to-end Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i>MESH NETWORK FORM</button>
+    <button><i class="fa-solid fa-paint-roller"></i>Chat Color & Wallpaper</button>
+    <button><i class="fa-solid fa-shield"></i>Advanced Chat Privacy<input type="checkbox"></button>
   </div>
-  <div id="groupMembersList"></div>
-</div>
 
+  <div class="container">
+    <div class="membersHeader">
+      <span id="memberCount">0 Members</span>
+      <button id="addMemberBtn">+</button>
+    </div>
+    <div id="groupMembersList"></div>
+  </div>
 
   <div class="container" id="groupLinks">
     <button id="showGroupLink">Group Link</button>
@@ -261,82 +169,31 @@ body {
   </div>
 
   <div class="container actionBox">
-    <button><i class="fa-solid fa-sign-out"></i><span>Leave Group</span></button>
-    <button><i class="fa-solid fa-ban"></i><span>Block Group</span></button>
-    <button><i class="fa-solid fa-flag"></i><span>Report Group</span></button>
-    <button><i class="fa-solid fa-trash"></i><span>Delete Group</span></button>
-    <button><i class="fa-solid fa-user-slash"></i><span>Block Member</span></button>
+    <button onclick="leaveGroup()"><i class="fa-solid fa-sign-out"></i><span>Leave Group</span></button>
+    <button onclick="blockGroup()"><i class="fa-solid fa-ban"></i><span>Block Group</span></button>
+    <button onclick="reportGroup()"><i class="fa-solid fa-flag"></i><span>Report Group</span></button>
+    <button onclick="deleteGroup()"><i class="fa-solid fa-trash"></i><span>Delete Group</span></button>
+    <button onclick="blockMember()"><i class="fa-solid fa-user-slash"></i><span>Block Member</span></button>
   </div>
 
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
 <script>
-// ===== DATA =====
+/* ===== DATA ===== */
 let allFriends = JSON.parse(localStorage.getItem("friendsList") || '["Alice","Bob","Charlie"]'); 
-let currentGroupMembers = JSON.parse(localStorage.getItem("groupMembers") || '[]');
+let currentGroupMembers = JSON.parse(localStorage.getItem("groupMembers") || []);
 let messages = [];
 let currentGroup = "My Group";
-let groupData = {
-  "My Group": { photo: "profile.png", members: [...currentGroupMembers], admin: true }
-};
+let groupData = { "My Group": { photo: "profile.png", members: [...currentGroupMembers], admin: true } };
 
-// ===== CHAT MEMBERS =====
+/* ===== RENDER FUNCTIONS ===== */
 function renderChatMembers(){
   document.getElementById("members").textContent = currentGroupMembers.join(", ");
 }
-<script>
-// ===== EMOJI PICKER =====
-const emojiBtn = document.getElementById("emojiBtn");
-const emojiPicker = document.getElementById("emojiPicker");
-
-// List of emojis (you can expand)
-const emojis = ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😍","🥰","😘","😗","😙","😚"];
-
-function renderEmojis(){
-  emojiPicker.innerHTML = "";
-  emojis.forEach(e=>{
-    const span = document.createElement("span");
-    span.textContent = e;
-    span.style.cursor = "pointer";
-    span.style.fontSize = "20px";
-    span.addEventListener("click", ()=>{
-      msgInput.value += e;
-      msgInput.focus();
-    });
-    emojiPicker.appendChild(span);
-  });
-}
-renderEmojis();
-
-// Toggle emoji picker
-emojiBtn.onclick = () => {
-  emojiPicker.style.display = emojiPicker.style.display === "flex" ? "none" : "flex";
-};
-
-// Close emoji picker if clicked outside
-document.addEventListener("click", (e)=>{
-  if(!emojiPicker.contains(e.target) && e.target !== emojiBtn){
-    emojiPicker.style.display = "none";
-  }
-});
-
-// ===== MIC BUTTON (Voice Simulation) =====
-const micBtn = document.getElementById("micBtn");
-micBtn.onclick = () => {
-  const txt = prompt("Simulate voice input (type your message):");
-  if(txt && txt.trim() !== ""){
-    messages.push({id:Date.now(), text:txt, self:true, time:new Date().toLocaleTimeString()});
-    renderMessages();
-  }
-};
-</script>
-
-// ===== GROUP MEMBERS =====
 function renderGroupMembers(){
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
-
   if(currentGroupMembers.length === 0){
     const div = document.createElement("div");
     div.textContent = "No members yet";
@@ -351,36 +208,15 @@ function renderGroupMembers(){
       membersDiv.appendChild(div);
     });
   }
-
-  // Member count
   document.getElementById("memberCount").textContent = `${currentGroupMembers.length} Member${currentGroupMembers.length !== 1 ? 's' : ''}`;
-
-  // Check if friends are left to add
-  const addBtn = document.getElementById("addMemberBtn");
-  let friendsLeft = allFriends.filter(f => !currentGroupMembers.includes(f));
-  const existingMsg = document.getElementById("noFriendsMsg");
-  if(existingMsg) existingMsg.remove();
-  if(friendsLeft.length === 0){
-    const msg = document.createElement("div");
-    msg.id="noFriendsMsg";
-    msg.textContent="No friends to add yet.";
-    msg.style.fontSize="14px";
-    msg.style.color="#555";
-    msg.style.marginTop="5px";
-    addBtn.insertAdjacentElement("afterend", msg);
-  }
-
   localStorage.setItem("groupMembers", JSON.stringify(currentGroupMembers));
   renderChatMembers();
 }
 
-// ===== ADD MEMBER =====
+/* ===== ADD MEMBER ===== */
 document.getElementById("addMemberBtn").onclick = () => {
   const friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
-  if(friendsToAdd.length === 0){
-    alert("No friends to add yet.");
-    return;
-  }
+  if(friendsToAdd.length === 0){ alert("No friends to add yet."); return; }
   const friend = prompt("Add member:\n" + friendsToAdd.join("\n"));
   if(friend && friendsToAdd.includes(friend)){
     currentGroupMembers.push(friend);
@@ -388,23 +224,16 @@ document.getElementById("addMemberBtn").onclick = () => {
   }
 };
 
-// ===== CHAT =====
+/* ===== CHAT ===== */
 const chatBox=document.getElementById("chatBox");
 const msgInput=document.getElementById("msgInput");
-
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-
-msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    const txt=msgInput.value.trim();
-    if(!txt) return;
-    messages.push({id:uid(), text:txt, self:true, time:new Date().toLocaleTimeString()});
-    msgInput.value="";
-    renderMessages();
+msgInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){ e.preventDefault(); const txt=msgInput.value.trim();
+    if(!txt) return; messages.push({id:uid(), text:txt, self:true, time:new Date().toLocaleTimeString()});
+    msgInput.value=""; renderMessages();
   }
 });
-
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
@@ -416,159 +245,89 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// ===== ATTACHMENT MENU =====
+/* ===== ADD MESSAGE HELPER ===== */
+function addMessage(content,type="sent"){
+  const msg = document.createElement("div");
+  msg.classList.add("msg", type==="sent"?"self":"");
+  msg.innerHTML = `<div class="content">${content}</div><div class="meta">${new Date().toLocaleTimeString()}</div>`;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+/* ===== ATTACHMENT MENU ===== */
 document.getElementById("plusBtn").onclick = () => {
   const menu = document.getElementById("attachmentMenu");
   menu.style.display = menu.style.display === "block" ? "none" : "block";
 };
-
-// File
-document.getElementById("sendDocumentBtn").onclick = () => document.getElementById("fileInput").click();
-document.getElementById("fileInput").onchange = e => {
+document.getElementById("sendDocumentBtn").onclick = ()=>{ document.getElementById("fileInput").click(); };
+document.getElementById("fileInput").onchange = e=>{
+  const file = e.target.files[0]; if(file) addMessage(`📎 File: ${file.name}`);
+};
+document.getElementById("galleryBtn").onclick = ()=>{ document.getElementById("galleryInput").click(); };
+document.getElementById("galleryInput").onchange = e=>{
   const file = e.target.files[0];
-  if(file) addMessage(`📎 File: ${file.name}`);
+  if(file){ const imgURL = URL.createObjectURL(file); addMessage(`<img src="${imgURL}" style="max-width:150px; border-radius:8px;">`); }
 };
-
-// Gallery
-document.getElementById("galleryBtn").onclick = () => document.getElementById("galleryInput").click();
-document.getElementById("galleryInput").onchange = e => {
-  const file = e.target.files[0];
-  if(file){
-    const imgURL = URL.createObjectURL(file);
-    addMessage(`<img src="${imgURL}" style="max-width:150px; border-radius:8px;">`);
-  }
+document.getElementById("cameraBtn").onclick = ()=> addMessage("📷 [Camera opened]");
+document.getElementById("sendLocationBtn").onclick = ()=>{
+  if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude, longitude}=pos.coords; addMessage(`📍 Location: ${latitude}, ${longitude}`);
+  }); }
 };
+document.getElementById("audioBtn").onclick = ()=> addMessage("📞 [Audio call started]");
+document.getElementById("contactBtn").onclick = ()=> addMessage("👤 [Contact shared]");
+document.getElementById("distanceBtn").onclick = ()=> addMessage("📏 [Distance info]");
 
-// Camera
-document.getElementById("cameraBtn").onclick = () => addMessage("📷 [Camera opened]");
+/* ===== EMOJI PICKER ===== */
+const emojiBtn = document.getElementById("emojiBtn");
+const emojiPicker = document.getElementById("emojiPicker");
+const emojis = ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😍","🥰","😘","😗","😙","😚"];
+function renderEmojis(){ emojiPicker.innerHTML = ""; emojis.forEach(e=>{ const span = document.createElement("span"); span.textContent = e;
+span.style.cursor = "pointer"; span.style.fontSize = "20px"; span.addEventListener("click", ()=>{ msgInput.value += e; msgInput.focus(); }); emojiPicker.appendChild(span); }); }
+renderEmojis();
+emojiBtn.onclick = ()=>{ emojiPicker.style.display = emojiPicker.style.display==="flex"?"none":"flex"; };
+document.addEventListener("click",e=>{ if(!emojiPicker.contains(e.target) && e.target!==emojiBtn){ emojiPicker.style.display="none"; } });
 
-// Location
-document.getElementById("sendLocationBtn").onclick = () => {
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos => {
-      const {latitude, longitude} = pos.coords;
-      addMessage(`📍 Location: ${latitude}, ${longitude}`);
-    });
-  }
-};
+/* ===== MIC BUTTON ===== */
+const micBtn = document.getElementById("micBtn");
+micBtn.onclick = ()=>{ const txt = prompt("Simulate voice input (type your message):"); if(txt && txt.trim()!==""){ messages.push({id:Date.now(), text:txt, self:true, time:new Date().toLocaleTimeString()}); renderMessages(); } };
 
-// Audio
-document.getElementById("audioBtn").onclick = () => addMessage("📞 [Audio call started]");
-
-// Contact
-document.getElementById("contactBtn").onclick = () => addMessage("👤 [Contact shared]");
-
-// Distance
-document.getElementById("distanceBtn").onclick = () => addMessage("📏 [Distance info]");
-
-// Helper to add messages
-function addMessage(content){
-  const div = document.createElement("div");
-  div.className = "msg self";
-  div.innerHTML = `<div class="content">${content}</div><div class="meta">${new Date().toLocaleTimeString()}</div>`;
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// ===== GROUP INFO =====
+/* ===== GROUP INFO ===== */
 document.getElementById("groupName").onclick = ()=> openGroupInfo(currentGroup);
-
 function openGroupInfo(groupName){
-  currentGroup=groupName;
-  document.getElementById("groupInfoPage").style.display="block";
-  document.getElementById("chatPage").style.display="none";
-  const data = groupData[groupName];
+  currentGroup=groupName; document.getElementById("groupInfoPage").style.display="block";
+  document.getElementById("chatPage").style.display="none"; const data = groupData[groupName];
   document.getElementById("infoGroupPhoto").src = data.photo;
-  document.getElementById("infoGroupName").textContent = groupName;
-  renderGroupMembers();
+  document.getElementById("infoGroupName").textContent = groupName; renderGroupMembers();
 }
+function backToChat(){ document.getElementById("groupInfoPage").style.display="none"; document.getElementById("chatPage").style.display="block"; }
 
-function backToChat(){
-  document.getElementById("groupInfoPage").style.display="none";
-  document.getElementById("chatPage").style.display="block";
-}
-
-// ===== GROUP PHOTO =====
-document.getElementById("infoGroupPhoto").onclick = ()=> document.getElementById("groupPhotoFile").click();
+/* ===== GROUP PHOTO ===== */
+document.getElementById("infoGroupPhoto").onclick = ()=>{ document.getElementById("groupPhotoFile").click(); };
 document.getElementById("groupPhotoFile").addEventListener("change", e=>{
-  const file = e.target.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = () => {
-      const url = reader.result;
-      document.getElementById("infoGroupPhoto").src = url;
-      document.getElementById("groupPhoto").src = url;
-      groupData[currentGroup].photo = url;
-    };
-    reader.readAsDataURL(file);
+  const file=e.target.files[0]; if(file){ const reader=new FileReader();
+    reader.onload=()=>{ const url=reader.result;
+      document.getElementById("infoGroupPhoto").src=url;
+      document.getElementById("groupPhoto").src=url;
+      groupData[currentGroup].photo=url;
+    }; reader.readAsDataURL(file);
   }
 });
 
-// ===== EDIT GROUP NAME =====
+/* ===== EDIT GROUP NAME ===== */
 document.getElementById("infoGroupName").addEventListener("input", ()=>{
-  const newName = document.getElementById("infoGroupName").textContent.trim();
-  if(newName && newName!==currentGroup){
-    groupData[newName] = {...groupData[currentGroup]};
-    delete groupData[currentGroup];
-    currentGroup = newName;
-    document.getElementById("groupName").textContent = newName;
-  }
+  const newName=document.getElementById("infoGroupName").textContent.trim();
+  if(newName && newName!==currentGroup){ groupData[newName]={...groupData[currentGroup]}; delete groupData[currentGroup]; currentGroup=newName; document.getElementById("groupName").textContent=newName; }
 });
 
-// ===== GROUP ACTION BUTTONS =====
-document.querySelectorAll(".actionBox button").forEach(btn => {
-  btn.onclick = () => {
-    const action = btn.textContent.trim();
-    switch(action){
-      case "Leave Group":
-        if(confirm("Are you sure you want to leave the group?")){
-          alert("You left the group.");
-          currentGroupMembers = [];
-          renderGroupMembers();
-          backToChat();
-        }
-        break;
-      case "Block Group":
-        alert("Group blocked.");
-        break;
-      case "Report Group":
-        alert("Group reported.");
-        break;
-      case "Delete Group":
-        if(confirm("Are you sure you want to delete this group?")){
-          alert("Group deleted.");
-          currentGroupMembers = [];
-          renderGroupMembers();
-          backToChat();
-        }
-        break;
-      case "Block Member":
-        const member = prompt("Enter member name to block:\n" + currentGroupMembers.join("\n"));
-        if(member && currentGroupMembers.includes(member)){
-          currentGroupMembers = currentGroupMembers.filter(m=>m!==member);
-          renderGroupMembers();
-          alert(`${member} has been blocked.`);
-        }
-        break;
-    }
-  };
-});
+/* ===== GROUP ACTIONS ===== */
+function leaveGroup(){ if(confirm("Leave group?")){ alert("You left the group"); currentGroupMembers=[]; renderGroupMembers(); backToChat(); } }
+function blockGroup(){ alert("Group blocked"); }
+function reportGroup(){ alert("Group reported"); }
+function deleteGroup(){ if(confirm("Delete group?")){ alert("Group deleted"); currentGroupMembers=[]; renderGroupMembers(); backToChat(); } }
+function blockMember(){ const member=prompt("Enter member name to block:"); if(member && currentGroupMembers.includes(member)){ alert(member+" blocked"); } }
 
-// ===== GROUP LINK =====
-document.getElementById("showGroupLink").onclick = () => {
-  document.getElementById("linkPopup").style.display="block";
-};
-document.getElementById("closePopup").onclick = () => document.getElementById("linkPopup").style.display="none";
-function copyLink(){
-  const input = document.getElementById("groupLinkInput");
-  input.select();
-  navigator.clipboard.writeText(input.value).then(()=>alert("Copied to clipboard!"));
-}
-
-// ===== INITIAL RENDER =====
-renderGroupMembers();
-renderChatMembers();
+renderGroupMembers(); renderChatMembers();
 </script>
-
 </body>
 </html>
