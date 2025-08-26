@@ -77,22 +77,40 @@ body {
 .actionBox i { color: red; font-size: 18px; }
 .actionBox button:focus { outline: none; }
 
-/* RESPONSIVE FOR LAPTOP */
-@media (min-width:768px){
-  #chatPage, #groupInfoPage { max-width:600px; margin:auto; border:1px solid #ccc; border-radius:10px; }
+/* CHAT BOX AND MESSAGES */
+#chatBox {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 100px;
 }
 
+.msg {
+  max-width: 90%; /* mobile-friendly */
+  padding: 10px 14px;
+  margin: 5px 0;
+  border-radius: 18px;
+  background: #f1f1f1;
+  word-break: break-word;
+}
+
+.msg.self {
+  background: #dcf8c6;
+  align-self: flex-end;
+}
+
+/* AUDIO PLAYER */
 .msg audio {
-  max-width: 300px;   /* scales for laptop and phone */
   width: 100%;
+  max-width: 500px; /* bigger on laptop */
   border-radius: 8px;
   outline: none;
 }
-@media (min-width: 768px){
-  .msg { max-width: 60%; }
-}
 
-  .poll {
+/* POLL MESSAGES */
+.poll {
+  width: 100%;
+  max-width: 500px; /* scale on laptops */
   background: #f1f1f1;
   padding: 10px;
   border-radius: 10px;
@@ -122,6 +140,32 @@ body {
 .poll .votes {
   margin-left: 5px;
 }
+
+/* ATTACHMENT MENU GRID */
+#attachmentMenu .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+/* RESPONSIVE FOR LAPTOP */
+@media (min-width: 768px) {
+  #chatPage, #groupInfoPage {
+    max-width: 800px;
+    margin: auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+
+  .msg {
+    max-width: 60%;
+  }
+
+  #attachmentMenu .grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
 
 </style>
 </head>
