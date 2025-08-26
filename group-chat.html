@@ -75,15 +75,22 @@ body {
 
 /* RED ACTIONS ALL INSIDE ONE CONTAINER */
 .groupActions button {
-  display: block;
+  display: flex;             /* icon + text in row */
+  align-items: center;       /* vertically centered */
+  gap: 8px;                  /* space between icon and text */
   width: 100%;
   margin: 5px 0;
   padding: 8px;
   border: none;
   border-radius: 5px;
-  background: white;  /* White container */
-  color: red;         /* Red text */
+  background: white;         /* white container */
+  color: red;                /* red text */
   cursor: pointer;
+  justify-content: flex-start; /* left align */
+}
+
+.groupActions i {
+  font-size: 16px;
 }
 
 </style>
@@ -164,14 +171,18 @@ body {
   </div>
 
 
-<!-- RED ACTIONS IN SINGLE WHITE CONTAINER -->
-<div class="container groupActions">
-  <button>Leave Group</button>
-  <button>Block Group</button>
-  <button>Report Group</button>
-  <div id="adminActions">
-    <button>Delete Group</button>
-    <button>Block Member</button>
+
+<!-- OUTER BLACK CONTAINER -->
+<div style="background:black; padding:10px;">
+  <!-- INNER WHITE CONTAINER -->
+  <div class="groupActions" style="background:white; padding:10px; border-radius:8px;">
+    <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
+    <button><i class="fa-solid fa-ban"></i> Block Group</button>
+    <button><i class="fa-solid fa-flag"></i> Report Group</button>
+    <div id="adminActions">
+      <button><i class="fa-solid fa-trash"></i> Delete Group</button>
+      <button><i class="fa-solid fa-user-slash"></i> Block Member</button>
+    </div>
   </div>
 </div>
 
