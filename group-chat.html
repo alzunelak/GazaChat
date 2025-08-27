@@ -95,13 +95,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     </div>
   </div>
 
-  <div class="settingsContainer">
-    <button><i class="fa-solid fa-lock"></i> End-to-end Encryption</button>
-    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
-    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
-    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy <input type="checkbox"></button>
-  </div>
-
   <div class="container">
     <div class="membersHeader">
       <span id="memberCount">0 Members</span>
@@ -109,56 +102,14 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     </div>
     <div id="groupMembersList"></div>
   </div>
-
-  <div class="container" id="groupLinks">
-    <button id="showGroupLink">Group Link</button>
-    <button id="showBlockedUsers">Blocked Users</button>
-    <button id="showRequestInvite">Request / Invite</button>
-  </div>
-
-  <div class="container actionBox">
-    <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
-    <button><i class="fa-solid fa-ban"></i> Block Group</button>
-    <button><i class="fa-solid fa-flag"></i> Report Group</button>
-    <button><i class="fa-solid fa-trash"></i> Delete Group</button>
-  </div>
-
-  <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
-<!-- POPUPS -->
-<div id="linkPopup" class="popup">
-  <h3>Invite Link</h3>
-  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
-  <button onclick="copyLink()">Copy</button>
-  <button class="closeBtn" onclick="closePopup()">Close</button>
-</div>
-
-document.getElementById("addMemberBtn").onclick = () => {
-    // Save current members to localStorage
-    localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
-    localStorage.setItem("allFriends", JSON.stringify(allFriends));
-
-    // Redirect to Add Members page
-    window.location.href = "addMembers.html";
-};
-
-
-
-<div id="blockedPopup" class="popup">
-  <h3>Blocked Users</h3>
-  <div id="blockedList"></div>
-  <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
-</div>
-
-
-  <script>
+<script>
 // ===== STATE =====
 let currentUser = "John Doe";
 let isAdmin = true;
 let allFriends = ["Alice","Bob","Charlie"];
-let currentGroupMembers = [currentUser,"Alice","Bob"];
-let blockedMembers = JSON.parse(localStorage.getItem("blockedMembers")||"[]");
+let currentGroupMembers = [currentUser,"Alice"];
 let messages = [];
 
 // ===== CHAT =====
@@ -181,7 +132,6 @@ msgInput.addEventListener("keydown", e => {
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
-    if(blockedMembers.includes(m.user)) return; // skip blocked users
     const div=document.createElement("div");
     div.className="msg"+(m.user===currentUser?" self":"");
     div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
@@ -193,69 +143,25 @@ function renderMessages(){
 function renderGroupMembers(){
   const membersDiv=document.getElementById("groupMembersList");
   membersDiv.innerHTML="";
-  const activeMembers=currentGroupMembers.filter(m=>!blockedMembers.includes(m));
-  if(activeMembers.length===0){
+  currentGroupMembers.forEach(name=>{
     const div=document.createElement("div");
-    div.textContent="No active members";
-    div.style.fontStyle="italic"; div.style.color="#555";
+    div.className="memberBox"; div.textContent=name;
     membersDiv.appendChild(div);
-  } else {
-    activeMembers.forEach(name=>{
-      const div=document.createElement("div");
-      div.className="memberBox"; div.textContent=name;
-      if(isAdmin && name!==currentUser){
-        const btn=document.createElement("button");
-        btn.textContent="Block"; btn.style.marginLeft="10px";
-        btn.onclick=()=>blockMember(name);
-        div.appendChild(btn);
-      }
-      membersDiv.appendChild(div);
-    });
-  }
-  document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
+  });
+  document.getElementById("memberCount").textContent=`${currentGroupMembers.length} Member${currentGroupMembers.length!==1?"s":""}`;
 }
 
-// ===== ADD MEMBER =====
-document.getElementById("addMemberBtn").onclick = ()=>{
-  const friendsDiv = document.getElementById("friendsToAddList");
-  friendsDiv.innerHTML = "";
+// ===== ADD MEMBER BUTTON =====
+document.getElementById("addMemberBtn").onclick = () => {
+  // Save current members and friends to localStorage
+  localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
+  localStorage.setItem("allFriends", JSON.stringify(allFriends));
 
-  // Fetch existing friends from localStorage (like first code)
-  let friends = JSON.parse(localStorage.getItem("friends") || "[]"); // array of {name: "Alice"} objects
-  const available = friends.map(f=>f.name).filter(f => !currentGroupMembers.includes(f));
-
-  if(available.length===0){
-    friendsDiv.innerHTML = "<p style='color:#555;font-style:italic;'>No friends to add</p>";
-  } else {
-    available.forEach(name=>{
-      const div = document.createElement("div");
-      div.className = "item";
-      div.textContent = name;
-      div.onclick = () => {
-        // Add friend to group
-        currentGroupMembers.push(name);
-        renderGroupMembers();
-
-        // Optional: add a system message like first code
-        messages.push({
-          id: uid(),
-          text: `${name} joined the group`,
-          self:false,
-          user:"System",
-          time:new Date().toLocaleTimeString()
-        });
-        renderMessages();
-
-        closeAddMemberPopup();
-      };
-      friendsDiv.appendChild(div);
-    });
-  }
-
-  document.getElementById("addMemberPopup").style.display="block";
+  // Redirect to addMembers.html
+  window.location.href = "addMembers.html";
 };
 
-// ===== BACK TO CHAT =====
+// ===== NAVIGATION =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
 function openGroupInfo(){
   document.getElementById("chatPage").style.display="none";
@@ -266,76 +172,6 @@ function backToChat(){
   document.getElementById("groupInfoPage").style.display="none";
   document.getElementById("chatPage").style.display="flex";
 }
-
-// ===== GROUP PHOTO =====
-document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
-document.getElementById("groupPhotoFile").addEventListener("change",e=>{
-  const file=e.target.files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=()=>{ const url=reader.result;
-      document.getElementById("infoGroupPhoto").src=url;
-      document.getElementById("groupPhoto").src=url; };
-    reader.readAsDataURL(file);
-  }
-});
-
-// ===== BLOCK MEMBER =====
-function blockMember(name){
-  if(confirm(`Block ${name}?`)){
-    blockedMembers.push(name);
-    localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
-    renderGroupMembers();
-  }
-}
-
-// ===== BLOCKED USERS POPUP =====
-document.getElementById("showBlockedUsers").onclick = ()=>{
-  renderBlockedUsersPopup();
-  document.getElementById("blockedPopup").style.display="block";
-};
-function renderBlockedUsersPopup(){
-  const listDiv=document.getElementById("blockedList");
-  listDiv.innerHTML="";
-  if(blockedMembers.length===0){
-    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
-  } else {
-    blockedMembers.forEach((u,index)=>{
-      const div=document.createElement("div");
-      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
-      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
-      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
-      unblockBtn.className="unblockBtn";
-      unblockBtn.onclick=()=>{
-        blockedMembers.splice(index,1);
-        localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
-        renderBlockedUsersPopup();
-        renderGroupMembers();
-      };
-      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
-    });
-  }
-}
-function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
-
-// ===== POPUPS =====
-document.getElementById("showGroupLink").onclick = ()=>{
-  const inviteLink = `${window.location.origin}/join.html?group=grp_123456`;
-  document.getElementById("groupLinkInput").value = inviteLink;
-  document.getElementById("linkPopup").style.display="block";
-};
-function copyLink(){
-  const input = document.getElementById("groupLinkInput");
-  input.select(); input.setSelectionRange(0,99999);
-  navigator.clipboard.writeText(input.value);
-  alert("Group link copied!");
-}
-function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
-
-// ===== REQUEST/INVITE PAGE =====
-document.getElementById("showRequestInvite").onclick = () => {
-    window.location.href = "requestInvite.html"; // redirect to separate page
-};
 
 // ===== INITIAL RENDER =====
 renderMessages();
