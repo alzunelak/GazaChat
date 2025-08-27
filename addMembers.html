@@ -28,13 +28,17 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 <script>
 let currentUser = "John Doe";
 
-// Load current group members from localStorage
+// Ensure currentGroupMembers exists in localStorage
 let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `["${currentUser}"]`);
+localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
-// Load all friends from localStorage or use defaults
-let allFriends = JSON.parse(localStorage.getItem("allFriends") || '["Alice","Bob","Charlie"]');
+// Ensure allFriends exists in localStorage
+if(!localStorage.getItem("allFriends")){
+    localStorage.setItem("allFriends", JSON.stringify(["Alice","Bob","Charlie","John Doe"]));
+}
+let allFriends = JSON.parse(localStorage.getItem("allFriends"));
 
-// Filter friends not already in group
+// Filter friends not already in the group
 let friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
 
 const friendsList = document.getElementById("friendsList");
@@ -54,7 +58,7 @@ function renderFriends() {
             currentGroupMembers.push(name);
             localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
-            // Optional system message
+            // Optional: system message
             let messages = JSON.parse(localStorage.getItem("messages") || "[]");
             messages.push({
                 id: Date.now(),
@@ -75,7 +79,7 @@ function renderFriends() {
 
 // Back button
 document.getElementById("backBtn").onclick = () => {
-    window.location.href = "groupInfo.html";
+    window.history.back(); // goes back to group info page
 };
 
 // Initial render
