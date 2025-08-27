@@ -97,19 +97,33 @@
   <span>🔥</span><span>🎉</span><span>❤️</span>
 </div>
 
-<!-- FRIEND INFO PAGE -->
-<div id="friendInfoPage" style="display:none;flex:1;flex-direction:column;background:#f5f5f5;font-family:'Segoe UI',Arial,sans-serif;">
-  <main style="flex:1;display:flex;flex-direction:column;">
 
-    <!-- HEADER -->
-    <div style="background:#075E54;color:white;padding:15px;display:flex;flex-direction:column;align-items:center;position:relative;">
-      <i class="fa-solid fa-arrow-left" onclick="backToChat()" 
-         style="position:absolute;left:15px;top:18px;font-size:22px;cursor:pointer;"></i>
-      <img id="infoFriendPhoto" src="default-profile.png" 
-           style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-top:10px;">
-      <h2 id="infoFriendName" style="margin:10px 0 5px 0;font-size:20px;text-align:center;"></h2>
-      <span id="friendStatus" style="font-size:14px;color:#d2f5e3;">Offline</span>
-    </div>
+<!-- CHAT HEADER -->
+<div id="chatHeader" style="display:flex;flex-direction:column;align-items:center;background:#075E54;color:white;padding:15px;position:sticky;top:0;z-index:10;">
+  <!-- Back Arrow -->
+  <div style="align-self:flex-start;cursor:pointer;" onclick="backToChat()">
+    <i class="fa-solid fa-arrow-left" style="font-size:20px;"></i>
+  </div>
+
+  <!-- Friend Photo -->
+  <img id="friendPhoto" src="default-profile.png" style="width:70px;height:70px;border-radius:50%;object-fit:cover;margin:10px 0;">
+
+  <!-- Friend Name -->
+  <span id="friendName" style="font-size:18px;font-weight:bold;">Friend Name</span>
+
+  <!-- Friend Status -->
+  <span id="friendStatus" style="font-size:14px;color:#d2f5e3;">Offline</span>
+</div>
+
+<!-- CHAT MESSAGES -->
+<div id="chatBox" style="flex:1;overflow-y:auto;padding:10px;"></div>
+
+<!-- INPUT AREA -->
+<div id="inputArea" style="display:flex;padding:10px;background:#f0f0f0;position:sticky;bottom:0;">
+  <input id="msgInput" placeholder="Type a message..." style="flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;">
+  <button id="sendBtn" style="margin-left:5px;background:#25D366;color:white;border:none;padding:0 12px;border-radius:50%;font-size:22px;">➡</button>
+</div>
+  
 
     <!-- ACTION BUTTONS -->
     <div style="display:flex;justify-content:space-around;margin-top:15px;padding:10px;">
@@ -220,23 +234,58 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Example: simulate online/offline status
-let friendOnline = false; // Replace with actual logic from your app
 
-function updateStatus() {
-  const statusEl = document.getElementById('friendStatus');
-  statusEl.textContent = friendOnline ? "Online" : "Offline";
-}
 
-// Call updateStatus initially
-updateStatus();
+  // --- Friend Info ---
+  const friendsList = JSON.parse(localStorage.getItem('friends') || '[]');
+  const params = new URLSearchParams(window.location.search);
+  const friendParam = params.get("friend") ? decodeURIComponent(params.get("friend")) : "Friend";
 
-// Example: toggle online/offline for testing
-setInterval(() => {
-  friendOnline = !friendOnline;
-  updateStatus();
-}, 10000); // toggles every 10 seconds
+  const friendObj = friendsList.find(f => f.name === friendParam);
+  const friendData = {
+    name: friendObj ? friendObj.name : friendParam,
+    photo: friendObj && friendObj.profile ? friendObj.profile : "default-profile.png",
+    online: friendObj ? friendObj.online : false
+  };
 
+  document.getElementById("friendName").textContent = friendData.name;
+  document.getElementById("friendPhoto").src = friendData.photo;
+  document.getElementById("friendPhoto").onerror = () => { document.getElementById("friendPhoto").src = "default-profile.png"; };
+  document.getElementById("friendStatus").textContent = friendData.online ? "Online" : "Offline";
+  document.getElementById("friendStatus").style.color = friendData.online ? "#d2f5e3" : "#ccc";
+
+  // --- Chat logic ---
+  const myId = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
+  const myName = localStorage.getItem("username") || "Me";
+  const chatBox = document.getElementById("chatBox");
+  const msgInput = document.getElementById("msgInput");
+  let messages = JSON.parse(localStorage.getItem(`chat_${friendData.name}`) || "[]");
+
+  function renderMessages() {
+    chatBox.innerHTML = "";
+    messages.forEach(m => {
+      const div = document.createElement("div");
+      div.className = "msg" + (m.senderId===myId?" self":"");
+      div.innerHTML = `<b>${m.senderName}:</b> ${m.text} <div style="font-size:10px;color:#999;">${m.time}</div>`;
+      chatBox.appendChild(div);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  msgInput.addEventListener("keydown", e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      const txt = msgInput.value.trim();
+      if(!txt) return;
+      const msg = {id:Date.now(), senderId:myId, senderName:myName, text:txt, time:new Date().toLocaleTimeString()};
+      messages.push(msg);
+      localStorage.setItem(`chat_${friendData.name}`, JSON.stringify(messages));
+      msgInput.value = "";
+      renderMessages();
+    }
+  });
+
+  renderMessages()
 
   
 // Emoji picker
