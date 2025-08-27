@@ -99,10 +99,9 @@ body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#00
 </div>
 
 
-  <div class="actionBox">
-    <button class="block" onclick="window.location.href='blockuser.html'"><i class="fa-solid fa-ban"></i> Block User</button>
-    <button class="report"><i class="fa-solid fa-flag"></i> Report User</button>
-  </div>
+<div class="actionBox">
+  <button class="block" onclick="blockUser()"><i class="fa-solid fa-ban"></i> Block User</button>
+  <button class="report" onclick="reportUser()"><i class="fa-solid fa-flag"></i> Report User</button>
 </div>
 
 <script>
@@ -177,7 +176,23 @@ function deleteChat(){
   }
 }
 
+let friend = JSON.parse(localStorage.getItem("currentFriend") || '{"name":"Friend Name","photo":"friend.png"}');
 
+function blockUser() {
+    let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+    if(!blocked.includes(friend.name)) blocked.push(friend.name);
+    localStorage.setItem("blockedUsers", JSON.stringify(blocked));
+    // Redirect to home after block
+    window.location.href = "home.html";
+}
+
+function reportUser() {
+    let reported = JSON.parse(localStorage.getItem("reportedUsers") || "[]");
+    if(!reported.includes(friend.name)) reported.push(friend.name);
+    localStorage.setItem("reportedUsers", JSON.stringify(reported));
+    // Redirect to home after report
+    window.location.href = "home.html";
+}
 
 // ===== INITIAL RENDER =====
 renderMessages();
