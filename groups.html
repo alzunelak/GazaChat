@@ -3,212 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Groups</title>
+<title>My Groups</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body{
-  font-family: Arial;
-  margin: 0;
-  padding: 20px;
-  background: #f5f5f5;
-}
-
-.group{
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  position: relative;
-}
-
-.group img{
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
-  object-fit: cover;
-}
-
-.group .info{
-  flex: 1;
-}
-
-.group .info h3{
-  margin: 0;
-  font-size: 16px;
-}
-
-.group .info p{
-  margin: 0;
-  font-size: 12px;
-  color: gray;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.red-dot{
-  position: absolute;
-  right: 10px;
-  top: 15px;
-  width: 10px;
-  height: 10px;
-  background: red;
-  border-radius: 50%;
-}
-
-#createGroupBtn{
-  padding: 10px 15px;
-  background: #25d366;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-#newGroupPopup{
-  display: none;
-  position: absolute;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  flex-direction: column;
-}
-
-#newGroupPopup input{
-  width: 200px;
-  margin-bottom: 10px;
-  padding: 5px;
-}
-
-#newGroupPopup button{
-  padding: 5px 10px;
-  margin-right: 5px;
-}
+body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f5f5f5;}
+.header{background:#075E54;color:white;padding:15px;font-size:18px;font-weight:bold;text-align:center;}
+.groupList{display:flex;flex-direction:column;}
+.groupItem{display:flex;align-items:center;padding:10px;background:#fff;margin:5px 10px;border-radius:8px;cursor:pointer;transition:background 0.2s;}
+.groupItem:hover{background:#ececec;}
+.groupItem img{width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:10px;}
+.groupInfo{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.groupName{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lastMsg{font-size:12px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.memberCount{font-size:12px;color:#999;}
 </style>
 </head>
 <body>
 
-<h1>Your Groups</h1>
-<button id="createGroupBtn">+ Create Group</button>
-<div id="groupsList"></div>
-
-<div id="newGroupPopup">
-  <h3>New Group</h3>
-  <input type="text" id="newGroupName" placeholder="Group Name"><br>
-  <input type="file" id="newGroupPhoto" accept="image/*"><br>
-  <div style="display:flex;">
-    <button onclick="createGroup()">Create</button>
-    <button onclick="closeNewGroupPopup()">Cancel</button>
-  </div>
-</div>
+<div class="header">My Groups</div>
+<div class="groupList" id="groupList"></div>
 
 <script>
-const myName = "You"; // current user
+// ===== STATE =====
 let groups = JSON.parse(localStorage.getItem("groups") || "[]");
 
-const groupsListDiv = document.getElementById("groupsList");
-const createGroupBtn = document.getElementById("createGroupBtn");
-const newGroupPopup = document.getElementById("newGroupPopup");
-
-// Show popup
-createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
-function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
-
-// Render groups - latest message on top
+// ===== RENDER GROUPS =====
 function renderGroups(){
-  groupsListDiv.innerHTML = "";
-  const myGroups = groups.filter(g => g.members.some(m => m.name === myName));
-  
-  // Sort by last message timestamp descending
-  myGroups.sort((a,b)=>{
-    const aTime = a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
-    const bTime = b.messages.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
-    return bTime - aTime;
-  });
+  const listDiv = document.getElementById("groupList");
+  listDiv.innerHTML="";
+  if(groups.length===0){
+    listDiv.innerHTML="<p style='text-align:center;margin-top:20px;color:#555;'>No groups yet</p>";
+    return;
+  }
 
-  myGroups.forEach((g,index)=>{
-    const div = document.createElement("div");
-    div.className="group";
+  groups.forEach((g,index)=>{
+    const div=document.createElement("div");
+    div.className="groupItem";
+
+    // Click to open chat
     div.onclick = ()=>{
-      g.unread = false; // mark as read
-      groups = groups.map(gr=>gr.name===g.name ? g : gr);
-      localStorage.setItem("groups",JSON.stringify(groups));
-      localStorage.setItem("currentGroupIndex", groups.findIndex(gr=>gr.name===g.name));
-      window.location="group-chat.html";
+      localStorage.setItem("currentGroupIndex", index);
+      window.location.href = "group-chat.html";
     };
 
-    const fullMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
-    const latestMsg = fullMsg.length > 20 ? fullMsg.slice(0,20) + "..." : fullMsg;
+    const img=document.createElement("img");
+    img.src=g.photo || "group.png";
 
-    div.innerHTML = `
-      <img src="${g.photo || 'group.png'}">
-      <div class="info">
-        <h3>${g.name}</h3>
-        <p title="${fullMsg}">${latestMsg}</p>
-      </div>
-      ${g.unread ? '<div class="red-dot"></div>' : ''}
-    `;
-    groupsListDiv.appendChild(div);
+    const infoDiv=document.createElement("div");
+    infoDiv.className="groupInfo";
+
+    const nameDiv=document.createElement("div");
+    nameDiv.className="groupName";
+    nameDiv.textContent=g.name;
+
+    const lastMsgDiv=document.createElement("div");
+    lastMsgDiv.className="lastMsg";
+    if(g.messages && g.messages.length>0){
+      const lastMsg = g.messages[g.messages.length-1];
+      lastMsgDiv.textContent = `${lastMsg.user}: ${lastMsg.text}`;
+    } else {
+      lastMsgDiv.textContent = "No messages yet";
+    }
+
+    const memberDiv=document.createElement("div");
+    memberDiv.className="memberCount";
+    const activeMembers = g.members.filter(m=>!g.blocked?.includes(m.name));
+    memberDiv.textContent=`${activeMembers.length} member${activeMembers.length!==1?"s":""}`;
+
+    infoDiv.appendChild(nameDiv);
+    infoDiv.appendChild(lastMsgDiv);
+    infoDiv.appendChild(memberDiv);
+
+    div.appendChild(img);
+    div.appendChild(infoDiv);
+    listDiv.appendChild(div);
   });
 }
 
-// Create new group
-function createGroup(){
-  const name = document.getElementById("newGroupName").value.trim();
-  if(!name){ alert("Enter a group name!"); return; }
-
-  const fileInput = document.getElementById("newGroupPhoto");
-  if(fileInput.files && fileInput.files[0]){
-    const reader = new FileReader();
-    reader.onload = e=> saveGroup(name,e.target.result);
-    reader.readAsDataURL(fileInput.files[0]);
-  } else saveGroup(name,"group.png");
-}
-
-// Save new group
-function saveGroup(name,img){
-  const newGroup = {
-    name,
-    photo:img,
-    admin:myName,
-    members:[{name:myName,accepted:true}],
-    invited:[],
-    blocked:[],
-    messages:[],
-    unread:false
-  };
-  groups.push(newGroup);
-  localStorage.setItem("groups",JSON.stringify(groups));
+// ===== AUTO REFRESH EVERY 1 SECOND =====
+setInterval(()=>{
+  groups = JSON.parse(localStorage.getItem("groups") || "[]");
   renderGroups();
-  closeNewGroupPopup();
-  document.getElementById("newGroupName").value="";
-  document.getElementById("newGroupPhoto").value="";
-}
+},1000);
 
-// Update group (name or photo) if changed in group-chat.html
-function syncGroupUpdates(){
-  const updatedGroups = JSON.parse(localStorage.getItem("groups") || "[]");
-  if(updatedGroups.length !== groups.length ||
-     JSON.stringify(updatedGroups) !== JSON.stringify(groups)){
-    groups = updatedGroups;
-    renderGroups();
-  }
-}
-
-// Listen to localStorage changes (multi-tab or after edits)
-window.addEventListener('storage', syncGroupUpdates);
-
-// Initial render
 renderGroups();
 </script>
-
 </body>
 </html>
