@@ -6,6 +6,7 @@
 <title>WhatsApp Group Info</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
+/* --- Styles --- */
 body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
 #chatPage,#groupInfoPage{display:flex;flex-direction:column;flex:1;}
 .header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;}
@@ -46,7 +47,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
 
-/* Popup styles */
+/* Popup */
 .popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
 .popup h3{margin-top:0;}
 .popup button.closeBtn{margin-top:10px;float:right;}
@@ -95,6 +96,13 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     </div>
   </div>
 
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i> End-to-end Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy <input type="checkbox"></button>
+  </div>
+
   <div class="container">
     <div class="membersHeader">
       <span id="memberCount">0 Members</span>
@@ -102,6 +110,35 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     </div>
     <div id="groupMembersList"></div>
   </div>
+
+  <div class="container" id="groupLinks">
+    <button id="showGroupLink">Group Link</button>
+    <button id="showBlockedUsers">Blocked Users</button>
+    <button id="showRequestInvite">Request / Invite</button>
+  </div>
+
+  <div class="container actionBox">
+    <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
+    <button><i class="fa-solid fa-ban"></i> Block Group</button>
+    <button><i class="fa-solid fa-flag"></i> Report Group</button>
+    <button><i class="fa-solid fa-trash"></i> Delete Group</button>
+  </div>
+
+  <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
+</div>
+
+<!-- POPUPS -->
+<div id="linkPopup" class="popup">
+  <h3>Invite Link</h3>
+  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
+  <button onclick="copyLink()">Copy</button>
+  <button class="closeBtn" onclick="closePopup()">Close</button>
+</div>
+
+<div id="blockedPopup" class="popup">
+  <h3>Blocked Users</h3>
+  <div id="blockedList"></div>
+  <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
 </div>
 
 <script>
@@ -110,6 +147,7 @@ let currentUser = "John Doe";
 let isAdmin = true;
 let allFriends = ["Alice","Bob","Charlie"];
 let currentGroupMembers = [currentUser,"Alice"];
+let blockedMembers = JSON.parse(localStorage.getItem("blockedMembers")||"[]");
 let messages = [];
 
 // ===== CHAT =====
@@ -132,6 +170,7 @@ msgInput.addEventListener("keydown", e => {
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
+    if(blockedMembers.includes(m.user)) return;
     const div=document.createElement("div");
     div.className="msg"+(m.user===currentUser?" self":"");
     div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
@@ -143,21 +182,31 @@ function renderMessages(){
 function renderGroupMembers(){
   const membersDiv=document.getElementById("groupMembersList");
   membersDiv.innerHTML="";
-  currentGroupMembers.forEach(name=>{
+  const activeMembers=currentGroupMembers.filter(m=>!blockedMembers.includes(m));
+  if(activeMembers.length===0){
     const div=document.createElement("div");
-    div.className="memberBox"; div.textContent=name;
+    div.textContent="No active members"; div.style.fontStyle="italic"; div.style.color="#555";
     membersDiv.appendChild(div);
-  });
-  document.getElementById("memberCount").textContent=`${currentGroupMembers.length} Member${currentGroupMembers.length!==1?"s":""}`;
+  } else {
+    activeMembers.forEach(name=>{
+      const div=document.createElement("div");
+      div.className="memberBox"; div.textContent=name;
+      if(isAdmin && name!==currentUser){
+        const btn=document.createElement("button");
+        btn.textContent="Block"; btn.style.marginLeft="10px";
+        btn.onclick=()=>blockMember(name);
+        div.appendChild(btn);
+      }
+      membersDiv.appendChild(div);
+    });
+  }
+  document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
 }
 
-// ===== ADD MEMBER BUTTON =====
-document.getElementById("addMemberBtn").onclick = () => {
-  // Save current members and friends to localStorage
+// ===== ADD MEMBER =====
+document.getElementById("addMemberBtn").onclick = ()=>{
   localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
   localStorage.setItem("allFriends", JSON.stringify(allFriends));
-
-  // Redirect to addMembers.html
   window.location.href = "addMembers.html";
 };
 
@@ -172,6 +221,76 @@ function backToChat(){
   document.getElementById("groupInfoPage").style.display="none";
   document.getElementById("chatPage").style.display="flex";
 }
+
+// ===== GROUP PHOTO =====
+document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
+document.getElementById("groupPhotoFile").addEventListener("change",e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=()=>{ const url=reader.result;
+      document.getElementById("infoGroupPhoto").src=url;
+      document.getElementById("groupPhoto").src=url; };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ===== BLOCK MEMBER =====
+function blockMember(name){
+  if(confirm(`Block ${name}?`)){
+    blockedMembers.push(name);
+    localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
+    renderGroupMembers();
+  }
+}
+
+// ===== BLOCKED USERS POPUP =====
+document.getElementById("showBlockedUsers").onclick = ()=>{
+  renderBlockedUsersPopup();
+  document.getElementById("blockedPopup").style.display="block";
+};
+function renderBlockedUsersPopup(){
+  const listDiv=document.getElementById("blockedList");
+  listDiv.innerHTML="";
+  if(blockedMembers.length===0){
+    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
+  } else {
+    blockedMembers.forEach((u,index)=>{
+      const div=document.createElement("div");
+      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
+      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
+      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
+      unblockBtn.className="unblockBtn";
+      unblockBtn.onclick=()=>{
+        blockedMembers.splice(index,1);
+        localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
+        renderBlockedUsersPopup();
+        renderGroupMembers();
+      };
+      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
+    });
+  }
+}
+function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
+
+// ===== GROUP LINK =====
+document.getElementById("showGroupLink").onclick = ()=>{
+  const inviteLink = `${window.location.origin}/join.html?group=grp_123456`;
+  document.getElementById("groupLinkInput").value = inviteLink;
+  document.getElementById("linkPopup").style.display="block";
+};
+function copyLink(){
+  const input = document.getElementById("groupLinkInput");
+  input.select(); input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Group link copied!");
+}
+function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
+
+// ===== REQUEST/INVITE =====
+document.getElementById("showRequestInvite").onclick = () => {
+    window.location.href = "requestInvite.html";
+};
 
 // ===== INITIAL RENDER =====
 renderMessages();
