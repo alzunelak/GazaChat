@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Add Members</title>
-<!-- Font Awesome CSS for back arrow -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body {font-family:Arial;margin:0;padding:0;background:#fff;}
@@ -30,11 +29,10 @@ let currentUser = "John Doe";
 
 // Load current group members from localStorage
 let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `["${currentUser}"]`);
-localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
-// Load your actual friends from localStorage
-// Example structure: ["Alice", "Bob", "Charlie"]
-let allFriends = JSON.parse(localStorage.getItem("allFriends") || "[]");
+// Load your existing friends from localStorage
+// This must match the key you used on your main page
+let allFriends = JSON.parse(localStorage.getItem("allFriends") || "[]"); // ["Alice","Bob","Charlie"]
 
 // Filter out members already in the group
 let friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
@@ -77,7 +75,7 @@ function renderFriends() {
 
 // Back button
 document.getElementById("backBtn").onclick = () => {
-    window.history.back(); // go back to group info page
+    window.history.back();
 };
 
 // Initial render
