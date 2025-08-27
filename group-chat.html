@@ -22,10 +22,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
 .input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
 #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
-#attachmentMenu{display:none;position:fixed;bottom:60px;left:10px;right:10px;background:#fff;padding:10px;border-radius:10px;z-index:101;}
-#attachmentMenu .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-#attachmentMenu button{padding:10px;border:none;border-radius:8px;background:#128C7E;color:white;cursor:pointer;font-size:16px;}
-#emojiPicker{display:none;position:absolute;bottom:60px;right:10px;background:#fff;border-radius:10px;padding:5px;max-width:300px;max-height:150px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:5px;}
 .groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#fff;color:#000;margin-bottom:10px;border-radius:10px;position:relative;}
 .groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
 .groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
@@ -34,7 +30,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
 .actionButtons i{font-size:20px;margin-bottom:5px;}
 .container{background:#fff;padding:10px;margin:10px;border-radius:10px;}
-.infoItem{margin:5px 0;font-size:14px;}
 .settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#fff;border-radius:8px;}
 .settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
 .settingsContainer button:hover{background:#f1f1f1;}
@@ -50,6 +45,11 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
+/* Popup styles */
+.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
+.popup h3{margin-top:0;}
+.popup button.closeBtn{margin-top:10px;float:right;}
+.popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
 </style>
 </head>
 <body>
@@ -110,63 +110,11 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     <div id="groupMembersList"></div>
   </div>
 
-<div class="container" id="groupLinks">
-  <button id="showGroupLink">Group Link</button>
-  <button id="showBlockedUsers">Blocked Users</button>
-  <button id="showRequestInvite">Request / Invite</button>
-</div>
-
-<!-- Popup for Group Link -->
-<div id="linkPopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-     background:#fff; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:1000;">
-  <h3>Invite Link</h3>
-  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
-  <div style="margin-top:10px; text-align:right;">
-    <button onclick="copyLink()">Copy</button>
-    <button onclick="closePopup()">Close</button>
+  <div class="container" id="groupLinks">
+    <button id="showGroupLink">Group Link</button>
+    <button id="showBlockedUsers">Blocked Users</button>
+    <button id="showRequestInvite">Request / Invite</button>
   </div>
-</div>
-
-<script>
-  // Navigate to other pages
-  document.getElementById("showBlockuser").onclick = function() {
-      window.location.href = "blockuser.html";
-  };
-
-  document.getElementById("showRequestInvite").onclick = function() {
-      window.location.href = "requestInvite.html"; 
-  };
-
-  // Your group data
-  let currentGroup = "My Group"; // change dynamically if needed
-  let groupData = {
-      "My Group": { id: "grp_123456", photo: "profile.png", members: ["Mimah","Alice","Bob"], admin: true }
-  };
-
-  // Show popup with link
-  document.getElementById("showGroupLink").onclick = function() {
-      const group = groupData[currentGroup];
-      const inviteLink = `${window.location.origin}/join.html?group=${group.id}`;
-      document.getElementById("groupLinkInput").value = inviteLink;
-      document.getElementById("linkPopup").style.display = "block";
-  };
-
-  // Copy link function
-  function copyLink(){
-      const input = document.getElementById("groupLinkInput");
-      input.select();
-      input.setSelectionRange(0,99999);
-      navigator.clipboard.writeText(input.value);
-      alert("Group link copied!");
-  }
-
-  // Close popup
-  function closePopup(){
-      document.getElementById("linkPopup").style.display = "none";
-  }
-</script>
-
-
 
   <div class="container actionBox">
     <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
@@ -178,22 +126,48 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
+<!-- POPUPS -->
+<div id="linkPopup" class="popup">
+  <h3>Invite Link</h3>
+  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
+  <button onclick="copyLink()">Copy</button>
+  <button class="closeBtn" onclick="closePopup()">Close</button>
+</div>
+
+<div id="addMemberPopup" class="popup">
+  <h3>Add Friend</h3>
+  <div id="friendsToAddList"></div>
+  <button class="closeBtn" onclick="closeAddMemberPopup()">Close</button>
+</div>
+
+<div id="blockedPopup" class="popup">
+  <h3>Blocked Users</h3>
+  <div id="blockedList"></div>
+  <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
+</div>
+
+<div id="requestPopup" class="popup">
+  <h3>Request / Invite</h3>
+  <div id="requestList"></div>
+  <button class="closeBtn" onclick="closeRequestPopup()">Close</button>
+</div>
+
 <script>
 // ===== STATE =====
-let currentUser = "John Doe"; // real logged-in user
-let isAdmin = true;           // flag to show admin controls
+let currentUser = "John Doe";
+let isAdmin = true;
 let allFriends = ["Alice","Bob","Charlie"];
 let currentGroupMembers = [currentUser,"Alice","Bob"];
 let blockedMembers = JSON.parse(localStorage.getItem("blockedMembers")||"[]");
 let messages = [];
 
 // ===== CHAT =====
-const chatBox=document.getElementById("chatBox");
-const msgInput=document.getElementById("msgInput");
+const chatBox = document.getElementById("chatBox");
+const msgInput = document.getElementById("msgInput");
 
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
-msgInput.addEventListener("keydown",e=>{
+msgInput.addEventListener("keydown", e => {
   if(e.key==="Enter"){
     e.preventDefault();
     const txt=msgInput.value.trim();
@@ -245,28 +219,33 @@ function renderGroupMembers(){
   document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
 }
 
-
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = ()=>{
+  const friendsDiv = document.getElementById("friendsToAddList");
+  friendsDiv.innerHTML = "";
   const friendsToAdd = allFriends.filter(f=>!currentGroupMembers.includes(f));
-  if(friendsToAdd.length===0){ alert("No friends to add yet."); return; }
-  const friend = prompt("Add member:\n"+friendsToAdd.join("\n"));
-  if(friend && friendsToAdd.includes(friend)){
-    currentGroupMembers.push(friend);
-    renderGroupMembers();
+  if(friendsToAdd.length===0){ friendsDiv.innerHTML="<p style='color:#555;font-style:italic;'>No friends to add</p>";}
+  else {
+    friendsToAdd.forEach(friend=>{
+      const div = document.createElement("div");
+      div.className="item";
+      div.textContent=friend;
+      div.onclick=()=>{ currentGroupMembers.push(friend); renderGroupMembers(); closeAddMemberPopup(); };
+      friendsDiv.appendChild(div);
+    });
   }
+  document.getElementById("addMemberPopup").style.display="block";
 };
+
+function closeAddMemberPopup(){ document.getElementById("addMemberPopup").style.display="none"; }
 
 // ===== GROUP INFO PAGE =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
-document.getElementById("openGroupInfo")?.addEventListener("click", openGroupInfo);
-
 function openGroupInfo(){
   document.getElementById("chatPage").style.display="none";
   document.getElementById("groupInfoPage").style.display="block";
   renderGroupMembers();
 }
-
 function backToChat(){
   document.getElementById("groupInfoPage").style.display="none";
   document.getElementById("chatPage").style.display="flex";
@@ -278,19 +257,60 @@ document.getElementById("groupPhotoFile").addEventListener("change",e=>{
   const file=e.target.files[0];
   if(file){
     const reader=new FileReader();
-    reader.onload=()=>{
-      const url=reader.result;
-      document.getElementById("infoGroupPhoto").src=url;
-      document.getElementById("groupPhoto").src=url;
-    };
+    reader.onload=()=>{ const url=reader.result; document.getElementById("infoGroupPhoto").src=url; document.getElementById("groupPhoto").src=url; };
     reader.readAsDataURL(file);
   }
 });
 
+// ===== BLOCK MEMBER =====
+function blockMember(name){
+  if(confirm(`Block ${name}?`)){
+    blockedMembers.push(name);
+    localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
+    renderGroupMembers();
+  }
+}
+
+// ===== POPUPS =====
+document.getElementById("showGroupLink").onclick = ()=>{
+  const inviteLink = `${window.location.origin}/join.html?group=grp_123456`;
+  document.getElementById("groupLinkInput").value = inviteLink;
+  document.getElementById("linkPopup").style.display="block";
+};
+function copyLink(){
+  const input = document.getElementById("groupLinkInput");
+  input.select();
+  input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Group link copied!");
+}
+function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
+
+// ===== BLOCKED USERS POPUP =====
+document.getElementById("showBlockedUsers").onclick = ()=>{
+  const listDiv=document.getElementById("blockedList");
+  listDiv.innerHTML="";
+  if(blockedMembers.length===0) listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
+  else blockedMembers.forEach(u=>{ const d=document.createElement("div"); d.className="item"; d.textContent=u; listDiv.appendChild(d); });
+  document.getElementById("blockedPopup").style.display="block";
+};
+function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
+
+// ===== REQUEST/INVITE POPUP =====
+document.getElementById("showRequestInvite").onclick = ()=>{
+  const listDiv=document.getElementById("requestList");
+  listDiv.innerHTML="";
+  const requests=["Charlie"]; // example
+  if(requests.length===0) listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No requests</p>";
+  else requests.forEach(r=>{ const d=document.createElement("div"); d.className="item"; d.textContent=r; listDiv.appendChild(d); });
+  document.getElementById("requestPopup").style.display="block";
+};
+function closeRequestPopup(){ document.getElementById("requestPopup").style.display="none"; }
+
 // ===== INITIAL RENDER =====
 renderMessages();
 renderGroupMembers();
-renderBlockedMembers();
 </script>
+
 </body>
 </html>
