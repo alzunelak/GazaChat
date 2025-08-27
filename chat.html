@@ -83,31 +83,60 @@
 </div>
 
 <!-- FRIEND INFO PAGE -->
-<div id="friendInfoPage" style="display:none;">
-  <div class="groupHeader">
-    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
-    <img id="infoFriendPhoto" src="default-profile.png">
-    <h2 id="infoFriendName"></h2>
+<div id="friendInfoPage" style="display:none;flex:1;flex-direction:column;background:#f5f5f5;">
+  <!-- Header -->
+  <div class="header" style="background:#075E54;color:white;justify-content:flex-start;gap:10px;">
+    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()" style="cursor:pointer;font-size:22px;"></i>
+    <img id="infoFriendPhoto" src="default-profile.png" style="width:60px;height:60px;border-radius:50%;object-fit:cover;">
+    <div class="header-info" style="flex:1;color:white;">
+      <h2 id="infoFriendName" style="margin:0;font-size:18px;"></h2>
+      <span style="font-size:12px;color:#d2f5e3;">Online</span>
+    </div>
   </div>
 
-  <div class="actionButtons">
-    <button><i class="fa-solid fa-video"></i> Video Call</button>
-    <button><i class="fa-solid fa-phone"></i> Audio Call</button>
-    <button><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+  <!-- Action Buttons -->
+  <div style="display:flex;justify-content:space-around;padding:10px;background:#fff;">
+    <button style="display:flex;flex-direction:column;align-items:center;border:none;background:none;color:#075E54;cursor:pointer;">
+      <i class="fa-solid fa-video" style="font-size:24px;"></i>
+      <span style="font-size:12px;margin-top:4px;">Video Call</span>
+    </button>
+    <button style="display:flex;flex-direction:column;align-items:center;border:none;background:none;color:#075E54;cursor:pointer;">
+      <i class="fa-solid fa-phone" style="font-size:24px;"></i>
+      <span style="font-size:12px;margin-top:4px;">Audio Call</span>
+    </button>
+    <button style="display:flex;flex-direction:column;align-items:center;border:none;background:none;color:#075E54;cursor:pointer;">
+      <i class="fa-solid fa-magnifying-glass" style="font-size:24px;"></i>
+      <span style="font-size:12px;margin-top:4px;">Search</span>
+    </button>
   </div>
 
-  <div class="settingsContainer">
-    <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
-    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
-    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
-    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
+  <!-- Settings Section -->
+  <div style="margin-top:10px;background:#fff;padding:10px;border-top:1px solid #ccc;">
+    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+      <i class="fa-solid fa-lock"></i> End-to-End Encryption
+    </button>
+    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+      <i class="fa-solid fa-network-wired"></i> Mesh Network Form
+    </button>
+    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+      <i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper
+    </button>
+    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+      <i class="fa-solid fa-shield"></i> Advanced Chat Privacy
+    </button>
   </div>
 
-  <div class="actionBox">
-    <button class="block" onclick="alert('User blocked')"><i class="fa-solid fa-ban"></i> Block User</button>
-    <button class="report"><i class="fa-solid fa-flag"></i> Report User</button>
+  <!-- Action Buttons -->
+  <div style="margin-top:10px;padding:10px;background:#fff;">
+    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f44336;color:white;border-radius:8px;cursor:pointer;">
+      <i class="fa-solid fa-ban"></i> Block User
+    </button>
+    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#ff9800;color:white;border-radius:8px;cursor:pointer;margin-top:5px;">
+      <i class="fa-solid fa-flag"></i> Report User
+    </button>
   </div>
 </div>
+
 
 <script>
 // --- My Info ---
