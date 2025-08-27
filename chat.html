@@ -72,6 +72,36 @@
   <span>🔥</span><span>🎉</span><span>❤️</span>
 </div>
 
+
+  <!-- FRIEND INFO PAGE -->
+<div id="friendInfoPage" style="display:none;">
+  <div class="groupHeader">
+    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
+    <img id="infoFriendPhoto" src="profile.png">
+    <h2 id="infoFriendName"></h2>
+  <div class="actionButtons">
+      <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+      <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+      <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+    </div>
+  </div>
+
+ <div class="settingsContainer">
+  <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
+  <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+  <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+  <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy </button>
+</div>
+
+
+  <div class="actionBox">
+    <button class="block" onclick="window.location.href='blockuser.html'"><i class="fa-solid fa-ban"></i> Block User</button>
+    <button class="report"><i class="fa-solid fa-flag"></i> Report User</button>
+  </div>
+</div>
+
+<script>
+  
 <script>
 // --- My Info ---
 const myName = localStorage.getItem("username") || "Me";
@@ -140,6 +170,22 @@ const menuPopup=document.getElementById("menuPopup");
 menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";};
 document.addEventListener("click", e=>{if(!menuBtn.contains(e.target)&&!menuPopup.contains(e.target)) menuPopup.style.display="none";});
 
+
+// ===== NAVIGATION =====
+friendNameEl.onclick = openFriendInfo;
+friendPhotoEl.onclick = openFriendInfo;
+
+function openFriendInfo(){
+  document.getElementById("chatPage").style.display="none";
+  document.getElementById("friendInfoPage").style.display="block";
+}
+function backToChat(){
+  document.getElementById("friendInfoPage").style.display="none";
+  document.getElementById("chatPage").style.display="flex";
+}
+
+// ===
+  
 // Delete chat
 function deleteChat(){
   if(confirm("Delete all messages?")){
