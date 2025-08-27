@@ -61,6 +61,21 @@
     </div>
   </div>
 
+<div class="header" style="display:flex;align-items:center;padding:10px;background:#075E54;color:white;position:relative;">
+  <i class="fa-solid fa-arrow-left" onclick="backToChats()" 
+     style="font-size:20px;cursor:pointer;margin-right:10px;"></i>
+  <img id="friendPhoto" src="default-profile.png" style="width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:10px;">
+  <div style="display:flex;flex-direction:column;overflow:hidden;">
+    <span id="friendName" style="font-weight:bold;">Friend</span>
+    <span id="friendStatus" style="font-size:12px;color:#d2f5e3;">Offline</span>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:10px;">
+    <button><i class="fa-solid fa-phone" style="color:white;"></i></button>
+    <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical" style="color:white;"></i></button>
+  </div>
+</div>
+
+  
   <div id="chatBox"></div>
 
   <div id="inputArea">
@@ -205,6 +220,25 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// Example: simulate online/offline status
+let friendOnline = false; // Replace with actual logic from your app
+
+function updateStatus() {
+  const statusEl = document.getElementById('friendStatus');
+  statusEl.textContent = friendOnline ? "Online" : "Offline";
+}
+
+// Call updateStatus initially
+updateStatus();
+
+// Example: toggle online/offline for testing
+setInterval(() => {
+  friendOnline = !friendOnline;
+  updateStatus();
+}, 10000); // toggles every 10 seconds
+
+
+  
 // Emoji picker
 document.getElementById("emojiBtn").addEventListener("click", ()=>{
   const ep=document.getElementById("emojiPicker");
