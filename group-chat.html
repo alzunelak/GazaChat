@@ -134,11 +134,16 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   <button class="closeBtn" onclick="closePopup()">Close</button>
 </div>
 
-<div id="addMemberPopup" class="popup">
-  <h3>Add Friend</h3>
-  <div id="friendsToAddList"></div>
-  <button class="closeBtn" onclick="closeAddMemberPopup()">Close</button>
-</div>
+document.getElementById("addMemberBtn").onclick = () => {
+    // Save current members to localStorage
+    localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
+    localStorage.setItem("allFriends", JSON.stringify(allFriends));
+
+    // Redirect to Add Members page
+    window.location.href = "addMembers.html";
+};
+
+
 
 <div id="blockedPopup" class="popup">
   <h3>Blocked Users</h3>
