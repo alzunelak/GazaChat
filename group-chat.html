@@ -214,17 +214,41 @@ function renderGroupMembers(){
 document.getElementById("addMemberBtn").onclick = ()=>{
   const friendsDiv = document.getElementById("friendsToAddList");
   friendsDiv.innerHTML = "";
-  const friendsToAdd = allFriends.filter(f=>!currentGroupMembers.includes(f));
-  if(friendsToAdd.length===0){ friendsDiv.innerHTML="<p style='color:#555;font-style:italic;'>No friends to add</p>";}
-  else friendsToAdd.forEach(friend=>{
-    const div = document.createElement("div");
-    div.className="item"; div.textContent=friend;
-    div.onclick=()=>{ currentGroupMembers.push(friend); renderGroupMembers(); closeAddMemberPopup(); };
-    friendsDiv.appendChild(div);
-  });
+
+  // Fetch existing friends from localStorage (like first code)
+  let friends = JSON.parse(localStorage.getItem("friends") || "[]"); // array of {name: "Alice"} objects
+  const available = friends.map(f=>f.name).filter(f => !currentGroupMembers.includes(f));
+
+  if(available.length===0){
+    friendsDiv.innerHTML = "<p style='color:#555;font-style:italic;'>No friends to add</p>";
+  } else {
+    available.forEach(name=>{
+      const div = document.createElement("div");
+      div.className = "item";
+      div.textContent = name;
+      div.onclick = () => {
+        // Add friend to group
+        currentGroupMembers.push(name);
+        renderGroupMembers();
+
+        // Optional: add a system message like first code
+        messages.push({
+          id: uid(),
+          text: `${name} joined the group`,
+          self:false,
+          user:"System",
+          time:new Date().toLocaleTimeString()
+        });
+        renderMessages();
+
+        closeAddMemberPopup();
+      };
+      friendsDiv.appendChild(div);
+    });
+  }
+
   document.getElementById("addMemberPopup").style.display="block";
 };
-function closeAddMemberPopup(){ document.getElementById("addMemberPopup").style.display="none"; }
 
 // ===== BACK TO CHAT =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
