@@ -1,45 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat with Friend</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column;}
-    #chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
-    .header{display:flex;align-items:center;justify-content:space-between;background:#fff;padding:10px;border-bottom:1px solid #ccc;}
-    .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
-    .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
-    .header-info h2{margin:0;font-size:16px;cursor:pointer;}
-    .header-actions{display:flex;align-items:center;gap:15px;}
-    .header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:#128C7E;}
-    #chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
-    .msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;}
-    .msg.self{background:#dcf8c6;align-self:flex-end;}
-    .msg .meta{font-size:10px;color:#999;text-align:right;}
-    #inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100% - 20px);z-index:100;}
-    .input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
-    .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-    .input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
-    #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
-    .popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
-    .popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
-    .popup div:hover{background:#f1f1f1;}
-    #emojiPicker{position:absolute;bottom:60px;left:10px;background:#fff;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
-    #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
-    #emojiPicker span:hover{background:#eee;border-radius:5px;}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat with Friend</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column;}
+  #chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
+  .header{display:flex;align-items:center;justify-content:space-between;background:#fff;padding:10px;border-bottom:1px solid #ccc;position:relative;}
+  .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
+  .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
+  .header-info h2{margin:0;font-size:16px;cursor:pointer;}
+  .header-actions{display:flex;align-items:center;gap:15px;}
+  .header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:#128C7E;}
+  #chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
+  .msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;}
+  .msg.self{background:#dcf8c6;align-self:flex-end;}
+  .msg .meta{font-size:10px;color:#999;text-align:right;}
+  #inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100% - 20px);z-index:100;}
+  .input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
+  .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
+  .input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
+  #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+  .popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
+  .popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
+  .popup div:hover{background:#f1f1f1;}
+  #emojiPicker{position:absolute;bottom:60px;left:10px;background:#fff;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
+  #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
+  #emojiPicker span:hover{background:#eee;border-radius:5px;}
 
-    /* Friend Info Page */
-    #friendInfoPage{padding:10px;}
-    .groupHeader{display:flex;align-items:center;gap:10px;margin-bottom:15px;}
-    .groupHeader img{width:70px;height:70px;border-radius:50%;object-fit:cover;}
-    .groupHeader h2{margin:0;font-size:18px;}
-    .actionButtons button{display:flex;align-items:center;gap:5px;margin:5px 0;padding:8px 12px;border:none;background:#eee;border-radius:8px;cursor:pointer;}
-    .settingsContainer button{display:flex;align-items:center;gap:5px;margin:5px 0;padding:8px 12px;border:none;background:#eee;border-radius:8px;cursor:pointer;width:100%;}
-    .actionBox button{display:flex;align-items:center;gap:5px;margin:5px 0;padding:8px 12px;border:none;background:#f44336;color:#fff;border-radius:8px;cursor:pointer;width:100%;}
-    .backArrow{cursor:pointer;font-size:22px;}
-  </style>
+  /* FRIEND INFO PAGE */
+  #friendInfoPage{display:none; flex-direction:column; padding:20px; background:#f5f5f5;}
+  .friendHeader{ text-align:center; margin-bottom:20px; position:relative; }
+  .friendHeader img{width:120px; height:120px; border-radius:50%; margin-bottom:10px;}
+  .friendHeader h2{margin:0; font-size:22px; margin-bottom:20px;}
+  .actionButtons{display:flex; justify-content:center; gap:30px; margin-bottom:20px;}
+  .actionButtons button{display:flex; flex-direction:column; align-items:center; border:none; background:none; cursor:pointer; color:#075E54;}
+  .actionButtons i{font-size:24px;}
+  .settingsContainer, .groupsContainer, .actionBox{background:#fff; padding:10px; border-radius:10px; margin-bottom:20px;}
+  .settingsContainer button, .groupsContainer button{width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; margin-bottom:5px; cursor:pointer;}
+  .actionBox button{width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; cursor:pointer; color:white; margin-bottom:5px;}
+  .actionBox .block{background:#f44336;}
+  .actionBox .report{background:#ff5722;}
+  .backArrow{cursor:pointer; font-size:22px; position:absolute; left:0; top:0;}
+</style>
 </head>
 <body>
 
@@ -60,9 +65,7 @@
       <div onclick="deleteChat()">Delete Chat</div>
     </div>
   </div>
-
   <div id="chatBox"></div>
-
   <div id="inputArea">
     <div class="input-box">
       <input id="msgInput" placeholder="Type a message...">
@@ -82,67 +85,35 @@
   <span>🔥</span><span>🎉</span><span>❤️</span>
 </div>
 
-
-
-
- <!-- FRIEND INFO PAGE --> 
-<div id="friendInfoPage" style="display:none; flex-direction:column; background:#f5f5f5; padding:20px;">
-
-  <!-- Header / Friend Info -->
-  <div class="friendHeader" style="text-align:center; margin-bottom:20px;">
-    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()" style="position:absolute; left:20px; top:30px; cursor:pointer; font-size:22px;"></i>
-    <img id="infoFriendPhoto" src="profile.png" style="width:120px; height:120px; border-radius:50%; margin-bottom:10px;">
-    <h2 id="infoFriendName" style="margin:0; font-size:22px; margin-bottom:20px;">Friend Name</h2>
-
-    <!-- Action Buttons -->
-    <div class="actionButtons" style="display:flex; justify-content:center; gap:30px; margin-bottom:20px;">
-      <button style="display:flex; flex-direction:column; align-items:center; border:none; background:none; cursor:pointer; color:#075E54;">
-        <i class="fa-solid fa-video" style="font-size:24px;"></i>
-        <span style="font-size:12px;">Video Call</span>
-      </button>
-      <button style="display:flex; flex-direction:column; align-items:center; border:none; background:none; cursor:pointer; color:#075E54;">
-        <i class="fa-solid fa-phone" style="font-size:24px;"></i>
-        <span style="font-size:12px;">Audio Call</span>
-      </button>
-      <button style="display:flex; flex-direction:column; align-items:center; border:none; background:none; cursor:pointer; color:#075E54;">
-        <i class="fa-solid fa-magnifying-glass" style="font-size:24px;"></i>
-        <span style="font-size:12px;">Search</span>
-      </button>
+<!-- FRIEND INFO PAGE -->
+<div id="friendInfoPage">
+  <div class="friendHeader">
+    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
+    <img id="infoFriendPhoto" src="default-profile.png">
+    <h2 id="infoFriendName">Friend Name</h2>
+    <div class="actionButtons">
+      <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+      <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+      <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
     </div>
   </div>
 
-  <!-- Settings Section -->
-  <div class="settingsContainer" style="background:#fff; padding:10px; border-radius:10px; margin-bottom:20px;">
-    <button style="width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; margin-bottom:5px;">
-      <i class="fa-solid fa-lock"></i> End-to-end Encryption
-    </button>
-    <button style="width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; margin-bottom:5px;">
-      <i class="fa-solid fa-network-wired"></i> Mesh Network Form
-    </button>
-    <button style="width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; margin-bottom:5px;">
-      <i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper
-    </button>
-    <button style="width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; margin-bottom:5px;">
-      <i class="fa-solid fa-shield"></i> Advanced Chat Privacy
-    </button>
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
   </div>
 
-  <!-- No groups in common + button -->
-  <div style="background:#fff; padding:10px; border-radius:10px; margin-bottom:20px; text-align:center;">
-    <div style="margin-bottom:10px;">No groups in common</div>
-    <button style="padding:8px 12px; border:none; border-radius:8px; cursor:pointer; background:#075E54; color:white;">+</button>
+  <div class="groupsContainer">
+    <div>No groups in common</div>
+    <button>+</button>
   </div>
 
-  <!-- Block / Report Section -->
-  <div class="actionBox" style="background:#fff; padding:10px; border-radius:10px;">
-    <button onclick="confirmBlock()" style="width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; background:#f44336; color:white; margin-bottom:5px;">
-      <i class="fa-solid fa-ban"></i> Block User
-    </button>
-    <button onclick="confirmReport()" style="width:100%; display:flex; align-items:center; gap:10px; padding:10px; border:none; border-radius:8px; background:#ff5722; color:white;">
-      <i class="fa-solid fa-flag"></i> Report User
-    </button>
+  <div class="actionBox">
+    <button class="block" onclick="confirmBlock()"><i class="fa-solid fa-ban"></i> Block User</button>
+    <button class="report" onclick="confirmReport()"><i class="fa-solid fa-flag"></i> Report User</button>
   </div>
-
 </div>
 
 <script>
@@ -154,39 +125,12 @@ const myId   = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.ran
 // --- Friend Info ---
 const params = new URLSearchParams(window.location.search);
 const friendParam = params.get("friend") ? decodeURIComponent(params.get("friend")) : "Friend";
-
-// Get friends from storage, filter out blocked users
 const friendsList = JSON.parse(localStorage.getItem("friends") || "[]");
-const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-
-// Find friend only if not blocked
-const friendObj = friendsList.find(f => f.name === friendParam && !blockedUsers.includes(f.name));
-
+const friendObj = friendsList.find(f => f.name === friendParam);
 const friendData = {
   name: friendObj ? friendObj.name : friendParam,
-  photo: friendObj && friendObj.profile ? friendObj.profile : "default-profile.png",
-  blocked: blockedUsers.includes(friendParam)
+  photo: friendObj && friendObj.profile ? friendObj.profile : "default-profile.png"
 };
-function confirmBlock() {
-  if(confirm("Are you sure you want to block this user?")) {
-    let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-    if(!blocked.includes(friendData.name)) blocked.push(friendData.name);
-    localStorage.setItem("blockedUsers", JSON.stringify(blocked));
-    alert("User blocked!");
-    window.location.href = "home.html";
-  }
-}
-
-function confirmReport() {
-  if(confirm("Are you sure you want to report this user?")) {
-    let reported = JSON.parse(localStorage.getItem("reportedUsers") || "[]");
-    if(!reported.includes(friendData.name)) reported.push(friendData.name);
-    localStorage.setItem("reportedUsers", JSON.stringify(reported));
-    alert("User reported!");
-    window.location.href = "home.html";
-  }
-}
-
 
 // --- Set headers ---
 const friendNameEl  = document.getElementById("friendName");
@@ -254,7 +198,7 @@ friendPhotoEl.onclick = openFriendInfo;
 
 function openFriendInfo(){
   document.getElementById("chatPage").style.display="none";
-  document.getElementById("friendInfoPage").style.display="block";
+  document.getElementById("friendInfoPage").style.display="flex";
 }
 function backToChat(){
   document.getElementById("friendInfoPage").style.display="none";
@@ -270,7 +214,28 @@ function deleteChat(){
   }
 }
 
-// Initial
+// Block / Report
+function confirmBlock() {
+  if(confirm("Are you sure you want to block this user?")) {
+    let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+    if(!blocked.includes(friendData.name)) blocked.push(friendData.name);
+    localStorage.setItem("blockedUsers", JSON.stringify(blocked));
+    alert("User blocked!");
+    window.location.href = "home.html";
+  }
+}
+
+function confirmReport() {
+  if(confirm("Are you sure you want to report this user?")) {
+    let reported = JSON.parse(localStorage.getItem("reportedUsers") || "[]");
+    if(!reported.includes(friendData.name)) reported.push(friendData.name);
+    localStorage.setItem("reportedUsers", JSON.stringify(reported));
+    alert("User reported!");
+    window.location.href = "home.html";
+  }
+}
+
+// Initial render
 renderMessages();
 </script>
 </body>
