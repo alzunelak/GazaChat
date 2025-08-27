@@ -45,11 +45,13 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
+
 /* Popup styles */
 .popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
 .popup h3{margin-top:0;}
 .popup button.closeBtn{margin-top:10px;float:right;}
 .popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
+.popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -67,9 +69,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
     </div>
   </div>
-
   <div id="chatBox"></div>
-
   <div id="inputArea">
     <div class="input-box">
       <input id="msgInput" placeholder="Type a message...">
@@ -164,9 +164,7 @@ let messages = [];
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
-
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-
 msgInput.addEventListener("keydown", e => {
   if(e.key==="Enter"){
     e.preventDefault();
@@ -177,10 +175,12 @@ msgInput.addEventListener("keydown", e => {
     renderMessages();
   }
 });
-
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
+    // Skip messages from blocked members
+    if(blockedMembers.includes(m.user)) return;
+
     const div=document.createElement("div");
     div.className="msg"+(m.user===currentUser?" self":"");
     div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
@@ -188,34 +188,31 @@ function renderMessages(){
   });
 }
 
+}
+
 // ===== GROUP MEMBERS =====
 function renderGroupMembers(){
   const membersDiv=document.getElementById("groupMembersList");
   membersDiv.innerHTML="";
   const activeMembers=currentGroupMembers.filter(m=>!blockedMembers.includes(m));
-
   if(activeMembers.length===0){
     const div=document.createElement("div");
     div.textContent="No active members";
-    div.style.fontStyle="italic";
-    div.style.color="#555";
+    div.style.fontStyle="italic"; div.style.color="#555";
     membersDiv.appendChild(div);
   } else {
     activeMembers.forEach(name=>{
       const div=document.createElement("div");
-      div.className="memberBox";
-      div.textContent=name;
+      div.className="memberBox"; div.textContent=name;
       if(isAdmin && name!==currentUser){
         const btn=document.createElement("button");
-        btn.textContent="Block";
-        btn.style.marginLeft="10px";
+        btn.textContent="Block"; btn.style.marginLeft="10px";
         btn.onclick=()=>blockMember(name);
         div.appendChild(btn);
       }
       membersDiv.appendChild(div);
     });
   }
-
   document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
 }
 
@@ -225,18 +222,14 @@ document.getElementById("addMemberBtn").onclick = ()=>{
   friendsDiv.innerHTML = "";
   const friendsToAdd = allFriends.filter(f=>!currentGroupMembers.includes(f));
   if(friendsToAdd.length===0){ friendsDiv.innerHTML="<p style='color:#555;font-style:italic;'>No friends to add</p>";}
-  else {
-    friendsToAdd.forEach(friend=>{
-      const div = document.createElement("div");
-      div.className="item";
-      div.textContent=friend;
-      div.onclick=()=>{ currentGroupMembers.push(friend); renderGroupMembers(); closeAddMemberPopup(); };
-      friendsDiv.appendChild(div);
-    });
-  }
+  else friendsToAdd.forEach(friend=>{
+    const div = document.createElement("div");
+    div.className="item"; div.textContent=friend;
+    div.onclick=()=>{ currentGroupMembers.push(friend); renderGroupMembers(); closeAddMemberPopup(); };
+    friendsDiv.appendChild(div);
+  });
   document.getElementById("addMemberPopup").style.display="block";
 };
-
 function closeAddMemberPopup(){ document.getElementById("addMemberPopup").style.display="none"; }
 
 // ===== GROUP INFO PAGE =====
@@ -257,7 +250,9 @@ document.getElementById("groupPhotoFile").addEventListener("change",e=>{
   const file=e.target.files[0];
   if(file){
     const reader=new FileReader();
-    reader.onload=()=>{ const url=reader.result; document.getElementById("infoGroupPhoto").src=url; document.getElementById("groupPhoto").src=url; };
+    reader.onload=()=>{ const url=reader.result;
+      document.getElementById("infoGroupPhoto").src=url;
+      document.getElementById("groupPhoto").src=url; };
     reader.readAsDataURL(file);
   }
 });
@@ -279,8 +274,7 @@ document.getElementById("showGroupLink").onclick = ()=>{
 };
 function copyLink(){
   const input = document.getElementById("groupLinkInput");
-  input.select();
-  input.setSelectionRange(0,99999);
+  input.select(); input.setSelectionRange(0,99999);
   navigator.clipboard.writeText(input.value);
   alert("Group link copied!");
 }
@@ -288,21 +282,43 @@ function closePopup(){ document.getElementById("linkPopup").style.display="none"
 
 // ===== BLOCKED USERS POPUP =====
 document.getElementById("showBlockedUsers").onclick = ()=>{
-  const listDiv=document.getElementById("blockedList");
-  listDiv.innerHTML="";
-  if(blockedMembers.length===0) listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
-  else blockedMembers.forEach(u=>{ const d=document.createElement("div"); d.className="item"; d.textContent=u; listDiv.appendChild(d); });
+  renderBlockedUsersPopup();
   document.getElementById("blockedPopup").style.display="block";
 };
+function renderBlockedUsersPopup(){
+  const listDiv=document.getElementById("blockedList");
+  listDiv.innerHTML="";
+  if(blockedMembers.length===0){
+    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
+  } else {
+    blockedMembers.forEach((u,index)=>{
+      const div=document.createElement("div");
+      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
+      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
+      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
+      unblockBtn.className="unblockBtn";
+      unblockBtn.onclick=()=>{
+        blockedMembers.splice(index,1);
+        localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
+        renderBlockedUsersPopup();
+        renderGroupMembers();
+      };
+      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
+    });
+  }
+}
 function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
 
 // ===== REQUEST/INVITE POPUP =====
 document.getElementById("showRequestInvite").onclick = ()=>{
   const listDiv=document.getElementById("requestList");
   listDiv.innerHTML="";
-  const requests=["Charlie"]; // example
+  const requests=["Charlie"];
   if(requests.length===0) listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No requests</p>";
-  else requests.forEach(r=>{ const d=document.createElement("div"); d.className="item"; d.textContent=r; listDiv.appendChild(d); });
+  else requests.forEach(r=>{
+    const div=document.createElement("div"); div.className="item"; div.textContent=r;
+    listDiv.appendChild(div);
+  });
   document.getElementById("requestPopup").style.display="block";
 };
 function closeRequestPopup(){ document.getElementById("requestPopup").style.display="none"; }
@@ -311,6 +327,5 @@ function closeRequestPopup(){ document.getElementById("requestPopup").style.disp
 renderMessages();
 renderGroupMembers();
 </script>
-
 </body>
 </html>
