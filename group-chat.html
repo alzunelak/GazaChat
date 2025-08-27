@@ -244,22 +244,27 @@ function backToChat(){
 }
 
 // ===== GROUP PHOTO =====
-document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
-document.getElementById("groupPhotoFile").addEventListener("change",e=>{
-  const file=e.target.files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const url=reader.result;
-      document.getElementById("infoGroupPhoto").src=url;
-      document.getElementById("groupPhoto").src=url;
-      currentGroup.photo = url;
-      groups[currentGroupIndex] = currentGroup;
-      localStorage.setItem("groups", JSON.stringify(groups));
+document.getElementById("groupPhotoFile").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = reader.result;
+      document.getElementById("infoGroupPhoto").src = url;
+      document.getElementById("groupPhoto").src = url;
+
+      // --- UPDATE groups in localStorage ---
+      let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+      let currentIndex = parseInt(localStorage.getItem("currentGroupIndex") || 0);
+      if (groups[currentIndex]) {
+        groups[currentIndex].photo = url;
+        localStorage.setItem("groups", JSON.stringify(groups));
+      }
     };
     reader.readAsDataURL(file);
   }
 });
+
 
 // ===== BLOCK MEMBER =====
 function blockMember(name){
