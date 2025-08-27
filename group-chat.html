@@ -245,47 +245,6 @@ function renderGroupMembers(){
   document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
 }
 
-// ===== BLOCK / UNBLOCK =====
-function blockMember(name){
-  if(!blockedMembers.includes(name)) blockedMembers.push(name);
-  localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
-  renderGroupMembers();
-  renderBlockedMembers();
-}
-
-function unblockMember(name){
-  blockedMembers = blockedMembers.filter(m=>m!==name);
-  localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
-  renderGroupMembers();
-  renderBlockedMembers();
-}
-
-function renderBlockedMembers(){
-  let list=document.getElementById("blockedMembersList");
-  if(!list){
-    list=document.createElement("div");
-    list.id="blockedMembersList";
-    document.querySelector("#groupInfoPage").appendChild(list);
-  }
-  list.innerHTML="<h3>Blocked Members</h3>";
-  if(blockedMembers.length===0){
-    list.innerHTML+="<p style='color:#555;font-style:italic'>No blocked members</p>";
-  } else {
-    blockedMembers.forEach(name=>{
-      const div=document.createElement("div");
-      div.className="memberBox";
-      div.textContent=name;
-      if(isAdmin){
-        const btn=document.createElement("button");
-        btn.textContent="Unblock";
-        btn.style.marginLeft="10px";
-        btn.onclick=()=>unblockMember(name);
-        div.appendChild(btn);
-      }
-      list.appendChild(div);
-    });
-  }
-}
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = ()=>{
