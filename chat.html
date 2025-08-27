@@ -29,6 +29,16 @@
     #emojiPicker{position:absolute;bottom:60px;left:10px;background:#fff;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
     #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
     #emojiPicker span:hover{background:#eee;border-radius:5px;}
+
+    /* Friend Info Page */
+    #friendInfoPage{padding:10px;}
+    .groupHeader{display:flex;align-items:center;gap:10px;margin-bottom:15px;}
+    .groupHeader img{width:70px;height:70px;border-radius:50%;object-fit:cover;}
+    .groupHeader h2{margin:0;font-size:18px;}
+    .actionButtons button{display:flex;align-items:center;gap:5px;margin:5px 0;padding:8px 12px;border:none;background:#eee;border-radius:8px;cursor:pointer;}
+    .settingsContainer button{display:flex;align-items:center;gap:5px;margin:5px 0;padding:8px 12px;border:none;background:#eee;border-radius:8px;cursor:pointer;width:100%;}
+    .actionBox button{display:flex;align-items:center;gap:5px;margin:5px 0;padding:8px 12px;border:none;background:#f44336;color:#fff;border-radius:8px;cursor:pointer;width:100%;}
+    .backArrow{cursor:pointer;font-size:22px;}
   </style>
 </head>
 <body>
@@ -72,36 +82,33 @@
   <span>🔥</span><span>🎉</span><span>❤️</span>
 </div>
 
-
-  <!-- FRIEND INFO PAGE -->
+<!-- FRIEND INFO PAGE -->
 <div id="friendInfoPage" style="display:none;">
   <div class="groupHeader">
     <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
-    <img id="infoFriendPhoto" src="profile.png">
+    <img id="infoFriendPhoto" src="default-profile.png">
     <h2 id="infoFriendName"></h2>
-  <div class="actionButtons">
-      <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
-      <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
-      <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-    </div>
   </div>
 
- <div class="settingsContainer">
-  <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
-  <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
-  <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
-  <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy </button>
-</div>
+  <div class="actionButtons">
+    <button><i class="fa-solid fa-video"></i> Video Call</button>
+    <button><i class="fa-solid fa-phone"></i> Audio Call</button>
+    <button><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+  </div>
 
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
+  </div>
 
   <div class="actionBox">
-    <button class="block" onclick="window.location.href='blockuser.html'"><i class="fa-solid fa-ban"></i> Block User</button>
+    <button class="block" onclick="alert('User blocked')"><i class="fa-solid fa-ban"></i> Block User</button>
     <button class="report"><i class="fa-solid fa-flag"></i> Report User</button>
   </div>
 </div>
 
-<script>
-  
 <script>
 // --- My Info ---
 const myName = localStorage.getItem("username") || "Me";
@@ -119,10 +126,19 @@ const friendData = {
   photo: friendObj && friendObj.profile ? friendObj.profile : "default-profile.png"
 };
 
-// Set header
-document.getElementById("friendName").textContent = friendData.name;
-document.getElementById("friendPhoto").src = friendData.photo;
-document.getElementById("friendPhoto").onerror = () => { document.getElementById("friendPhoto").src = "default-profile.png"; };
+// --- Set headers ---
+const friendNameEl  = document.getElementById("friendName");
+const friendPhotoEl = document.getElementById("friendPhoto");
+const infoFriendNameEl  = document.getElementById("infoFriendName");
+const infoFriendPhotoEl = document.getElementById("infoFriendPhoto");
+
+friendNameEl.textContent = friendData.name;
+friendPhotoEl.src = friendData.photo;
+infoFriendNameEl.textContent = friendData.name;
+infoFriendPhotoEl.src = friendData.photo;
+
+friendPhotoEl.onerror = () => { friendPhotoEl.src = "default-profile.png"; };
+infoFriendPhotoEl.onerror = () => { infoFriendPhotoEl.src = "default-profile.png"; };
 
 // --- Chat State ---
 let messages = JSON.parse(localStorage.getItem(`chat_${friendData.name}`) || "[]");
@@ -170,7 +186,6 @@ const menuPopup=document.getElementById("menuPopup");
 menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";};
 document.addEventListener("click", e=>{if(!menuBtn.contains(e.target)&&!menuPopup.contains(e.target)) menuPopup.style.display="none";});
 
-
 // ===== NAVIGATION =====
 friendNameEl.onclick = openFriendInfo;
 friendPhotoEl.onclick = openFriendInfo;
@@ -184,8 +199,6 @@ function backToChat(){
   document.getElementById("chatPage").style.display="flex";
 }
 
-// ===
-  
 // Delete chat
 function deleteChat(){
   if(confirm("Delete all messages?")){
