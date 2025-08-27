@@ -24,34 +24,38 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 
 <div id="friendsList"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 <script>
-let currentUser = "you";
+// ===== STATE =====
+let currentUser = "You";
 
-// Load current group members from localStorage
+// Load current group members from localStorage or add self by default
 let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `["${currentUser}"]`);
 
-// Load friends from localStorage
-// Ensure your localStorage key is 'friends' and it is an array of names
+// Load all friends from localStorage (stored as objects [{name:"Alice"}])
 let allFriends = JSON.parse(localStorage.getItem("friends") || "[]");
 
-// Filter friends not already in the group
-let friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
+// Extract friend names
+let friendNames = allFriends.map(f => f.name);
+
+// Filter friends not already in group
+let friendsToAdd = friendNames.filter(f => !currentGroupMembers.includes(f));
 
 const friendsList = document.getElementById("friendsList");
 
+// ===== RENDER FRIENDS LIST =====
 function renderFriends() {
     friendsList.innerHTML = "";
-    if (friendsToAdd.length === 0) {
+    if(friendsToAdd.length === 0){
         friendsList.innerHTML = "<p style='color:#555;font-style:italic;'>No friends to add</p>";
         return;
     }
+
     friendsToAdd.forEach(name => {
         const div = document.createElement("div");
         div.className = "friendItem";
         div.textContent = name;
         div.onclick = () => {
-            // Add friend to group
+            // Add friend to current group
             currentGroupMembers.push(name);
             localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
@@ -66,7 +70,7 @@ function renderFriends() {
             });
             localStorage.setItem("messages", JSON.stringify(messages));
 
-            // Remove from friendsToAdd and re-render
+            // Remove friend from add list and re-render
             friendsToAdd = friendsToAdd.filter(f => f !== name);
             renderFriends();
         };
@@ -74,13 +78,14 @@ function renderFriends() {
     });
 }
 
-// Back button
+// ===== BACK BUTTON =====
 document.getElementById("backBtn").onclick = () => {
-    window.history.back();
+    window.history.back(); // Go back to group info page
 };
 
-// Initial render
+// ===== INITIAL RENDER =====
 renderFriends();
 </script>
+
 </body>
 </html>
