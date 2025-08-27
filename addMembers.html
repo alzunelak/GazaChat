@@ -25,13 +25,14 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 <script>
+  <script>
 let currentUser = "John Doe";
 
 // Load current group members from localStorage
-let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || "[]");
+let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `["${currentUser}"]`);
 
 // Load all friends from localStorage
-let allFriends = JSON.parse(localStorage.getItem("friends") || '[]'); // [{name:"Alice"}, {name:"Bob"}]
+let allFriends = JSON.parse(localStorage.getItem("allFriends") || '[]'); // e.g., [{name:"Alice"}, {name:"Bob"}]
 
 // Filter friends not already in group
 let friendsToAdd = allFriends.map(f=>f.name).filter(f => !currentGroupMembers.includes(f));
@@ -49,8 +50,8 @@ function renderFriends(){
         div.className = "friendItem";
         div.textContent = name;
         div.onclick = () => {
+            // Add to group
             currentGroupMembers.push(name);
-            // Save updated group members to localStorage
             localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
             // Optional: system message
@@ -64,9 +65,8 @@ function renderFriends(){
             });
             localStorage.setItem("messages", JSON.stringify(messages));
 
-            // Remove friend from available list and re-render
-            friendsToAdd = friendsToAdd.filter(f => f !== name);
-            renderFriends();
+            // Go back to group info page automatically
+            window.location.href = "groupInfo.html";
         };
         friendsList.appendChild(div);
     });
@@ -79,5 +79,9 @@ document.getElementById("backBtn").onclick = ()=>{
 
 renderFriends();
 </script>
+
+
+
+
 </body>
 </html>
