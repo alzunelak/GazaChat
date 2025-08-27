@@ -73,11 +73,10 @@ function renderFriends(){
 }
 
 // Back button
-document.getElementById("backBtn").onclick = ()=>{
-    window.location.href = "groupInfo.html";
-};
-
+document.getElementById("backBtn").onclick = () => {
+    window.history.back();
 renderFriends();
+  
 </script>
 </body>
 </html> 
