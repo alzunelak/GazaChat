@@ -26,12 +26,12 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 
 <script>
 // ===== STATE =====
-let currentUser = "You";
+let currentUser = "you";
 
-// Load current group members from localStorage or add self by default
-let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `["${currentUser}"]`);
+// Load current group members from localStorage
+let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
 
-// Load all friends from localStorage (stored as objects [{name:"Alice"}])
+// Load all friends from localStorage (expected format: [{name: "Alice"}, {name: "Bob"}])
 let allFriends = JSON.parse(localStorage.getItem("friends") || "[]");
 
 // Extract friend names
@@ -42,14 +42,13 @@ let friendsToAdd = friendNames.filter(f => !currentGroupMembers.includes(f));
 
 const friendsList = document.getElementById("friendsList");
 
-// ===== RENDER FRIENDS LIST =====
+// ===== RENDER FRIENDS =====
 function renderFriends() {
     friendsList.innerHTML = "";
     if(friendsToAdd.length === 0){
         friendsList.innerHTML = "<p style='color:#555;font-style:italic;'>No friends to add</p>";
         return;
     }
-
     friendsToAdd.forEach(name => {
         const div = document.createElement("div");
         div.className = "friendItem";
@@ -70,7 +69,7 @@ function renderFriends() {
             });
             localStorage.setItem("messages", JSON.stringify(messages));
 
-            // Remove friend from add list and re-render
+            // Remove friend from the add list and re-render
             friendsToAdd = friendsToAdd.filter(f => f !== name);
             renderFriends();
         };
@@ -80,6 +79,8 @@ function renderFriends() {
 
 // ===== BACK BUTTON =====
 document.getElementById("backBtn").onclick = () => {
+    // Save updated members before returning
+    localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
     window.history.back(); // Go back to group info page
 };
 
