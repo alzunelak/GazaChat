@@ -219,6 +219,21 @@ function backToChat(){
   document.getElementById("chatPage").style.display="flex";
 }
 
+  // ===== AUTO UPDATE MEMBERS =====
+// Whenever localStorage is updated in another tab/page
+window.addEventListener('storage', (event) => {
+    if(event.key === "currentGroupMembers"){
+        currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
+        renderGroupMembers();
+    }
+});
+
+// Also update members when page gains focus (after returning from Add Members page)
+window.addEventListener('focus', () => {
+    currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
+    renderGroupMembers();
+});
+
 // ===== GROUP PHOTO =====
 document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
 document.getElementById("groupPhotoFile").addEventListener("change",e=>{
