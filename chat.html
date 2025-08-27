@@ -8,8 +8,9 @@
 <style>
   body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column;}
   #chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
+  
   /* Chat Header */
-  #chatHeader{display:flex;flex-direction:column;align-items:center;background:#075E54;color:white;padding:15px;position:sticky;top:0;z-index:10;}
+  #chatHeader{display:flex;flex-direction:column;align-items:center;background:#075E54;color:white;padding:15px;position:sticky;top:0;z-index:10;cursor:pointer;}
   #chatHeader .topRow{width:100%;display:flex;align-items:center;}
   #chatHeader .topRow i{cursor:pointer;font-size:20px;margin-right:10px;}
   #chatHeader img{width:70px;height:70px;border-radius:50%;object-fit:cover;margin:10px 0;}
@@ -28,44 +29,58 @@
   #msgInput{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;outline:none;}
   #sendBtn{margin-left:5px;background:#25D366;color:white;border:none;padding:0 12px;border-radius:50%;font-size:22px;cursor:pointer;}
   
-  /* Action buttons row */
+  /* Friend Info Page */
+  #friendInfoPage{display:none;flex:1;overflow-y:auto;}
+  .infoHeader{display:flex;align-items:center;gap:10px;padding:10px;background:#075E54;color:white;}
+  .infoHeader i{cursor:pointer;font-size:20px;}
+  .infoHeader img{width:70px;height:70px;border-radius:50%;object-fit:cover;margin-left:10px;}
+  .infoHeader .infoName{font-size:18px;font-weight:bold;}
+  .infoHeader .infoStatus{font-size:14px;color:#d2f5e3;}
+  
   .actionButtons{display:flex;justify-content:space-around;margin:10px 0;padding:10px;}
   .actionButtons .btn{flex:1;margin:0 5px;background:#fff;border-radius:10px;padding:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;}
   .actionButtons .btn i{font-size:24px;color:#075E54;}
   .actionButtons .btn span{margin-top:5px;font-size:14px;color:#075E54;}
   
-  /* Settings */
   .settingsContainer button{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;}
-  
-  /* Block / Report */
   .actionBox button{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:none;color:#f44336;cursor:pointer;margin-bottom:5px;}
 </style>
 </head>
 <body>
 
+<!-- CHAT PAGE -->
 <div id="chatPage">
-
-  <!-- CHAT HEADER -->
   <div id="chatHeader">
-    <div class="topRow">
-      <i class="fa-solid fa-arrow-left" onclick="backToChats()"></i>
-    </div>
     <img id="chatFriendPhoto" src="default-profile.png">
     <span class="friendName" id="chatFriendName">Friend</span>
     <span class="friendStatus" id="chatFriendStatus">Offline</span>
   </div>
 
-  <!-- Chat Messages -->
   <div id="chatBox"></div>
 
-  <!-- Action Buttons -->
+  <div id="inputArea">
+    <input id="msgInput" placeholder="Type a message...">
+    <button id="sendBtn">➡</button>
+  </div>
+</div>
+
+<!-- FRIEND INFO PAGE -->
+<div id="friendInfoPage">
+  <div class="infoHeader">
+    <i class="fa-solid fa-arrow-left" onclick="backToChat()"></i>
+    <img id="infoFriendPhoto" src="default-profile.png">
+    <div style="display:flex;flex-direction:column;">
+      <span class="infoName" id="infoFriendName">Friend</span>
+      <span class="infoStatus" id="infoFriendStatus">Offline</span>
+    </div>
+  </div>
+
   <div class="actionButtons">
     <div class="btn"><i class="fa-solid fa-video"></i><span>Video Call</span></div>
     <div class="btn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></div>
     <div class="btn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></div>
   </div>
 
-  <!-- Settings -->
   <div class="settingsContainer">
     <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
     <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
@@ -73,16 +88,9 @@
     <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
   </div>
 
-  <!-- Block / Report -->
   <div class="actionBox">
     <button><i class="fa-solid fa-ban"></i> Block User</button>
     <button><i class="fa-solid fa-flag"></i> Report User</button>
-  </div>
-
-  <!-- Input Area -->
-  <div id="inputArea">
-    <input id="msgInput" placeholder="Type a message...">
-    <button id="sendBtn">➡</button>
   </div>
 </div>
 
@@ -99,7 +107,7 @@
     online: friendObj ? friendObj.online : false
   };
 
-  // --- Set Chat Header ---
+  // Chat header
   const chatFriendNameEl = document.getElementById("chatFriendName");
   const chatFriendPhotoEl = document.getElementById("chatFriendPhoto");
   const chatFriendStatusEl = document.getElementById("chatFriendStatus");
@@ -109,6 +117,13 @@
   chatFriendPhotoEl.onerror = () => { chatFriendPhotoEl.src = "default-profile.png"; };
   chatFriendStatusEl.textContent = friendData.online ? "Online" : "Offline";
   chatFriendStatusEl.style.color = friendData.online ? "#d2f5e3" : "#ccc";
+
+  // Friend Info page
+  document.getElementById("infoFriendName").textContent = friendData.name;
+  document.getElementById("infoFriendPhoto").src = friendData.photo;
+  document.getElementById("infoFriendPhoto").onerror = () => { document.getElementById("infoFriendPhoto").src = "default-profile.png"; };
+  document.getElementById("infoFriendStatus").textContent = friendData.online ? "Online" : "Offline";
+  document.getElementById("infoFriendStatus").style.color = friendData.online ? "#d2f5e3" : "#ccc";
 
   // --- Chat Logic ---
   const myId = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
@@ -142,6 +157,20 @@
   });
 
   renderMessages();
+
+  // Navigate to Friend Info
+  chatFriendPhotoEl.onclick = openFriendInfo;
+  chatFriendNameEl.onclick = openFriendInfo;
+
+  function openFriendInfo(){
+    document.getElementById("chatPage").style.display="none";
+    document.getElementById("friendInfoPage").style.display="flex";
+  }
+
+  function backToChat(){
+    document.getElementById("friendInfoPage").style.display="none";
+    document.getElementById("chatPage").style.display="flex";
+  }
 </script>
 </body>
 </html>
