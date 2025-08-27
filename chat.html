@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WhatsApp Friend Chat</title>
+<title>One-to-One Chat</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
 #chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
-.header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;}
+.header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;position:relative;}
 .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
 .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
 .header-info h2{margin:0;font-size:16px;cursor:pointer;}
@@ -21,10 +21,15 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
 .input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
 #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+/* Menu Popup */
+.menuPopup {display:none;position:absolute;top:60px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;width:150px;z-index:1000;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+.menuPopup div {padding:10px;cursor:pointer;}
+.menuPopup div:hover {background:#f1f1f1;}
 
+/* Friend Info */
 .groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#fff;color:#000;margin-bottom:10px;border-radius:10px;position:relative;}
-.groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
-.groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
+.groupHeader img{width:80px;height:80px;border-radius:50%;cursor:default;margin-bottom:10px;object-fit:cover;}
+.groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:default;}
 .backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;color:#000;}
 .actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
 .actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
@@ -39,12 +44,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
-
-.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
-.popup h3{margin-top:0;}
-.popup button.closeBtn{margin-top:10px;float:right;}
-.popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
-.popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -59,6 +58,11 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     <div class="header-actions">
       <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+      <div id="menuPopup" class="menuPopup">
+        <div onclick="openFriendInfo()">View Info</div>
+        <div onclick="alert('Mute functionality coming soon')">Mute</div>
+        <div onclick="deleteChat()">Delete Chat</div>
+      </div>
     </div>
   </div>
   <div id="chatBox"></div>
@@ -79,7 +83,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   <div class="groupHeader">
     <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
     <img id="friendPhoto" src="profile.png">
-    <h2 id="friendName" contenteditable="true">Friend Name</h2>
+    <h2 id="friendName">Friend Name</h2>
     <div class="actionButtons">
       <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
       <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
@@ -94,20 +98,32 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   </div>
 
   <div class="container actionBox">
-    <button><i class="fa-solid fa-ban"></i> Block User</button>
-    <button><i class="fa-solid fa-flag"></i> Report User</button>
+    <button onclick="blockUser()"><i class="fa-solid fa-ban"></i> Block User</button>
+    <button onclick="alert('User reported')"><i class="fa-solid fa-flag"></i> Report User</button>
   </div>
-
-  <input type="file" id="friendPhotoFile" accept="image/*" style="display:none;">
 </div>
 
 <script>
 // ===== STATE =====
 let myName = "You";
 let messages = [];
-let blockedUsers = [];
+let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+
+// Fetch friend data from localStorage
+let friendData = JSON.parse(localStorage.getItem("currentFriend")) || {name:"Friend Name", photo:"profile.png"};
+
+const friendHeaderPhoto = document.getElementById("friendHeaderPhoto");
+const friendHeaderName = document.getElementById("friendHeaderName");
+const friendPhoto = document.getElementById("friendPhoto");
+const friendName = document.getElementById("friendName");
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
+
+// ===== INITIAL FRIEND INFO =====
+friendHeaderName.textContent = friendData.name;
+friendHeaderPhoto.src = friendData.photo;
+friendPhoto.src = friendData.photo;
+friendName.textContent = friendData.name;
 
 // ===== CHAT FUNCTIONALITY =====
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
@@ -126,7 +142,7 @@ msgInput.addEventListener("keydown", e => {
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
-    if(blockedUsers.includes(m.user)) return;
+    if(blockedUsers.includes(m.user) || blockedUsers.includes(friendData.name)) return;
     const div=document.createElement("div");
     div.className="msg"+(m.user===myName?" self":"");
     div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
@@ -136,7 +152,7 @@ function renderMessages(){
 }
 
 // ===== NAVIGATION =====
-document.getElementById("friendHeaderName").onclick = openFriendInfo;
+friendHeaderName.onclick = openFriendInfo;
 function openFriendInfo(){
   document.getElementById("chatPage").style.display="none";
   document.getElementById("friendInfoPage").style.display="block";
@@ -146,39 +162,34 @@ function backToChat(){
   document.getElementById("chatPage").style.display="flex";
 }
 
-// ===== FRIEND PHOTO =====
-document.getElementById("friendPhoto").onclick = () => { document.getElementById("friendPhotoFile").click(); };
-document.getElementById("friendPhotoFile").addEventListener("change", e=>{
-  const file=e.target.files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=()=>{ 
-      const url=reader.result;
-      document.getElementById("friendPhoto").src=url;
-      document.getElementById("friendHeaderPhoto").src=url;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// ===== EDIT FRIEND NAME =====
-document.getElementById("friendName").addEventListener("blur", ()=>{
-  const newName = document.getElementById("friendName").textContent.trim();
-  if(newName){
-    document.getElementById("friendHeaderName").textContent = newName;
-  }
-});
-
 // ===== BLOCK & REPORT =====
-document.querySelector(".actionBox button:nth-child(1)").onclick = () => {
-  if(confirm("Block this user?")) { blockedUsers.push(document.getElementById("friendHeaderName").textContent); alert("User blocked."); }
-};
-document.querySelector(".actionBox button:nth-child(2)").onclick = () => {
-  if(confirm("Report this user?")) alert("User reported.");
-};
+function blockUser(){
+  if(confirm("Block this user?")){
+    blockedUsers.push(friendData.name);
+    localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
+    window.location.href = "blockuser.html";
+  }
+}
+
+// ===== DELETE CHAT =====
+function deleteChat(){
+  if(confirm("Delete this chat?")){
+    messages = [];
+    renderMessages();
+    alert("Chat deleted.");
+  }
+}
+
+// ===== MENU POPUP =====
+const menuBtn = document.getElementById("menuBtn");
+const menuPopup = document.getElementById("menuPopup");
+menuBtn.onclick = () => { menuPopup.style.display = menuPopup.style.display==="block"?"none":"block"; }
+document.addEventListener("click", e => {
+  if(!menuPopup.contains(e.target) && e.target!==menuBtn) menuPopup.style.display="none";
+});
 
 // ===== INITIAL RENDER =====
-renderMessages();
+if(!blockedUsers.includes(friendData.name)) renderMessages();
 </script>
 </body>
 </html>
