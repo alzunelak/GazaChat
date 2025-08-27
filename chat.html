@@ -40,7 +40,6 @@ body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#00
 .actionBox i{font-size:18px;}
 .actionBox .block{background:#ffeded;color:red;}
 .actionBox .report{background:#ffeded;color:red;}
-.actionBox .leaveChat{background:#ffeded;color:red;}
 .popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
 .popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
 .popup div:hover{background:#f1f1f1;}
@@ -91,17 +90,17 @@ body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#00
     </div>
   </div>
 
- <div class="settingsContainer">
-  <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
-  <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
-  <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
-  <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy </button>
-</div>
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy </button>
+  </div>
 
-
-<div class="actionBox">
-  <button class="block" onclick="blockUser()"><i class="fa-solid fa-ban"></i> Block User</button>
-  <button class="report" onclick="reportUser()"><i class="fa-solid fa-flag"></i> Report User</button>
+  <div class="actionBox">
+    <button class="block" onclick="blockUser()"><i class="fa-solid fa-ban"></i> Block User</button>
+    <button class="report" onclick="reportUser()"><i class="fa-solid fa-flag"></i> Report User</button>
+  </div>
 </div>
 
 <script>
@@ -111,10 +110,8 @@ let friendData = JSON.parse(localStorage.getItem("currentFriend")) || {name:"Fri
 let messages = JSON.parse(localStorage.getItem(`chat_with_${friendData.name}`) || "[]");
 
 // ===== HEADER =====
-const friendNameEl = document.getElementById("friendName");
-const friendPhotoEl = document.getElementById("friendPhoto");
-friendNameEl.textContent = friendData.name;
-friendPhotoEl.src = friendData.photo;
+document.getElementById("friendName").textContent = friendData.name;
+document.getElementById("friendPhoto").src = friendData.photo;
 document.getElementById("infoFriendName").textContent = friendData.name;
 document.getElementById("infoFriendPhoto").src = friendData.photo;
 
@@ -151,13 +148,12 @@ function renderMessages(){
 // ===== MENU POPUP =====
 const menuBtn = document.getElementById("menuBtn");
 const menuPopup = document.getElementById("menuPopup");
-menuBtn.onclick = ()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";}
-document.addEventListener("click", e => {if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none";})
+menuBtn.onclick = ()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";};
+document.addEventListener("click", e => {if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none";});
 
 // ===== NAVIGATION =====
-friendNameEl.onclick = openFriendInfo;
-friendPhotoEl.onclick = openFriendInfo;
-
+document.getElementById("friendName").onclick = openFriendInfo;
+document.getElementById("friendPhoto").onclick = openFriendInfo;
 function openFriendInfo(){
   document.getElementById("chatPage").style.display="none";
   document.getElementById("friendInfoPage").style.display="block";
@@ -176,22 +172,18 @@ function deleteChat(){
   }
 }
 
-let friend = JSON.parse(localStorage.getItem("currentFriend") || '{"name":"Friend Name","photo":"friend.png"}');
-
-function blockUser() {
-    let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-    if(!blocked.includes(friend.name)) blocked.push(friend.name);
+// ===== BLOCK & REPORT =====
+function blockUser(){
+  let blocked = JSON.parse(localStorage.getItem("blockedUsers")) || [];
+  if(!blocked.includes(friendData.name)){
+    blocked.push(friendData.name);
     localStorage.setItem("blockedUsers", JSON.stringify(blocked));
-    // Redirect to home after block
-    window.location.href = "home.html";
+  }
+  window.location.href = "home.html"; // back to home after block
 }
-
-function reportUser() {
-    let reported = JSON.parse(localStorage.getItem("reportedUsers") || "[]");
-    if(!reported.includes(friend.name)) reported.push(friend.name);
-    localStorage.setItem("reportedUsers", JSON.stringify(reported));
-    // Redirect to home after report
-    window.location.href = "home.html";
+function reportUser(){
+  alert("User reported.");
+  window.location.href = "home.html";
 }
 
 // ===== INITIAL RENDER =====
