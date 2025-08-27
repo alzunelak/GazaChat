@@ -1,9 +1,10 @@
-uuuuuuuuuuuuuuuuuuuuuuuiiii<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Add Members</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body {font-family:Arial;margin:0;padding:0;background:#fff;}
 .header {display:flex;align-items:center;padding:10px;background:#075E54;color:white;}
@@ -28,29 +29,30 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 let currentUser = "you";
 
 // Load current group members from localStorage
-let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || "[]");
+let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `["${currentUser}"]`);
 
-// Load all friends from localStorage
-let allFriends = JSON.parse(localStorage.getItem("friends") || '[]'); // [{name:"Alice"}, {name:"Bob"}]
+// Load friends from localStorage
+// Ensure your localStorage key is 'friends' and it is an array of names
+let allFriends = JSON.parse(localStorage.getItem("friends") || "[]");
 
-// Filter friends not already in group
-let friendsToAdd = allFriends.map(f=>f.name).filter(f => !currentGroupMembers.includes(f));
+// Filter friends not already in the group
+let friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
 
 const friendsList = document.getElementById("friendsList");
 
-function renderFriends(){
+function renderFriends() {
     friendsList.innerHTML = "";
-    if(friendsToAdd.length === 0){
+    if (friendsToAdd.length === 0) {
         friendsList.innerHTML = "<p style='color:#555;font-style:italic;'>No friends to add</p>";
         return;
     }
-    friendsToAdd.forEach(name=>{
+    friendsToAdd.forEach(name => {
         const div = document.createElement("div");
         div.className = "friendItem";
         div.textContent = name;
         div.onclick = () => {
+            // Add friend to group
             currentGroupMembers.push(name);
-            // Save updated group members to localStorage
             localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
             // Optional: system message
@@ -64,7 +66,7 @@ function renderFriends(){
             });
             localStorage.setItem("messages", JSON.stringify(messages));
 
-            // Remove friend from available list and re-render
+            // Remove from friendsToAdd and re-render
             friendsToAdd = friendsToAdd.filter(f => f !== name);
             renderFriends();
         };
@@ -75,8 +77,10 @@ function renderFriends(){
 // Back button
 document.getElementById("backBtn").onclick = () => {
     window.history.back();
+};
+
+// Initial render
 renderFriends();
-  
 </script>
 </body>
-</html> 
+</html>
