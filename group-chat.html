@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WhatsApp Group Info</title>
+<title>WhatsApp Group Chat</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
@@ -140,12 +140,21 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 
 <script>
 // ===== STATE =====
-let currentUser = "you";
-let isAdmin = true;
-let allFriends = ["sophia","zainab","maya","amat","rukhsar","nuzlah"];
-let currentGroupMembers = [currentUser,"sophia"];
-let blockedMembers = JSON.parse(localStorage.getItem("blockedMembers")||"[]");
-let messages = [];
+let myName = "You"; // current user
+let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "-1");
+let currentGroup = groups[currentGroupIndex];
+
+if(!currentGroup){
+  alert("No group selected. Redirecting...");
+  window.location.href = "groups.html";
+}
+
+let currentUser = myName;
+let isAdmin = (currentGroup.admin === myName);
+let currentGroupMembers = currentGroup.members.map(m=>m.name);
+let blockedMembers = currentGroup.blocked || [];
+let messages = currentGroup.messages || [];
 
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
@@ -158,9 +167,15 @@ msgInput.addEventListener("keydown", e => {
     e.preventDefault();
     const txt=msgInput.value.trim();
     if(!txt) return;
-    messages.push({id:uid(), text:txt, self:true, user:currentUser, time:new Date().toLocaleTimeString()});
+    const newMsg = {id:uid(), text:txt, self:true, user:currentUser, time:new Date().toLocaleString()};
+    messages.push(newMsg);
     msgInput.value="";
     renderMessages();
+
+    // Save message to group
+    currentGroup.messages = messages;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
   }
 });
 
@@ -173,6 +188,7 @@ function renderMessages(){
     div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
     chatBox.appendChild(div);
   });
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 // ===== GROUP MEMBERS =====
@@ -198,12 +214,20 @@ function renderGroupMembers(){
     });
   }
   document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
+
+  // Update in groups array
+  currentGroup.members = currentGroupMembers.map(n=>({name:n, accepted:true}));
+  currentGroup.blocked = blockedMembers;
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
+
+  // Update chat header members
+  document.getElementById("members").textContent = activeMembers.join(", ");
 }
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = ()=>{
   localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
-  localStorage.setItem("allFriends", JSON.stringify(allFriends));
   window.location.href = "addMembers.html";
 };
 
@@ -219,30 +243,20 @@ function backToChat(){
   document.getElementById("chatPage").style.display="flex";
 }
 
-  // ===== AUTO UPDATE MEMBERS =====
-// Whenever localStorage is updated in another tab/page
-window.addEventListener('storage', (event) => {
-    if(event.key === "currentGroupMembers"){
-        currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
-        renderGroupMembers();
-    }
-});
-
-// Also update members when page gains focus (after returning from Add Members page)
-window.addEventListener('focus', () => {
-    currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
-    renderGroupMembers();
-});
-
 // ===== GROUP PHOTO =====
 document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
 document.getElementById("groupPhotoFile").addEventListener("change",e=>{
   const file=e.target.files[0];
   if(file){
     const reader=new FileReader();
-    reader.onload=()=>{ const url=reader.result;
+    reader.onload=()=>{
+      const url=reader.result;
       document.getElementById("infoGroupPhoto").src=url;
-      document.getElementById("groupPhoto").src=url; };
+      document.getElementById("groupPhoto").src=url;
+      currentGroup.photo = url;
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+    };
     reader.readAsDataURL(file);
   }
 });
@@ -251,7 +265,6 @@ document.getElementById("groupPhotoFile").addEventListener("change",e=>{
 function blockMember(name){
   if(confirm(`Block ${name}?`)){
     blockedMembers.push(name);
-    localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
     renderGroupMembers();
   }
 }
@@ -275,7 +288,6 @@ function renderBlockedUsersPopup(){
       unblockBtn.className="unblockBtn";
       unblockBtn.onclick=()=>{
         blockedMembers.splice(index,1);
-        localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
         renderBlockedUsersPopup();
         renderGroupMembers();
       };
@@ -287,7 +299,7 @@ function closeBlockedPopup(){ document.getElementById("blockedPopup").style.disp
 
 // ===== GROUP LINK =====
 document.getElementById("showGroupLink").onclick = ()=>{
-  const inviteLink = `${window.location.origin}/join.html?group=grp_123456`;
+  const inviteLink = `${window.location.origin}/join.html?group=${currentGroupIndex}`;
   document.getElementById("groupLinkInput").value = inviteLink;
   document.getElementById("linkPopup").style.display="block";
 };
@@ -312,7 +324,11 @@ const deleteGroupBtn = document.querySelector(".actionBox button:nth-child(4)");
 
 leaveBtn.onclick = () => {
   if(confirm("Are you sure you want to leave the group?")){
-    alert("You left the group.");
+    currentGroupMembers = currentGroupMembers.filter(n=>n!==myName);
+    renderGroupMembers();
+    currentGroup.members = currentGroupMembers.map(n=>({name:n,accepted:true}));
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
     window.location.href = "groups.html";
   }
 };
@@ -337,15 +353,31 @@ deleteGroupBtn.onclick = () => {
     return;
   }
   if(confirm("Are you sure you want to DELETE the group? This cannot be undone.")){
-    alert("Group deleted.");
+    groups.splice(currentGroupIndex,1);
+    localStorage.setItem("groups", JSON.stringify(groups));
     window.location.href = "groups.html";
   }
 };
 
 // ===== INITIAL RENDER =====
+document.getElementById("groupName").textContent = currentGroup.name;
+document.getElementById("infoGroupName").textContent = currentGroup.name;
+document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
+document.getElementById("infoGroupPhoto").src = currentGroup.photo || "group.png";
+
 renderMessages();
 renderGroupMembers();
-</script>
 
+// ===== EDIT GROUP NAME =====
+document.getElementById("infoGroupName").addEventListener("blur",()=>{
+  const newName=document.getElementById("infoGroupName").textContent.trim();
+  if(newName){
+    currentGroup.name=newName;
+    groups[currentGroupIndex]=currentGroup;
+    localStorage.setItem("groups",JSON.stringify(groups));
+    document.getElementById("groupName").textContent=newName;
+  }
+});
+</script>
 </body>
-</html> 
+</html>
