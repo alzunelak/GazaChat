@@ -1,20 +1,214 @@
-document.getElementById("groupPhotoFile").addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const url = reader.result;
-      document.getElementById("infoGroupPhoto").src = url;
-      document.getElementById("groupPhoto").src = url;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groups</title>
+<style>
+body{
+  font-family: Arial;
+  margin: 0;
+  padding: 20px;
+  background: #f5f5f5;
+}
 
-      // --- UPDATE groups in localStorage ---
-      let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-      let currentIndex = parseInt(localStorage.getItem("currentGroupIndex") || 0);
-      if (groups[currentIndex]) {
-        groups[currentIndex].photo = url;
-        localStorage.setItem("groups", JSON.stringify(groups));
-      }
+.group{
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.group img{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.group .info{
+  flex: 1;
+}
+
+.group .info h3{
+  margin: 0;
+  font-size: 16px;
+}
+
+.group .info p{
+  margin: 0;
+  font-size: 12px;
+  color: gray;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.red-dot{
+  position: absolute;
+  right: 10px;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+}
+
+#createGroupBtn{
+  padding: 10px 15px;
+  background: #25d366;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+#newGroupPopup{
+  display: none;
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  flex-direction: column;
+}
+
+#newGroupPopup input{
+  width: 200px;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+#newGroupPopup button{
+  padding: 5px 10px;
+  margin-right: 5px;
+}
+</style>
+</head>
+<body>
+
+<h1>Your Groups</h1>
+<button id="createGroupBtn">+ Create Group</button>
+<div id="groupsList"></div>
+
+<div id="newGroupPopup">
+  <h3>New Group</h3>
+  <input type="text" id="newGroupName" placeholder="Group Name"><br>
+  <input type="file" id="newGroupPhoto" accept="image/*"><br>
+  <div style="display:flex;">
+    <button onclick="createGroup()">Create</button>
+    <button onclick="closeNewGroupPopup()">Cancel</button>
+  </div>
+</div>
+
+<script>
+const myName = "You"; // current user
+let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+
+const groupsListDiv = document.getElementById("groupsList");
+const createGroupBtn = document.getElementById("createGroupBtn");
+const newGroupPopup = document.getElementById("newGroupPopup");
+
+// Show popup
+createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
+function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
+
+// Render groups - latest message on top
+function renderGroups(){
+  groupsListDiv.innerHTML = "";
+  const myGroups = groups.filter(g => g.members.some(m => m.name === myName));
+  
+  // Sort by last message timestamp descending
+  myGroups.sort((a,b)=>{
+    const aTime = a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
+    const bTime = b.messages.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
+    return bTime - aTime;
+  });
+
+  myGroups.forEach((g,index)=>{
+    const div = document.createElement("div");
+    div.className="group";
+    div.onclick = ()=>{
+      g.unread = false; // mark as read
+      groups = groups.map(gr=>gr.name===g.name ? g : gr);
+      localStorage.setItem("groups",JSON.stringify(groups));
+      localStorage.setItem("currentGroupIndex", groups.findIndex(gr=>gr.name===g.name));
+      window.location="group-chat.html";
     };
-    reader.readAsDataURL(file);
+
+    const fullMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
+    const latestMsg = fullMsg.length > 20 ? fullMsg.slice(0,20) + "..." : fullMsg;
+
+    div.innerHTML = `
+      <img src="${g.photo || 'group.png'}">
+      <div class="info">
+        <h3>${g.name}</h3>
+        <p title="${fullMsg}">${latestMsg}</p>
+      </div>
+      ${g.unread ? '<div class="red-dot"></div>' : ''}
+    `;
+    groupsListDiv.appendChild(div);
+  });
+}
+
+// Create new group
+function createGroup(){
+  const name = document.getElementById("newGroupName").value.trim();
+  if(!name){ alert("Enter a group name!"); return; }
+
+  const fileInput = document.getElementById("newGroupPhoto");
+  if(fileInput.files && fileInput.files[0]){
+    const reader = new FileReader();
+    reader.onload = e=> saveGroup(name,e.target.result);
+    reader.readAsDataURL(fileInput.files[0]);
+  } else saveGroup(name,"group.png");
+}
+
+// Save new group
+function saveGroup(name,img){
+  const newGroup = {
+    name,
+    photo:img,
+    admin:myName,
+    members:[{name:myName,accepted:true}],
+    invited:[],
+    blocked:[],
+    messages:[],
+    unread:false
+  };
+  groups.push(newGroup);
+  localStorage.setItem("groups",JSON.stringify(groups));
+  renderGroups();
+  closeNewGroupPopup();
+  document.getElementById("newGroupName").value="";
+  document.getElementById("newGroupPhoto").value="";
+}
+
+// Update group (name or photo) if changed in group-chat.html
+function syncGroupUpdates(){
+  const updatedGroups = JSON.parse(localStorage.getItem("groups") || "[]");
+  if(updatedGroups.length !== groups.length ||
+     JSON.stringify(updatedGroups) !== JSON.stringify(groups)){
+    groups = updatedGroups;
+    renderGroups();
   }
-});
+}
+
+// Listen to localStorage changes (multi-tab or after edits)
+window.addEventListener('storage', syncGroupUpdates);
+
+// Initial render
+renderGroups();
+</script>
+
+</body>
+</html> 
