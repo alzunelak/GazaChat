@@ -91,14 +91,17 @@ body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#00
     </div>
   </div>
 
-  <div class="settingsContainer">
-    <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
-  </div>
+ <div class="settingsContainer">
+  <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
+  <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+  <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+  <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy </button>
+</div>
+
 
   <div class="actionBox">
     <button class="block" onclick="window.location.href='blockuser.html'"><i class="fa-solid fa-ban"></i> Block User</button>
     <button class="report"><i class="fa-solid fa-flag"></i> Report User</button>
-    <button class="leaveChat"><i class="fa-solid fa-sign-out"></i> Leave Chat</button>
   </div>
 </div>
 
@@ -174,14 +177,7 @@ function deleteChat(){
   }
 }
 
-// ===== LEAVE CHAT =====
-document.querySelector(".leaveChat").onclick = () => {
-  if(confirm("Are you sure you want to leave this chat?")){
-    messages = [];
-    localStorage.removeItem(`chat_with_${friendData.name}`);
-    window.location.href="groups.html";
-  }
-}
+
 
 // ===== INITIAL RENDER =====
 renderMessages();
