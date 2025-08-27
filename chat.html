@@ -83,58 +83,62 @@
 </div>
 
 <!-- FRIEND INFO PAGE -->
-<div id="friendInfoPage" style="display:none;flex:1;flex-direction:column;background:#f5f5f5;">
-  <!-- Header -->
-  <div class="header" style="background:#075E54;color:white;justify-content:flex-start;gap:10px;">
-    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()" style="cursor:pointer;font-size:22px;"></i>
-    <img id="infoFriendPhoto" src="default-profile.png" style="width:60px;height:60px;border-radius:50%;object-fit:cover;">
-    <div class="header-info" style="flex:1;color:white;">
-      <h2 id="infoFriendName" style="margin:0;font-size:18px;"></h2>
-      <span style="font-size:12px;color:#d2f5e3;">Online</span>
+<div id="friendInfoPage" style="display:none;flex:1;flex-direction:column;background:#f5f5f5;font-family:'Segoe UI',Arial,sans-serif;">
+  <main style="flex:1;display:flex;flex-direction:column;">
+
+    <!-- HEADER -->
+    <div style="background:#075E54;color:white;padding:15px;display:flex;flex-direction:column;align-items:center;position:relative;">
+      <i class="fa-solid fa-arrow-left" onclick="backToChat()" 
+         style="position:absolute;left:15px;top:18px;font-size:22px;cursor:pointer;"></i>
+      <img id="infoFriendPhoto" src="default-profile.png" 
+           style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-top:10px;">
+      <h2 id="infoFriendName" style="margin:10px 0 5px 0;font-size:20px;text-align:center;"></h2>
+      <span id="friendStatus" style="font-size:14px;color:#d2f5e3;">Offline</span>
     </div>
-  </div>
 
-  <!-- Action Buttons -->
-  <div style="display:flex;justify-content:space-around;padding:10px;background:#fff;">
-    <button style="display:flex;flex-direction:column;align-items:center;border:none;background:none;color:#075E54;cursor:pointer;">
-      <i class="fa-solid fa-video" style="font-size:24px;"></i>
-      <span style="font-size:12px;margin-top:4px;">Video Call</span>
-    </button>
-    <button style="display:flex;flex-direction:column;align-items:center;border:none;background:none;color:#075E54;cursor:pointer;">
-      <i class="fa-solid fa-phone" style="font-size:24px;"></i>
-      <span style="font-size:12px;margin-top:4px;">Audio Call</span>
-    </button>
-    <button style="display:flex;flex-direction:column;align-items:center;border:none;background:none;color:#075E54;cursor:pointer;">
-      <i class="fa-solid fa-magnifying-glass" style="font-size:24px;"></i>
-      <span style="font-size:12px;margin-top:4px;">Search</span>
-    </button>
-  </div>
+    <!-- ACTION BUTTONS -->
+    <div style="display:flex;justify-content:space-around;margin-top:15px;padding:10px;">
+      <div style="flex:1;margin:0 5px;background:#fff;border-radius:10px;padding:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+        <i class="fa-solid fa-video" style="font-size:24px;color:#075E54;"></i>
+        <span style="margin-top:5px;font-size:14px;color:#075E54;">Video Call</span>
+      </div>
+      <div style="flex:1;margin:0 5px;background:#fff;border-radius:10px;padding:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+        <i class="fa-solid fa-phone" style="font-size:24px;color:#075E54;"></i>
+        <span style="margin-top:5px;font-size:14px;color:#075E54;">Audio Call</span>
+      </div>
+      <div style="flex:1;margin:0 5px;background:#fff;border-radius:10px;padding:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+        <i class="fa-solid fa-magnifying-glass" style="font-size:24px;color:#075E54;"></i>
+        <span style="margin-top:5px;font-size:14px;color:#075E54;">Search</span>
+      </div>
+    </div>
 
-  <!-- Settings Section -->
-  <div style="margin-top:10px;background:#fff;padding:10px;border-top:1px solid #ccc;">
-    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
-      <i class="fa-solid fa-lock"></i> End-to-End Encryption
-    </button>
-    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
-      <i class="fa-solid fa-network-wired"></i> Mesh Network Form
-    </button>
-    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
-      <i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper
-    </button>
-    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
-      <i class="fa-solid fa-shield"></i> Advanced Chat Privacy
-    </button>
-  </div>
+    <!-- SETTINGS -->
+    <div style="margin-top:15px;padding:10px;">
+      <button style="display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+        <i class="fa-solid fa-lock"></i> End-to-End Encryption
+      </button>
+      <button style="display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+        <i class="fa-solid fa-network-wired"></i> Mesh Network Form
+      </button>
+      <button style="display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+        <i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper
+      </button>
+      <button style="display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:#f1f1f1;border-radius:8px;margin-bottom:5px;cursor:pointer;">
+        <i class="fa-solid fa-shield"></i> Advanced Chat Privacy
+      </button>
+    </div>
 
-  <!-- Action Buttons -->
-  <div style="margin-top:10px;padding:10px;background:#fff;">
-    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#f44336;color:white;border-radius:8px;cursor:pointer;">
-      <i class="fa-solid fa-ban"></i> Block User
-    </button>
-    <button style="display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:none;background:#ff9800;color:white;border-radius:8px;cursor:pointer;margin-top:5px;">
-      <i class="fa-solid fa-flag"></i> Report User
-    </button>
-  </div>
+    <!-- BLOCK / REPORT -->
+    <div style="margin-top:15px;padding:10px;display:flex;flex-direction:column;gap:10px;">
+      <button style="display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:none;color:#f44336;cursor:pointer;">
+        <i class="fa-solid fa-ban"></i> Block User
+      </button>
+      <button style="display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:none;background:none;color:#f44336;cursor:pointer;">
+        <i class="fa-solid fa-flag"></i> Report User
+      </button>
+    </div>
+
+  </main>
 </div>
 
 
