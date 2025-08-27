@@ -3,220 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>One-to-One Chat</title>
+<title>WhatsApp Friend Chat</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body {margin:0;font-family:Arial,sans-serif;background:#e5ddd5;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-/* --- CHAT HEADER --- */
-.chat-header {background:#075E54;color:white;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;cursor:pointer;}
-.chat-header-left {display:flex;align-items:center;}
-.chat-header-left img {width:40px;height:40px;border-radius:50%;margin-right:10px;object-fit:cover;}
-.chat-header-right button {background:none;border:none;color:white;font-size:20px;margin-left:10px;cursor:pointer;}
-/* --- MESSAGES --- */
-.chat-messages {flex:1;padding:10px;overflow-y:auto;display:flex;flex-direction:column;}
-.message-container {display:flex;margin:5px 0;align-items:flex-end;position:relative;}
-.message-container.sent {justify-content:flex-end;}
-.message-container.received {justify-content:flex-start;}
-.message-container.received img {width:30px;height:30px;border-radius:50%;margin-right:5px;object-fit:cover;}
-.message {max-width:70%;padding:8px 12px;border-radius:18px;position:relative;word-wrap:break-word;cursor:pointer;}
-.sent .message {background:#dcf8c6;align-self:flex-end;}
-.received .message {background:white;align-self:flex-start;}
-.timestamp {font-size:10px;color:#888;margin-top:2px;text-align:right;}
-/* --- INPUT --- */
-.chat-input {display:flex;padding:10px;background:#f0f0f0;align-items:center;position:sticky;bottom:0;z-index:10;}
-.chat-input input {flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
-.chat-input button {padding:0 12px;border:none;background:#25D366;color:white;border-radius:50%;font-size:22px;cursor:pointer;margin-left:5px;}
-.preview{max-width:200px;border-radius:10px;margin-top:5px;}
-/* --- ATTACHMENT --- */
-.circle-btn {width:40px;height:40px;border-radius:50%;border:none;background:#25D366;color:white;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:5px;}
-.attachment-menu {position:absolute;bottom:60px;left:10px;display:none;flex-direction:column;gap:10px;}
-.attachment-btn {width:50px;height:50px;border-radius:50%;border:none;background:#075E54;color:white;font-size:22px;cursor:pointer;}
-/* --- DELETE --- */
-#deletePopup {position:absolute;display:none;background:white;border:1px solid #ccc;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:100;padding:5px;}
-#deletePopup button {background:none;border:none;padding:5px 10px;cursor:pointer;width:100%;text-align:left;}
-#deletePopup button:hover {background:#f0f0f0;}
-/* --- PROFILE PAGE --- */
-#profilePage {display:none;flex-direction:column;height:100%;}
-.profile-header {display:flex;align-items:center;background:#075E54;color:white;padding:15px;position:sticky;top:0;}
-.profile-header img {width:60px;height:60px;border-radius:50%;margin-right:10px;}
-.profile-header h2 {margin:0;font-size:18px;}
-.profile-back {margin-right:10px;cursor:pointer;font-size:20px;}
+body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
+#chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
+.header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;}
+.header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
+.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
+.header-info h2{margin:0;font-size:16px;cursor:pointer;}
+#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
+.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;}
+.msg.self{background:#dcf8c6;align-self:flex-end;}
+.msg .meta{font-size:10px;color:#999;text-align:right;}
+#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100%-20px);z-index:100;}
+.input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
+.input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
+.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
+#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+
+.groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#fff;color:#000;margin-bottom:10px;border-radius:10px;position:relative;}
+.groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
+.groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
+.backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;color:#000;}
+.actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
+.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
+.actionButtons i{font-size:20px;margin-bottom:5px;}
+
+.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#fff;border-radius:8px;}
+.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
+.settingsContainer button:hover{background:#f1f1f1;}
+.settingsContainer i{color:black;font-size:18px;}
+.settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
+
+.actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+.actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
+.actionBox i{color:red;font-size:18px;}
+
+.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
+.popup h3{margin-top:0;}
+.popup button.closeBtn{margin-top:10px;float:right;}
+.popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
+.popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
 </style>
 </head>
 <body>
 
 <!-- CHAT PAGE -->
 <div id="chatPage">
-  <div class="chat-header">
-    <div class="chat-header-left">
-      <img id="friendProfile" src="default-profile.png">
-      <span id="friendName">Friend</span>
+  <div class="header">
+    <img id="friendHeaderPhoto" src="profile.png">
+    <div class="header-info">
+      <h2 id="friendHeaderName">Friend Name</h2>
     </div>
-    <div class="chat-header-right">
-      <button id="blockBtn">🚫</button>
+    <div class="header-actions">
+      <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
+      <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
     </div>
   </div>
-
-  <div class="chat-messages" id="chatMessages"></div>
-
-  <div class="chat-input">
-    <button id="attachmentToggle" class="circle-btn">+</button>
-    <input type="text" id="messageInput" placeholder="Type a message...">
-    <button id="sendBtn">➡</button>
-  </div>
-
-  <div id="attachmentMenu" class="attachment-menu">
-    <button class="attachment-btn" id="sendFileBtn">📄</button>
-    <button class="attachment-btn" id="takePhotoBtn">📸</button>
-    <button class="attachment-btn" id="takeVideoBtn">🎥</button>
-    <button class="attachment-btn" id="sendLocationBtn">📍</button>
-  </div>
-
-  <div id="deletePopup">
-    <button id="deleteForMeBtn">🗑 Delete for me</button>
-    <button id="deleteForEveryoneBtn">❌ Delete for everyone</button>
+  <div id="chatBox"></div>
+  <div id="inputArea">
+    <div class="input-box">
+      <input id="msgInput" placeholder="Type a message...">
+      <div class="input-buttons">
+        <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+        <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+      </div>
+    </div>
+    <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
   </div>
 </div>
 
-<!-- PROFILE PAGE -->
-<div id="profilePage">
-  <div class="profile-header">
-    <span class="profile-back" onclick="backToChat()">⬅</span>
-    <img id="profilePhoto" src="default-profile.png">
-    <h2 id="profileName">Friend</h2>
+<!-- FRIEND INFO PAGE -->
+<div id="friendInfoPage" style="display:none;">
+  <div class="groupHeader">
+    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
+    <img id="friendPhoto" src="profile.png">
+    <h2 id="friendName" contenteditable="true">Friend Name</h2>
+    <div class="actionButtons">
+      <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+      <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+      <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+    </div>
   </div>
+
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i> End-to-end Encryption</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+    <button><i class="fa-solid fa-shield"></i> Privacy Settings <input type="checkbox"></button>
+  </div>
+
+  <div class="container actionBox">
+    <button><i class="fa-solid fa-ban"></i> Block User</button>
+    <button><i class="fa-solid fa-flag"></i> Report User</button>
+  </div>
+
+  <input type="file" id="friendPhotoFile" accept="image/*" style="display:none;">
 </div>
 
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
-// --- USER ---
-const myName = localStorage.getItem("username") || "Me";
-const myPic = localStorage.getItem("profilePic") || "default-profile.png";
-const myId  = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
+// ===== STATE =====
+let myName = "You";
+let messages = [];
+let blockedUsers = [];
+const chatBox = document.getElementById("chatBox");
+const msgInput = document.getElementById("msgInput");
 
-// --- FRIEND ---
-const params = new URLSearchParams(window.location.search);
-const friend = params.get('friend') || 'John Doe';
-const friendsList = JSON.parse(localStorage.getItem('friends') || '[]');
-const friendObj = friendsList.find(f => f.name === friend);
-const friendName = friendObj ? friendObj.name : friend;
-const friendPhoto = friendObj && friendObj.profile ? friendObj.profile : 'default-profile.png';
+// ===== CHAT FUNCTIONALITY =====
+function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
-// SET HEADER
-const friendNameEl = document.getElementById('friendName');
-const friendProfileEl = document.getElementById('friendProfile');
-friendNameEl.innerText = friendName;
-friendProfileEl.src = friendPhoto;
-friendProfileEl.onerror = () => { friendProfileEl.src='default-profile.png'; }
-
-// SOCKET.IO
-const socket = io("http://localhost:3000");
-socket.emit("register", myName);
-
-// CHAT STORAGE
-function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
-function saveChat(messages){ localStorage.setItem(`chat_${friend}`, JSON.stringify(messages)); }
-function formatTime(){ const d=new Date(); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
-
-// BLOCK
-function isBlocked(friendName){
-  const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")||"[]");
-  return blockedUsers.includes(friendName);
-}
-const blockBtn = document.getElementById('blockBtn');
-const input = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-function updateInputState(){
-  if(isBlocked(friend)){
-    input.disabled=true; input.placeholder="You have blocked this user."; sendBtn.disabled=true;
-  } else { input.disabled=false; input.placeholder="Type a message..."; sendBtn.disabled=false; }
-}
-blockBtn.addEventListener('click', ()=>{
-  let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-  if(!blockedUsers.includes(friend)){
-    blockedUsers.push(friend);
-    localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-    alert(friend + " is blocked.");
-    updateInputState();
+msgInput.addEventListener("keydown", e => {
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const txt=msgInput.value.trim();
+    if(!txt) return;
+    messages.push({id:uid(), text:txt, self:true, user:myName, time:new Date().toLocaleTimeString()});
+    msgInput.value="";
+    renderMessages();
   }
 });
-updateInputState();
 
-// LOAD CHAT
-const chatContainer = document.getElementById('chatMessages');
-function loadChat(){
-  chatContainer.innerHTML='';
-  getChat().forEach((msg,index)=>{
-    const container=document.createElement('div');
-    container.className='message-container '+(msg.senderId===myId?'sent':'received');
-    const div=document.createElement('div'); div.className='message'; div.dataset.index=index;
-    if(msg.deleted){ div.innerHTML="<i>This message was deleted</i>"; }
-    else if(msg.type==='text'){ div.innerHTML=msg.text; }
-    else if(msg.type==='photo'){ div.innerHTML=`<img src="${msg.data}" class="preview">`; }
-    else if(msg.type==='video'){ div.innerHTML=`<video src="${msg.data}" class="preview" controls></video>`; }
-    else if(msg.type==='file'){ div.innerHTML=`📄 <a href="${msg.data}" download>Download File</a>`; }
-    const ts=document.createElement('div'); ts.className='timestamp'; ts.innerText=msg.time; div.appendChild(ts);
-    container.appendChild(div); chatContainer.appendChild(container);
+function renderMessages(){
+  chatBox.innerHTML="";
+  messages.forEach(m=>{
+    if(blockedUsers.includes(m.user)) return;
+    const div=document.createElement("div");
+    div.className="msg"+(m.user===myName?" self":"");
+    div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
+    chatBox.appendChild(div);
   });
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
-loadChat();
 
-// SEND MESSAGE
-function sendMessage(){
-  if(isBlocked(friend)) return alert("Cannot send to blocked user!");
-  const text=input.value.trim(); if(!text) return;
-  const msg={ senderId:myId, senderName:myName, type:"text", text:text, time:formatTime() };
-  const messages=getChat(); messages.push(msg); saveChat(messages); loadChat();
-  socket.emit("private message", msg); input.value="";
+// ===== NAVIGATION =====
+document.getElementById("friendHeaderName").onclick = openFriendInfo;
+function openFriendInfo(){
+  document.getElementById("chatPage").style.display="none";
+  document.getElementById("friendInfoPage").style.display="block";
 }
-sendBtn.addEventListener('click', sendMessage);
-input.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage(); });
-
-// RECEIVE MESSAGE
-socket.on("private message", msg=>{
-  const messages=getChat(); messages.push(msg); saveChat(messages); loadChat();
-});
-
-// DELETE MESSAGE
-const deletePopup = document.getElementById('deletePopup');
-let currentMsgIndex=null; let currentMsg=null;
-function showDeleteMenu(msg,index,msgDiv){
-  currentMsgIndex=index; currentMsg=msg;
-  document.getElementById('deleteForEveryoneBtn').style.display=(msg.senderId===myId?'block':'none');
-  const rect=msgDiv.getBoundingClientRect(),chatRect=chatContainer.getBoundingClientRect();
-  const popupWidth=deletePopup.offsetWidth||150;
-  let left=rect.left+rect.width/2-popupWidth/2;
-  left=Math.max(chatRect.left+5,Math.min(left,chatRect.right-popupWidth-5));
-  const top=rect.top-deletePopup.offsetHeight-5;
-  deletePopup.style.left=left+'px'; deletePopup.style.top=top+'px'; deletePopup.style.display='block';
+function backToChat(){
+  document.getElementById("friendInfoPage").style.display="none";
+  document.getElementById("chatPage").style.display="flex";
 }
-document.addEventListener('click', e=>{ if(!deletePopup.contains(e.target)) deletePopup.style.display='none'; });
-document.getElementById('deleteForMeBtn').addEventListener('click', ()=>{
-  const messages=getChat(); messages.splice(currentMsgIndex,1); saveChat(messages); loadChat(); deletePopup.style.display='none';
-});
-document.getElementById('deleteForEveryoneBtn').addEventListener('click', ()=>{
-  const messages=getChat(); messages[currentMsgIndex].deleted=true; saveChat(messages); loadChat(); deletePopup.style.display='none';
-  socket.emit("delete message",{friend:friend,index:currentMsgIndex});
-});
-socket.on("delete message",({index})=>{
-  const messages=getChat(); if(messages[index]){ messages[index].deleted=true; saveChat(messages); loadChat(); }
+
+// ===== FRIEND PHOTO =====
+document.getElementById("friendPhoto").onclick = () => { document.getElementById("friendPhotoFile").click(); };
+document.getElementById("friendPhotoFile").addEventListener("change", e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=()=>{ 
+      const url=reader.result;
+      document.getElementById("friendPhoto").src=url;
+      document.getElementById("friendHeaderPhoto").src=url;
+    };
+    reader.readAsDataURL(file);
+  }
 });
 
-// CLICK HEADER TO OPEN PROFILE
-const chatPage = document.getElementById("chatPage");
-const profilePage = document.getElementById("profilePage");
-const profilePhoto = document.getElementById("profilePhoto");
-const profileName = document.getElementById("profileName");
-
-// click header-left only
-document.querySelector(".chat-header-left").addEventListener("click", ()=>{
-  chatPage.style.display="none";
-  profilePage.style.display="flex";
-  profilePhoto.src=friendPhoto;
-  profileName.textContent=friendName;
+// ===== EDIT FRIEND NAME =====
+document.getElementById("friendName").addEventListener("blur", ()=>{
+  const newName = document.getElementById("friendName").textContent.trim();
+  if(newName){
+    document.getElementById("friendHeaderName").textContent = newName;
+  }
 });
-function backToChat(){ profilePage.style.display="none"; chatPage.style.display="flex"; }
+
+// ===== BLOCK & REPORT =====
+document.querySelector(".actionBox button:nth-child(1)").onclick = () => {
+  if(confirm("Block this user?")) { blockedUsers.push(document.getElementById("friendHeaderName").textContent); alert("User blocked."); }
+};
+document.querySelector(".actionBox button:nth-child(2)").onclick = () => {
+  if(confirm("Report this user?")) alert("User reported.");
+};
+
+// ===== INITIAL RENDER =====
+renderMessages();
 </script>
 </body>
 </html>
