@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Add Members</title>
+<!-- Font Awesome CSS for icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body {font-family:Arial;margin:0;padding:0;background:#fff;}
 .header {display:flex;align-items:center;padding:10px;background:#075E54;color:white;}
@@ -23,18 +25,18 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 
 <div id="friendsList"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 <script>
+// ===== STATE =====
 let currentUser = "John Doe";
 
 // Load current group members from localStorage
 let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `["${currentUser}"]`);
 
 // Load all friends from localStorage
-let allFriends = JSON.parse(localStorage.getItem("allFriends") || '[]'); // e.g., [{name:"Alice"}, {name:"Bob"}]
+let allFriends = JSON.parse(localStorage.getItem("allFriends") || '["Alice","Bob","Charlie"]');
 
 // Filter friends not already in group
-let friendsToAdd = allFriends.map(f=>f.name).filter(f => !currentGroupMembers.includes(f));
+let friendsToAdd = allFriends.filter(f => !currentGroupMembers.includes(f));
 
 const friendsList = document.getElementById("friendsList");
 
@@ -44,7 +46,7 @@ function renderFriends(){
         friendsList.innerHTML = "<p style='color:#555;font-style:italic;'>No friends to add</p>";
         return;
     }
-    friendsToAdd.forEach(name=>{
+    friendsToAdd.forEach(name => {
         const div = document.createElement("div");
         div.className = "friendItem";
         div.textContent = name;
@@ -53,7 +55,7 @@ function renderFriends(){
             currentGroupMembers.push(name);
             localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
-            // Optional: system message
+            // Optional: add system message
             let messages = JSON.parse(localStorage.getItem("messages") || "[]");
             messages.push({
                 id: Date.now(),
@@ -64,7 +66,7 @@ function renderFriends(){
             });
             localStorage.setItem("messages", JSON.stringify(messages));
 
-            // Go back to group info page automatically
+            // Go back to group info page
             window.location.href = "groupInfo.html";
         };
         friendsList.appendChild(div);
@@ -72,12 +74,12 @@ function renderFriends(){
 }
 
 // Back button
-document.getElementById("backBtn").onclick = ()=>{
+document.getElementById("backBtn").onclick = () => {
     window.location.href = "groupInfo.html";
 };
 
+// Initial render
 renderFriends();
 </script>
-
 </body>
 </html>
