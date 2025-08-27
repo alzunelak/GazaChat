@@ -147,7 +147,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 </div>
 
 
-<script>
+  <script>
 // ===== STATE =====
 let currentUser = "John Doe";
 let isAdmin = true;
@@ -159,7 +159,9 @@ let messages = [];
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
+
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
+
 msgInput.addEventListener("keydown", e => {
   if(e.key==="Enter"){
     e.preventDefault();
@@ -170,25 +172,17 @@ msgInput.addEventListener("keydown", e => {
     renderMessages();
   }
 });
+
 function renderMessages(){
   chatBox.innerHTML="";
   messages.forEach(m=>{
-    // Skip messages from blocked members
-    if(blockedMembers.includes(m.user)) return;
-
+    if(blockedMembers.includes(m.user)) return; // skip blocked users
     const div=document.createElement("div");
     div.className="msg"+(m.user===currentUser?" self":"");
     div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
     chatBox.appendChild(div);
   });
 }
-
-}
-
-  
-document.getElementById("showRequestInvite").onclick = () => {
-    window.location.href = "requestInvite.html";
-};
 
 // ===== GROUP MEMBERS =====
 function renderGroupMembers(){
@@ -232,7 +226,7 @@ document.getElementById("addMemberBtn").onclick = ()=>{
 };
 function closeAddMemberPopup(){ document.getElementById("addMemberPopup").style.display="none"; }
 
-// ===== GROUP INFO PAGE =====
+// ===== BACK TO CHAT =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
 function openGroupInfo(){
   document.getElementById("chatPage").style.display="none";
@@ -266,20 +260,6 @@ function blockMember(name){
   }
 }
 
-// ===== POPUPS =====
-document.getElementById("showGroupLink").onclick = ()=>{
-  const inviteLink = `${window.location.origin}/join.html?group=grp_123456`;
-  document.getElementById("groupLinkInput").value = inviteLink;
-  document.getElementById("linkPopup").style.display="block";
-};
-function copyLink(){
-  const input = document.getElementById("groupLinkInput");
-  input.select(); input.setSelectionRange(0,99999);
-  navigator.clipboard.writeText(input.value);
-  alert("Group link copied!");
-}
-function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
-
 // ===== BLOCKED USERS POPUP =====
 document.getElementById("showBlockedUsers").onclick = ()=>{
   renderBlockedUsersPopup();
@@ -309,23 +289,29 @@ function renderBlockedUsersPopup(){
 }
 function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
 
-// ===== REQUEST/INVITE POPUP =====
-document.getElementById("showRequestInvite").onclick = ()=>{
-  const listDiv=document.getElementById("requestList");
-  listDiv.innerHTML="";
-  const requests=["Charlie"];
-  if(requests.length===0) listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No requests</p>";
-  else requests.forEach(r=>{
-    const div=document.createElement("div"); div.className="item"; div.textContent=r;
-    listDiv.appendChild(div);
-  });
-  document.getElementById("requestPopup").style.display="block";
+// ===== POPUPS =====
+document.getElementById("showGroupLink").onclick = ()=>{
+  const inviteLink = `${window.location.origin}/join.html?group=grp_123456`;
+  document.getElementById("groupLinkInput").value = inviteLink;
+  document.getElementById("linkPopup").style.display="block";
 };
-function closeRequestPopup(){ document.getElementById("requestPopup").style.display="none"; }
+function copyLink(){
+  const input = document.getElementById("groupLinkInput");
+  input.select(); input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Group link copied!");
+}
+function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
+
+// ===== REQUEST/INVITE PAGE =====
+document.getElementById("showRequestInvite").onclick = () => {
+    window.location.href = "requestInvite.html"; // redirect to separate page
+};
 
 // ===== INITIAL RENDER =====
 renderMessages();
 renderGroupMembers();
 </script>
+
 </body>
 </html>
