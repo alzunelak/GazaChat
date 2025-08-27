@@ -3,203 +3,220 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private Chat</title>
+<title>One-to-One Chat</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column;}
-/* CHAT PAGE */
-#chatPage{flex:1;display:flex;flex-direction:column;}
-.header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;}
-.header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
-.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
-.header-info h2{margin:0;font-size:16px;cursor:pointer;}
-#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
-.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;cursor:pointer;}
-.msg.self{background:#dcf8c6;align-self:flex-end;}
-.msg .meta{font-size:10px;color:#999;text-align:right;}
-#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100%-20px);z-index:100;}
-.input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
-.input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
-#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+body {margin:0;font-family:Arial,sans-serif;background:#e5ddd5;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+/* --- CHAT HEADER --- */
+.chat-header {background:#075E54;color:white;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;cursor:pointer;}
+.chat-header-left {display:flex;align-items:center;}
+.chat-header-left img {width:40px;height:40px;border-radius:50%;margin-right:10px;object-fit:cover;}
+.chat-header-right button {background:none;border:none;color:white;font-size:20px;margin-left:10px;cursor:pointer;}
+/* --- MESSAGES --- */
+.chat-messages {flex:1;padding:10px;overflow-y:auto;display:flex;flex-direction:column;}
+.message-container {display:flex;margin:5px 0;align-items:flex-end;position:relative;}
+.message-container.sent {justify-content:flex-end;}
+.message-container.received {justify-content:flex-start;}
+.message-container.received img {width:30px;height:30px;border-radius:50%;margin-right:5px;object-fit:cover;}
+.message {max-width:70%;padding:8px 12px;border-radius:18px;position:relative;word-wrap:break-word;cursor:pointer;}
+.sent .message {background:#dcf8c6;align-self:flex-end;}
+.received .message {background:white;align-self:flex-start;}
+.timestamp {font-size:10px;color:#888;margin-top:2px;text-align:right;}
+/* --- INPUT --- */
+.chat-input {display:flex;padding:10px;background:#f0f0f0;align-items:center;position:sticky;bottom:0;z-index:10;}
+.chat-input input {flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;margin-right:5px;}
+.chat-input button {padding:0 12px;border:none;background:#25D366;color:white;border-radius:50%;font-size:22px;cursor:pointer;margin-left:5px;}
 .preview{max-width:200px;border-radius:10px;margin-top:5px;}
-/* PROFILE PAGE */
-#profilePage{display:none;flex-direction:column;flex:1;background:#fff;}
-.profileHeader{display:flex;align-items:center;background:#075E54;color:white;padding:10px;position:relative;}
-.backBtn{position:absolute;left:10px;font-size:20px;cursor:pointer;}
-.profileHeader img{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:auto;}
-.profileHeader h2{text-align:center;margin:10px 0;}
-.profileActions{display:flex;justify-content:center;gap:20px;margin-top:10px;}
-.profileActions button{padding:10px 15px;border:none;background:#25D366;color:white;border-radius:8px;cursor:pointer;}
-/* DELETE POPUP */
-#deletePopup{position:absolute;display:none;background:white;border:1px solid #ccc;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:1000;padding:5px;}
-#deletePopup button{background:none;border:none;padding:5px 10px;cursor:pointer;width:100%;text-align:left;}
-#deletePopup button:hover{background:#f0f0f0;}
+/* --- ATTACHMENT --- */
+.circle-btn {width:40px;height:40px;border-radius:50%;border:none;background:#25D366;color:white;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:5px;}
+.attachment-menu {position:absolute;bottom:60px;left:10px;display:none;flex-direction:column;gap:10px;}
+.attachment-btn {width:50px;height:50px;border-radius:50%;border:none;background:#075E54;color:white;font-size:22px;cursor:pointer;}
+/* --- DELETE --- */
+#deletePopup {position:absolute;display:none;background:white;border:1px solid #ccc;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:100;padding:5px;}
+#deletePopup button {background:none;border:none;padding:5px 10px;cursor:pointer;width:100%;text-align:left;}
+#deletePopup button:hover {background:#f0f0f0;}
+/* --- PROFILE PAGE --- */
+#profilePage {display:none;flex-direction:column;height:100%;}
+.profile-header {display:flex;align-items:center;background:#075E54;color:white;padding:15px;position:sticky;top:0;}
+.profile-header img {width:60px;height:60px;border-radius:50%;margin-right:10px;}
+.profile-header h2 {margin:0;font-size:18px;}
+.profile-back {margin-right:10px;cursor:pointer;font-size:20px;}
 </style>
 </head>
 <body>
 
 <!-- CHAT PAGE -->
 <div id="chatPage">
-  <div class="header">
-    <img id="userPhoto" src="profile.png">
-    <div class="header-info">
-      <h2 id="userName">Friend</h2>
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <img id="friendProfile" src="default-profile.png">
+      <span id="friendName">Friend</span>
     </div>
-    <div class="header-actions">
-      <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
+    <div class="chat-header-right">
+      <button id="blockBtn">🚫</button>
     </div>
   </div>
-  <div id="chatBox"></div>
-  <div id="inputArea">
-    <div class="input-box">
-      <input id="msgInput" placeholder="Type a message...">
-      <div class="input-buttons">
-        <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
-        <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
-      </div>
-    </div>
-    <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
+
+  <div class="chat-messages" id="chatMessages"></div>
+
+  <div class="chat-input">
+    <button id="attachmentToggle" class="circle-btn">+</button>
+    <input type="text" id="messageInput" placeholder="Type a message...">
+    <button id="sendBtn">➡</button>
+  </div>
+
+  <div id="attachmentMenu" class="attachment-menu">
+    <button class="attachment-btn" id="sendFileBtn">📄</button>
+    <button class="attachment-btn" id="takePhotoBtn">📸</button>
+    <button class="attachment-btn" id="takeVideoBtn">🎥</button>
+    <button class="attachment-btn" id="sendLocationBtn">📍</button>
+  </div>
+
+  <div id="deletePopup">
+    <button id="deleteForMeBtn">🗑 Delete for me</button>
+    <button id="deleteForEveryoneBtn">❌ Delete for everyone</button>
   </div>
 </div>
 
 <!-- PROFILE PAGE -->
 <div id="profilePage">
-  <div class="profileHeader">
-    <i class="fa-solid fa-arrow-left backBtn" onclick="backToChat()"></i>
-    <img id="profilePhoto" src="profile.png">
+  <div class="profile-header">
+    <span class="profile-back" onclick="backToChat()">⬅</span>
+    <img id="profilePhoto" src="default-profile.png">
     <h2 id="profileName">Friend</h2>
   </div>
-  <div class="profileActions">
-    <button id="blockBtn">Block</button>
-    <button id="callProfileBtn">Call</button>
-  </div>
-</div>
-
-<!-- DELETE POPUP -->
-<div id="deletePopup">
-  <button id="deleteForMeBtn">🗑 Delete for me</button>
-  <button id="deleteForEveryoneBtn">❌ Delete for everyone</button>
 </div>
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
-// ===== STATE =====
-let myName = localStorage.getItem("username") || "You";
-let friendName = "Friend";
-let friendPhoto = "profile.png";
-let myId = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
-let messages = JSON.parse(localStorage.getItem("chat_"+friendName)||"[]");
+// --- USER ---
+const myName = localStorage.getItem("username") || "Me";
+const myPic = localStorage.getItem("profilePic") || "default-profile.png";
+const myId  = localStorage.getItem("userId") || ("guest_" + Math.floor(Math.random()*100000));
 
-// ===== SOCKET.IO =====
+// --- FRIEND ---
+const params = new URLSearchParams(window.location.search);
+const friend = params.get('friend') || 'John Doe';
+const friendsList = JSON.parse(localStorage.getItem('friends') || '[]');
+const friendObj = friendsList.find(f => f.name === friend);
+const friendName = friendObj ? friendObj.name : friend;
+const friendPhoto = friendObj && friendObj.profile ? friendObj.profile : 'default-profile.png';
+
+// SET HEADER
+const friendNameEl = document.getElementById('friendName');
+const friendProfileEl = document.getElementById('friendProfile');
+friendNameEl.innerText = friendName;
+friendProfileEl.src = friendPhoto;
+friendProfileEl.onerror = () => { friendProfileEl.src='default-profile.png'; }
+
+// SOCKET.IO
 const socket = io("http://localhost:3000");
 socket.emit("register", myName);
-socket.on("private message", msg=>{
-  if(msg.user===friendName || msg.self) {
-    messages.push(msg);
-    saveMessages();
-    renderMessages();
+
+// CHAT STORAGE
+function getChat(){ return JSON.parse(localStorage.getItem(`chat_${friend}`)||'[]'); }
+function saveChat(messages){ localStorage.setItem(`chat_${friend}`, JSON.stringify(messages)); }
+function formatTime(){ const d=new Date(); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
+
+// BLOCK
+function isBlocked(friendName){
+  const blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")||"[]");
+  return blockedUsers.includes(friendName);
+}
+const blockBtn = document.getElementById('blockBtn');
+const input = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+function updateInputState(){
+  if(isBlocked(friend)){
+    input.disabled=true; input.placeholder="You have blocked this user."; sendBtn.disabled=true;
+  } else { input.disabled=false; input.placeholder="Type a message..."; sendBtn.disabled=false; }
+}
+blockBtn.addEventListener('click', ()=>{
+  let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+  if(!blockedUsers.includes(friend)){
+    blockedUsers.push(friend);
+    localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
+    alert(friend + " is blocked.");
+    updateInputState();
   }
 });
+updateInputState();
 
-// ===== ELEMENTS =====
-const chatBox = document.getElementById("chatBox");
-const msgInput = document.getElementById("msgInput");
-const deletePopup = document.getElementById("deletePopup");
-let currentMsgIndex = null;
-
-// ===== SEND MESSAGE =====
-msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter") { e.preventDefault(); sendMessage(); }
-});
-
-function sendMessage(){
-  const text = msgInput.value.trim();
-  if(!text) return;
-  const msg={text,user:myName,self:true,time:new Date().toLocaleTimeString(),type:"text"};
-  messages.push(msg);
-  saveMessages();
-  renderMessages();
-  msgInput.value="";
-  socket.emit("private message", msg);
-}
-
-// ===== RENDER =====
-function renderMessages(){
-  chatBox.innerHTML="";
-  messages.forEach((m,i)=>{
-    const div=document.createElement("div");
-    div.className="msg"+(m.self?" self":"");
-    div.dataset.index = i;
-    if(m.type==="text") div.innerHTML=`<b>${m.user}:</b> ${m.text}<div class="meta">${m.time}</div>`;
-    else if(m.type==="image") div.innerHTML=`<b>${m.user}:</b><br><img src="${m.text}" class="preview"><div class="meta">${m.time}</div>`;
-    chatBox.appendChild(div);
+// LOAD CHAT
+const chatContainer = document.getElementById('chatMessages');
+function loadChat(){
+  chatContainer.innerHTML='';
+  getChat().forEach((msg,index)=>{
+    const container=document.createElement('div');
+    container.className='message-container '+(msg.senderId===myId?'sent':'received');
+    const div=document.createElement('div'); div.className='message'; div.dataset.index=index;
+    if(msg.deleted){ div.innerHTML="<i>This message was deleted</i>"; }
+    else if(msg.type==='text'){ div.innerHTML=msg.text; }
+    else if(msg.type==='photo'){ div.innerHTML=`<img src="${msg.data}" class="preview">`; }
+    else if(msg.type==='video'){ div.innerHTML=`<video src="${msg.data}" class="preview" controls></video>`; }
+    else if(msg.type==='file'){ div.innerHTML=`📄 <a href="${msg.data}" download>Download File</a>`; }
+    const ts=document.createElement('div'); ts.className='timestamp'; ts.innerText=msg.time; div.appendChild(ts);
+    container.appendChild(div); chatContainer.appendChild(container);
   });
-  chatBox.scrollTop = chatBox.scrollHeight;
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 }
+loadChat();
 
-// ===== LOCAL STORAGE =====
-function saveMessages(){ localStorage.setItem("chat_"+friendName, JSON.stringify(messages)); }
+// SEND MESSAGE
+function sendMessage(){
+  if(isBlocked(friend)) return alert("Cannot send to blocked user!");
+  const text=input.value.trim(); if(!text) return;
+  const msg={ senderId:myId, senderName:myName, type:"text", text:text, time:formatTime() };
+  const messages=getChat(); messages.push(msg); saveChat(messages); loadChat();
+  socket.emit("private message", msg); input.value="";
+}
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage(); });
 
-// ===== DELETE MESSAGE =====
-chatBox.addEventListener("contextmenu", e=>{
-  e.preventDefault();
-  const msgDiv = e.target.closest(".msg");
-  if(!msgDiv) return;
-  currentMsgIndex = parseInt(msgDiv.dataset.index);
-  const msg = messages[currentMsgIndex];
-  deletePopup.style.top = (e.clientY-40)+"px";
-  deletePopup.style.left = (e.clientX-60)+"px";
-  deletePopup.style.display="block";
+// RECEIVE MESSAGE
+socket.on("private message", msg=>{
+  const messages=getChat(); messages.push(msg); saveChat(messages); loadChat();
 });
 
-document.addEventListener("click", e=>{
-  if(!deletePopup.contains(e.target)) deletePopup.style.display="none";
+// DELETE MESSAGE
+const deletePopup = document.getElementById('deletePopup');
+let currentMsgIndex=null; let currentMsg=null;
+function showDeleteMenu(msg,index,msgDiv){
+  currentMsgIndex=index; currentMsg=msg;
+  document.getElementById('deleteForEveryoneBtn').style.display=(msg.senderId===myId?'block':'none');
+  const rect=msgDiv.getBoundingClientRect(),chatRect=chatContainer.getBoundingClientRect();
+  const popupWidth=deletePopup.offsetWidth||150;
+  let left=rect.left+rect.width/2-popupWidth/2;
+  left=Math.max(chatRect.left+5,Math.min(left,chatRect.right-popupWidth-5));
+  const top=rect.top-deletePopup.offsetHeight-5;
+  deletePopup.style.left=left+'px'; deletePopup.style.top=top+'px'; deletePopup.style.display='block';
+}
+document.addEventListener('click', e=>{ if(!deletePopup.contains(e.target)) deletePopup.style.display='none'; });
+document.getElementById('deleteForMeBtn').addEventListener('click', ()=>{
+  const messages=getChat(); messages.splice(currentMsgIndex,1); saveChat(messages); loadChat(); deletePopup.style.display='none';
+});
+document.getElementById('deleteForEveryoneBtn').addEventListener('click', ()=>{
+  const messages=getChat(); messages[currentMsgIndex].deleted=true; saveChat(messages); loadChat(); deletePopup.style.display='none';
+  socket.emit("delete message",{friend:friend,index:currentMsgIndex});
+});
+socket.on("delete message",({index})=>{
+  const messages=getChat(); if(messages[index]){ messages[index].deleted=true; saveChat(messages); loadChat(); }
 });
 
-document.getElementById("deleteForMeBtn").addEventListener("click", ()=>{
-  messages.splice(currentMsgIndex,1);
-  saveMessages();
-  renderMessages();
-  deletePopup.style.display="none";
-});
-
-document.getElementById("deleteForEveryoneBtn").addEventListener("click", ()=>{
-  messages[currentMsgIndex].deleted = true;
-  saveMessages();
-  renderMessages();
-  socket.emit("delete message",{index:currentMsgIndex,friend:friendName});
-  deletePopup.style.display="none";
-});
-
-socket.on("delete message", ({index})=>{
-  if(messages[index]) messages[index].deleted = true;
-  saveMessages(); renderMessages();
-});
-
-// ===== PROFILE PAGE =====
+// CLICK HEADER TO OPEN PROFILE
 const chatPage = document.getElementById("chatPage");
 const profilePage = document.getElementById("profilePage");
-document.getElementById("userName").addEventListener("click", openProfile);
+const profilePhoto = document.getElementById("profilePhoto");
+const profileName = document.getElementById("profileName");
 
-function openProfile(){
+// click header-left only
+document.querySelector(".chat-header-left").addEventListener("click", ()=>{
   chatPage.style.display="none";
   profilePage.style.display="flex";
-  document.getElementById("profileName").textContent = friendName;
-  document.getElementById("profilePhoto").src = friendPhoto;
-}
-
-function backToChat(){
-  profilePage.style.display="none";
-  chatPage.style.display="flex";
-}
-
-// ===== BLOCK FRIEND =====
-document.getElementById("blockBtn").addEventListener("click", ()=>{
-  if(confirm("Block "+friendName+"?")){
-    alert(friendName+" blocked!");
-  }
+  profilePhoto.src=friendPhoto;
+  profileName.textContent=friendName;
 });
+function backToChat(){ profilePage.style.display="none"; chatPage.style.display="flex"; }
 </script>
 </body>
 </html>
