@@ -6,7 +6,6 @@
 <title>WhatsApp Group Info</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-/* --- Styles --- */
 body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
 #chatPage,#groupInfoPage{display:flex;flex-direction:column;flex:1;}
 .header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;}
@@ -46,8 +45,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
-
-/* Popup */
 .popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
 .popup h3{margin-top:0;}
 .popup button.closeBtn{margin-top:10px;float:right;}
@@ -290,6 +287,44 @@ function closePopup(){ document.getElementById("linkPopup").style.display="none"
 // ===== REQUEST/INVITE =====
 document.getElementById("showRequestInvite").onclick = () => {
     window.location.href = "requestInvite.html";
+};
+
+// ===== ACTION BOX BUTTONS =====
+const leaveBtn = document.querySelector(".actionBox button:nth-child(1)");
+const blockGroupBtn = document.querySelector(".actionBox button:nth-child(2)");
+const reportGroupBtn = document.querySelector(".actionBox button:nth-child(3)");
+const deleteGroupBtn = document.querySelector(".actionBox button:nth-child(4)");
+
+leaveBtn.onclick = () => {
+  if(confirm("Are you sure you want to leave the group?")){
+    alert("You left the group.");
+    window.location.href = "groups.html";
+  }
+};
+
+blockGroupBtn.onclick = () => {
+  if(confirm("Are you sure you want to block this group?")){
+    alert("Group blocked.");
+    window.location.href = "groups.html";
+  }
+};
+
+reportGroupBtn.onclick = () => {
+  if(confirm("Are you sure you want to report this group?")){
+    alert("Group reported.");
+    window.location.href = "groups.html";
+  }
+};
+
+deleteGroupBtn.onclick = () => {
+  if(!isAdmin){
+    alert("Only admin can delete the group!");
+    return;
+  }
+  if(confirm("Are you sure you want to DELETE the group? This cannot be undone.")){
+    alert("Group deleted.");
+    window.location.href = "groups.html";
+  }
 };
 
 // ===== INITIAL RENDER =====
