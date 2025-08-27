@@ -146,11 +146,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
 </div>
 
-<div id="requestPopup" class="popup">
-  <h3>Request / Invite</h3>
-  <div id="requestList"></div>
-  <button class="closeBtn" onclick="closeRequestPopup()">Close</button>
-</div>
 
 <script>
 // ===== STATE =====
@@ -189,6 +184,11 @@ function renderMessages(){
 }
 
 }
+
+  
+document.getElementById("showRequestInvite").onclick = () => {
+    window.location.href = "requestInvite.html";
+};
 
 // ===== GROUP MEMBERS =====
 function renderGroupMembers(){
