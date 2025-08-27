@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Chat</title>
+<title>WhatsApp Group Chat</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
@@ -14,7 +14,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .header-info h2{margin:0;font-size:16px;cursor:pointer;}
 .header-info #members{font-size:12px;color:#d0f0e3;}
 #chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
-.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;cursor:pointer;}
+.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;}
 .msg.self{background:#dcf8c6;align-self:flex-end;}
 .msg .meta{font-size:10px;color:#999;text-align:right;}
 #inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100%-20px);z-index:100;}
@@ -50,7 +50,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .popup button.closeBtn{margin-top:10px;float:right;}
 .popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
 .popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
-.preview{max-width:200px;border-radius:10px;margin-top:5px;}
 </style>
 </head>
 <body>
@@ -139,14 +138,17 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
 </div>
 
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
 // ===== STATE =====
-let myName = localStorage.getItem("username") || "You";
+let myName = "You"; // current user
 let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "0");
+let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "-1");
 let currentGroup = groups[currentGroupIndex];
-if(!currentGroup){ alert("No group selected."); window.location.href="groups.html"; }
+
+if(!currentGroup){
+  alert("No group selected. Redirecting...");
+  window.location.href = "groups.html";
+}
 
 let currentUser = myName;
 let isAdmin = (currentGroup.admin === myName);
@@ -154,97 +156,228 @@ let currentGroupMembers = currentGroup.members.map(m=>m.name);
 let blockedMembers = currentGroup.blocked || [];
 let messages = currentGroup.messages || [];
 
-// ===== SOCKET.IO =====
-const socket = io("http://localhost:3000");
-socket.emit("join group", currentGroupIndex);
-socket.on("group message", ({groupId, msg})=>{
-  if(groupId === currentGroupIndex){
-    messages.push(msg);
-    saveGroups();
-    renderMessages();
-  }
-});
-socket.on("delete message", ({groupId,index})=>{
-  if(groupId === currentGroupIndex && messages[index]){
-    messages[index].deleted=true;
-    saveGroups();
-    renderMessages();
-  }
-});
-
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
+
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
-msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){ e.preventDefault(); sendMessage(); }
-});
+msgInput.addEventListener("keydown", e => {
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const txt=msgInput.value.trim();
+    if(!txt) return;
+    const newMsg = {id:uid(), text:txt, self:true, user:currentUser, time:new Date().toLocaleString()};
+    messages.push(newMsg);
+    msgInput.value="";
+    renderMessages();
 
-function sendMessage(){
-  const text = msgInput.value.trim();
-  if(!text) return;
-  const newMsg = {id:uid(), text, self:true, user:currentUser, time:new Date().toLocaleTimeString(), type:"text"};
-  messages.push(newMsg);
-  msgInput.value="";
-  renderMessages();
-  saveGroups();
-  socket.emit("group message", {groupId:currentGroupIndex,msg:newMsg});
-}
+    // Save message to group
+    currentGroup.messages = messages;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+  }
+});
 
 function renderMessages(){
   chatBox.innerHTML="";
-  messages.forEach((m,index)=>{
+  messages.forEach(m=>{
     if(blockedMembers.includes(m.user)) return;
     const div=document.createElement("div");
     div.className="msg"+(m.user===currentUser?" self":"");
-    if(m.deleted) div.innerHTML="<i>This message was deleted</i>";
-    else if(m.type==="text") div.innerHTML=`<b>${m.user}:</b> ${m.text}`;
-    else if(m.type==="image") div.innerHTML=`<b>${m.user}:</b><br><img src="${m.text}" class="preview">`;
-    div.onclick=()=>{ if(m.user===currentUser&&!m.deleted){ deleteMessage(index); } };
+    div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
     chatBox.appendChild(div);
   });
-  chatBox.scrollTop=chatBox.scrollHeight;
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function deleteMessage(index){
-  if(confirm("Delete this message for everyone?")){
-    messages[index].deleted=true;
-    renderMessages();
-    saveGroups();
-    socket.emit("delete message",{groupId:currentGroupIndex,index});
+// ===== GROUP MEMBERS =====
+function renderGroupMembers(){
+  const membersDiv=document.getElementById("groupMembersList");
+  membersDiv.innerHTML="";
+  const activeMembers=currentGroupMembers.filter(m=>!blockedMembers.includes(m));
+  if(activeMembers.length===0){
+    const div=document.createElement("div");
+    div.textContent="No active members"; div.style.fontStyle="italic"; div.style.color="#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name=>{
+      const div=document.createElement("div");
+      div.className="memberBox"; div.textContent=name;
+      if(isAdmin && name!==currentUser){
+        const btn=document.createElement("button");
+        btn.textContent="Block"; btn.style.marginLeft="10px";
+        btn.onclick=()=>blockMember(name);
+        div.appendChild(btn);
+      }
+      membersDiv.appendChild(div);
+    });
+  }
+  document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
+
+  // Update in groups array
+  currentGroup.members = currentGroupMembers.map(n=>({name:n, accepted:true}));
+  currentGroup.blocked = blockedMembers;
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
+
+  // Update chat header members
+  document.getElementById("members").textContent = activeMembers.join(", ");
+}
+
+// ===== ADD MEMBER =====
+document.getElementById("addMemberBtn").onclick = ()=>{
+  localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
+  window.location.href = "addMembers.html";
+};
+
+// ===== NAVIGATION =====
+document.getElementById("groupName").onclick = ()=>openGroupInfo();
+function openGroupInfo(){
+  document.getElementById("chatPage").style.display="none";
+  document.getElementById("groupInfoPage").style.display="block";
+  renderGroupMembers();
+}
+function backToChat(){
+  document.getElementById("groupInfoPage").style.display="none";
+  document.getElementById("chatPage").style.display="flex";
+}
+
+// ===== GROUP PHOTO =====
+document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
+document.getElementById("groupPhotoFile").addEventListener("change",e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const url=reader.result;
+      document.getElementById("infoGroupPhoto").src=url;
+      document.getElementById("groupPhoto").src=url;
+      currentGroup.photo = url;
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ===== BLOCK MEMBER =====
+function blockMember(name){
+  if(confirm(`Block ${name}?`)){
+    blockedMembers.push(name);
+    renderGroupMembers();
   }
 }
 
-// ===== LOCAL STORAGE =====
-function saveGroups(){ currentGroup.messages=messages; groups[currentGroupIndex]=currentGroup; localStorage.setItem("groups",JSON.stringify(groups)); }
-
-// ===== GROUP INFO =====
-function backToChat(){ document.getElementById("chatPage").style.display="flex"; document.getElementById("groupInfoPage").style.display="none"; }
-
-document.getElementById("groupName").innerText=currentGroup.name;
-document.getElementById("members").innerText=currentGroup.members.map(m=>m.name).join(", ");
-document.getElementById("infoGroupName").innerText=currentGroup.name;
-
-function renderGroupMembers(){
-  const list=document.getElementById("groupMembersList");
-  list.innerHTML="";
-  currentGroup.members.forEach(m=>{
-    const div=document.createElement("div");
-    div.className="memberBox";
-    div.innerHTML=`${m.name} ${m.name===currentGroup.admin?'<i>(Admin)</i>':''}`;
-    list.appendChild(div);
-  });
-  document.getElementById("memberCount").innerText=`${currentGroup.members.length} Members`;
+// ===== BLOCKED USERS POPUP =====
+document.getElementById("showBlockedUsers").onclick = ()=>{
+  renderBlockedUsersPopup();
+  document.getElementById("blockedPopup").style.display="block";
+};
+function renderBlockedUsersPopup(){
+  const listDiv=document.getElementById("blockedList");
+  listDiv.innerHTML="";
+  if(blockedMembers.length===0){
+    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
+  } else {
+    blockedMembers.forEach((u,index)=>{
+      const div=document.createElement("div");
+      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
+      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
+      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
+      unblockBtn.className="unblockBtn";
+      unblockBtn.onclick=()=>{
+        blockedMembers.splice(index,1);
+        renderBlockedUsersPopup();
+        renderGroupMembers();
+      };
+      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
+    });
+  }
 }
-renderGroupMembers();
-
-// ===== POPUPS =====
-function copyLink(){ document.getElementById("groupLinkInput").select(); document.execCommand("copy"); alert("Copied!"); }
-function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
 function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
 
+// ===== GROUP LINK =====
+document.getElementById("showGroupLink").onclick = ()=>{
+  const inviteLink = `${window.location.origin}/join.html?group=${currentGroupIndex}`;
+  document.getElementById("groupLinkInput").value = inviteLink;
+  document.getElementById("linkPopup").style.display="block";
+};
+function copyLink(){
+  const input = document.getElementById("groupLinkInput");
+  input.select(); input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Group link copied!");
+}
+function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
+
+// ===== REQUEST/INVITE =====
+document.getElementById("showRequestInvite").onclick = () => {
+    window.location.href = "requestInvite.html";
+};
+
+// ===== ACTION BOX BUTTONS =====
+const leaveBtn = document.querySelector(".actionBox button:nth-child(1)");
+const blockGroupBtn = document.querySelector(".actionBox button:nth-child(2)");
+const reportGroupBtn = document.querySelector(".actionBox button:nth-child(3)");
+const deleteGroupBtn = document.querySelector(".actionBox button:nth-child(4)");
+
+leaveBtn.onclick = () => {
+  if(confirm("Are you sure you want to leave the group?")){
+    currentGroupMembers = currentGroupMembers.filter(n=>n!==myName);
+    renderGroupMembers();
+    currentGroup.members = currentGroupMembers.map(n=>({name:n,accepted:true}));
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    window.location.href = "groups.html";
+  }
+};
+
+blockGroupBtn.onclick = () => {
+  if(confirm("Are you sure you want to block this group?")){
+    alert("Group blocked.");
+    window.location.href = "groups.html";
+  }
+};
+
+reportGroupBtn.onclick = () => {
+  if(confirm("Are you sure you want to report this group?")){
+    alert("Group reported.");
+    window.location.href = "groups.html";
+  }
+};
+
+deleteGroupBtn.onclick = () => {
+  if(!isAdmin){
+    alert("Only admin can delete the group!");
+    return;
+  }
+  if(confirm("Are you sure you want to DELETE the group? This cannot be undone.")){
+    groups.splice(currentGroupIndex,1);
+    localStorage.setItem("groups", JSON.stringify(groups));
+    window.location.href = "groups.html";
+  }
+};
+
+// ===== INITIAL RENDER =====
+document.getElementById("groupName").textContent = currentGroup.name;
+document.getElementById("infoGroupName").textContent = currentGroup.name;
+document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
+document.getElementById("infoGroupPhoto").src = currentGroup.photo || "group.png";
+
 renderMessages();
+renderGroupMembers();
+
+// ===== EDIT GROUP NAME =====
+document.getElementById("infoGroupName").addEventListener("blur",()=>{
+  const newName=document.getElementById("infoGroupName").textContent.trim();
+  if(newName){
+    currentGroup.name=newName;
+    groups[currentGroupIndex]=currentGroup;
+    localStorage.setItem("groups",JSON.stringify(groups));
+    document.getElementById("groupName").textContent=newName;
+  }
+});
 </script>
 </body>
 </html>
