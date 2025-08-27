@@ -110,11 +110,63 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     <div id="groupMembersList"></div>
   </div>
 
-  <div class="container" id="groupLinks">
-    <button id="showGroupLink">Group Link</button>
-    <button id="showBlockedUsers">Blocked Users</button>
-    <button id="showRequestInvite">Request / Invite</button>
+<div class="container" id="groupLinks">
+  <button id="showGroupLink">Group Link</button>
+  <button id="showBlockedUsers">Blocked Users</button>
+  <button id="showRequestInvite">Request / Invite</button>
+</div>
+
+<!-- Popup for Group Link -->
+<div id="linkPopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+     background:#fff; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:1000;">
+  <h3>Invite Link</h3>
+  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
+  <div style="margin-top:10px; text-align:right;">
+    <button onclick="copyLink()">Copy</button>
+    <button onclick="closePopup()">Close</button>
   </div>
+</div>
+
+<script>
+  // Navigate to other pages
+  document.getElementById("showBlockedUsers").onclick = function() {
+      window.location.href = "blockedUser.html";
+  };
+
+  document.getElementById("showRequestInvite").onclick = function() {
+      window.location.href = "requestInvite.html"; 
+  };
+
+  // Your group data
+  let currentGroup = "My Group"; // change dynamically if needed
+  let groupData = {
+      "My Group": { id: "grp_123456", photo: "profile.png", members: ["Mimah","Alice","Bob"], admin: true }
+  };
+
+  // Show popup with link
+  document.getElementById("showGroupLink").onclick = function() {
+      const group = groupData[currentGroup];
+      const inviteLink = `${window.location.origin}/join.html?group=${group.id}`;
+      document.getElementById("groupLinkInput").value = inviteLink;
+      document.getElementById("linkPopup").style.display = "block";
+  };
+
+  // Copy link function
+  function copyLink(){
+      const input = document.getElementById("groupLinkInput");
+      input.select();
+      input.setSelectionRange(0,99999);
+      navigator.clipboard.writeText(input.value);
+      alert("Group link copied!");
+  }
+
+  // Close popup
+  function closePopup(){
+      document.getElementById("linkPopup").style.display = "none";
+  }
+</script>
+
+
 
   <div class="container actionBox">
     <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
