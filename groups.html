@@ -146,7 +146,7 @@ function renderGroups(){
     };
 
     const fullMsg = g.messages && g.messages.length>0 ? g.messages[g.messages.length-1].text : "No messages yet";
-    const latestMsg = fullMsg.length > 10 ? fullMsg.slice(0,10) + "..." : fullMsg;
+    const latestMsg = fullMsg.length > 20 ? fullMsg.slice(0,20) + "..." : fullMsg;
 
     div.innerHTML = `
       <img src="${g.photo || 'group.png'}">
@@ -193,24 +193,20 @@ function saveGroup(name,img){
   document.getElementById("newGroupPhoto").value="";
 }
 
-// Simulate receiving a message
-function receiveMessage(groupName, text){
-  const g = groups.find(gr=>gr.name===groupName);
-  if(!g) return;
-  g.messages.push({sender:"Friend", text, time:new Date().toISOString()});
-  if(localStorage.getItem("currentGroupIndex") != groups.findIndex(gr=>gr.name===g.name)){
-    g.unread = true; // mark as unread
-  } else g.unread = false;
-  localStorage.setItem("groups",JSON.stringify(groups));
-  renderGroups();
+// Update group (name or photo) if changed in group-chat.html
+function syncGroupUpdates(){
+  const updatedGroups = JSON.parse(localStorage.getItem("groups") || "[]");
+  if(updatedGroups.length !== groups.length ||
+     JSON.stringify(updatedGroups) !== JSON.stringify(groups)){
+    groups = updatedGroups;
+    renderGroups();
+  }
 }
 
-// Listen to localStorage changes (multi-tab)
-window.addEventListener('storage', ()=>{
-  groups = JSON.parse(localStorage.getItem("groups") || "[]");
-  renderGroups();
-});
+// Listen to localStorage changes (multi-tab or after edits)
+window.addEventListener('storage', syncGroupUpdates);
 
+// Initial render
 renderGroups();
 </script>
 
