@@ -43,6 +43,29 @@ body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#00
 .popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
 .popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
 .popup div:hover{background:#f1f1f1;}
+
+  #emojiPicker {
+      position:absolute;
+      bottom:60px;
+      left:10px;
+      background:#fff;
+      border:1px solid #ccc;
+      padding:10px;
+      display:none;
+      max-height:200px;
+      overflow-y:auto;
+      border-radius:8px;
+    }
+    #emojiPicker span {
+      font-size:20px;
+      padding:5px;
+      cursor:pointer;
+    }
+    #emojiPicker span:hover {
+      background:#eee;
+      border-radius:5px;
+    }
+
 </style>
 </head>
 <body>
@@ -77,6 +100,22 @@ body {margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#00
   </div>
 </div>
 
+<!-- Emoji Picker -->
+<div id="emojiPicker">
+  <span>😀</span>
+  <span>😂</span>
+  <span>😍</span>
+  <span>😭</span>
+  <span>😎</span>
+  <span>😡</span>
+  <span>👍</span>
+  <span>🙏</span>
+  <span>🔥</span>
+  <span>🎉</span>
+  <span>❤️</span>
+</div>
+
+  
 <!-- FRIEND INFO PAGE -->
 <div id="friendInfoPage" style="display:none;">
   <div class="groupHeader">
@@ -145,6 +184,25 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+
+ // Emoji picker toggle
+  const emojiBtn = document.getElementById("emojiBtn");
+  const emojiPicker = document.getElementById("emojiPicker");
+  const msgInput = document.getElementById("msgInput");
+
+  emojiBtn.addEventListener("click", () => {
+    emojiPicker.style.display = emojiPicker.style.display === "block" ? "none" : "block";
+  });
+
+  // Insert emoji into input
+  emojiPicker.addEventListener("click", (e) => {
+    if (e.target.tagName === "SPAN") {
+      msgInput.value += e.target.textContent;
+      emojiPicker.style.display = "none"; // close after picking
+      msgInput.focus();
+    }
+  });
+  
 // ===== MENU POPUP =====
 const menuBtn = document.getElementById("menuBtn");
 const menuPopup = document.getElementById("menuPopup");
