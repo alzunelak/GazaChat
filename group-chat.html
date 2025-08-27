@@ -1,190 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Group Chat</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; }
-    .header { background:#4CAF50; color:#fff; padding:10px; display:flex; align-items:center; }
-    .header h2 { flex:1; margin:0; }
-    .chat-box { height:300px; overflow-y:auto; padding:10px; border:1px solid #ccc; }
-    .msg { margin:5px 0; }
-    .msg.self { text-align:right; }
-    .input-area { display:flex; padding:10px; border-top:1px solid #ccc; }
-    .input-area input { flex:1; padding:8px; }
-    .input-area button { padding:8px; }
-    .tabs { display:flex; border-bottom:1px solid #ccc; }
-    .tabs button { flex:1; padding:10px; cursor:pointer; }
-    .tab-content { display:none; padding:10px; }
-    .tab-content.active { display:block; }
-    .member, .friend { display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #eee; }
-    .member button, .friend button { margin-left:5px; }
-    .top-bar { display:flex; align-items:center; margin-bottom:10px; }
-    .back { cursor:pointer; margin-right:10px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Group Info</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
+#chatPage,#groupInfoPage{display:flex;flex-direction:column;flex:1;}
+.header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;}
+.header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
+.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
+.header-info h2{margin:0;font-size:16px;cursor:pointer;}
+.header-info #members{font-size:12px;color:#d0f0e3;}
+#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
+.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;}
+.msg.self{background:#dcf8c6;align-self:flex-end;}
+.msg .meta{font-size:10px;color:#999;text-align:right;}
+#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100%-20px);z-index:100;}
+.input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
+.input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
+.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
+#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+.groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#fff;color:#000;margin-bottom:10px;border-radius:10px;position:relative;}
+.groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
+.groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
+.backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;color:#000;}
+.actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
+.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
+.actionButtons i{font-size:20px;margin-bottom:5px;}
+.container{background:#fff;padding:10px;margin:10px;border-radius:10px;}
+.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#fff;border-radius:8px;}
+.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
+.settingsContainer button:hover{background:#f1f1f1;}
+.settingsContainer i{color:black;font-size:18px;}
+.settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
+#groupMembersList{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+.memberBox{padding:5px 10px;background:#eee;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.membersHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+#memberCount{font-weight:500;font-size:16px;}
+#addMemberBtn{width:30px;height:30px;border-radius:50%;background:#128C7E;color:white;font-size:20px;border:none;cursor:pointer;}
+#groupLinks{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+#groupLinks button{width:100%;padding:10px;border:none;border-radius:5px;background:#fff;color:#000;cursor:pointer;text-align:left;}
+.actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+.actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
+.actionBox i{color:red;font-size:18px;}
+.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
+.popup h3{margin-top:0;}
+.popup button.closeBtn{margin-top:10px;float:right;}
+.popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
+.popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
+</style>
 </head>
 <body>
+
+<!-- CHAT PAGE -->
+<div id="chatPage">
   <div class="header">
-    <div class="back" onclick="window.location='groups.html'">⬅ Back</div>
-    <h2 id="groupName">Group</h2>
+    <img id="groupPhoto" src="profile.png">
+    <div class="header-info">
+      <h2 id="groupName">My Group</h2>
+      <div id="members"></div>
+    </div>
+    <div class="header-actions">
+      <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
+      <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    </div>
   </div>
-
-  <div class="tabs">
-    <button onclick="showTab('chat')">Chat</button>
-    <button onclick="showTab('members')">Members</button>
-    <button onclick="showTab('blocked')">Blocked</button>
-  </div>
-
-  <div id="chat" class="tab-content active">
-    <div id="chatBox" class="chat-box"></div>
-    <div class="input-area">
+  <div id="chatBox"></div>
+  <div id="inputArea">
+    <div class="input-box">
       <input id="msgInput" placeholder="Type a message...">
-      <button onclick="sendMsg()">Send</button>
+      <div class="input-buttons">
+        <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+        <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+      </div>
+    </div>
+    <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
+  </div>
+</div>
+
+<!-- GROUP INFO PAGE -->
+<div id="groupInfoPage" style="display:none;">
+  <div class="groupHeader">
+    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
+    <img id="infoGroupPhoto" src="profile.png">
+    <h2 id="infoGroupName" contenteditable="true">My Group</h2>
+    <div class="actionButtons">
+      <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+      <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+      <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
     </div>
   </div>
 
-  <div id="members" class="tab-content">
-    <div class="top-bar"><h3>Group Members</h3></div>
-    <div id="memberList"></div>
-    <h4>Add Friends</h4>
-    <div id="friendList"></div>
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i> End-to-end Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
+    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy <input type="checkbox"></button>
   </div>
 
-  <div id="blocked" class="tab-content">
-    <h3>Blocked Users</h3>
-    <div id="blockedList"></div>
+  <div class="container">
+    <div class="membersHeader">
+      <span id="memberCount">0 Members</span>
+      <button id="addMemberBtn">+</button>
+    </div>
+    <div id="groupMembersList"></div>
   </div>
 
-  <script>
-    // ===== STATE =====
-    let currentUser = "You";
-    let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-    let groupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "-1");
+  <div class="container" id="groupLinks">
+    <button id="showGroupLink">Group Link</button>
+    <button id="showBlockedUsers">Blocked Users</button>
+    <button id="showRequestInvite">Request / Invite</button>
+  </div>
 
-    if (groupIndex < 0 || !groups[groupIndex]) {
-      window.location.href = "groups.html";
-    }
+  <div class="container actionBox">
+    <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
+    <button><i class="fa-solid fa-ban"></i> Block Group</button>
+    <button><i class="fa-solid fa-flag"></i> Report Group</button>
+    <button><i class="fa-solid fa-trash"></i> Delete Group</button>
+  </div>
 
-    let currentGroup = groups[groupIndex];
-    let messages = currentGroup.messages || [];
-    let blockedMembers = currentGroup.blocked || [];
-    let allFriends = JSON.parse(localStorage.getItem("friends") || "[]");
+  <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
+</div>
 
-    document.getElementById("groupName").textContent = currentGroup.name;
+<!-- POPUPS -->
+<div id="linkPopup" class="popup">
+  <h3>Invite Link</h3>
+  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
+  <button onclick="copyLink()">Copy</button>
+  <button class="closeBtn" onclick="closePopup()">Close</button>
+</div>
 
-    // ===== TABS =====
-    function showTab(id){
-      document.querySelectorAll('.tab-content').forEach(tc=>tc.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+<div id="blockedPopup" class="popup">
+  <h3>Blocked Users</h3>
+  <div id="blockedList"></div>
+  <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
+</div>
 
-    // ===== CHAT =====
-    function renderMessages(){
-      const chatBox=document.getElementById("chatBox");
-      chatBox.innerHTML="";
-      messages.forEach(m=>{
-        if(blockedMembers.includes(m.user)) return;
-        const div=document.createElement("div");
-        div.className="msg"+(m.user===currentUser?" self":"");
-        div.innerHTML=`<div><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
-        chatBox.appendChild(div);
-      });
-      chatBox.scrollTop=chatBox.scrollHeight;
-    }
+<script>
+// ===== STATE =====
+let currentUser = "you";
+let isAdmin = true;
+let allFriends = ["sophia","zainab","maya","amat","rukhsar","nuzlah"];
+let currentGroupMembers = [currentUser,"sophia"];
+let blockedMembers = JSON.parse(localStorage.getItem("blockedMembers")||"[]");
+let messages = [];
 
-    function sendMsg(){
-      const msgInput=document.getElementById("msgInput");
-      const txt=msgInput.value.trim();
-      if(!txt) return;
-      const newMsg = {id:Date.now(), text:txt, user:currentUser, time:new Date().toLocaleTimeString()};
-      messages.push(newMsg);
-      currentGroup.messages = messages;
-      saveGroup();
-      renderMessages();
-      msgInput.value="";
-    }
+// ===== CHAT =====
+const chatBox = document.getElementById("chatBox");
+const msgInput = document.getElementById("msgInput");
 
-    // ===== MEMBERS =====
-    function renderMembers(){
-      const list=document.getElementById("memberList");
-      list.innerHTML="";
-      currentGroup.members.forEach(m=>{
-        const div=document.createElement("div");
-        div.className="member";
-        div.innerHTML=`<span>${m.name}</span>`;
-        if(m.name!==currentUser){
-          const remove=document.createElement("button");
-          remove.textContent="Remove";
-          remove.onclick=()=>{
-            currentGroup.members=currentGroup.members.filter(mem=>mem.name!==m.name);
-            saveGroup(); renderMembers();
-          };
-          const block=document.createElement("button");
-          block.textContent="Block";
-          block.onclick=()=>{
-            blockedMembers.push(m.name);
-            currentGroup.blocked=blockedMembers;
-            saveGroup(); renderBlocked();
-          };
-          div.appendChild(remove); div.appendChild(block);
-        }
-        list.appendChild(div);
-      });
-    }
+function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
-    // ===== ADD FRIENDS =====
-    function renderFriends(){
-      const fl=document.getElementById("friendList");
-      fl.innerHTML="";
-      let memberNames=currentGroup.members.map(m=>m.name);
-      let available=allFriends.filter(f=>!memberNames.includes(f));
-      if(available.length===0){ fl.innerHTML="No friends to add"; return; }
-      available.forEach(f=>{
-        const div=document.createElement("div");
-        div.className="friend";
-        div.innerHTML=`<span>${f}</span>`;
-        const add=document.createElement("button");
-        add.textContent="Add";
-        add.onclick=()=>{
-          currentGroup.members.push({name:f});
-          saveGroup(); renderMembers(); renderFriends();
-        };
-        div.appendChild(add);
-        fl.appendChild(div);
-      });
-    }
-
-    // ===== BLOCKED =====
-    function renderBlocked(){
-      const bl=document.getElementById("blockedList");
-      bl.innerHTML="";
-      if(blockedMembers.length===0){ bl.innerHTML="No blocked users"; return; }
-      blockedMembers.forEach(b=>{
-        const div=document.createElement("div");
-        div.textContent=b;
-        const unblock=document.createElement("button");
-        unblock.textContent="Unblock";
-        unblock.onclick=()=>{
-          blockedMembers=blockedMembers.filter(x=>x!==b);
-          currentGroup.blocked=blockedMembers;
-          saveGroup(); renderBlocked();
-        };
-        div.appendChild(unblock);
-        bl.appendChild(div);
-      });
-    }
-
-    // ===== SAVE =====
-    function saveGroup(){
-      groups[groupIndex]=currentGroup;
-      localStorage.setItem("groups",JSON.stringify(groups));
-    }
-
-    // ===== INIT =====
+msgInput.addEventListener("keydown", e => {
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const txt=msgInput.value.trim();
+    if(!txt) return;
+    messages.push({id:uid(), text:txt, self:true, user:currentUser, time:new Date().toLocaleTimeString()});
+    msgInput.value="";
     renderMessages();
-    renderMembers();
-    renderFriends();
-    renderBlocked();
-  </script>
+  }
+});
+
+function renderMessages(){
+  chatBox.innerHTML="";
+  messages.forEach(m=>{
+    if(blockedMembers.includes(m.user)) return;
+    const div=document.createElement("div");
+    div.className="msg"+(m.user===currentUser?" self":"");
+    div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
+    chatBox.appendChild(div);
+  });
+}
+
+// ===== GROUP MEMBERS =====
+function renderGroupMembers(){
+  const membersDiv=document.getElementById("groupMembersList");
+  membersDiv.innerHTML="";
+  const activeMembers=currentGroupMembers.filter(m=>!blockedMembers.includes(m));
+  if(activeMembers.length===0){
+    const div=document.createElement("div");
+    div.textContent="No active members"; div.style.fontStyle="italic"; div.style.color="#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name=>{
+      const div=document.createElement("div");
+      div.className="memberBox"; div.textContent=name;
+      if(isAdmin && name!==currentUser){
+        const btn=document.createElement("button");
+        btn.textContent="Block"; btn.style.marginLeft="10px";
+        btn.onclick=()=>blockMember(name);
+        div.appendChild(btn);
+      }
+      membersDiv.appendChild(div);
+    });
+  }
+  document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
+}
+
+// ===== ADD MEMBER =====
+document.getElementById("addMemberBtn").onclick = ()=>{
+  localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
+  localStorage.setItem("allFriends", JSON.stringify(allFriends));
+  window.location.href = "addMembers.html";
+};
+
+// ===== NAVIGATION =====
+document.getElementById("groupName").onclick = ()=>openGroupInfo();
+function openGroupInfo(){
+  document.getElementById("chatPage").style.display="none";
+  document.getElementById("groupInfoPage").style.display="block";
+  renderGroupMembers();
+}
+function backToChat(){
+  document.getElementById("groupInfoPage").style.display="none";
+  document.getElementById("chatPage").style.display="flex";
+}
+
+  // ===== AUTO UPDATE MEMBERS =====
+// Whenever localStorage is updated in another tab/page
+window.addEventListener('storage', (event) => {
+    if(event.key === "currentGroupMembers"){
+        currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
+        renderGroupMembers();
+    }
+});
+
+// Also update members when page gains focus (after returning from Add Members page)
+window.addEventListener('focus', () => {
+    currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
+    renderGroupMembers();
+});
+
+// ===== GROUP PHOTO =====
+document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
+document.getElementById("groupPhotoFile").addEventListener("change",e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=()=>{ const url=reader.result;
+      document.getElementById("infoGroupPhoto").src=url;
+      document.getElementById("groupPhoto").src=url; };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ===== BLOCK MEMBER =====
+function blockMember(name){
+  if(confirm(`Block ${name}?`)){
+    blockedMembers.push(name);
+    localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
+    renderGroupMembers();
+  }
+}
+
+// ===== BLOCKED USERS POPUP =====
+document.getElementById("showBlockedUsers").onclick = ()=>{
+  renderBlockedUsersPopup();
+  document.getElementById("blockedPopup").style.display="block";
+};
+function renderBlockedUsersPopup(){
+  const listDiv=document.getElementById("blockedList");
+  listDiv.innerHTML="";
+  if(blockedMembers.length===0){
+    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
+  } else {
+    blockedMembers.forEach((u,index)=>{
+      const div=document.createElement("div");
+      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
+      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
+      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
+      unblockBtn.className="unblockBtn";
+      unblockBtn.onclick=()=>{
+        blockedMembers.splice(index,1);
+        localStorage.setItem("blockedMembers", JSON.stringify(blockedMembers));
+        renderBlockedUsersPopup();
+        renderGroupMembers();
+      };
+      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
+    });
+  }
+}
+function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
+
+// ===== GROUP LINK =====
+document.getElementById("showGroupLink").onclick = ()=>{
+  const inviteLink = `${window.location.origin}/join.html?group=grp_123456`;
+  document.getElementById("groupLinkInput").value = inviteLink;
+  document.getElementById("linkPopup").style.display="block";
+};
+function copyLink(){
+  const input = document.getElementById("groupLinkInput");
+  input.select(); input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Group link copied!");
+}
+function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
+
+// ===== REQUEST/INVITE =====
+document.getElementById("showRequestInvite").onclick = () => {
+    window.location.href = "requestInvite.html";
+};
+
+// ===== ACTION BOX BUTTONS =====
+const leaveBtn = document.querySelector(".actionBox button:nth-child(1)");
+const blockGroupBtn = document.querySelector(".actionBox button:nth-child(2)");
+const reportGroupBtn = document.querySelector(".actionBox button:nth-child(3)");
+const deleteGroupBtn = document.querySelector(".actionBox button:nth-child(4)");
+
+leaveBtn.onclick = () => {
+  if(confirm("Are you sure you want to leave the group?")){
+    alert("You left the group.");
+    window.location.href = "groups.html";
+  }
+};
+
+blockGroupBtn.onclick = () => {
+  if(confirm("Are you sure you want to block this group?")){
+    alert("Group blocked.");
+    window.location.href = "groups.html";
+  }
+};
+
+reportGroupBtn.onclick = () => {
+  if(confirm("Are you sure you want to report this group?")){
+    alert("Group reported.");
+    window.location.href = "groups.html";
+  }
+};
+
+deleteGroupBtn.onclick = () => {
+  if(!isAdmin){
+    alert("Only admin can delete the group!");
+    return;
+  }
+  if(confirm("Are you sure you want to DELETE the group? This cannot be undone.")){
+    alert("Group deleted.");
+    window.location.href = "groups.html";
+  }
+};
+
+// ===== INITIAL RENDER =====
+renderMessages();
+renderGroupMembers();
+</script>
+
 </body>
-</html>
+</html> 
