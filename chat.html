@@ -6,256 +6,86 @@
 <title>Chat App</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* BODY */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #fff; /* Body white */
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+body{
+  margin:0;
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:#fff;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
-/* CHAT & FRIEND PAGES */
-#chatPage, #friendInfoPage {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
+/* CHAT & FRIEND PAGE */
+#chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
 
 /* HEADER */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #128C7E; /* Green header */
-  padding: 10px;
-  position: relative;
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#128C7E;
+  padding:10px;
+  position:relative;
 }
-.header img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  object-fit: cover;
-}
-.header-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-left: 10px;
-  overflow: hidden;
-  color: #fff; /* Name white */
-}
-.header-info h2 {
-  margin: 0;
-  font-size: 16px;
-  cursor: pointer;
-}
-.header-actions button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  color: #fff; /* Phone and dots white */
-}
+.header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
+.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;color:#fff;}
+.header-info h2{margin:0;font-size:16px;cursor:pointer;}
+.header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:#fff;}
 
 /* CHAT BOX */
-#chatBox {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  margin-bottom: 100px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.msg {
-  max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 18px;
-  background: #f1f1f1;
-  align-self: flex-start;
-  word-break: break-word;
-}
-.msg.self {
-  background: #dcf8c6;
-  align-self: flex-end;
-}
-.msg .meta {
-  display: block;
-  margin-top: 4px;
-  font-size: 10px;
-  color: #999;
-  text-align: right;
-}
-.msg.system {
-  background: #e1f0ff;
-  color: #333;
-  align-self: center;
-  text-align: center;
-}
+#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;display:flex;flex-direction:column;gap:6px;}
+.msg{max-width:70%;padding:10px 14px;border-radius:18px;background:#f1f1f1;align-self:flex-start;word-break:break-word;}
+.msg.self{background:#dcf8c6;align-self:flex-end;}
+.msg .meta{display:block;margin-top:4px;font-size:10px;color:#999;text-align:right;}
+.msg.system{background:#e1f0ff;color:#333;align-self:center;text-align:center;}
 
 /* INPUT AREA */
-#inputArea {
-  display: flex;
-  align-items: center;
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  width: calc(100% - 20px);
-  z-index: 100;
-}
-.input-box {
-  display: flex;
-  flex: 1;
-  background: #f1f1f1;
-  border-radius: 25px;
-  padding: 6px 10px;
-  gap: 6px;
-}
-.input-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-}
-.input-buttons button {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #128C7E;
-}
-#micBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #25D366;
-  color: white;
-  border: none;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 6px;
-}
+#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100% - 20px);z-index:100;}
+.input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
+.input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
+.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
+#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
 
 /* POPUPS */
-.popup, #emojiPicker, #attachPopup {
-  display: none;
-}
-.popup {
-  position: absolute;
-  top: 50px;
-  right: 10px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  z-index: 1000;
-  width: 150px;
-}
-.popup div {
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-}
-.popup div:hover {
-  background: #f1f1f1;
-}
+.popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border-radius:8px;z-index:1000;width:150px;}
+.popup div{padding:10px;cursor:pointer;}
+.popup div:hover{background:#f1f1f1;}
+
+#emojiPicker{position:absolute;bottom:60px;left:10px;background:#fff;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
+#emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
+#emojiPicker span:hover{background:#eee;border-radius:5px;}
+
+#attachPopup{display:none;position:absolute;bottom:60px;left:60px;background:#fff;padding:12px;border-radius:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
+#attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#f8f8f8;text-align:center;font-size:12px;user-select:none;}
+.attachItem:hover{background:#f1f1f1;}
+.attachItem i{font-size:20px;color:#075E54;}
+.attachItem input{display:none;}
 
 /* FRIEND INFO PAGE */
-#friendInfoPage {
-  display: none;
-  flex-direction: column;
-  padding: 20px;
-  background: #fff;
-}
-.friendHeader {
-  text-align: center;
-  margin-bottom: 20px;
-  position: relative;
-}
-.friendHeader img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  margin-bottom: 10px;
-  object-fit: cover;
-}
-.friendHeader h2 {
-  margin: 0;
-  font-size: 22px;
-  margin-bottom: 20px;
-}
-.actionButtons button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0;
-  background: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-}
+#friendInfoPage{display:none;flex-direction:column;padding:20px;background:#fff;}
+.friendHeader{text-align:center;margin-bottom:20px;position:relative;}
+.friendHeader img{width:120px;height:120px;border-radius:50%;margin-bottom:10px;object-fit:cover;}
+.friendHeader h2{margin:0;font-size:22px;margin-bottom:20px;}
+.actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
+.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border-radius:8px;cursor:pointer;}
+.actionButtons i{font-size:20px;margin-bottom:5px;}
 
-/* SETTINGS AND OTHER BUTTONS */
-.settingsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 8px;
-  background: #fff;
-  margin-bottom: 10px;
-}
-.settingsContainer button {
-  width: 100%;
-  padding: 12px 15px;
-  border: none;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  color: #000;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-.settingsContainer button:hover {
-  background: #f1f1f1;
-}
+/* SETTINGS */
+.settingsContainer{display:flex;flex-direction:column;gap:10px;padding:10px;border-radius:8px;background:#fff;margin-bottom:15px;}
+.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
+.settingsContainer button:hover{background:#f1f1f1;}
 
-/* BLOCK & REPORT BUTTONS */
-.blockBtn, .reportBtn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  border-radius: 8px;
-  background: #fff;
-  font-weight: bold;
-  cursor: pointer;
-}
-.blockBtn {
-  color: #f44336;
-}
-.reportBtn {
-  color: #ff5722;
-}
+/* BLOCK & REPORT */
+.blockBtn,.reportBtn{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;font-weight:bold;cursor:pointer;}
+.blockBtn{color:#f44336;}
+.reportBtn{color:#ff5722;}
 
 /* NO GROUPS + ADD FRIEND */
-.addFriendBtn {
-  background: #128C7E;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
+.addFriendBtn{background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;}
+
+/* BACK ARROW */
+.backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
 </style>
 </head>
 <body>
@@ -294,6 +124,47 @@ body {
   </div>
 </div>
 
+<!-- Emoji Picker -->
+<div id="emojiPicker">
+  <span>😀</span><span>😂</span><span>😍</span><span>😭</span>
+  <span>😎</span><span>😡</span><span>👍</span><span>🙏</span>
+  <span>🔥</span><span>🎉</span><span>❤️</span>
+</div>
+
+<!-- ATTACHMENTS -->
+<div id="attachPopup">
+  <div id="attachGrid">
+    <label class="attachItem">
+      <i class="fa-solid fa-image"></i>
+      <span>Gallery</span>
+      <input type="file" id="galleryInput" accept="image/*,video/*">
+    </label>
+    <label class="attachItem">
+      <i class="fa-solid fa-camera"></i>
+      <span>Camera</span>
+      <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment">
+    </label>
+    <div class="attachItem" id="sendLocation">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>Location</span>
+    </div>
+    <label class="attachItem">
+      <i class="fa-solid fa-file"></i>
+      <span>Document</span>
+      <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt">
+    </label>
+    <div class="attachItem" id="sendContact">
+      <i class="fa-solid fa-user"></i>
+      <span>Contact</span>
+    </div>
+    <label class="attachItem">
+      <i class="fa-solid fa-microphone"></i>
+      <span>Audio</span>
+      <input type="file" id="audioInput" accept="audio/*">
+    </label>
+  </div>
+</div>
+
 <!-- FRIEND INFO PAGE -->
 <div id="friendInfoPage">
   <div class="friendHeader">
@@ -314,7 +185,6 @@ body {
     <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
   </div>
 
-  <!-- No Groups + Add Friend -->
   <div class="settingsContainer">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <span>No groups in common</span>
@@ -322,7 +192,6 @@ body {
     </div>
   </div>
 
-  <!-- Block & Report -->
   <div class="settingsContainer">
     <div style="display:flex;flex-direction:column;gap:8px;">
       <button class="blockBtn"><span><i class="fa-solid fa-ban"></i> Block User</span></button>
@@ -332,43 +201,65 @@ body {
 </div>
 
 <script>
-/* ----- JS CODE ----- */
+// DATA
 const myId = "user123";
-const friendsList = JSON.parse(localStorage.getItem("friends") || "[]");
+const friendsList = JSON.parse(localStorage.getItem("friends")||"[]");
 const friendParam = new URLSearchParams(window.location.search).get("friend");
-const friendObj = friendsList.find(f => f.name === friendParam);
-const friendData = { name: friendObj ? friendObj.name : (friendParam || "Friend"), photo: friendObj?.photo || "default-profile.png" };
+const friendObj = friendsList.find(f=>f.name===friendParam);
+const friendData={name:friendObj?friendObj.name:(friendParam||"Friend"),photo:friendObj?.photo||"default-profile.png"};
 
-/* DOM */
-document.getElementById("friendName").textContent = friendData.name;
-document.getElementById("friendPhoto").src = friendData.photo;
-document.getElementById("infoFriendName").textContent = friendData.name;
-document.getElementById("infoFriendPhoto").src = friendData.photo;
+document.getElementById("friendName").textContent=friendData.name;
+document.getElementById("friendPhoto").src=friendData.photo;
+document.getElementById("infoFriendName").textContent=friendData.name;
+document.getElementById("infoFriendPhoto").src=friendData.photo;
 
-/* Friend Info Toggle */
-function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; }
-function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; }
+// FRIEND INFO
+function openFriendInfo(){document.getElementById("chatPage").style.display="none";document.getElementById("friendInfoPage").style.display="flex";}
+function backToChat(){document.getElementById("friendInfoPage").style.display="none";document.getElementById("chatPage").style.display="flex";}
 
-/* Add Friend */
-document.getElementById("addFriendBtn").onclick = ()=>{ alert(`${friendData.name} added as friend!`); }
+// MESSAGES
+let messages = JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
+const chatBox=document.getElementById("chatBox");
+const msgInput=document.getElementById("msgInput");
+function uid(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);}
+function timeNow(){return new Date().toLocaleTimeString();}
+function saveMessages(){localStorage.setItem(`chat_${friendData.name}`,JSON.stringify(messages));}
+function appendMessageBubble(obj){const div=document.createElement("div");div.className="msg"+(obj.senderId===myId?" self":"");div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;chatBox.appendChild(div);chatBox.scrollTop=chatBox.scrollHeight;}
+function renderMessages(){chatBox.innerHTML="";messages.forEach(appendMessageBubble);}
+renderMessages();
 
-/* Block User */
-document.querySelector(".blockBtn").onclick = ()=>{
-  if(confirm("Block this user?")){
-    let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-    if(!blocked.includes(friendData.name)){
-      blocked.push(friendData.name);
-      localStorage.setItem("blockedUsers", JSON.stringify(blocked));
-      alert("User blocked.");
-      document.getElementById("chatPage").style.display="none";
-      document.getElementById("friendInfoPage").style.display="none";
-    }
-  }
-}
+msgInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const txt=msgInput.value.trim();if(!txt)return;const msg={id:uid(),senderId:myId,text:txt,time:timeNow()};messages.push(msg);saveMessages();appendMessageBubble(msg);msgInput.value="";}});
 
-/* Report User */
-document.querySelector(".reportBtn").onclick = ()=>{ if(confirm("Report this user?")) alert("User reported."); }
+// EMOJI PICKER
+const emojiPicker=document.getElementById("emojiPicker");
+document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";};
+emojiPicker.addEventListener("click",e=>{if(e.target.tagName==="SPAN"){msgInput.value+=e.target.textContent;emojiPicker.style.display="none";msgInput.focus();}});
+
+// MENU POPUP
+const menuBtn=document.getElementById("menuBtn");
+const menuPopup=document.getElementById("menuPopup");
+menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";};
+document.addEventListener("click",e=>{if(!menuBtn.contains(e.target)&&!menuPopup.contains(e.target))menuPopup.style.display="none";});
+
+// DELETE CHAT
+function deleteChat(){if(confirm("Delete all messages?")){messages=[];saveMessages();renderMessages();}}
+
+// ATTACHMENTS
+const attachBtn=document.getElementById("plusBtn");
+const attachPopup=document.getElementById("attachPopup");
+attachBtn.onclick=e=>{e.stopPropagation();attachPopup.style.display=attachPopup.style.display==="block"?"none":"block";}
+document.addEventListener("click",e=>{if(!attachBtn.contains(e.target)&&!attachPopup.contains(e.target))attachPopup.style.display="none";});
+function sendAttachmentMessage(text){const msg={id:uid(),senderId:myId,text,time:timeNow()};messages.push(msg);saveMessages();appendMessageBubble(msg);attachPopup.style.display="none";}
+
+document.getElementById("galleryInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`);e.target.value="";}});
+document.getElementById("cameraInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`);e.target.value="";}});
+document.getElementById("documentInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`📄 Document: ${file.name}`);e.target.value="";}});
+document.getElementById("audioInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`🎵 Audio: ${file.name}`);e.target.value="";}});
+document.getElementById("sendLocation").onclick=()=>{if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{const lat=pos.coords.latitude.toFixed(5),lng=pos.coords.longitude.toFixed(5);sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`);},()=>sendAttachmentMessage("📍 Location sharing denied"));}else sendAttachmentMessage("📍 Geolocation not supported");};
+document.getElementById("sendContact").onclick=()=>{const name=prompt("Contact Name");if(name){sendAttachmentMessage(`👤 Contact: ${name}`);}};
+document.getElementById("addFriendBtn").onclick=()=>{alert(`${friendData.name} added as friend!`);}
+document.querySelector(".blockBtn").onclick=()=>{if(confirm("Block this user?")){let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]");if(!blocked.includes(friendData.name)){blocked.push(friendData.name);localStorage.setItem("blockedUsers",JSON.stringify(blocked));alert("User blocked.");document.getElementById("chatPage").style.display="none";document.getElementById("friendInfoPage").style.display="none";}}}
+document.querySelector(".reportBtn").onclick=()=>{if(confirm("Report this user?"))alert("User reported.");}
 </script>
-
 </body>
 </html>
