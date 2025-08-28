@@ -50,6 +50,33 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .popup button.closeBtn{margin-top:10px;float:right;}
 .popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
 .popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
+
+
+  /* Popup menu for 3-dot options */
+.popupMenu {
+  display:none;
+  position:absolute;
+  right:10px;
+  top:60px;
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.2);
+  z-index:2000;
+  width:160px;
+}
+.popupMenu .menuItem {
+  padding:10px;
+  cursor:pointer;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.popupMenu .menuItem:hover {
+  background:#f1f1f1;
+}
+
 </style>
 </head>
 <body>
@@ -67,6 +94,16 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
     </div>
   </div>
+
+
+  
+<div id="menuPopup" class="popupMenu">
+  <div class="menuItem" id="viewInfo"><i class="fa-solid fa-circle-info"></i> View Info</div>
+  <div class="menuItem" id="muteChat"><i class="fa-solid fa-bell-slash"></i> Mute</div>
+  <div class="menuItem" id="deleteChat"><i class="fa-solid fa-trash"></i> Delete Chat</div>
+</div>
+
+  
   <div id="chatBox"></div>
   <div id="inputArea">
     <div class="input-box">
@@ -80,6 +117,21 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   </div>
 </div>
 
+
+
+
+
+<!-- ATTACHMENT MENU -->
+<div id="attachmentMenu" class="popupMenu" style="top:auto; bottom:60px; right:10px; display:none; width:200px;">
+  <div class="menuItem" id="attachGallery"><i class="fa-solid fa-image"></i> Gallery</div>
+  <div class="menuItem" id="attachCamera"><i class="fa-solid fa-camera"></i> Camera</div>
+  <div class="menuItem" id="attachDocument"><i class="fa-solid fa-file"></i> Document</div>
+  <div class="menuItem" id="attachAudio"><i class="fa-solid fa-microphone"></i> Audio</div>
+  <div class="menuItem" id="attachContact"><i class="fa-solid fa-address-book"></i> Contact</div>
+  <div class="menuItem" id="attachLocation"><i class="fa-solid fa-location-dot"></i> Location</div>
+</div>
+
+  
 <!-- GROUP INFO PAGE -->
 <div id="groupInfoPage" style="display:none;">
   <div class="groupHeader">
@@ -156,6 +208,66 @@ let currentGroupMembers = currentGroup.members.map(m=>m.name);
 let blockedMembers = currentGroup.blocked || [];
 let messages = currentGroup.messages || [];
 
+
+
+// ===== MENU BUTTON TOGGLE =====
+const menuBtn = document.getElementById("menuBtn");
+const menuPopup = document.getElementById("menuPopup");
+
+menuBtn.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  menuPopup.style.display = (menuPopup.style.display==="block") ? "none" : "block";
+});
+
+// Close menu when clicking outside
+document.addEventListener("click", ()=> menuPopup.style.display="none");
+
+// ===== MENU ITEM ACTIONS =====
+document.getElementById("viewInfo").onclick = ()=>{
+  openGroupInfo();
+  menuPopup.style.display="none";
+};
+
+document.getElementById("muteChat").onclick = ()=>{
+  alert("Chat muted.");
+  menuPopup.style.display="none";
+};
+
+document.getElementById("deleteChat").onclick = ()=>{
+  if(confirm("Delete all messages?")){
+    messages = [];
+    currentGroup.messages = [];
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    renderMessages();
+  }
+  menuPopup.style.display="none";
+};
+
+
+
+
+const plusBtn = document.getElementById("plusBtn");
+const attachmentMenu = document.getElementById("attachmentMenu");
+
+// Toggle attachment menu
+plusBtn.addEventListener("click", e=>{
+  e.stopPropagation();
+  attachmentMenu.style.display = (attachmentMenu.style.display==="block") ? "none" : "block";
+});
+document.addEventListener("click", ()=> attachmentMenu.style.display="none");
+
+// Trigger file/location inputs
+document.getElementById("attachGallery").onclick = () => { document.getElementById("galleryInput").click(); };
+document.getElementById("attachCamera").onclick = () => { document.getElementById("cameraInput").click(); };
+document.getElementById("attachDocument").onclick = () => { document.getElementById("documentInput").click(); };
+document.getElementById("attachAudio").onclick = () => { document.getElementById("audioInput").click(); };
+document.getElementById("attachContact").onclick = () => { document.getElementById("contactInput").click(); };
+document.getElementById("attachLocation").onclick = () => { document.getElementById("locationInput").click(); };
+
+  
+  
+  
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
 const msgInput = document.getElementById("msgInput");
