@@ -28,8 +28,8 @@ body{
   position:relative;
 }
 .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
-.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;color:#fff;}
-.header-info h2{margin:0;font-size:16px;cursor:pointer;}
+.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;color:#fff;cursor:pointer;}
+.header-info h2{margin:0;font-size:16px;}
 .header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:#fff;}
 
 /* CHAT BOX */
@@ -63,8 +63,8 @@ body{
 .attachItem input{display:none;}
 
 /* FRIEND INFO PAGE */
-#friendInfoPage{display:none;flex-direction:column;padding:20px;background:#fff;}
-.friendHeader{text-align:center;margin-bottom:20px;position:relative;}
+#friendInfoPage{display:none;flex-direction:column;background:#fff;flex:1;}
+.friendHeader{padding:20px;text-align:center;position:relative;background:#f9f9f9;}
 .friendHeader img{width:120px;height:120px;border-radius:50%;margin-bottom:10px;object-fit:cover;}
 .friendHeader h2{margin:0;font-size:22px;margin-bottom:20px;}
 .actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
@@ -85,7 +85,7 @@ body{
 .addFriendBtn{background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;}
 
 /* BACK ARROW */
-.backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
+.backArrow{cursor:pointer;font-size:22px;position:absolute;left:10px;top:20px;}
 </style>
 </head>
 <body>
@@ -94,7 +94,7 @@ body{
 <div id="chatPage">
   <div class="header">
     <img id="friendPhoto" src="default-profile.png" alt="friend">
-    <div class="header-info">
+    <div class="header-info" id="headerClick">
       <h2 id="friendName"></h2>
     </div>
     <div class="header-actions">
@@ -170,7 +170,7 @@ body{
   <div class="friendHeader">
     <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
     <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
-    <h2 id="infoFriendName">Friend Name</h2>
+    <h2 id="infoFriendName"></h2>
     <div class="actionButtons">
       <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
       <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
@@ -201,65 +201,96 @@ body{
 </div>
 
 <script>
-// DATA
+/* --------- USER DATA --------- */
+const myName = "Me";
 const myId = "user123";
 const friendsList = JSON.parse(localStorage.getItem("friends")||"[]");
 const friendParam = new URLSearchParams(window.location.search).get("friend");
 const friendObj = friendsList.find(f=>f.name===friendParam);
-const friendData={name:friendObj?friendObj.name:(friendParam||"Friend"),photo:friendObj?.photo||"default-profile.png"};
+const friendData = {name:friendObj?friendObj.name:(friendParam||"Friend"), photo:friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"};
 
-document.getElementById("friendName").textContent=friendData.name;
-document.getElementById("friendPhoto").src=friendData.photo;
-document.getElementById("infoFriendName").textContent=friendData.name;
-document.getElementById("infoFriendPhoto").src=friendData.photo;
-
-// FRIEND INFO
-function openFriendInfo(){document.getElementById("chatPage").style.display="none";document.getElementById("friendInfoPage").style.display="flex";}
-function backToChat(){document.getElementById("friendInfoPage").style.display="none";document.getElementById("chatPage").style.display="flex";}
-
-// MESSAGES
-let messages = JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
+/* DOM Elements */
+const friendNameEl=document.getElementById("friendName");
+const friendPhotoEl=document.getElementById("friendPhoto");
+const infoFriendNameEl=document.getElementById("infoFriendName");
+const infoFriendPhotoEl=document.getElementById("infoFriendPhoto");
 const chatBox=document.getElementById("chatBox");
 const msgInput=document.getElementById("msgInput");
+
+/* Initialize headers */
+friendNameEl.textContent=friendData.name;
+friendPhotoEl.src=friendData.photo;
+friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png";
+infoFriendNameEl.textContent=friendData.name;
+infoFriendPhotoEl.src=friendData.photo;
+infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png";
+
+/* Messages array */
+let messages=JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
+
+/* Utility */
 function uid(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);}
 function timeNow(){return new Date().toLocaleTimeString();}
 function saveMessages(){localStorage.setItem(`chat_${friendData.name}`,JSON.stringify(messages));}
-function appendMessageBubble(obj){const div=document.createElement("div");div.className="msg"+(obj.senderId===myId?" self":"");div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;chatBox.appendChild(div);chatBox.scrollTop=chatBox.scrollHeight;}
-function renderMessages(){chatBox.innerHTML="";messages.forEach(appendMessageBubble);}
-renderMessages();
+function appendMessageBubble(obj){
+  const div=document.createElement("div");
+  div.className="msg"+(obj.senderId===myId?" self":"");
+  div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
+  chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight;
+}
+function renderMessages(){chatBox.innerHTML=""; messages.forEach(appendMessageBubble);}
 
-msgInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const txt=msgInput.value.trim();if(!txt)return;const msg={id:uid(),senderId:myId,text:txt,time:timeNow()};messages.push(msg);saveMessages();appendMessageBubble(msg);msgInput.value="";}});
+/* Send text message */
+msgInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){ e.preventDefault();
+    const txt=msgInput.value.trim(); if(!txt)return;
+    const msg={id:uid(),senderId:myId,text:txt,time:timeNow()};
+    messages.push(msg); saveMessages(); appendMessageBubble(msg); msgInput.value="";
+  }
+});
 
-// EMOJI PICKER
+/* Emoji picker */
 const emojiPicker=document.getElementById("emojiPicker");
-document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";};
-emojiPicker.addEventListener("click",e=>{if(e.target.tagName==="SPAN"){msgInput.value+=e.target.textContent;emojiPicker.style.display="none";msgInput.focus();}});
+document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";}
+emojiPicker.addEventListener("click",e=>{if(e.target.tagName==="SPAN"){msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus();}});
 
-// MENU POPUP
+/* Menu popup */
 const menuBtn=document.getElementById("menuBtn");
 const menuPopup=document.getElementById("menuPopup");
-menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";};
+menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";}
 document.addEventListener("click",e=>{if(!menuBtn.contains(e.target)&&!menuPopup.contains(e.target))menuPopup.style.display="none";});
 
-// DELETE CHAT
-function deleteChat(){if(confirm("Delete all messages?")){messages=[];saveMessages();renderMessages();}}
+/* Friend info click */
+document.getElementById("headerClick").onclick=openFriendInfo;
+friendPhotoEl.onclick=openFriendInfo;
+function openFriendInfo(){document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex";}
+function backToChat(){document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex";}
 
-// ATTACHMENTS
+/* Delete chat */
+function deleteChat(){if(confirm("Delete all messages?")){messages=[]; saveMessages(); renderMessages();}}
+
+/* Attachments */
 const attachBtn=document.getElementById("plusBtn");
 const attachPopup=document.getElementById("attachPopup");
-attachBtn.onclick=e=>{e.stopPropagation();attachPopup.style.display=attachPopup.style.display==="block"?"none":"block";}
-document.addEventListener("click",e=>{if(!attachBtn.contains(e.target)&&!attachPopup.contains(e.target))attachPopup.style.display="none";});
-function sendAttachmentMessage(text){const msg={id:uid(),senderId:myId,text,time:timeNow()};messages.push(msg);saveMessages();appendMessageBubble(msg);attachPopup.style.display="none";}
+attachBtn.onclick=e=>{e.stopPropagation(); attachPopup.style.display=attachPopup.style.display==="block"?"none":"block";}
+document.addEventListener("click",e=>{if(!attachBtn.contains(e.target)&&!attachPopup.contains(e.target)) attachPopup.style.display="none";});
+function sendAttachmentMessage(text){const msg={id:uid(),senderId:myId,text,time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none";}
+document.getElementById("galleryInput").addEventListener("change",e=>{const file=e.target.files[0]; if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`); e.target.value="";}});
+document.getElementById("cameraInput").addEventListener("change",e=>{const file=e.target.files[0]; if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`); e.target.value="";}});
+document.getElementById("documentInput").addEventListener("change",e=>{const file=e.target.files[0]; if(file){sendAttachmentMessage(`📄 Document: ${file.name}`); e.target.value="";}});
+document.getElementById("audioInput").addEventListener("change",e=>{const file=e.target.files[0]; if(file){sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value="";}});
+document.getElementById("sendLocation").onclick=()=>{if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`);}, ()=>sendAttachmentMessage("📍 Location sharing denied"));}else sendAttachmentMessage("📍 Geolocation not supported");};
+document.getElementById("sendContact").onclick=()=>{const name=prompt("Contact Name");if(name){sendAttachmentMessage(`👤 Contact: ${name}`);};};
 
-document.getElementById("galleryInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`);e.target.value="";}});
-document.getElementById("cameraInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`);e.target.value="";}});
-document.getElementById("documentInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`📄 Document: ${file.name}`);e.target.value="";}});
-document.getElementById("audioInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`🎵 Audio: ${file.name}`);e.target.value="";}});
-document.getElementById("sendLocation").onclick=()=>{if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{const lat=pos.coords.latitude.toFixed(5),lng=pos.coords.longitude.toFixed(5);sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`);},()=>sendAttachmentMessage("📍 Location sharing denied"));}else sendAttachmentMessage("📍 Geolocation not supported");};
-document.getElementById("sendContact").onclick=()=>{const name=prompt("Contact Name");if(name){sendAttachmentMessage(`👤 Contact: ${name}`);}};
-document.getElementById("addFriendBtn").onclick=()=>{alert(`${friendData.name} added as friend!`);}
-document.querySelector(".blockBtn").onclick=()=>{if(confirm("Block this user?")){let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]");if(!blocked.includes(friendData.name)){blocked.push(friendData.name);localStorage.setItem("blockedUsers",JSON.stringify(blocked));alert("User blocked.");document.getElementById("chatPage").style.display="none";document.getElementById("friendInfoPage").style.display="none";}}}
-document.querySelector(".reportBtn").onclick=()=>{if(confirm("Report this user?"))alert("User reported.");}
+/* Add Friend */
+document.getElementById("addFriendBtn").onclick=()=>{alert(`${friendData.name} added as friend!`);};
+
+/* Block & Report */
+document.querySelector(".blockBtn").onclick=()=>{if(confirm("Block this user?")){let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]"); if(!blocked.includes(friendData.name)){blocked.push(friendData.name); localStorage.setItem("blockedUsers",JSON.stringify(blocked)); alert("User blocked."); document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="none";}}};
+document.querySelector(".reportBtn").onclick=()=>{if(confirm("Report this user?")) alert("User reported.");};
+
+/* Render messages initially */
+renderMessages();
 </script>
 </body>
 </html>
