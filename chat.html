@@ -30,6 +30,34 @@
   #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
   #emojiPicker span:hover{background:#eee;border-radius:5px;}
 
+#attachPopup {
+  display: none;
+  position: absolute;
+  bottom: 60px;
+  left: 60px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 8px;
+  width: 200px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 2000;
+}
+#attachPopup label, #attachPopup div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+#attachPopup label:hover, #attachPopup div:hover {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+#attachPopup input { display: none; }
+
+  
   /* FRIEND INFO PAGE */
   #friendInfoPage{display:none; flex-direction:column; padding:20px; background:#f5f5f5;}
   .friendHeader{ text-align:center; margin-bottom:20px; position:relative; }
@@ -85,6 +113,34 @@
   <span>🔥</span><span>🎉</span><span>❤️</span>
 </div>
 
+<!-- Attachment Popup -->
+<div id="attachPopup">
+  <label>
+    <i class="fa-solid fa-image"></i> Gallery
+    <input type="file" id="galleryInput" accept="image/*,video/*" hidden>
+  </label>
+
+  <label>
+    <i class="fa-solid fa-camera"></i> Camera
+    <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment" hidden>
+  </label>
+
+  <label>
+    <i class="fa-solid fa-file"></i> Document
+    <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt" hidden>
+  </label>
+
+  <div id="sendContact"><i class="fa-solid fa-user"></i> Contact</div>
+  <div id="sendLocation"><i class="fa-solid fa-location-dot"></i> Location</div>
+
+  <label>
+    <i class="fa-solid fa-microphone"></i> Audio
+    <input type="file" id="audioInput" accept="audio/*" hidden>
+  </label>
+</div>
+
+
+  
 <!-- FRIEND INFO PAGE -->
 <div id="friendInfoPage">
   <div class="friendHeader">
@@ -186,6 +242,64 @@ document.getElementById("emojiPicker").addEventListener("click", e=>{
   if(e.target.tagName==="SPAN"){ msgInput.value += e.target.textContent; msgInput.focus(); e.currentTarget.style.display="none"; }
 });
 
+
+  // Toggle popup
+const attachBtn = document.getElementById("plusBtn");
+const attachPopup = document.getElementById("attachPopup");
+
+attachBtn.addEventListener("click", () => {
+  attachPopup.style.display = attachPopup.style.display === "block" ? "none" : "block";
+});
+
+// Close popup when clicking outside
+document.addEventListener("click", e => {
+  if (!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) {
+    attachPopup.style.display = "none";
+  }
+});
+
+// Gallery & Camera
+document.getElementById("galleryInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) alert("Selected from Gallery: " + file.name);
+});
+
+document.getElementById("cameraInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) alert("Captured with Camera: " + file.name);
+});
+
+// Document
+document.getElementById("documentInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) alert("Document Selected: " + file.name);
+});
+
+// Audio
+document.getElementById("audioInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) alert("Audio Selected: " + file.name);
+});
+
+// Location (use GPS)
+document.getElementById("sendLocation").addEventListener("click", () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const coords = `Latitude: ${pos.coords.latitude}, Longitude: ${pos.coords.longitude}`;
+      alert("Location: " + coords);
+    }, err => alert("Location access denied."));
+  } else {
+    alert("Geolocation not supported");
+  }
+});
+
+// Contact (Mock – real phone contacts need special API)
+document.getElementById("sendContact").addEventListener("click", () => {
+  alert("Open Contacts (requires Phone API / backend)");
+});
+
+
+  
 // Menu popup
 const menuBtn=document.getElementById("menuBtn");
 const menuPopup=document.getElementById("menuPopup");
