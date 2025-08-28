@@ -52,21 +52,32 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
 
 
-  /* Make input box bigger on laptops/desktops */
+
 @media (min-width: 1024px) {
-    .input-box input {
-        font-size:18px; /* bigger text */
-        padding: 10px;  /* more space inside */
+    /* Make input box taller */
+    #inputArea {
+        bottom:20px;
     }
+
+    .input-box {
+        padding:12px 15px;   /* bigger padding */
+    }
+
+    .input-box input {
+        font-size:18px;      /* bigger text */
+    }
+
     #micBtn {
         width:50px;
         height:50px;
         font-size:22px;
     }
+
     .input-buttons button {
         font-size:22px;
     }
 }
+
 
 
   /* Popup menu for 3-dot options */
