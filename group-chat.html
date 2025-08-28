@@ -52,31 +52,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
 
 
-
-@media (min-width: 1024px) {
-    /* Make input box taller */
-    #inputArea {
-        bottom:20px;
-    }
-
-#inputArea {
-  display:flex;
-  align-items:center;
-  position:fixed;
-  bottom:10px;
-  left:10px;
-  width: calc(100% - 20px); /* fix syntax */
-  z-index:1000;              /* ensure on top */
-}
-
-#chatBox {
-  flex:1;
-  overflow-y:auto;
-  padding:10px;
-  margin-bottom:120px; /* ensure enough space */
-}
-
-
+    
   /* Popup menu for 3-dot options */
 .popupMenu {
   display:none;
@@ -102,6 +78,32 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   background:#f1f1f1;
 }
 
+
+
+@media (min-width: 1024px) {
+    /* Make input box taller */
+    #inputArea {
+        bottom:20px;
+    }
+
+#inputArea {
+  display:flex;
+  align-items:center;
+  position:fixed;
+  bottom:10px;
+  left:10px;
+  width: calc(100% - 20px); /* fix syntax */
+  z-index:1000;              /* ensure on top */
+}
+
+#chatBox {
+  flex:1;
+  overflow-y:auto;
+  padding:10px;
+  margin-bottom:120px; /* ensure enough space */
+}
+
+    
 </style>
 </head>
 <body>
@@ -141,8 +143,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
   </div>
 </div>
-
-
 
 
 
