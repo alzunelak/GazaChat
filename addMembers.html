@@ -11,8 +11,10 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 .header i {font-size:24px;cursor:pointer;margin-right:10px;}
 .header h2 {margin:0;font-size:18px;}
 #friendsList {padding:10px;display:flex;flex-direction:column;gap:8px;}
-.friendItem {padding:10px;background:#eee;border-radius:8px;cursor:pointer;}
+.friendItem {padding:10px;background:#eee;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
 .friendItem:hover {background:#d0f0e3;}
+.addBtn {background:#128C7E;color:white;border:none;border-radius:5px;padding:5px 10px;cursor:pointer;}
+.addBtn:hover {background:#075E54;}
 </style>
 </head>
 <body>
@@ -26,15 +28,13 @@ body {font-family:Arial;margin:0;padding:0;background:#fff;}
 
 <script>
 // ===== STATE =====
-let currentUser = "you";
+let currentUser = "You"; // current user
 
 // Load current group members from localStorage
 let currentGroupMembers = JSON.parse(localStorage.getItem("currentGroupMembers") || `[ "${currentUser}" ]`);
 
-// Load all friends from localStorage (expected format: [{name: "Alice"}, {name: "Bob"}])
+// Load all friends from localStorage (format: [{name: "Alice"}, {name: "Bob"}])
 let allFriends = JSON.parse(localStorage.getItem("friends") || "[]");
-
-// Extract friend names
 let friendNames = allFriends.map(f => f.name);
 
 // Filter friends not already in group
@@ -53,28 +53,43 @@ function renderFriends() {
         const div = document.createElement("div");
         div.className = "friendItem";
         div.textContent = name;
-        div.onclick = () => {
-            // Add friend to current group
-            currentGroupMembers.push(name);
-            localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
-            // Optional: system message
-            let messages = JSON.parse(localStorage.getItem("messages") || "[]");
-            messages.push({
-                id: Date.now(),
-                text: `${name} joined the group`,
-                self: false,
-                user: "System",
-                time: new Date().toLocaleTimeString()
-            });
-            localStorage.setItem("messages", JSON.stringify(messages));
+        const btn = document.createElement("button");
+        btn.className = "addBtn";
+        btn.textContent = "Add";
+        btn.onclick = () => addFriend(name);
 
-            // Remove friend from the add list and re-render
-            friendsToAdd = friendsToAdd.filter(f => f !== name);
-            renderFriends();
-        };
+        div.appendChild(btn);
         friendsList.appendChild(div);
     });
+}
+
+// ===== ADD FRIEND =====
+function addFriend(name) {
+    // Add friend to current group
+    currentGroupMembers.push(name);
+    localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
+
+    // Optional: system message (for chat notifications)
+    let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+    let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "0");
+    let currentGroup = groups[currentGroupIndex];
+    if(currentGroup){
+        if(!currentGroup.messages) currentGroup.messages = [];
+        currentGroup.messages.push({
+            id: Date.now(),
+            text: `${name} joined the group`,
+            self: false,
+            user: "System",
+            time: new Date().toLocaleTimeString()
+        });
+        groups[currentGroupIndex] = currentGroup;
+        localStorage.setItem("groups", JSON.stringify(groups));
+    }
+
+    // Remove friend from add list and re-render
+    friendsToAdd = friendsToAdd.filter(f => f !== name);
+    renderFriends();
 }
 
 // ===== BACK BUTTON =====
