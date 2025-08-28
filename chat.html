@@ -151,7 +151,15 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f5f5f5;height:
     <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
     <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
   </div>
-
+  
+<!-- NEW SECTION: No Groups + Add Friend -->
+<div class="settingsContainer">
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <span>No groups in common</span>
+    <button class="addFriendBtn" id="addFriendBtn" style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">+ Add Friend</button>
+  </div>
+</div>
+  
   <div class="actionBox">
     <button class="block" onclick="blockUser()"><i class="fa-solid fa-ban"></i> Block User</button>
     <button class="report" onclick="reportUser()"><i class="fa-solid fa-flag"></i> Report User</button>
@@ -275,6 +283,11 @@ document.getElementById("sendContact").onclick = ()=>{
   const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }
 };
 
+// Add Friend Button functionality
+document.getElementById("addFriendBtn").onclick = ()=>{
+    alert(`${friendData.name} added as friend!`);
+};
+  
 /* Block & Report */
 function blockUser(){ if(confirm("Block this user?")) alert("User blocked."); }
 function reportUser(){ if(confirm("Report this user?")) alert("User reported."); }
