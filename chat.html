@@ -160,9 +160,16 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f5f5f5;height:
   </div>
 </div>
   
-  <div class="actionBox">
-    <button class="block" onclick="blockUser()"><i class="fa-solid fa-ban"></i> Block User</button>
-    <button class="report" onclick="reportUser()"><i class="fa-solid fa-flag"></i> Report User</button>
+  
+  <!-- BLOCK & REPORT SECTION -->
+<div class="settingsContainer">
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <button class="blockBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border:none;border-radius:8px;background:#f44336;color:white;cursor:pointer;">
+      <span><i class="fa-solid fa-ban"></i> Block User</span>
+    </button>
+    <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border:none;border-radius:8px;background:#ff5722;color:white;cursor:pointer;">
+      <span><i class="fa-solid fa-flag"></i> Report User</span>
+    </button>
   </div>
 </div>
 
@@ -288,10 +295,26 @@ document.getElementById("addFriendBtn").onclick = ()=>{
     alert(`${friendData.name} added as friend!`);
 };
   
-/* Block & Report */
-function blockUser(){ if(confirm("Block this user?")) alert("User blocked."); }
-function reportUser(){ if(confirm("Report this user?")) alert("User reported."); }
+// Block User
+document.querySelector(".blockBtn").onclick = ()=>{
+    if(confirm("Block this user?")){
+        let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+        if(!blocked.includes(friendData.name)){
+            blocked.push(friendData.name);
+            localStorage.setItem("blockedUsers", JSON.stringify(blocked));
+            alert("User blocked.");
+            // Optionally hide friend immediately
+            document.getElementById("chatPage").style.display = "none";
+            document.getElementById("friendInfoPage").style.display = "none";
+        }
+    }
+};
 
+  // Report User
+document.querySelector(".reportBtn").onclick = ()=>{
+    if(confirm("Report this user?")) alert("User reported.");
+};
+  
 /* Render messages initially */
 renderMessages();
 </script>
