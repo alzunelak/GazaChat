@@ -236,34 +236,6 @@ msgInput.addEventListener("keydown", e=>{
     msgInput.value="";
   }
 });
-
-
-/* ---------------------------
-   FRIEND INFO PAGE BUTTON REDIRECTS
-   Handles Video Call, Audio Call, and Search buttons
-   Do NOT mix with other chat or message scripts
----------------------------- */
-
-const friendName = encodeURIComponent(friendData.name);
-const friendPhoto = encodeURIComponent(friendData.photo);
-
-// Video Call button
-document.getElementById("videoCallBtn").onclick = () => {
-    window.location.href = `video-call.html?friend=${friendName}&img=${friendPhoto}`;
-};
-
-// Audio Call button
-document.getElementById("audioCallBtn").onclick = () => {
-    window.location.href = `audio-call.html?friend=${friendName}&img=${friendPhoto}`;
-};
-
-// Search button (optional: you can redirect to calls.html with search context)
-document.getElementById("searchBtn").onclick = () => {
-    window.location.href = `calls.html?friend=${friendName}&img=${friendPhoto}`;
-};
-
-
-
   
 /* Emoji picker */
 const emojiPicker = document.getElementById("emojiPicker");
@@ -365,7 +337,32 @@ document.querySelector(".blockBtn").addEventListener("click", function(e){
 document.querySelector(".reportBtn").onclick = ()=>{
     if(confirm("Report this user?")) alert("User reported.");
 };
+/* ---------------------------
+   FRIEND INFO PAGE BUTTON REDIRECTS
+   Handles Video Call, Audio Call, and Search buttons
+   Do NOT mix with other chat or message scripts
+---------------------------- */
+const friendName = encodeURIComponent(friendData.name);
+const friendPhoto = encodeURIComponent(friendData.photo);
 
+// Video Call button
+document.getElementById("videoCallBtn").onclick = () => {
+    window.location.href = `video-call.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+// Audio Call button
+document.getElementById("audioCallBtn").onclick = () => {
+    window.location.href = `audio-call.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+// Search button (optional: redirect to calls.html)
+document.getElementById("searchBtn").onclick = () => {
+    window.location.href = `calls.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+
+
+  
 /* Render messages initially */
 renderMessages();
 </script>
