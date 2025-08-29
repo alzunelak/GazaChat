@@ -733,10 +733,14 @@ document.getElementById("infoGroupName").addEventListener("blur",()=>{
   }
 });
 
-// Header Call button
-document.getElementById("audioCallBtn").onclick = () => { 
-window.location.href = audio-call.html?
-friend=${friendName}&img=${friendPhoto}; }; 
+// Make header call button function like audio call
+document.getElementById("callBtn").onclick = () => {
+    const groupName = encodeURIComponent(currentGroup.name);
+    const groupPhoto = encodeURIComponent(currentGroup.photo || "group.png");
+    window.location.href = `audio-call.html?friend=${groupName}&img=${groupPhoto}`;
+};
+
+
     
 </script>
 </body>
