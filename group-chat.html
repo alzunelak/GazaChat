@@ -164,6 +164,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     <img id="infoGroupPhoto" src="profile.png">
     <h2 id="infoGroupName" contenteditable="true">My Group</h2>
     <div class="actionButtons">
+      <div id="callContainer" style="display:none; flex-wrap:wrap; gap:10px; margin-top:10px;"></div>
       <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
       <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
       <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
@@ -234,6 +235,132 @@ let blockedMembers = currentGroup.blocked || [];
 let messages = currentGroup.messages || [];
 
 
+
+const callContainer = document.getElementById("callContainer");
+
+// ===== START VIDEO CALL =====
+document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    addCallStream(stream, "You");
+  } catch (err) {
+    alert("Cannot access camera/microphone. Check permissions.");
+    console.error(err);
+  }
+};
+
+// ===== START AUDIO CALL =====
+document.querySelector(".actionButtons button:nth-child(2)").onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    addCallStream(stream, "You", true); // audio only
+  } catch (err) {
+    alert("Cannot access microphone. Check permissions.");
+    console.error(err);
+  }
+};
+
+// ===== FUNCTION TO ADD STREAM TO CALL CONTAINER =====
+function addCallStream(stream, name, audioOnly=false){
+  callContainer.style.display = "flex"; // show container
+
+  const userDiv = document.createElement("div");
+  userDiv.style.position = "relative";
+  userDiv.style.flex = "1 1 200px";
+  userDiv.style.border = "2px solid #128C7E";
+  userDiv.style.borderRadius = "10px";
+  userDiv.style.background = "#000";
+  userDiv.style.display = "flex";
+  userDiv.style.flexDirection = "column";
+  userDiv.style.alignItems = "center";
+  userDiv.style.justifyContent = "center";
+  userDiv.style.padding = "5px";
+
+  // Video / Audio element
+  if(!audioOnly){
+    const videoEl = document.createElement("video");
+    videoEl.srcObject = stream;
+    videoEl.autoplay = true;
+    videoEl.style.width = "100%";
+    videoEl.style.height = "200px";
+    videoEl.style.borderRadius = "10px";
+    userDiv.appendChild(videoEl);
+  } else {
+    const audioEl = document.createElement("audio");
+    audioEl.srcObject = stream;
+    audioEl.autoplay = true;
+    audioEl.controls = true;
+    userDiv.appendChild(audioEl);
+  }
+
+  // Name label
+  const nameLabel = document.createElement("span");
+  nameLabel.textContent = name;
+  nameLabel.style.color = "#fff";
+  nameLabel.style.marginTop = "5px";
+  userDiv.appendChild(nameLabel);
+
+  // End call button
+  const endBtn = document.createElement("button");
+  endBtn.textContent = "End";
+  endBtn.style.position = "absolute";
+  endBtn.style.top = "5px";
+  endBtn.style.right = "5px";
+  endBtn.style.padding = "2px 5px";
+  endBtn.style.background = "#25D366";
+  endBtn.style.color = "#fff";
+  endBtn.style.border = "none";
+  endBtn.style.borderRadius = "5px";
+  endBtn.style.cursor = "pointer";
+  endBtn.onclick = () => {
+    stream.getTracks().forEach(track => track.stop());
+    userDiv.remove();
+    if(callContainer.children.length === 0) callContainer.style.display="none";
+  };
+  userDiv.appendChild(endBtn);
+
+  callContainer.appendChild(userDiv);
+}
+
+// ===== SEARCH MESSAGES =====
+document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
+  const keyword = prompt("Enter keyword to search in messages:");
+  if (!keyword) return;
+
+  chatBox.innerHTML = "";
+  messages.forEach(m => {
+    if (blockedMembers.includes(m.user)) return;
+    if (m.text.toLowerCase().includes(keyword.toLowerCase())) {
+      const div = document.createElement("div");
+      div.className = "msg" + (m.user === currentUser ? " self" : "");
+      div.innerHTML = `<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
+      chatBox.appendChild(div);
+    }
+  });
+
+  // Add reset button
+  if (!document.getElementById("resetSearchBtn")) {
+    const resetBtn = document.createElement("button");
+    resetBtn.textContent = "Reset Search";
+    resetBtn.id = "resetSearchBtn";
+    resetBtn.style.margin = "10px";
+    resetBtn.style.padding = "5px 10px";
+    resetBtn.style.background = "#128C7E";
+    resetBtn.style.color = "#fff";
+    resetBtn.style.border = "none";
+    resetBtn.style.borderRadius = "5px";
+    resetBtn.style.cursor = "pointer";
+    resetBtn.onclick = () => {
+      renderMessages();
+      resetBtn.remove();
+    };
+    chatBox.parentElement.insertBefore(resetBtn, chatBox);
+  }
+};
+
+
+    
+    
 
 // ===== MENU BUTTON TOGGLE =====
 const menuBtn = document.getElementById("menuBtn");
