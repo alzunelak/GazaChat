@@ -156,7 +156,10 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
       <button class="addFriendBtn" id="addFriendBtn" style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">+ create group </button>
     </div>
   </div>
-  
+
+
+ 
+
  <!-- BLOCK & REPORT SECTION -->
 <div class="settingsContainer">
   <div style="display:flex;flex-direction:column;gap:8px;">
@@ -166,6 +169,8 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#ff5722;cursor:pointer;font-weight:bold;">
       <span><i class="fa-solid fa-flag"></i> Report User</span>
     </button>
+  
+  
   </div>
 </div>
 
@@ -290,6 +295,16 @@ document.getElementById("sendContact").onclick = ()=>{
 /* Add Friend Button */
 document.getElementById("addFriendBtn").onclick = ()=>{ alert(`${friendData.name} added as friend!`); };
 
+
+/* Guard: if this user is blocked, kick them back immediately */
+let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+if (blockedUsers.includes(friendData.name)) {
+  alert("This user is blocked. Returning to home.");
+  window.location.replace("./home.html"); // safer redirect
+}
+
+
+  
 /* Block User */
 document.querySelector(".blockBtn").addEventListener("click", function(e){
     e.preventDefault(); // stop default action
