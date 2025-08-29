@@ -294,15 +294,23 @@ document.getElementById("addFriendBtn").onclick = ()=>{ alert(`${friendData.name
 document.querySelector(".blockBtn").onclick = ()=>{
     if(confirm("Block this user?")){
         let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+        let friends = JSON.parse(localStorage.getItem("friends") || "[]");
+
         if(!blocked.includes(friendData.name)){
             blocked.push(friendData.name);
             localStorage.setItem("blockedUsers", JSON.stringify(blocked));
+
+            // Remove user from friends list
+            friends = friends.filter(f => f.name !== friendData.name);
+            localStorage.setItem("friends", JSON.stringify(friends));
+
             alert("User blocked.");
-            document.getElementById("chatPage").style.display = "none";
-            document.getElementById("friendInfoPage").style.display = "none";
+            // Close chat
+            window.location.href = "home.html";
         }
     }
 };
+
 
 /* Report User */
 document.querySelector(".reportBtn").onclick = ()=>{
