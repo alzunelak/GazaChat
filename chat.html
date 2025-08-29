@@ -291,8 +291,8 @@ document.getElementById("sendContact").onclick = ()=>{
 document.getElementById("addFriendBtn").onclick = ()=>{ alert(`${friendData.name} added as friend!`); };
 
 /* Block User */
-document.querySelector(".blockBtn").onclick = (e)=>{
-    e.preventDefault(); // stop default button behavior
+document.querySelector(".blockBtn").addEventListener("click", function(e){
+    e.preventDefault(); // stop default action
 
     if(confirm("Block this user?")){
         let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
@@ -308,11 +308,13 @@ document.querySelector(".blockBtn").onclick = (e)=>{
 
             alert("User blocked.");
 
-            // ✅ Force redirect
-            window.location.replace("home.html");
+            //  Close chat/profile and go home
+            setTimeout(()=>{
+                window.location.href = "home.html";
+            }, 200); 
         }
     }
-};
+});
 
 
 
