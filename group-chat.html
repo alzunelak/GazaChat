@@ -733,13 +733,10 @@ document.getElementById("infoGroupName").addEventListener("blur",()=>{
   }
 });
 
-// Header Call button for Audio Call button
-document.getElementById("callBtn").onclick = () => {
-    const friendNameEncoded = encodeURIComponent(friendData.name);
-    const friendPhotoEncoded = encodeURIComponent(friendData.photo);
-    window.location.href = `audio-call.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
-};
-
+// Header Call button
+document.getElementById("audioCallBtn").onclick = () => { 
+window.location.href = audio-call.html?
+friend=${friendName}&img=${friendPhoto}; }; 
     
 </script>
 </body>
