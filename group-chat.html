@@ -732,15 +732,6 @@ document.getElementById("infoGroupName").addEventListener("blur",()=>{
     document.getElementById("groupName").textContent=newName;
   }
 });
-
-// Make header call button function like audio call
-document.getElementById("callBtn").onclick = () => {
-    const groupName = encodeURIComponent(currentGroup.name);
-    const groupPhoto = encodeURIComponent(currentGroup.photo || "group.png");
-    window.location.href = `audio-call.html?friend=${groupName}&img=${groupPhoto}`;
-};
-
-
     
 </script>
 </body>
