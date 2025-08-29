@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WhatsApp Group Chat</title>
+<title>gaza Chat</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
@@ -290,7 +290,86 @@ document.getElementById("attachAudio").onclick = () => { document.getElementById
 document.getElementById("attachContact").onclick = () => { document.getElementById("contactInput").click(); };
 document.getElementById("attachLocation").onclick = () => { document.getElementById("locationInput").click(); };
 
-  
+
+
+ // ===== AUDIO RECORDING =====
+let mediaRecorder;
+let audioChunks = [];
+const micBtn = document.getElementById("micBtn");
+
+micBtn.addEventListener("mousedown", startRecording);   // PC press
+micBtn.addEventListener("touchstart", startRecording);  // Mobile press
+micBtn.addEventListener("mouseup", stopRecording);      // PC release
+micBtn.addEventListener("touchend", stopRecording);     // Mobile release
+
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.start();
+
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+    })
+    .catch(err => {
+      alert("Microphone access denied!");
+      console.error(err);
+    });
+}
+
+function stopRecording() {
+  if (!mediaRecorder) return;
+
+  mediaRecorder.stop();
+  mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    // create message with audio
+    const newMsg = {
+      id: uid(),
+      text: "",
+      audio: audioUrl,   // <-- store audio
+      self: true,
+      user: currentUser,
+      time: new Date().toLocaleString()
+    };
+    messages.push(newMsg);
+
+    // Save
+    currentGroup.messages = messages;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+
+    renderMessages();
+  };
+}
+function renderMessages() {
+  chatBox.innerHTML = "";
+  messages.forEach(m => {
+    if (blockedMembers.includes(m.user)) return;
+    const div = document.createElement("div");
+    div.className = "msg" + (m.user === currentUser ? " self" : "");
+
+    if (m.audio) {
+      div.innerHTML = `
+        <div class="content"><b>${m.user}:</b> 
+          <audio controls src="${m.audio}"></audio>
+        </div>
+        <div class="meta">${m.time}</div>`;
+    } else {
+      div.innerHTML = `
+        <div class="content"><b>${m.user}:</b> ${m.text}</div>
+        <div class="meta">${m.time}</div>`;
+    }
+    chatBox.appendChild(div);
+  });
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
   
   
 // ===== CHAT =====
