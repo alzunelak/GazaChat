@@ -164,7 +164,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
     <img id="infoGroupPhoto" src="profile.png">
     <h2 id="infoGroupName" contenteditable="true">My Group</h2>
     <div class="actionButtons">
-      <div id="callContainer" style="display:none; flex-wrap:wrap; gap:10px; margin-top:10px;"></div>
       <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
       <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
       <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
@@ -238,27 +237,8 @@ let messages = currentGroup.messages || [];
 
 const callContainer = document.getElementById("callContainer");
 
-// ===== START VIDEO CALL =====
-document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    addCallStream(stream, "You");
-  } catch (err) {
-    alert("Cannot access camera/microphone. Check permissions.");
-    console.error(err);
-  }
-};
 
-// ===== START AUDIO CALL =====
-document.querySelector(".actionButtons button:nth-child(2)").onclick = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    addCallStream(stream, "You", true); // audio only
-  } catch (err) {
-    alert("Cannot access microphone. Check permissions.");
-    console.error(err);
-  }
-};
+
 
 // ===== VIDEO CALL =====
 document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
