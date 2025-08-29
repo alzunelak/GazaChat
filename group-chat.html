@@ -732,6 +732,15 @@ document.getElementById("infoGroupName").addEventListener("blur",()=>{
     document.getElementById("groupName").textContent=newName;
   }
 });
+
+// Header Call button for Audio Call button
+document.getElementById("callBtn").onclick = () => {
+    const friendNameEncoded = encodeURIComponent(friendData.name);
+    const friendPhotoEncoded = encodeURIComponent(friendData.photo);
+    window.location.href = `audio-call.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
+};
+
+    
 </script>
 </body>
 </html>
