@@ -358,7 +358,7 @@ document.getElementById("audioCallBtn").onclick = () => {
 
 // Search button (optional: redirect to calls.html)
 document.getElementById("searchBtn").onclick = () => {
-    window.location.href = `calls.html?friend=${friendName}&img=${friendPhoto}`;
+    window.location.href = `chat.html?friend=${friendName}&img=${friendPhoto}`;
 };
 
 
@@ -366,7 +366,7 @@ document.getElementById("searchBtn").onclick = () => {
 document.getElementById("callBtn").onclick = () => {
     const friendNameEncoded = encodeURIComponent(friendData.name);
     const friendPhotoEncoded = encodeURIComponent(friendData.photo);
-    window.location.href = `audio-call.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
+    window.location.href = `chat.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
 };
 
   
