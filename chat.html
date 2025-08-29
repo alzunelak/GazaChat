@@ -361,6 +361,14 @@ document.getElementById("searchBtn").onclick = () => {
     window.location.href = `calls.html?friend=${friendName}&img=${friendPhoto}`;
 };
 
+
+  // Header Call button behaves like the Audio Call button
+document.getElementById("callBtn").onclick = () => {
+    const friendNameEncoded = encodeURIComponent(friendData.name);
+    const friendPhotoEncoded = encodeURIComponent(friendData.photo);
+    window.location.href = `audio-call.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
+};
+
   
 /* Render messages initially */
 renderMessages();
