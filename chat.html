@@ -134,11 +134,11 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
     <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
     <h2 id="infoFriendName">Friend Name</h2>
-    <div class="actionButtons">
-      <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
-      <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
-      <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-    </div>
+   <div class="actionButtons">
+  <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+  <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+  <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+</div>
   </div>
 
   <!-- SETTINGS SECTION -->
@@ -338,6 +338,30 @@ document.querySelector(".reportBtn").onclick = ()=>{
     if(confirm("Report this user?")) alert("User reported.");
 };
 
+/* ---------------------------
+   FRIEND INFO PAGE BUTTON REDIRECTS
+   Handles Video Call, Audio Call, and Search buttons
+   Do NOT mix with other chat or message scripts
+---------------------------- */
+const friendName = encodeURIComponent(friendData.name);
+const friendPhoto = encodeURIComponent(friendData.photo);
+
+// Video Call button
+document.getElementById("videoCallBtn").onclick = () => {
+    window.location.href = `video-call.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+// Audio Call button
+document.getElementById("audioCallBtn").onclick = () => {
+    window.location.href = `audio-call.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+// Search button (optional: redirect to calls.html)
+document.getElementById("searchBtn").onclick = () => {
+    window.location.href = `calls.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+  
 /* Render messages initially */
 renderMessages();
 </script>
