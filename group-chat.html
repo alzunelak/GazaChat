@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>gaza Chat</title>
+<title>GazaChat Group</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
@@ -308,16 +308,16 @@ function startRecording() {
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
       mediaRecorder.start();
-
       mediaRecorder.ondataavailable = e => {
         if (e.data.size > 0) audioChunks.push(e.data);
       };
     })
     .catch(err => {
-      alert("Microphone access denied!");
-      console.error(err);
+      console.error("Mic error:", err);
+      alert("Cannot access microphone. Check permissions or use HTTPS/localhost.");
     });
 }
+
 
 function stopRecording() {
   if (!mediaRecorder) return;
