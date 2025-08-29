@@ -260,67 +260,100 @@ document.querySelector(".actionButtons button:nth-child(2)").onclick = async () 
   }
 };
 
-// ===== FUNCTION TO ADD STREAM TO CALL CONTAINER =====
-function addCallStream(stream, name, audioOnly=false){
-  callContainer.style.display = "flex"; // show container
+// ===== VIDEO CALL =====
+document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
-  const userDiv = document.createElement("div");
-  userDiv.style.position = "relative";
-  userDiv.style.flex = "1 1 200px";
-  userDiv.style.border = "2px solid #128C7E";
-  userDiv.style.borderRadius = "10px";
-  userDiv.style.background = "#000";
-  userDiv.style.display = "flex";
-  userDiv.style.flexDirection = "column";
-  userDiv.style.alignItems = "center";
-  userDiv.style.justifyContent = "center";
-  userDiv.style.padding = "5px";
+    // Create video container
+    const container = document.createElement("div");
+    container.style.position = "relative";
+    container.style.border = "2px solid #128C7E";
+    container.style.borderRadius = "10px";
+    container.style.marginTop = "10px";
+    container.style.width = "100%";
+    container.style.maxHeight = "400px";
+    container.style.background = "#000";
 
-  // Video / Audio element
-  if(!audioOnly){
+    // Video element
     const videoEl = document.createElement("video");
     videoEl.srcObject = stream;
     videoEl.autoplay = true;
     videoEl.style.width = "100%";
-    videoEl.style.height = "200px";
-    videoEl.style.borderRadius = "10px";
-    userDiv.appendChild(videoEl);
-  } else {
+    videoEl.style.height = "300px";
+    container.appendChild(videoEl);
+
+    // Close button
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "End Call";
+    closeBtn.style.position = "absolute";
+    closeBtn.style.top = "5px";
+    closeBtn.style.right = "5px";
+    closeBtn.style.padding = "5px 10px";
+    closeBtn.style.background = "#25D366";
+    closeBtn.style.color = "#fff";
+    closeBtn.style.border = "none";
+    closeBtn.style.borderRadius = "5px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.onclick = () => {
+      stream.getTracks().forEach(track => track.stop());
+      container.remove();
+    };
+    container.appendChild(closeBtn);
+
+    document.getElementById("groupInfoPage").appendChild(container);
+
+  } catch (err) {
+    alert("Cannot access camera/microphone. Check permissions.");
+    console.error(err);
+  }
+};
+
+// ===== AUDIO CALL =====
+document.querySelector(".actionButtons button:nth-child(2)").onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // Create audio container
+    const container = document.createElement("div");
+    container.style.position = "relative";
+    container.style.border = "2px solid #128C7E";
+    container.style.borderRadius = "10px";
+    container.style.marginTop = "10px";
+    container.style.padding = "10px";
+    container.style.background = "#f1f1f1";
+
+    // Audio element
     const audioEl = document.createElement("audio");
     audioEl.srcObject = stream;
     audioEl.autoplay = true;
-    audioEl.controls = true;
-    userDiv.appendChild(audioEl);
+    container.appendChild(audioEl);
+
+    // Close button
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "End Call";
+    closeBtn.style.position = "absolute";
+    closeBtn.style.top = "5px";
+    closeBtn.style.right = "5px";
+    closeBtn.style.padding = "5px 10px";
+    closeBtn.style.background = "#25D366";
+    closeBtn.style.color = "#fff";
+    closeBtn.style.border = "none";
+    closeBtn.style.borderRadius = "5px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.onclick = () => {
+      stream.getTracks().forEach(track => track.stop());
+      container.remove();
+    };
+    container.appendChild(closeBtn);
+
+    document.getElementById("groupInfoPage").appendChild(container);
+
+  } catch (err) {
+    alert("Cannot access microphone. Check permissions.");
+    console.error(err);
   }
-
-  // Name label
-  const nameLabel = document.createElement("span");
-  nameLabel.textContent = name;
-  nameLabel.style.color = "#fff";
-  nameLabel.style.marginTop = "5px";
-  userDiv.appendChild(nameLabel);
-
-  // End call button
-  const endBtn = document.createElement("button");
-  endBtn.textContent = "End";
-  endBtn.style.position = "absolute";
-  endBtn.style.top = "5px";
-  endBtn.style.right = "5px";
-  endBtn.style.padding = "2px 5px";
-  endBtn.style.background = "#25D366";
-  endBtn.style.color = "#fff";
-  endBtn.style.border = "none";
-  endBtn.style.borderRadius = "5px";
-  endBtn.style.cursor = "pointer";
-  endBtn.onclick = () => {
-    stream.getTracks().forEach(track => track.stop());
-    userDiv.remove();
-    if(callContainer.children.length === 0) callContainer.style.display="none";
-  };
-  userDiv.appendChild(endBtn);
-
-  callContainer.appendChild(userDiv);
-}
+};
 
 // ===== SEARCH MESSAGES =====
 document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
@@ -358,8 +391,6 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
   }
 };
 
-
-    
     
 
 // ===== MENU BUTTON TOGGLE =====
