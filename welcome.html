@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome - ChatApp</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 100vh;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin: 20px 10px;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 10px 10px;
+    }
+    img {
+      width: 220px;
+      max-width: 70%;
+      height: auto;
+      margin: 20px 0;
+    }
+    .big-text {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 20px 15px;
+      color: #222;
+    }
+    .privacy-link {
+      font-size: 1rem;
+      color: #007bff;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+    .btn {
+      margin: 20px 0 40px;
+      padding: 14px 30px;
+      background: #007bff;
+      color: #fff;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    /* 🔹 Make it mobile-friendly */
+    @media screen and (max-width: 768px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      h2 {
+        font-size: 1.2rem;
+      }
+      .big-text {
+        font-size: 1.3rem;
+      }
+      .btn {
+        font-size: 1rem;
+        padding: 12px 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh</h1>
+  <h2>Welcome to ChatApp</h2>
+  <img src="logo.jpg" alt="ChatApp Logo">
+
+  <div class="big-text">Take privacy with you, be yourself in every message</div>
+
+  <a href="privacy.html" class="privacy-link">Terms and Privacy</a>
+
+  <button class="btn" onclick="window.location.href='profile.html'">Get Started</button>
+</body>
+</html>
