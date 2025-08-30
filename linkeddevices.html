@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linked Devices</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
+  h1 { font-size:2em; margin-bottom:20px; }
+  .device { background:#fff; padding:15px; border-radius:8px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  .device-info { display:flex; flex-direction:column; }
+  .device-name { font-weight:bold; font-size:1em; }
+  .device-details { font-size:0.9em; color:#555; }
+  button { padding:8px 15px; background:#dc3545; color:white; border:none; border-radius:5px; cursor:pointer; }
+  .add-device { padding:12px 20px; background:#25d366; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:20px; width:100%; font-size:1em; }
+</style>
+</head>
+<body>
+
+<h1>Linked Devices</h1>
+<p>Manage devices linked to your ChatApp account. Log out of any device you no longer use.</p>
+
+<div id="devicesContainer"></div>
+
+<button class="add-device" onclick="addDevice()">Link New Device</button>
+
+<script>
+let devices = JSON.parse(localStorage.getItem('linkedDevices')||'[]');
+
+// Render devices
+function renderDevices(){
+  const container = document.getElementById('devicesContainer');
+  container.innerHTML='';
+  if(devices.length===0){
+    container.innerHTML='<p>No devices linked yet.</p>';
+    return;
+  }
+  devices.forEach((device, index)=>{
+    const div = document.createElement('div');
+    div.className='device';
+    div.innerHTML = `
+      <div class="device-info">
+        <span class="device-name">${device.name}</span>
+        <span class="device-details">Last active: ${device.lastActive}</span>
+      </div>
+      <button onclick="removeDevice(${index})">Log Out</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// Remove device
+function removeDevice(index){
+  if(confirm(`Log out from "${devices[index].name}"?`)){
+    devices.splice(index,1);
+    localStorage.setItem('linkedDevices', JSON.stringify(devices));
+    renderDevices();
+  }
+}
+
+// Add new device (simulate)
+function addDevice(){
+  const deviceName = prompt('Enter device name (e.g., "Laptop", "Tablet")');
+  if(deviceName){
+    const newDevice = {
+      name: deviceName,
+      lastActive: new Date().toLocaleString()
+    };
+    devices.push(newDevice);
+    localStorage.setItem('linkedDevices', JSON.stringify(devices));
+    renderDevices();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', renderDevices);
+</script>
+
+</body>
+</html>
