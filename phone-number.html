@@ -10,18 +10,19 @@
     font-family: Arial, sans-serif;
     background: #f8f9fa;
     color: #333;
-    text-align: center;
     padding: 30px 20px;
   }
   h1 {
     font-size: 2em;
     font-weight: bold;
     margin-bottom: 10px;
+    text-align: left;
   }
   p.desc {
     font-size: 1em;
     color: #555;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    text-align: left;
   }
   select, input[type="text"] {
     width: 100%;
@@ -31,18 +32,19 @@
     margin-bottom: 15px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    text-align: left;
   }
-  .btn {
+  .next-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
     padding: 12px 30px;
     font-size: 1.1em;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    margin: 10px;
+    background: #007bff;
+    color: #fff;
   }
-  .next-btn { background: #007bff; color: #fff; }
-  .skip-btn { background: #6c757d; color: #fff; }
 
   /* Popup */
   .popup {
@@ -72,8 +74,9 @@
     border-radius:5px;
     cursor:pointer;
     font-size:1em;
+    background: #28a745;
+    color:#fff;
   }
-  .ok-btn { background: #28a745; color:#fff; }
 </style>
 </head>
 <body>
@@ -81,25 +84,47 @@
 <h1>Phone Number</h1>
 <p class="desc">You will receive a verification code. Carrier rates may apply.</p>
 
+<label for="country">Choose your country:</label>
 <select id="country">
-  <option value="US">United States</option>
-  <option value="KE">Kenya</option>
-  <option value="GB">United Kingdom</option>
-  <!-- Add more countries as needed -->
+  <option value="+1">United States (+1)</option>
+  <option value="+44">United Kingdom (+44)</option>
+  <option value="+91">India (+91)</option>
+  <option value="+61">Australia (+61)</option>
+  <option value="+81">Japan (+81)</option>
+  <option value="+49">Germany (+49)</option>
+  <option value="+33">France (+33)</option>
+  <option value="+39">Italy (+39)</option>
+  <option value="+34">Spain (+34)</option>
+  <option value="+55">Brazil (+55)</option>
+  <option value="+7">Russia (+7)</option>
+  <option value="+27">South Africa (+27)</option>
+  <option value="+254">Kenya (+254)</option>
+  <option value="+234">Nigeria (+234)</option>
+  <option value="+82">South Korea (+82)</option>
+  <option value="+66">Thailand (+66)</option>
+  <option value="+52">Mexico (+52)</option>
+  <option value="+64">New Zealand (+64)</option>
+  <option value="+31">Netherlands (+31)</option>
+  <option value="+46">Sweden (+46)</option>
+  <option value="+41">Switzerland (+41)</option>
+  <option value="+970">Palestine (+970)</option>
+  <option value="+92">Pakistan (+92)</option>
+  <option value="+966">Saudi Arabia (+966)</option>
+  <option value="+345">Sample Country (+345)</option>
 </select>
 
+
+<label for="phoneNumber">Phone Number:</label>
 <input type="text" id="phoneNumber" placeholder="Country code + phone number">
 
-<br>
-<button class="btn skip-btn" onclick="skip()">Skip</button>
-<button class="btn next-btn" onclick="nextStep()">Next</button>
+<button class="next-btn" onclick="nextStep()">Next</button>
 
 <!-- Popup for confirmation -->
 <div class="popup" id="popup">
   <div class="popup-content">
     <h2>Is this phone number correct?</h2>
     <p id="popupNumber"></p>
-    <button class="ok-btn" onclick="showCodeInput()">OK</button>
+    <button onclick="showCodeInput()">OK</button>
   </div>
 </div>
 
@@ -110,15 +135,11 @@
     <p>A verification code will be sent to this number.</p>
     <input type="text" id="codeInput" placeholder="Enter code here" maxlength="6">
     <br>
-    <button class="ok-btn" onclick="verifyCode()">Verify</button>
+    <button onclick="verifyCode()">Verify</button>
   </div>
 </div>
 
 <script>
-function skip() {
-  window.location.href = 'profile.html';
-}
-
 function nextStep() {
   const number = document.getElementById('phoneNumber').value;
   if(!number) {
