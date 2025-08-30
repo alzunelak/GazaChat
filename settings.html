@@ -12,6 +12,26 @@
     color: #333;
     padding: 20px;
   }
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .header img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+  }
+  .header-name {
+    font-size: 1.3em;
+    font-weight: bold;
+  }
   h1 {
     font-size: 2em;
     font-weight: bold;
@@ -40,30 +60,15 @@
     font-size: 1.2em;
     transition: transform 0.3s;
   }
-  /* Profile section */
-  .profile {
-    display: flex;
-    align-items: center;
-    margin-top: 40px;
-    padding: 10px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-  .profile img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin-right: 15px;
-    object-fit: cover;
-  }
-  .profile-name {
-    font-size: 1.2em;
-    font-weight: bold;
-  }
 </style>
 </head>
 <body>
+
+<!-- Profile at top -->
+<div class="header">
+  <img id="profilePic" src="default-profile.png" alt="Profile Picture">
+  <div class="header-name" id="profileName">User</div>
+</div>
 
 <h1>Settings</h1>
 
@@ -118,11 +123,13 @@
   <div class="arrow">&#9654;</div>
 </div>
 
-<!-- Profile at bottom -->
-<div class="profile">
-  <img src="profile.jpg" alt="Profile Picture">
-  <div class="profile-name">Mimah Suleiman</div>
-</div>
+<script>
+// Load profile name and picture from localStorage
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
+  document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+});
+</script>
 
 </body>
 </html>
