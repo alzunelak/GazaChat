@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starred Messages</title>
+<style>
+body { font-family: Arial, sans-serif; padding:20px; background:#f8f9fa; }
+.message { background:#fff; padding:10px; margin-bottom:10px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+<h1>Starred Messages</h1>
+<div id="starredContainer">No starred messages yet.</div>
+
+<script>
+const starred = JSON.parse(localStorage.getItem('starredMessages')||'[]');
+const container = document.getElementById('starredContainer');
+if(starred.length>0){
+  container.innerHTML='';
+  starred.forEach(m=>{ const div=document.createElement('div'); div.className='message'; div.textContent=m; container.appendChild(div); });
+}
+</script>
+</body>
+</html>
