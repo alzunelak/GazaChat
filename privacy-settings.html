@@ -13,9 +13,8 @@
     color: #333;
   }
   h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; }
+  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; }
   a { text-decoration: none; color: inherit; }
-  .divider { border-bottom: 1px solid #ccc; margin: 5px 0; }
   .back { margin-bottom: 20px; cursor: pointer; color: #007bff; display: inline-block; font-size: 1em; }
 
   /* Settings item */
@@ -23,8 +22,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start; 
-    padding: 16px;
-    border-bottom: 1px solid #ddd; 
+    padding: 16px 0; 
   }
   .setting-text { flex: 1; margin-right: 12px; }
   .setting-title { font-size: 16px; font-weight: 500; color: #000; }
@@ -44,6 +42,8 @@
   }
   .switch input:checked + .slider { background-color: #4CAF50; }
   .switch input:checked + .slider:before { transform: translateX(16px); }
+
+  .section-divider { border-bottom: 1px solid #ccc; margin: 15px 0 0 0; }
 </style>
 </head>
 <body>
@@ -56,10 +56,8 @@
 <a href="profilephoto.html"><div class="setting-item">Profile Photo <span>&#9654;</span></div></a>
 <a href="blockuser.html"><div class="setting-item">Blocked Contacts <span>&#9654;</span></div></a>
 
-<div class="divider"></div>
+<div class="section-divider"></div>
 <h2>Messaging</h2>
-
-<!-- Read Receipts -->
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Read Receipts</div>
@@ -67,24 +65,27 @@
   </div>
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
+<div class="setting-item">
+  <div class="setting-text">
+    <div class="setting-title">Default Timer for New Chats</div>
+  </div>
+  <span>Off</span>
+</div>
+<div class="section-divider"></div>
 
-<div class="divider"></div>
 <h2>App Security</h2>
-
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Screen Lock</div>
   </div>
   <span>Off</span>
 </div>
-
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Screen Security</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Incognito Keyboard</div>
@@ -92,33 +93,30 @@
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
+<div class="section-divider"></div>
 
-<div class="divider"></div>
 <h2>Payment</h2>
-
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Payment Lock</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
+<div class="section-divider"></div>
 
-<div class="divider"></div>
 <h2>Advanced</h2>
 <p>Signal messages and calls are always relay-called and sealed sender.</p>
+<div class="section-divider"></div>
 
-<div class="divider"></div>
 <h2>Camera</h2>
-
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Allow camera effects</div>
-    <div class="setting-desc">
-      Use effects in the camera and video calls. <a href="#">Learn more</a>.
-    </div>
+    <div class="setting-desc">Use effects in the camera and video calls. <a href="#">Learn more</a>.</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
+<div class="section-divider"></div>
 
 </body>
 </html>
