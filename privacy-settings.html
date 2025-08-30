@@ -5,35 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0; padding: 20px;
-    background: #f8f9fa;
+  body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 20px; 
+    background: #f8f9fa; 
+    color: #333;
   }
   h1 { font-size: 2em; margin-bottom: 20px; }
+  h2 { font-size: 1.2em; margin-top: 25px; }
   a { text-decoration: none; color: inherit; }
-  .option {
-    background: #fff; padding: 15px 20px; border-radius: 8px;
-    margin-bottom: 10px; cursor: pointer; display: flex;
-    justify-content: space-between; align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  .option { 
+    padding: 12px 0; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
   }
-  .option:hover { background: #e6f4ea; }
-  .back {
-    margin-bottom: 20px; cursor: pointer; color: #007bff;
+  .divider { 
+    border-bottom: 1px solid #ccc; 
+    margin: 5px 0; 
+  }
+  .back { 
+    margin-bottom: 20px; 
+    cursor: pointer; 
+    color: #007bff; 
+    display: inline-block; 
+    font-size: 1em;
+  }
+  .switch {
+    position: relative;
     display: inline-block;
+    width: 40px;
+    height: 20px;
   }
-  .section-title {
-    margin: 20px 0 10px; font-weight: bold; color: #333;
+  .switch input {display:none;}
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
   }
-  hr {
-    border: none; border-top: 1px solid #ddd;
-    margin: 15px 0;
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
   }
-  .toggle {
-    padding: 5px 10px; background: #007bff; color: #fff;
-    border-radius: 20px; font-size: 14px;
-  }
+  input:checked + .slider { background-color: #4CAF50; }
+  input:checked + .slider:before { transform: translateX(20px); }
+  p { font-size: 0.9em; color: #555; margin: 5px 0; }
 </style>
 </head>
 <body>
@@ -41,33 +68,56 @@
 <div class="back" onclick="history.back()">⬅ Back</div>
 <h1>Privacy</h1>
 
+<!-- Basic Links -->
 <a href="lastseen.html"><div class="option">Last Seen & Online <span>&#9654;</span></div></a>
 <a href="profilephoto.html"><div class="option">Profile Photo <span>&#9654;</span></div></a>
 <a href="blockuser.html"><div class="option">Blocked Contacts <span>&#9654;</span></div></a>
 
-<hr>
-<div class="section-title">Messaging</div>
-<div class="option">Read Receipts <span>Slide</span></div>
-<div class="option">Typing Indicators <span>Slide</span></div>
+<div class="divider"></div>
+<h2>Messaging</h2>
+<div class="option">Read Receipts 
+  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+</div>
+  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
+<div class="option">Typing Indicators 
+  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+</div>
+<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<hr>
-<div class="section-title">Disappearing Messages</div>
-<div class="option">Default Timer for New Chats <span class="toggle">ON</span></div>
+<div class="divider"></div>
+<h2>Disappearing Messages</h2>
+<div class="option">Default Timer for New Chats 
+  <span>Off</span>
+</div>
+<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<hr>
-<div class="section-title">App Security</div>
-<div class="option">Screen Lock <span class="toggle">OFF</span></div>
-<div class="option">Screen Security <span>Slide</span></div>
-<div class="option">Incognito Keyboard <span>Slide</span></div>
-<p style="font-size:14px;color:#666;margin-left:5px;">This setting is not guaranteed, and your keyboard may ignore it.</p>
+<div class="divider"></div>
+<h2>App Security</h2>
+<div class="option">Screen Lock 
+  <span>Off</span>
+</div>
+<div class="option">Screen Security 
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<hr>
-<div class="section-title">Payments</div>
-<div class="option">Payment Lock <span>Slide</span></div>
+<div class="option">Incognito Keyboard 
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<hr>
-<div class="section-title">Advanced</div>
-<p style="font-size:14px;color:#333;margin-left:5px;">Signal messages and calls always relay calls and sealed sender.</p>
+<p>This setting is not guaranteed and your keyboard may ignore it.</p>
+
+<div class="divider"></div>
+<h2>Payment</h2>
+<div class="option">Payment Lock 
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
+
+<div class="divider"></div>
+<h2>Advanced</h2>
+<p>Signal messages and calls are always relay-called and sealed sender.</p>
 
 </body>
 </html>
