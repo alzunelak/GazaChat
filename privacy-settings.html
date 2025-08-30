@@ -5,68 +5,69 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy</title>
 <style>
-  body { 
-    font-family: Arial, sans-serif; 
-    margin: 0; 
-    padding: 20px; 
-    background: #f8f9fa; 
-    color: #333;
-  }
-  h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; }
-  a { text-decoration: none; color: inherit; }
-  .option { 
-    padding: 12px 0; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-  }
-  .divider { 
-    border-bottom: 1px solid #ccc; 
-    margin: 10px 0; 
-  }
-  .back { 
-    margin-bottom: 20px; 
-    cursor: pointer; 
-    color: #007bff; 
-    display: inline-block; 
-    font-size: 1em;
-  }
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
-  }
-  .switch input {display:none;}
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 20px;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 14px;
-    width: 14px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-  }
-  input:checked + .slider { background-color: #4CAF50; }
-  input:checked + .slider:before { transform: translateX(20px); }
-
-  p { 
-    font-size: 0.9em; 
-    color: #555; 
-    margin: 5px 0 15px 0; 
-    padding-left: 10px; 
-  }
+body { 
+  font-family: Arial, sans-serif; 
+  margin: 0; 
+  padding: 20px; 
+  background: #f8f9fa; 
+  color: #333;
+}
+h1 { font-size: 2em; margin-bottom: 20px; }
+h2 { font-size: 1.2em; margin-top: 25px; }
+a { text-decoration: none; color: inherit; }
+.divider { 
+  border-bottom: 1px solid #ccc; 
+  margin: 15px 0; 
+}
+.back { 
+  margin-bottom: 20px; 
+  cursor: pointer; 
+  color: #007bff; 
+  display: inline-block; 
+  font-size: 1em;
+}
+.option-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+.option-name { flex: 1 1 100%; }
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+.switch input { display:none; }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 20px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .slider { background-color: #4CAF50; }
+input:checked + .slider:before { transform: translateX(20px); }
+p {
+  font-size: 0.9em;
+  color: #555;
+  margin: 3px 0 12px 0;
+  line-height: 1.4em;
+}
 </style>
 </head>
 <body>
@@ -75,57 +76,57 @@
 <h1>Privacy</h1>
 
 <!-- Basic Links -->
-<a href="lastseen.html"><div class="option">Last Seen & Online <span>&#9654;</span></div></a>
-<a href="profilephoto.html"><div class="option">Profile Photo <span>&#9654;</span></div></a>
-<a href="blockuser.html"><div class="option">Blocked Contacts <span>&#9654;</span></div></a>
+<a href="lastseen.html"><div class="option-container">Last Seen & Online <span>&#9654;</span></div></a>
+<a href="profilephoto.html"><div class="option-container">Profile Photo <span>&#9654;</span></div></a>
+<a href="blockuser.html"><div class="option-container">Blocked Contacts <span>&#9654;</span></div></a>
 
 <div class="divider"></div>
 <h2>Messaging</h2>
-
-<div class="option">Read Receipts 
+<div class="option-container">
+  <div class="option-name">Read Receipts</div>
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p>If read receipts are disabled you won't be able to see read receipts from others.</p>
+<p>If read receipts are disabled, you won't be able to see read receipts from others.</p>
 
-<div class="option">Typing Indicators 
+<div class="option-container">
+  <div class="option-name">Typing Indicators</div>
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p>Typing indicators will not appear if this is disabled.</p>
+<p>When disabled, typing notifications will not appear for your contacts.</p>
 
 <div class="divider"></div>
 <h2>Disappearing Messages</h2>
-<div class="option">Default Timer for New Chats 
-  <span>ON</span>
-</div>
-<p>This setting automatically sets disappearing messages for new chats.</p>
+<div class="option-container">Default Timer for New Chats <span>On</span></div>
+<p>New chats will automatically use the disappearing message timer you set.</p>
 
 <div class="divider"></div>
 <h2>App Security</h2>
-<div class="option">Screen Lock 
-  <span>OFF</span>
-</div>
-<p>You can lock the app for extra security.</p>
+<div class="option-container">Screen Lock <span>Off</span></div>
+<p>Lock the app with a screen lock. Only you can open it.</p>
 
-<div class="option">Screen Security 
+<div class="option-container">
+  <div class="option-name">Screen Security</div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>Protects screen content from being captured.</p>
+<p>Prevent the screen from showing in the app switcher.</p>
 
-<div class="option">Incognito Keyboard 
+<div class="option-container">
+  <div class="option-name">Incognito Keyboard</div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>This setting is not guaranteed and your keyboard may ignore it.</p>
+<p>This setting is not guaranteed; your keyboard may ignore it.</p>
 
 <div class="divider"></div>
 <h2>Payment</h2>
-<div class="option">Payment Lock 
+<div class="option-container">
+  <div class="option-name">Payment Lock</div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>Lock payments for added security.</p>
+<p>Lock your payment feature for security.</p>
 
 <div class="divider"></div>
 <h2>Advanced</h2>
-<p>Signal messages and calls are always relay-called and sealed sender.</p>
+<p>Signal messages and calls are always relay-called and use sealed sender for extra privacy.</p>
 
 </body>
 </html>
