@@ -3,17 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Security Notification</title>
+<title>Security Notifications</title>
 <style>
   body {
     font-family: Arial, sans-serif;
     margin:0;
     padding:20px;
     background:#f8f9fa;
-  }
-  h1 {
-    font-size:2em;
-    margin-bottom:20px;
+    color: #333;
   }
   .back {
     margin-bottom:20px;
@@ -21,18 +18,47 @@
     color:#007bff;
     display:inline-block;
   }
-  .setting-option {
+  h1 {
+    font-size: 1.8em;
+    margin-bottom:10px;
+  }
+  h2 {
+    font-size: 1.2em;
+    margin: 15px 0 5px 0;
+  }
+  p {
+    font-size: 1em;
+    color:#555;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  ul {
+    margin: 10px 0 20px 20px;
+    padding:0;
+    color: #555;
+  }
+  ul li {
+    margin-bottom: 8px;
+  }
+  .learn-more {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-bottom: 20px;
+    display:inline-block;
+  }
+  .toggle-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background:#fff;
     padding:15px 20px;
     border-radius:8px;
-    margin-bottom:15px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
     box-shadow:0 2px 5px rgba(0,0,0,0.1);
   }
-  .setting-option:hover {
-    background:#e6f4ea;
+  .toggle-section p {
+    margin:0;
+    font-weight:bold;
   }
   .toggle-switch {
     position: relative;
@@ -69,39 +95,31 @@
 <body>
 
 <div class="back" onclick="history.back()">⬅ Back</div>
-<h1>Security Notification</h1>
 
-<div class="setting-option">
-  Message Notifications
+<h1>Security Notifications</h1>
+
+<h2>O Your chats and calls are private</h2>
+<p>End-to-end encryption keeps your personal messages and calls between you and the people you choose. No one outside of the chat, not even WhatsApp, can read, listen to, or share them. This includes your:</p>
+
+<ul>
+  <li>Text and voice messages</li>
+  <li>Audio and video calls</li>
+  <li>Photos, videos and documents</li>
+  <li>Location sharing</li>
+  <li>Status updates</li>
+</ul>
+
+<span class="learn-more">Learn more</span>
+
+<div class="toggle-section">
+  <p>Show security notifications on this device</p>
   <label class="toggle-switch">
     <input type="checkbox" checked>
     <span class="slider"></span>
   </label>
 </div>
 
-<div class="setting-option">
-  Group Notifications
-  <label class="toggle-switch">
-    <input type="checkbox">
-    <span class="slider"></span>
-  </label>
-</div>
-
-<div class="setting-option">
-  Security Alerts
-  <label class="toggle-switch">
-    <input type="checkbox" checked>
-    <span class="slider"></span>
-  </label>
-</div>
-
-<div class="setting-option">
-  Show Preview
-  <label class="toggle-switch">
-    <input type="checkbox">
-    <span class="slider"></span>
-  </label>
-</div>
+<p>Get notified when your security code changes for a contact's phone in an end-to-end encrypted chat. If you have multiple devices, this setting must be enabled on each device where you want to get notifications. <span class="learn-more">Learn more</span></p>
 
 </body>
 </html>
