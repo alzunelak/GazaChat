@@ -11,20 +11,23 @@
       background: #f8f9fa;
       color: #333;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
     h1 {
       font-size: 2.2em;
       margin-bottom: 30px;
       font-weight: bold;
       color: #000;
-      text-align: right;
+      text-align: left;
     }
     .section {
       display: flex;
       justify-content: flex-end;
       align-items: center;
       margin: 30px 0;
-      text-align: right;
+      text-align: left;
     }
     .emoji {
       font-size: 2.5em;
@@ -43,9 +46,12 @@
       color: #555;
       margin-top: 5px;
     }
+    .next-container {
+      margin-top: auto; /* push button to bottom */
+      display: flex;
+      justify-content: flex-end; /* align right */
+    }
     .next-btn {
-      display: block;
-      margin: 80px auto 0;
       padding: 15px 30px;
       background: #007bff;
       color: white;
@@ -123,7 +129,9 @@
     <div class="emoji">📞</div>
   </div>
 
-  <button class="next-btn" onclick="startPermissions()">Next</button>
+  <div class="next-container">
+    <button class="next-btn" onclick="startPermissions()">Next</button>
+  </div>
 
   <!-- Popup -->
   <div class="popup" id="popup">
