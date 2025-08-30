@@ -13,7 +13,7 @@
     color: #333;
   }
   h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; }
+  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom:10px; }
   a { text-decoration: none; color: inherit; }
   .option { 
     padding: 12px 0; 
@@ -23,7 +23,7 @@
   }
   .divider { 
     border-bottom: 1px solid #ccc; 
-    margin: 5px 0; 
+    margin: 15px 0; 
   }
   .back { 
     margin-bottom: 20px; 
@@ -60,7 +60,12 @@
   }
   input:checked + .slider { background-color: #4CAF50; }
   input:checked + .slider:before { transform: translateX(20px); }
-  p { font-size: 0.9em; color: #555; margin: 5px 0; }
+  p { 
+    font-size: 0.9em; 
+    color: #555; 
+    margin: 5px 0 15px 0; /* extra bottom space for clear separation */
+    line-height: 1.4em; 
+  }
 </style>
 </head>
 <body>
@@ -78,34 +83,35 @@
 <div class="option">Read Receipts 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
+<p>If read receipts are disabled, you won't be able to see read receipts from others.</p>
+
 <div class="option">Typing Indicators 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
+<p>When typing indicators are disabled, you won't see when others are typing messages.</p>
 
 <div class="divider"></div>
 <h2>Disappearing Messages</h2>
 <div class="option">Default Timer for New Chats 
-  <span>Off</span>
+  <span>ON</span>
 </div>
-<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
+<p>This sets a default disappearing timer for all new chats. Messages will automatically disappear after the set duration.</p>
 
 <div class="divider"></div>
 <h2>App Security</h2>
 <div class="option">Screen Lock 
-  <span>Off</span>
+  <span>OFF</span>
 </div>
+<p>Enable screen lock to secure the app. You can toggle this ON or OFF.</p>
+
 <div class="option">Screen Security 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
+<p>Screen security prevents sensitive information from showing in previews.</p>
 
 <div class="option">Incognito Keyboard 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
-
 <p>This setting is not guaranteed and your keyboard may ignore it.</p>
 
 <div class="divider"></div>
@@ -113,11 +119,11 @@
 <div class="option">Payment Lock 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
+<p>Enable payment lock for extra security on transactions.</p>
 
 <div class="divider"></div>
 <h2>Advanced</h2>
-<p>Signal messages and calls are always relay-called and sealed sender.</p>
+<p>Signal messages and calls always relay calls and use sealed sender for privacy.</p>
 
 </body>
 </html>
