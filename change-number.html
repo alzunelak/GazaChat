@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Change Number</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
+  h1 { font-size:2em; margin-bottom:20px; }
+  .back { margin-bottom:20px; cursor:pointer; color:#007bff; display:inline-block; }
+  label, input { display:block; width:100%; max-width:300px; margin-bottom:15px; font-size:1em; }
+  input { padding:10px; border-radius:8px; border:1px solid #ccc; }
+  button { padding:12px 25px; font-size:1em; border:none; border-radius:8px; background:#25d366; color:#fff; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="back" onclick="history.back()">⬅ Back</div>
+<h1>Change Number</h1>
+
+<label for="oldNumber">Old Phone Number</label>
+<input type="text" id="oldNumber" placeholder="Enter old number">
+
+<label for="newNumber">New Phone Number</label>
+<input type="text" id="newNumber" placeholder="Enter new number">
+
+<button onclick="alert('Number changed successfully!')">Change Number</button>
+
+</body>
+</html>
