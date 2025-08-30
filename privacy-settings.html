@@ -13,17 +13,17 @@
     color: #333;
   }
   h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom:10px; }
+  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; }
   a { text-decoration: none; color: inherit; }
   .option { 
     display: flex; 
     justify-content: space-between; 
-    align-items: flex-start; /* toggle sits at top */
-    padding: 5px 0;
+    align-items: center; /* toggle stays at top */
+    padding: 10px 0;
   }
   .divider { 
     border-bottom: 1px solid #ccc; 
-    margin: 15px 0; 
+    margin: 20px 0; 
   }
   .back { 
     margin-bottom: 20px; 
@@ -61,11 +61,12 @@
   input:checked + .slider { background-color: #4CAF50; }
   input:checked + .slider:before { transform: translateX(20px); }
 
-  p { 
+  .description {
     font-size: 0.9em; 
     color: #555; 
-    margin: 10px 0 40px 0; /* paragraph visually separated */
-    line-height: 1.4em; 
+    margin-top: 40px; /* large gap between toggle and text */
+    margin-bottom: 40px; /* spacing after paragraph */
+    line-height: 1.4em;
   }
 </style>
 </head>
@@ -84,47 +85,47 @@
 <div class="option">Read Receipts 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p>If read receipts are disabled, you won't be able to see read receipts from others.</p>
+<p class="description">If read receipts are disabled, you won't be able to see read receipts from others.</p>
 
 <div class="option">Typing Indicators 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p>When typing indicators are disabled, you won't see when others are typing messages.</p>
+<p class="description">When typing indicators are disabled, you won't see when others are typing messages.</p>
 
 <div class="divider"></div>
 <h2>Disappearing Messages</h2>
 <div class="option">Default Timer for New Chats 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p>This sets a default disappearing timer for all new chats. Messages will automatically disappear after the set duration.</p>
+<p class="description">This sets a default disappearing timer for all new chats. Messages will automatically disappear after the set duration.</p>
 
 <div class="divider"></div>
 <h2>App Security</h2>
 <div class="option">Screen Lock 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>Screen lock prevents unauthorized access to the app.</p>
+<p class="description">Screen lock prevents unauthorized access to the app.</p>
 
 <div class="option">Screen Security 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>Screen security prevents sensitive information from showing in previews.</p>
+<p class="description">Screen security prevents sensitive information from showing in previews.</p>
 
 <div class="option">Incognito Keyboard 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>This setting is not guaranteed and your keyboard may ignore it.</p>
+<p class="description">This setting is not guaranteed and your keyboard may ignore it.</p>
 
 <div class="divider"></div>
 <h2>Payment</h2>
 <div class="option">Payment Lock 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p>Enable payment lock for extra security on transactions.</p>
+<p class="description">Enable payment lock for extra security on transactions.</p>
 
 <div class="divider"></div>
 <h2>Advanced</h2>
-<p>Signal messages and calls always relay calls and use sealed sender for privacy.</p>
+<p class="description">Signal messages and calls always relay calls and use sealed sender for privacy.</p>
 
 </body>
 </html>
