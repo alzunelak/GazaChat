@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Number</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    p.instruction {
+      font-size: 1em;
+      color: #555;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      margin-top: 15px;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .skip-btn {
+      background: #6c757d;
+      color: white;
+    }
+
+    .next-btn {
+      background: #007bff;
+      color: white;
+    }
+
+    /* Popup */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 350px;
+      text-align: center;
+    }
+
+    .popup-content p {
+      margin: 15px 0;
+    }
+
+    .popup button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Phone Number</h1>
+  <p class="instruction">You will receive a verification code. Carrier rates may apply.</p>
+
+  <label for="country">Choose your country:</label>
+  <select id="country">
+    <option value="+1">United States (+1)</option>
+    <option value="+44">United Kingdom (+44)</option>
+    <option value="+254">Kenya (+254)</option>
+    <option value="+345">Sample Country (+345)</option>
+    <!-- Add more countries as needed -->
+  </select>
+
+  <label for="phone">Enter your phone number:</label>
+  <input type="text" id="phone" placeholder="1234567890" value="3456789097">
+
+  <div class="buttons">
+    <button class="btn skip-btn" onclick="window.location.href='profile.html'">Skip</button>
+    <button class="btn next-btn" onclick="confirmNumber()">Next</button>
+  </div>
+
+  <!-- Popup for confirmation -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <p id="popupText"></p>
+      <button onclick="okNumber()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    function confirmNumber() {
+      const countryCode = document.getElementById('country').value;
+      const phoneNumber = document.getElementById('phone').value;
+      const fullNumber = countryCode + phoneNumber;
+
+      document.getElementById('popupText').innerHTML = `
+        Is this phone number correct?<br>
+        <strong>${fullNumber}</strong><br>
+        A verification code will be sent to this number.
+      `;
+
+      document.getElementById('popup').style.display = 'flex';
+    }
+
+    function okNumber() {
+      document.getElementById('popup').style.display = 'none';
+      // Redirect to enter code page or simulate sending code
+      window.location.href = 'enter-code.html';
+    }
+  </script>
+
+</body>
+</html>
