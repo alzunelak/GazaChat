@@ -3,25 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy & Terms</title>
+  <title>Terms & Privacy - ChatApp</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      margin: 20px;
       background: #f9f9f9;
-      color: #333;
+      color: #222;
       line-height: 1.6;
     }
-    h1 { text-align: center; }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    main {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1, h2, h3 {
+      color: #007bff;
+      margin-top: 25px;
+    }
     a {
       color: #007bff;
       text-decoration: underline;
     }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #eee;
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .back-btn:hover {
+      background: #0056b3;
+    }
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      header {
+        font-size: 1.2rem;
+        padding: 10px;
+      }
+      main {
+        padding: 15px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Privacy & Terms</h1>
-  <p>Your privacy is important to us. This is where you will explain your privacy policies, data use, and terms of service.</p>
-  <p><a href="welcome.html">Go Back</a></p>
+  <header>Signal Terms & Privacy Policy</header>
+  <main>
+    <p>
+      Signal is designed to never collect or store any sensitive information. Signal messages and calls cannot be accessed by us or other third parties because they are always end-to-end encrypted, private, and secure. 
+    </p>
+    <p>Our Terms of Service and Privacy Policy are available below.</p>
+
+    <h2>Terms of Service</h2>
+    <p><strong>Signal Messenger LLC. (“Signal”)</strong> utilizes state-of-the-art security and end-to-end encryption to provide private messaging, Internet calling, and other services to users worldwide. You agree to our Terms of Service (“Terms”) by installing or using our apps, services, or website (together, “Services”).</p>
+
+    <h3>About our services</h3>
+    <ul>
+      <li><strong>Minimum Age:</strong> You must be at least 13 years old to use our Services.</li>
+      <li><strong>Account Registration:</strong> You must register for our Services using your phone number and agree to receive verification codes.</li>
+      <li><strong>Privacy of user data:</strong> Signal does not sell, rent, or monetize your data—ever.</li>
+      <li><strong>Software:</strong> Updates may be installed to enable new features.</li>
+      <li><strong>Fees and Taxes:</strong> You are responsible for any data or carrier fees.</li>
+    </ul>
+
+    <h3>Using Signal</h3>
+    <p>You must use our Services legally and cannot disrupt or misuse our systems. Signal does not provide emergency services.</p>
+
+    <h3>Your Rights and License</h3>
+    <p>You own your data but grant Signal a license to provide the service. Our intellectual property remains ours.</p>
+
+    <h3>Disclaimers and Limitations</h3>
+    <p>Signal provides services "AS IS" without warranties. We are not responsible for user actions or disruptions. Liability is limited to $100.</p>
+
+    <h3>Resolving Disputes</h3>
+    <p>All disputes must be resolved in California courts under California law.</p>
+
+    <h2>Privacy Policy</h2>
+    <p>Signal cannot access your messages or calls. Data collected is minimal and encrypted:</p>
+    <ul>
+      <li><strong>Account Info:</strong> Phone numbers are required; other data is optional.</li>
+      <li><strong>Messages:</strong> Fully end-to-end encrypted, stored only on devices.</li>
+      <li><strong>Contacts:</strong> Privacy-preserving contact discovery is optional.</li>
+      <li><strong>Support:</strong> Data shared with support is kept only as needed.</li>
+    </ul>
+
+    <h3>Third-Party Services</h3>
+    <p>We may share limited data with third parties for functions like sending verification codes.</p>
+
+    <h3>Updates</h3>
+    <p>This policy is updated as needed. Continued use confirms acceptance.</p>
+
+    <h3>Contact</h3>
+    <p>Email: <a href="mailto:privacy@signal.org">privacy@signal.org</a></p>
+    <p>Signal Messenger, LLC, 650 Castro Street, Suite 120-223, Mountain View, CA 94041</p>
+
+    <a href="welcome.html" class="back-btn">← Back</a>
+  </main>
+  <footer>© 2013–2025 Signal, a 501c3 nonprofit</footer>
 </body>
 </html>
