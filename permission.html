@@ -11,54 +11,50 @@
       background: #f8f9fa;
       color: #333;
       padding: 20px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
     }
     h1 {
-      font-size: 2.2em;
-      margin-bottom: 30px;
+      font-size: 2em;
       font-weight: bold;
       color: #000;
+      margin-bottom: 40px;
       text-align: left;
     }
     .section {
       display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin: 30px 0;
-      text-align: left;
+      align-items: flex-start;
+      margin-bottom: 30px;
     }
     .emoji {
-      font-size: 2.5em;
-      margin-left: 15px;
+      font-size: 3em;
+      margin-right: 15px;
     }
-    .text {
-      max-width: 250px;
+    .text-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .title {
       font-size: 1.5em;
       font-weight: bold;
-      margin: 0;
+      margin: 0 0 5px 0;
     }
     .desc {
       font-size: 1em;
       color: #555;
-      margin-top: 5px;
-    }
-    .next-container {
-      margin-top: auto; /* push button to bottom */
-      display: flex;
-      justify-content: flex-end; /* align right */
+      max-width: 500px;
     }
     .next-btn {
-      padding: 15px 30px;
+      display: inline-block;
+      padding: 12px 25px;
       background: #007bff;
       color: white;
       border: none;
       border-radius: 8px;
       font-size: 1.2em;
       cursor: pointer;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
     }
     .popup {
       display: none;
@@ -99,6 +95,21 @@
       background: #dc3545;
       color: white;
     }
+    @media screen and (max-width: 768px) {
+      .section {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+      .title {
+        font-size: 1.3em;
+      }
+      .desc {
+        font-size: 0.9em;
+      }
+      .emoji {
+        font-size: 2.5em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -106,32 +117,30 @@
   <h1>Allow Permission</h1>
 
   <div class="section">
-    <div class="text">
+    <div class="emoji">🔔</div>
+    <div class="text-block">
       <div class="title">Notification</div>
       <div class="desc">Get notified when new messages arrive.</div>
     </div>
-    <div class="emoji">🔔</div>
   </div>
 
   <div class="section">
-    <div class="text">
+    <div class="emoji">👥</div>
+    <div class="text-block">
       <div class="title">Contact</div>
       <div class="desc">Find people you know. Your contacts are encrypted and not visible to Signal servers.</div>
     </div>
-    <div class="emoji">👥</div>
   </div>
 
   <div class="section">
-    <div class="text">
+    <div class="emoji">📞</div>
+    <div class="text-block">
       <div class="title">Phone Call</div>
       <div class="desc">Make registration easier and enable calling features.</div>
     </div>
-    <div class="emoji">📞</div>
   </div>
 
-  <div class="next-container">
-    <button class="next-btn" onclick="startPermissions()">Next</button>
-  </div>
+  <button class="next-btn" onclick="startPermissions()">Next</button>
 
   <!-- Popup -->
   <div class="popup" id="popup">
@@ -168,9 +177,9 @@
       document.getElementById("popup").style.display = "none";
       currentPermission++;
       if (currentPermission < permissions.length) {
-        setTimeout(showPopup, 200); // Show next popup
+        setTimeout(showPopup, 200);
       } else {
-        window.location.href = "phone-number.html"; // Redirect after finishing
+        window.location.href = "phone-number.html";
       }
     }
   </script>
