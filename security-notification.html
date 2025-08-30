@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Notification</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:20px;
+    background:#f8f9fa;
+  }
+  h1 {
+    font-size:2em;
+    margin-bottom:20px;
+  }
+  .back {
+    margin-bottom:20px;
+    cursor:pointer;
+    color:#007bff;
+    display:inline-block;
+  }
+  .setting-option {
+    background:#fff;
+    padding:15px 20px;
+    border-radius:8px;
+    margin-bottom:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  }
+  .setting-option:hover {
+    background:#e6f4ea;
+  }
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+  .toggle-switch input { display: none; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  input:checked + .slider {
+    background-color: #25d366;
+  }
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+</style>
+</head>
+<body>
+
+<div class="back" onclick="history.back()">⬅ Back</div>
+<h1>Security Notification</h1>
+
+<div class="setting-option">
+  Message Notifications
+  <label class="toggle-switch">
+    <input type="checkbox" checked>
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="setting-option">
+  Group Notifications
+  <label class="toggle-switch">
+    <input type="checkbox">
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="setting-option">
+  Security Alerts
+  <label class="toggle-switch">
+    <input type="checkbox" checked>
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="setting-option">
+  Show Preview
+  <label class="toggle-switch">
+    <input type="checkbox">
+    <span class="slider"></span>
+  </label>
+</div>
+
+</body>
+</html>
