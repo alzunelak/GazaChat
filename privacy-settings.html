@@ -16,10 +16,10 @@
   h2 { font-size: 1.2em; margin-top: 25px; margin-bottom:10px; }
   a { text-decoration: none; color: inherit; }
   .option { 
-    padding: 12px 0; 
     display: flex; 
     justify-content: space-between; 
-    align-items: center; 
+    align-items: flex-start; /* toggle sits at top */
+    padding: 5px 0;
   }
   .divider { 
     border-bottom: 1px solid #ccc; 
@@ -60,10 +60,11 @@
   }
   input:checked + .slider { background-color: #4CAF50; }
   input:checked + .slider:before { transform: translateX(20px); }
+
   p { 
     font-size: 0.9em; 
     color: #555; 
-    margin: 5px 0 50px 0; /* extra bottom space for clear separation */
+    margin: 10px 0 40px 0; /* paragraph visually separated */
     line-height: 1.4em; 
   }
 </style>
@@ -93,15 +94,16 @@
 <div class="divider"></div>
 <h2>Disappearing Messages</h2>
 <div class="option">Default Timer for New Chats 
-  <span>ON</span>
+  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
 <p>This sets a default disappearing timer for all new chats. Messages will automatically disappear after the set duration.</p>
 
 <div class="divider"></div>
 <h2>App Security</h2>
 <div class="option">Screen Lock 
-  <span>OFF</span>
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
+<p>Screen lock prevents unauthorized access to the app.</p>
 
 <div class="option">Screen Security 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
@@ -112,8 +114,6 @@
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
 <p>This setting is not guaranteed and your keyboard may ignore it.</p>
-
-  <p>This setting is not guaranteed and your keyboard may ignore it.</p>
 
 <div class="divider"></div>
 <h2>Payment</h2>
