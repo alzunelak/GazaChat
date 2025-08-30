@@ -36,23 +36,30 @@
     font-size: 1.2em;
     font-weight: bold;
   }
-  .section-content {
-    display: none;
-    padding: 10px 20px;
-    background: #f1f1f1;
-    border-radius: 8px;
-    margin-bottom: 10px;
-  }
-  .section-content p {
-    margin: 5px 0;
-    color: #555;
-  }
   .arrow {
     font-size: 1.2em;
     transition: transform 0.3s;
   }
-  .arrow.open {
-    transform: rotate(90deg);
+  /* Profile section */
+  .profile {
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .profile img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+  }
+  .profile-name {
+    font-size: 1.2em;
+    font-weight: bold;
   }
 </style>
 </head>
@@ -60,69 +67,62 @@
 
 <h1>Settings</h1>
 
-<div class="section" onclick="toggleSection('account')">
+<!-- Sections -->
+<div class="section" onclick="window.location.href='account.html'">
   <div class="section-title">Account</div>
-  <div class="arrow" id="arrow-account">&#9654;</div>
-</div>
-<div class="section-content" id="account">
-  <p>Change phone number</p>
-  <p>Delete account</p>
-  <p>Two-step verification</p>
+  <div class="arrow">&#9654;</div>
 </div>
 
-<div class="section" onclick="toggleSection('chat')">
+<div class="section" onclick="window.location.href='chat.html'">
   <div class="section-title">Chat</div>
-  <div class="arrow" id="arrow-chat">&#9654;</div>
-</div>
-<div class="section-content" id="chat">
-  <p>Chat backup</p>
-  <p>Font size</p>
-  <p>Media visibility</p>
+  <div class="arrow">&#9654;</div>
 </div>
 
-<div class="section" onclick="toggleSection('appearance')">
+<div class="section" onclick="window.location.href='appearance.html'">
   <div class="section-title">Appearance</div>
-  <div class="arrow" id="arrow-appearance">&#9654;</div>
-</div>
-<div class="section-content" id="appearance">
-  <p>Theme (Light/Dark)</p>
-  <p>Wallpaper</p>
-  <p>App icon</p>
+  <div class="arrow">&#9654;</div>
 </div>
 
-<div class="section" onclick="toggleSection('privacy')">
+<div class="section" onclick="window.location.href='privacy-settings.html'">
   <div class="section-title">Privacy</div>
-  <div class="arrow" id="arrow-privacy">&#9654;</div>
-</div>
-<div class="section-content" id="privacy">
-  <p>Last seen & online</p>
-  <p>Blocked contacts</p>
-  <p>Read receipts</p>
+  <div class="arrow">&#9654;</div>
 </div>
 
-<div class="section" onclick="toggleSection('notifications')">
+<div class="section" onclick="window.location.href='notifications.html'">
   <div class="section-title">Notifications</div>
-  <div class="arrow" id="arrow-notifications">&#9654;</div>
-</div>
-<div class="section-content" id="notifications">
-  <p>Message notifications</p>
-  <p>Group notifications</p>
-  <p>In-app sounds</p>
+  <div class="arrow">&#9654;</div>
 </div>
 
-<script>
-function toggleSection(id) {
-  const content = document.getElementById(id);
-  const arrow = document.getElementById('arrow-' + id);
-  if(content.style.display === 'block') {
-    content.style.display = 'none';
-    arrow.classList.remove('open');
-  } else {
-    content.style.display = 'block';
-    arrow.classList.add('open');
-  }
-}
-</script>
+<div class="section" onclick="window.location.href='data-storage.html'">
+  <div class="section-title">Data & Storage</div>
+  <div class="arrow">&#9654;</div>
+</div>
+
+<div class="section" onclick="window.location.href='invite-friend.html'">
+  <div class="section-title">Invite Friend</div>
+  <div class="arrow">&#9654;</div>
+</div>
+
+<div class="section" onclick="window.location.href='help.html'">
+  <div class="section-title">Help</div>
+  <div class="arrow">&#9654;</div>
+</div>
+
+<div class="section" onclick="window.location.href='app-language.html'">
+  <div class="section-title">App Language</div>
+  <div class="arrow">&#9654;</div>
+</div>
+
+<div class="section" onclick="window.location.href='accessibility.html'">
+  <div class="section-title">Accessibility</div>
+  <div class="arrow">&#9654;</div>
+</div>
+
+<!-- Profile at bottom -->
+<div class="profile">
+  <img src="profile.jpg" alt="Profile Picture">
+  <div class="profile-name">Mimah Suleiman</div>
+</div>
 
 </body>
 </html>
