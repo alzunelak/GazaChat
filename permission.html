@@ -6,133 +6,153 @@
   <title>Permissions</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      color: #333;
       text-align: center;
-      min-height: 100vh;
+      padding: 20px;
     }
     h1 {
-      font-size: 2em;
-      margin: 20px 0;
+      font-size: 2.2em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #000;
     }
-    h2 {
-      font-size: 1.5em;
-      margin: 10px 0;
-    }
-    p {
-      font-size: 1em;
-      margin: 5px 0 20px;
-      color: #555;
+    .section {
+      margin: 30px 0;
     }
     .emoji {
       font-size: 3em;
     }
-    button {
-      margin: 60px 0;
+    .title {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 10px 0 5px;
+    }
+    .desc {
+      font-size: 1em;
+      color: #555;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .next-btn {
+      display: inline-block;
       padding: 15px 30px;
-      font-size: 1.2em;
       background: #007bff;
       color: white;
       border: none;
       border-radius: 8px;
+      font-size: 1.2em;
       cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
+      margin-top: 80px;
     }
     .popup {
       display: none;
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
     .popup-content {
       background: white;
       padding: 20px;
       border-radius: 10px;
+      width: 90%;
+      max-width: 350px;
       text-align: center;
-      width: 300px;
     }
-    .popup-content button {
-      margin: 10px;
+    .popup-content h2 {
+      margin-bottom: 15px;
+    }
+    .popup-btns button {
       padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
       font-size: 1em;
+    }
+    .allow-btn {
+      background: #28a745;
+      color: white;
+    }
+    .deny-btn {
+      background: #dc3545;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>ALLOW PERMISSION</h1>
 
-  <div>
+  <h1>Allow Permission</h1>
+
+  <div class="section">
     <div class="emoji">🔔</div>
-    <h2>Notification</h2>
-    <p>Get notified when new messages arrive</p>
+    <div class="title">Notification</div>
+    <div class="desc">Get notified when new messages arrive.</div>
   </div>
 
-  <div>
-    <div class="emoji">📇</div>
-    <h2>Contact</h2>
-    <p>Find people you know. Your contacts are encrypted and not visible to Signal.</p>
+  <div class="section">
+    <div class="emoji">👥</div>
+    <div class="title">Contact</div>
+    <div class="desc">Find people you know. Your contacts are encrypted and not visible to Signal servers.</div>
   </div>
 
-  <div>
+  <div class="section">
     <div class="emoji">📞</div>
-    <h2>Phone Call</h2>
-    <p>Make registration easier and enable calling features</p>
+    <div class="title">Phone Call</div>
+    <div class="desc">Make registration easier and enable calling features.</div>
   </div>
 
-  <button id="nextBtn">Next</button>
+  <button class="next-btn" onclick="startPermissions()">Next</button>
 
-  <div id="popup" class="popup">
+  <!-- Popup -->
+  <div class="popup" id="popup">
     <div class="popup-content">
-      <p id="popupText">Allow Signal to access your notifications?</p>
-      <button id="allowBtn">Allow</button>
-      <button id="denyBtn">Deny</button>
+      <h2 id="popupTitle"></h2>
+      <p id="popupText"></p>
+      <div class="popup-btns">
+        <button class="allow-btn" onclick="handlePermission(true)">Allow</button>
+        <button class="deny-btn" onclick="handlePermission(false)">Deny</button>
+      </div>
     </div>
   </div>
 
   <script>
     const permissions = [
-      { text: 'Allow Signal to access your notifications?' },
-      { text: 'Allow Signal to access your contacts?' },
-      { text: 'Allow Signal to make and manage phone calls?' }
+      { title: "Allow Notifications", text: "Allow Signal to access your notifications?" },
+      { title: "Allow Contacts", text: "Allow Signal to access your contacts?" },
+      { title: "Allow Phone Calls", text: "Allow Signal to access your phone call feature?" }
     ];
-    
-    let current = 0;
-    const nextBtn = document.getElementById('nextBtn');
-    const popup = document.getElementById('popup');
-    const popupText = document.getElementById('popupText');
-    const allowBtn = document.getElementById('allowBtn');
-    const denyBtn = document.getElementById('denyBtn');
+    let currentPermission = 0;
 
-    nextBtn.addEventListener('click', () => {
-      popup.style.display = 'flex';
-      popupText.innerText = permissions[current].text;
-    });
-
-    function handleChoice() {
-      current++;
-      if (current < permissions.length) {
-        popupText.innerText = permissions[current].text;
-      } else {
-        popup.style.display = 'none';
-        window.location.href = 'phone-number.html';
-      }
+    function startPermissions() {
+      showPopup();
     }
 
-    allowBtn.addEventListener('click', handleChoice);
-    denyBtn.addEventListener('click', handleChoice);
+    function showPopup() {
+      document.getElementById("popupTitle").textContent = permissions[currentPermission].title;
+      document.getElementById("popupText").textContent = permissions[currentPermission].text;
+      document.getElementById("popup").style.display = "flex";
+    }
+
+    function handlePermission(allowed) {
+      console.log(permissions[currentPermission].title + ": " + (allowed ? "Allowed" : "Denied"));
+      document.getElementById("popup").style.display = "none";
+      currentPermission++;
+      if (currentPermission < permissions.length) {
+        setTimeout(showPopup, 200); // Show next popup
+      } else {
+        window.location.href = "phone-number.html"; // Redirect after finishing
+      }
+    }
   </script>
+
 </body>
 </html>
-
