@@ -1,75 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
-    h1 { font-size:2em; margin-bottom:20px; }
-    h2 { margin-top:30px; font-size:1.2em; color:#333; }
-    a { text-decoration:none; color:inherit; }
-    .option {
-      background:#fff; padding:15px 20px; border-radius:8px; margin-bottom:15px;
-      cursor:pointer; display:flex; justify-content:space-between; align-items:center;
-      box-shadow:0 2px 5px rgba(0,0,0,0.1);
-    }
-    .option:hover { background:#e6f4ea; }
-    .back { margin-bottom:20px; cursor:pointer; color:#007bff; display:inline-block; font-size:1.1em; }
-    .toggle { position:relative; width:40px; height:20px; background:#ccc; border-radius:20px; cursor:pointer; }
-    .toggle::before {
-      content:''; position:absolute; width:18px; height:18px; background:#fff; border-radius:50%;
-      top:1px; left:1px; transition:0.3s;
-    }
-    .toggle.active { background:#4caf50; }
-    .toggle.active::before { left:21px; }
-    small { font-size:0.85em; color:#666; display:block; margin-top:5px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy</title>
+<style>
+  body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 20px; 
+    background: #f8f9fa; 
+    color: #333;
+  }
+  h1 { font-size: 2em; margin-bottom: 20px; }
+  h2 { font-size: 1.2em; margin-top: 25px; }
+  a { text-decoration: none; color: inherit; }
+  .option { 
+    padding: 12px 0; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+  }
+  .divider { 
+    border-bottom: 1px solid #ccc; 
+    margin: 5px 0; 
+  }
+  .back { 
+    margin-bottom: 20px; 
+    cursor: pointer; 
+    color: #007bff; 
+    display: inline-block; 
+    font-size: 1em;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+  }
+  .switch input {display:none;}
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  input:checked + .slider { background-color: #4CAF50; }
+  input:checked + .slider:before { transform: translateX(20px); }
+  p { font-size: 0.9em; color: #555; margin: 5px 0; }
+</style>
 </head>
 <body>
 
 <div class="back" onclick="history.back()">⬅ Back</div>
 <h1>Privacy</h1>
 
-<!-- Profile Section -->
+<!-- Basic Links -->
 <a href="lastseen.html"><div class="option">Last Seen & Online <span>&#9654;</span></div></a>
+<div class="divider"></div>
 <a href="profilephoto.html"><div class="option">Profile Photo <span>&#9654;</span></div></a>
+<div class="divider"></div>
 <a href="blockuser.html"><div class="option">Blocked Contacts <span>&#9654;</span></div></a>
 
-<!-- Messaging Section -->
+<div class="divider"></div>
 <h2>Messaging</h2>
-<div class="option">Read Receipts <div class="toggle"></div></div>
-<div class="option">Typing Indicators <div class="toggle"></div></div>
-
-<!-- Disappearing Messages -->
-<h2>Disappearing Messages</h2>
-<div class="option">Default Timer for New Chats <div class="toggle"></div></div>
-
-<!-- App Security -->
-<h2>App Security</h2>
-<div class="option">Screen Lock <div class="toggle"></div></div>
-<div class="option">Screen Security <div class="toggle"></div></div>
-<div class="option">
-  Incognito Keyboard <div class="toggle"></div>
+<div class="option">Read Receipts 
+  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<small>This setting is not guaranteed; your keyboard may ignore it.</small>
+<div class="divider"></div>
+<div class="option">Typing Indicators 
+  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+</div>
 
-<!-- Payments -->
-<h2>Payments</h2>
-<div class="option">Payment Lock <div class="toggle"></div></div>
+<div class="divider"></div>
+<h2>Disappearing Messages</h2>
+<div class="option">Default Timer for New Chats 
+  <span>Off</span>
+</div>
 
-<!-- Advanced -->
+<div class="divider"></div>
+<h2>App Security</h2>
+<div class="option">Screen Lock 
+  <span>Off</span>
+</div>
+<div class="divider"></div>
+<div class="option">Screen Security 
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+<div class="divider"></div>
+<div class="option">Incognito Keyboard 
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+<p>This setting is not guaranteed and your keyboard may ignore it.</p>
+
+<div class="divider"></div>
+<h2>Payment</h2>
+<div class="option">Payment Lock 
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+<div class="divider"></div>
 <h2>Advanced</h2>
-<div class="option">Signal Messages & Calls</div>
-<div class="option">Always Relay Calls</div>
-<div class="option">Sealed Sender</div>
-
-<script>
-  // Toggle functionality
-  document.querySelectorAll('.toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => toggle.classList.toggle('active'));
-  });
-</script>
+<p>Signal messages and calls are always relay-called and sealed sender.</p>
 
 </body>
 </html>
