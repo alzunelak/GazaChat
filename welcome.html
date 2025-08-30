@@ -11,7 +11,7 @@
       font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center; /* Center vertically */
       align-items: center;
       min-height: 100vh;
       background: #f9f9f9;
@@ -28,8 +28,12 @@
     img {
       width: 220px;
       max-width: 70%;
-      height: auto;
+      height: 220px; /* Ensures perfect circle */
+      object-fit: cover; /* Makes sure image fills the circle */
+      border-radius: 50%; /* Makes the image circular */
       margin: 20px 0;
+      border: 4px solid #007bff; /* Optional border */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional shadow */
     }
     .big-text {
       font-size: 1.8rem;
@@ -69,6 +73,10 @@
       }
       .big-text {
         font-size: 1.3rem;
+      }
+      img {
+        width: 150px;
+        height: 150px;
       }
       .btn {
         font-size: 1rem;
