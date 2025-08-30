@@ -13,7 +13,7 @@
     color: #333;
   }
   h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; }
+  h2 { font-size: 1.2em; margin-top: 25px; }
   a { text-decoration: none; color: inherit; }
   .option { 
     padding: 12px 0; 
@@ -23,7 +23,7 @@
   }
   .divider { 
     border-bottom: 1px solid #ccc; 
-    margin: 15px 0; 
+    margin: 10px 0; 
   }
   .back { 
     margin-bottom: 20px; 
@@ -38,7 +38,7 @@
     width: 40px;
     height: 20px;
   }
-  .switch input { display:none; }
+  .switch input {display:none;}
   .slider {
     position: absolute;
     cursor: pointer;
@@ -60,7 +60,13 @@
   }
   input:checked + .slider { background-color: #4CAF50; }
   input:checked + .slider:before { transform: translateX(20px); }
-  .description { font-size: 0.9em; color: #555; margin: 5px 0 15px 0; }
+
+  p { 
+    font-size: 0.9em; 
+    color: #555; 
+    margin: 5px 0 15px 0; 
+    padding-left: 10px; 
+  }
 </style>
 </head>
 <body>
@@ -75,46 +81,51 @@
 
 <div class="divider"></div>
 <h2>Messaging</h2>
+
 <div class="option">Read Receipts 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
+<p>If read receipts are disabled you won't be able to see read receipts from others.</p>
 
 <div class="option">Typing Indicators 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
+<p>Typing indicators will not appear if this is disabled.</p>
 
 <div class="divider"></div>
 <h2>Disappearing Messages</h2>
 <div class="option">Default Timer for New Chats 
   <span>ON</span>
 </div>
-<p class="description">This will apply a default timer for all new chats.</p>
+<p>This setting automatically sets disappearing messages for new chats.</p>
 
 <div class="divider"></div>
 <h2>App Security</h2>
 <div class="option">Screen Lock 
   <span>OFF</span>
 </div>
-<p class="description">Enable or disable screen lock for extra security.</p>
+<p>You can lock the app for extra security.</p>
 
 <div class="option">Screen Security 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
+<p>Protects screen content from being captured.</p>
 
 <div class="option">Incognito Keyboard 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p class="description">This setting is not guaranteed and your keyboard may ignore it.</p>
+<p>This setting is not guaranteed and your keyboard may ignore it.</p>
 
 <div class="divider"></div>
 <h2>Payment</h2>
 <div class="option">Payment Lock 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
+<p>Lock payments for added security.</p>
 
 <div class="divider"></div>
 <h2>Advanced</h2>
-<p class="description">Signal messages and calls are always relay-called and sealed sender.</p>
+<p>Signal messages and calls are always relay-called and sealed sender.</p>
 
 </body>
 </html>
