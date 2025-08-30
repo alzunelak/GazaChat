@@ -10,34 +10,42 @@
       font-family: Arial, sans-serif;
       background: #f8f9fa;
       color: #333;
-      text-align: center;
       padding: 20px;
     }
     h1 {
       font-size: 2.2em;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       font-weight: bold;
       color: #000;
+      text-align: right;
     }
     .section {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
       margin: 30px 0;
+      text-align: right;
     }
     .emoji {
-      font-size: 3em;
+      font-size: 2.5em;
+      margin-left: 15px;
+    }
+    .text {
+      max-width: 250px;
     }
     .title {
       font-size: 1.5em;
       font-weight: bold;
-      margin: 10px 0 5px;
+      margin: 0;
     }
     .desc {
       font-size: 1em;
       color: #555;
-      max-width: 300px;
-      margin: 0 auto;
+      margin-top: 5px;
     }
     .next-btn {
-      display: inline-block;
+      display: block;
+      margin: 80px auto 0;
       padding: 15px 30px;
       background: #007bff;
       color: white;
@@ -45,7 +53,6 @@
       border-radius: 8px;
       font-size: 1.2em;
       cursor: pointer;
-      margin-top: 80px;
     }
     .popup {
       display: none;
@@ -93,21 +100,27 @@
   <h1>Allow Permission</h1>
 
   <div class="section">
+    <div class="text">
+      <div class="title">Notification</div>
+      <div class="desc">Get notified when new messages arrive.</div>
+    </div>
     <div class="emoji">🔔</div>
-    <div class="title">Notification</div>
-    <div class="desc">Get notified when new messages arrive.</div>
   </div>
 
   <div class="section">
+    <div class="text">
+      <div class="title">Contact</div>
+      <div class="desc">Find people you know. Your contacts are encrypted and not visible to Signal servers.</div>
+    </div>
     <div class="emoji">👥</div>
-    <div class="title">Contact</div>
-    <div class="desc">Find people you know. Your contacts are encrypted and not visible to Signal servers.</div>
   </div>
 
   <div class="section">
+    <div class="text">
+      <div class="title">Phone Call</div>
+      <div class="desc">Make registration easier and enable calling features.</div>
+    </div>
     <div class="emoji">📞</div>
-    <div class="title">Phone Call</div>
-    <div class="desc">Make registration easier and enable calling features.</div>
   </div>
 
   <button class="next-btn" onclick="startPermissions()">Next</button>
