@@ -22,14 +22,14 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start; 
-    padding: 16px 0; 
+    padding: 12px 0; 
   }
   .setting-text { flex: 1; margin-right: 12px; }
   .setting-title { font-size: 16px; font-weight: 500; color: #000; }
   .setting-desc { margin-top: 4px; font-size: 13px; color: #666; line-height: 1.4; }
 
   /* Toggle switch */
-  .switch { position: relative; display: inline-block; width: 40px; height: 24px; }
+  .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
   .switch input { opacity: 0; width: 0; height: 0; }
   .slider {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -41,9 +41,10 @@
     transition: 0.3s;
   }
   .switch input:checked + .slider { background-color: #4CAF50; }
-  .switch input:checked + .slider:before { transform: translateX(16px); }
+  .switch input:checked + .slider:before { transform: translateX(26px); }
 
   .section-divider { border-bottom: 1px solid #ccc; margin: 15px 0 0 0; }
+  p { font-size: 0.9em; color: #555; margin: 6px 0 0 0; }
 </style>
 </head>
 <body>
@@ -65,14 +66,16 @@
   </div>
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
+
 <div class="setting-item">
   <div class="setting-text">
-    <div class="setting-title">Default Timer for New Chats</div>
+    <div class="setting-title">Typing Indicator</div>
+    <div class="setting-desc">Show when you are typing to other users in chat.</div>
   </div>
-  <span>Off</span>
+  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<div class="section-divider"></div>
 
+<div class="section-divider"></div>
 <h2>App Security</h2>
 <div class="setting-item">
   <div class="setting-text">
@@ -80,12 +83,14 @@
   </div>
   <span>Off</span>
 </div>
+
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Screen Security</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
+
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Incognito Keyboard</div>
@@ -93,8 +98,18 @@
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<div class="section-divider"></div>
 
+<h2>Camera</h2>
+<div class="setting-item">
+  <div class="setting-text">
+    <div class="setting-title">Allow Camera Effects</div>
+    <div class="setting-desc">Use effects in the camera and video calls. <a href="#">Learn more</a>.</div>
+  </div>
+  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+<div class="section-divider"></div>
+  
+<div class="section-divider"></div>
 <h2>Payment</h2>
 <div class="setting-item">
   <div class="setting-text">
@@ -102,21 +117,12 @@
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<div class="section-divider"></div>
 
+<div class="section-divider"></div>
 <h2>Advanced</h2>
 <p>Signal messages and calls are always relay-called and sealed sender.</p>
 <div class="section-divider"></div>
 
-<h2>Camera</h2>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Allow camera effects</div>
-    <div class="setting-desc">Use effects in the camera and video calls. <a href="#">Learn more</a>.</div>
-  </div>
-  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
-<div class="section-divider"></div>
 
 </body>
 </html>
