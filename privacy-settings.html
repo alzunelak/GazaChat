@@ -13,17 +13,17 @@
     color: #333;
   }
   h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom:10px; }
+  h2 { font-size: 1.2em; margin-top: 25px; }
   a { text-decoration: none; color: inherit; }
   .option { 
+    padding: 12px 0; 
     display: flex; 
     justify-content: space-between; 
-    align-items: center;
-    padding: 10px 0;
+    align-items: center; 
   }
   .divider { 
     border-bottom: 1px solid #ccc; 
-    margin: 20px 0; 
+    margin: 5px 0; 
   }
   .back { 
     margin-bottom: 20px; 
@@ -60,15 +60,7 @@
   }
   input:checked + .slider { background-color: #4CAF50; }
   input:checked + .slider:before { transform: translateX(20px); }
-
-  .description {
-    font-size: 0.9em; 
-    color: #555; 
-    margin-top: 25px; /* far below toggle */
-    margin-left: 0; /* aligned left */
-    margin-bottom: 25px;
-    line-height: 1.4em;
-  }
+  p { font-size: 0.9em; color: #555; margin: 5px 0; }
 </style>
 </head>
 <body>
@@ -81,60 +73,51 @@
 <a href="profilephoto.html"><div class="option">Profile Photo <span>&#9654;</span></div></a>
 <a href="blockuser.html"><div class="option">Blocked Contacts <span>&#9654;</span></div></a>
 
-<!-- Messaging Section -->
 <div class="divider"></div>
 <h2>Messaging</h2>
-
 <div class="option">Read Receipts 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p class="description">If read receipts are disabled, you won't be able to see read receipts from others.</p>
-
+  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 <div class="option">Typing Indicators 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
-<p class="description">When typing indicators are disabled, you won't see when others are typing messages.</p>
+<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<!-- Disappearing Messages Section -->
 <div class="divider"></div>
 <h2>Disappearing Messages</h2>
-
 <div class="option">Default Timer for New Chats 
-  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+  <span>Off</span>
 </div>
-<p class="description">This sets a default disappearing timer for all new chats. Messages will automatically disappear after the set duration.</p>
+<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<!-- App Security Section -->
 <div class="divider"></div>
 <h2>App Security</h2>
-
 <div class="option">Screen Lock 
-  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+  <span>Off</span>
 </div>
-
 <div class="option">Screen Security 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p class="description">Screen security prevents sensitive information from showing in previews.</p>
+  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
 <div class="option">Incognito Keyboard 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p class="description">This setting is not guaranteed and your keyboard may ignore it.</p>
+  <p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<!-- Payment Section -->
+<p>This setting is not guaranteed and your keyboard may ignore it.</p>
+
 <div class="divider"></div>
 <h2>Payment</h2>
-
 <div class="option">Payment Lock 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p class="description">Enable payment lock for extra security on transactions.</p>
+<p>If read receipts are disabled you won't be able to see read receiptts from others.</p>
 
-<!-- Advanced Section -->
 <div class="divider"></div>
 <h2>Advanced</h2>
-<p class="description">Signal messages and calls always relay calls and use sealed sender for privacy.</p>
+<p>Signal messages and calls are always relay-called and sealed sender.</p>
 
 </body>
-</html>
+</html> 
