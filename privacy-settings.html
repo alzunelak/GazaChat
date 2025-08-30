@@ -13,7 +13,7 @@
     color: #333;
   }
   h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; }
+  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom:10px; }
   a { text-decoration: none; color: inherit; }
   .option { 
     display: flex; 
@@ -64,9 +64,9 @@
   .description {
     font-size: 0.9em; 
     color: #555; 
-    margin-top: 30px; /* far below toggle */
-    margin-left: 0; /* aligned to left */
-    margin-bottom: 30px;
+    margin-top: 25px; /* far below toggle */
+    margin-left: 0; /* aligned left */
+    margin-bottom: 25px;
     line-height: 1.4em;
   }
 </style>
@@ -81,8 +81,10 @@
 <a href="profilephoto.html"><div class="option">Profile Photo <span>&#9654;</span></div></a>
 <a href="blockuser.html"><div class="option">Blocked Contacts <span>&#9654;</span></div></a>
 
+<!-- Messaging Section -->
 <div class="divider"></div>
 <h2>Messaging</h2>
+
 <div class="option">Read Receipts 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
@@ -93,19 +95,22 @@
 </div>
 <p class="description">When typing indicators are disabled, you won't see when others are typing messages.</p>
 
+<!-- Disappearing Messages Section -->
 <div class="divider"></div>
 <h2>Disappearing Messages</h2>
+
 <div class="option">Default Timer for New Chats 
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
 <p class="description">This sets a default disappearing timer for all new chats. Messages will automatically disappear after the set duration.</p>
 
+<!-- App Security Section -->
 <div class="divider"></div>
 <h2>App Security</h2>
+
 <div class="option">Screen Lock 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
-<p class="description">Screen lock prevents unauthorized access to the app.</p>
 
 <div class="option">Screen Security 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
@@ -117,13 +122,16 @@
 </div>
 <p class="description">This setting is not guaranteed and your keyboard may ignore it.</p>
 
+<!-- Payment Section -->
 <div class="divider"></div>
 <h2>Payment</h2>
+
 <div class="option">Payment Lock 
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
 <p class="description">Enable payment lock for extra security on transactions.</p>
 
+<!-- Advanced Section -->
 <div class="divider"></div>
 <h2>Advanced</h2>
 <p class="description">Signal messages and calls always relay calls and use sealed sender for privacy.</p>
