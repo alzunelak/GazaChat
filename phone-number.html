@@ -1,186 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phone Number</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      color: #333;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Number - ChatApp</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    color: #333;
+    text-align: center;
+    padding: 30px 20px;
+  }
+  h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  p.desc {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 30px;
+  }
+  select, input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px;
+    font-size: 1em;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+  .btn {
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+  }
+  .next-btn { background: #007bff; color: #fff; }
+  .skip-btn { background: #6c757d; color: #fff; }
 
-    h1 {
-      font-size: 2em;
-      font-weight: bold;
-      color: #000;
-      margin-bottom: 10px;
-      text-align: left;
-    }
-
-    p.instruction {
-      font-size: 1em;
-      color: #555;
-      margin-bottom: 30px;
-      text-align: left;
-    }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-      margin-top: 15px;
-    }
-
-    select, input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 40px;
-    }
-
-    .btn {
-      padding: 12px 25px;
-      font-size: 1.1em;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .skip-btn {
-      background: #6c757d;
-      color: white;
-    }
-
-    .next-btn {
-      background: #007bff;
-      color: white;
-    }
-
-    /* Popup */
-    .popup {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .popup-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 350px;
-      text-align: center;
-    }
-
-    .popup-content p {
-      margin: 15px 0;
-    }
-
-    .popup button {
-      padding: 10px 20px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 5px;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-      font-size: 1em;
-    }
-  </style>
+  /* Popup */
+  .popup {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+  }
+  .popup-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+  }
+  .popup-content h2 { margin-bottom: 10px; }
+  .popup-content p { margin-bottom: 20px; }
+  .popup-content button {
+    padding: 10px 20px;
+    margin: 5px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:1em;
+  }
+  .ok-btn { background: #28a745; color:#fff; }
+</style>
 </head>
 <body>
 
-  <h1>Phone Number</h1>
-  <p class="instruction">You will receive a verification code. Carrier rates may apply.</p>
+<h1>Phone Number</h1>
+<p class="desc">You will receive a verification code. Carrier rates may apply.</p>
 
-<label for="country">Choose your country:</label>
 <select id="country">
-  <option value="+1">United States (+1)</option>
-  <option value="+44">United Kingdom (+44)</option>
-  <option value="+91">India (+91)</option>
-  <option value="+61">Australia (+61)</option>
-  <option value="+81">Japan (+81)</option>
-  <option value="+49">Germany (+49)</option>
-  <option value="+33">France (+33)</option>
-  <option value="+39">Italy (+39)</option>
-  <option value="+34">Spain (+34)</option>
-  <option value="+55">Brazil (+55)</option>
-  <option value="+7">Russia (+7)</option>
-  <option value="+27">South Africa (+27)</option>
-  <option value="+254">Kenya (+254)</option>
-  <option value="+234">Nigeria (+234)</option>
-  <option value="+82">South Korea (+82)</option>
-  <option value="+66">Thailand (+66)</option>
-  <option value="+52">Mexico (+52)</option>
-  <option value="+64">New Zealand (+64)</option>
-  <option value="+31">Netherlands (+31)</option>
-  <option value="+46">Sweden (+46)</option>
-  <option value="+41">Switzerland (+41)</option>
-  <option value="+970">Palestine (+970)</option>
-  <option value="+92">Pakistan (+92)</option>
-  <option value="+966">Saudi Arabia (+966)</option>
-  <option value="+345">Sample Country (+345)</option>
+  <option value="US">United States</option>
+  <option value="KE">Kenya</option>
+  <option value="GB">United Kingdom</option>
+  <!-- Add more countries as needed -->
 </select>
 
+<input type="text" id="phoneNumber" placeholder="Country code + phone number">
 
+<br>
+<button class="btn skip-btn" onclick="skip()">Skip</button>
+<button class="btn next-btn" onclick="nextStep()">Next</button>
 
-
-  <label for="phone">Enter your phone number:</label>
-  <input type="text" id="phone" placeholder="1234567890" value="3456789097">
-
-  <div class="buttons">
-    <button class="btn skip-btn" onclick="window.location.href='profile.html'">Skip</button>
-    <button class="btn next-btn" onclick="confirmNumber()">Next</button>
+<!-- Popup for confirmation -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h2>Is this phone number correct?</h2>
+    <p id="popupNumber"></p>
+    <button class="ok-btn" onclick="showCodeInput()">OK</button>
   </div>
+</div>
 
-  <!-- Popup for confirmation -->
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <p id="popupText"></p>
-      <button onclick="okNumber()">OK</button>
-    </div>
+<!-- Verification code input -->
+<div class="popup" id="codePopup">
+  <div class="popup-content">
+    <h2>Enter Verification Code</h2>
+    <p>A verification code will be sent to this number.</p>
+    <input type="text" id="codeInput" placeholder="Enter code here" maxlength="6">
+    <br>
+    <button class="ok-btn" onclick="verifyCode()">Verify</button>
   </div>
+</div>
 
-  <script>
-    function confirmNumber() {
-      const countryCode = document.getElementById('country').value;
-      const phoneNumber = document.getElementById('phone').value;
-      const fullNumber = countryCode + phoneNumber;
+<script>
+function skip() {
+  window.location.href = 'profile.html';
+}
 
-      document.getElementById('popupText').innerHTML = `
-        Is this phone number correct?<br>
-        <strong>${fullNumber}</strong><br>
-        A verification code will be sent to this number.
-      `;
+function nextStep() {
+  const number = document.getElementById('phoneNumber').value;
+  if(!number) {
+    alert("Please enter your phone number.");
+    return;
+  }
+  document.getElementById('popupNumber').textContent = number;
+  document.getElementById('popup').style.display = 'flex';
+}
 
-      document.getElementById('popup').style.display = 'flex';
-    }
+function showCodeInput() {
+  document.getElementById('popup').style.display = 'none';
+  document.getElementById('codePopup').style.display = 'flex';
+}
 
-    function okNumber() {
-      document.getElementById('popup').style.display = 'none';
-      // Redirect to enter code page or simulate sending code
-      window.location.href = 'enter-code.html';
-    }
-  </script>
+function verifyCode() {
+  const code = document.getElementById('codeInput').value;
+  if(code.length === 0){
+    alert("Please enter the verification code.");
+    return;
+  }
+  // Simulate verification success
+  alert("Verification successful!");
+  window.location.href = 'profile.html';
+}
+</script>
 
 </body>
 </html>
