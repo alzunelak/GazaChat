@@ -6,7 +6,7 @@
 <title>ChatApp Home</title>
 <style>
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-.header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); position:relative; }
+.header { display:flex; align-items:center; justify-content:space-between; padding:10px 15px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
 .profile { display:flex; align-items:center; }
 .profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; }
 .profile-name { font-weight:bold; font-size:16px; }
@@ -17,13 +17,17 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 .tabs div { font-weight:bold; cursor:pointer; }
 .add-button-container { position:fixed; bottom:60px; right:20px; z-index:100; }
 #addBtn { width:60px; height:60px; border-radius:50%; font-size:32px; cursor:pointer; background-color:#4CAF50; color:white; border:none; }
-.popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:5px 0; text-align:left; min-width:140px; }
+.popup-options { display:none; position:absolute; bottom:70px; right:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); padding:5px 0; min-width:140px; }
 .popup-options a { display:block; padding:8px 12px; color:#333; text-decoration:none; }
 .popup-options a:hover { background:#f0f0f0; }
 #qrContainer { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; text-align:center; }
 #qrContainer button { position:absolute; top:5px; right:5px; border:none; background:#f44336; color:white; border-radius:50%; width:25px; height:25px; cursor:pointer; }
-.friend { padding:10px; background:#fff; margin:5px 0; border-radius:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; align-items:center; }
-.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover; }
+.chatItem { display:flex; align-items:center; gap:12px; background:#fff; padding:12px; margin-bottom:10px; border-radius:8px; cursor:pointer; transition:background 0.2s; }
+.chatItem:hover { background:#f1f1f1; }
+.chatItem img { width:50px; height:50px; border-radius:50%; object-fit:cover; }
+.chatDetails { flex:1; display:flex; flex-direction:column; }
+.chatDetails .name { font-weight:bold; font-size:16px; margin-bottom:3px; }
+.chatDetails .lastMsg { font-size:14px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .three-dots-menu { position:absolute; top:45px; right:15px; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:none; min-width:140px; z-index:500; }
 .three-dots-menu a { display:block; padding:10px 15px; color:#333; text-decoration:none; font-weight:500; }
 .three-dots-menu a:hover { background:#f0f0f0; }
@@ -40,19 +44,16 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 </div>
 
 <div class="three-dots-menu" id="threeDotsMenu">
-  <a href="groups.html">New Group </a>
+  <a href="groups.html">New Group</a>
   <a href="Mark-all-read.html">Mark All Read</a>
   <a href="starred.html">Starred</a>
   <a href="filter-unread-chats">Filter Unread Chats</a>
   <a href="settings.html">Settings</a>
-  <a href="linkeddevices.html">Linked Devices </a>
+  <a href="linkeddevices.html">Linked Devices</a>
 </div>
 
-<div class="main-content" id="mainContent">
-  <div class="no-msg">
-    No messages yet<br>
-    Add a friend using the + button
-  </div>
+<div class="main-content" id="chatList">
+  <div class="no-msg">No messages yet<br>Add a friend using the + button</div>
 </div>
 
 <div id="qrContainer">
@@ -78,134 +79,70 @@ body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; 
 
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 <script>
-// --- Profile setup ---
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
   document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+  renderChats();
 });
 
-// --- Floating + button ---
+// Show popup
 const addBtn = document.getElementById('addBtn');
 const popupOptions = document.getElementById('popupOptions');
-addBtn.addEventListener('click', () => {
-  popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block';
-});
+addBtn.addEventListener('click', () => popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block');
 document.addEventListener('click', e => {
   if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display = 'none';
 });
 
-// --- QR popup ---
-const showQRCodeLink = document.getElementById('showQRCode');
-const qrContainer = document.getElementById('qrContainer');
-const noMsg = document.querySelector('.no-msg');
-const closeQR = document.getElementById('closeQR');
-let qrGenerated = false;
-const savedName = localStorage.getItem('username') || 'User';
-const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
-
-showQRCodeLink.addEventListener('click', e => {
-  e.preventDefault();
-  qrContainer.style.display = 'block';
-  noMsg.style.display = 'none';
-  if(!qrGenerated){
-    const qrData = JSON.stringify({name: savedName, profile: profilePic});
-    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
-    qrGenerated = true;
-  }
-});
-
-closeQR.addEventListener('click', () => {
-  qrContainer.style.display='none';
-  noMsg.style.display='block';
-});
-// --- Check URL parameter for auto-chat ---
-function getQueryParam(param) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(param);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const friendNameParam = getQueryParam('friend');
-  const friendProfileParam = getQueryParam('profile');
-
-  if(friendNameParam){
-    const friends = getFriends();
-    const friend = friends.find(f => f.name === decodeURIComponent(friendNameParam));
-    if(friend){
-      // Open chat automatically
-      openChat(friend.name, friend.profile);
-    } else if(friendProfileParam){
-      // In case friend not yet in localStorage, add and open chat
-      const newFriend = {
-        name: decodeURIComponent(friendNameParam),
-        profile: decodeURIComponent(friendProfileParam)
-      };
-      addFriend(newFriend);
-      openChat(newFriend.name, newFriend.profile);
-    }
-  }
-});
-
-// --- Open chat function ---
-function openChat(name, profile){
-  // You can customize this to open your chat.html
-  // Example: redirect with parameters
-  window.location.href = `chat.html?friend=${encodeURIComponent(name)}&profile=${encodeURIComponent(profile)}`;
-}
-
-// --- Friends management ---
-function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
-function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
-function addFriend(friend){
-  let friends = getFriends();
-  if(!friends.some(f => f.name === friend.name)){
-    // Ensure photo exists, fallback to default
-    if(!friend.profile) friend.profile = 'default-profile.png';
-    friends.push(friend);
-    saveFriends(friends);
-    renderFriends();
-  }
-}
-
-// --- Real-time updates ---
-const channel = new BroadcastChannel('chatapp');
-channel.onmessage = (e) => {
-  if(e.data.type === 'addFriend') addFriend(e.data.friend);
-}
-
-// --- Render friends ---
-function renderFriends(){
-  const mainContent = document.getElementById('mainContent');
-  const friends = getFriends();
-  mainContent.innerHTML = '';
-  if(friends.length===0){
-    mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
-  } else {
-    friends.forEach(f => {
-      const div = document.createElement('div');
-      div.className='friend';
-      div.innerHTML = `<img src="${f.profile || 'default-profile.png'}"><span>${f.name}</span>`;
-
-      // Open chat with real info
-      div.onclick = () => {
-        const friendName = encodeURIComponent(f.name);
-        const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
-        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
-      };
-
-      mainContent.appendChild(div);
-    });
-  }
-}
-
-// --- Three-dots menu ---
+// Three dots menu
 const threeDots = document.querySelector('.three-dots');
 const threeDotsMenu = document.getElementById('threeDotsMenu');
 threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; });
-document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
+document.addEventListener('click', () => threeDotsMenu.style.display = 'none');
 
-// Render friends on load
-document.addEventListener('DOMContentLoaded', renderFriends);
+// QR Code
+const showQRCodeLink = document.getElementById('showQRCode');
+const qrContainer = document.getElementById('qrContainer');
+const closeQR = document.getElementById('closeQR');
+let qrGenerated = false;
+showQRCodeLink.addEventListener('click', e => {
+  e.preventDefault();
+  qrContainer.style.display = 'block';
+  if(!qrGenerated){
+    const data = JSON.stringify({name: localStorage.getItem('username') || 'User', profile: localStorage.getItem('profilePic') || 'default-profile.png'});
+    new QRious({ element: document.getElementById('userQRCode'), value: data, size:150 });
+    qrGenerated = true;
+  }
+});
+closeQR.addEventListener('click', () => qrContainer.style.display='none');
+
+// Render chat list
+function renderChats(){
+  const friends = JSON.parse(localStorage.getItem('friends') || '[]');
+  const chatList = document.getElementById('chatList');
+  chatList.innerHTML = '';
+  if(friends.length === 0){
+    chatList.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
+  } else {
+    friends.forEach(f => {
+      const messages = JSON.parse(localStorage.getItem(\`chat_\${f.name}\`) || '[]');
+      const lastMsg = messages.length > 0 ? messages[messages.length-1].text : "No messages yet";
+      const div = document.createElement('div');
+      div.className = 'chatItem';
+      div.innerHTML = \`
+        <img src="\${f.profile || 'default-profile.png'}">
+        <div class="chatDetails">
+          <div class="name">\${f.name}</div>
+          <div class="lastMsg">\${lastMsg}</div>
+        </div>\`;
+      div.onclick = () => {
+        const name = encodeURIComponent(f.name);
+        const profile = encodeURIComponent(f.profile || 'default-profile.png');
+        window.location.href = \`chat.html?friend=\${name}&profile=\${profile}\`;
+      };
+      chatList.appendChild(div);
+    });
+  }
+}
 </script>
 </body>
 </html>
