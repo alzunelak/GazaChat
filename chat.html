@@ -232,28 +232,28 @@ input:checked + .slider:before {transform:translateX(26px);}
 <div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
 
   <button class="settingsItem" onclick="openEncryptionPopup()">
-    <span>✔ End-to-End Encryption</span>
+    <span>End-to-End Encryption</span>
     <i class="fa-solid fa-circle-info"></i>
   </button>
 
-  <button class="settingsItem" onclick="openDisappearModal()">
-    <span>✔ Disappearing Messages</span>
-    <i class="fa-solid fa-clock"></i>
-  </button>
-
+  
+  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
+    <span>Mesh Network</span>
+    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
+  </div>
+  
   <div class="settingsItem">
-    <span>✔ Chat Lock</span>
+    <span>Chat Lock</span>
     <label class="switch">
       <input type="checkbox" id="chatLockToggle">
       <span class="slider"></span>
     </label>
   </div>
-
-  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
-    <span>✔ Mesh Network</span>
-    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
-  </div>
-
+  
+  <button class="settingsItem" onclick="openDisappearModal()">
+    <span>Disappearing Messages</span>
+    <i class="fa-solid fa-clock"></i>
+  </button>
 </div>
   
   <!-- NO GROUPS SECTION -->
@@ -409,32 +409,10 @@ micBtn.onclick=async()=>{
   else { mediaRecorder.stop(); micBtn.style.background="#25D366"; }
 };
 
-
-
-
-
-// ==== POPUP FUNCTIONS ====
-function openDisappearModal(){
-  document.getElementById("disappearModal").style.display="flex";
-}
-function closeDisappearModal(){
-  document.getElementById("disappearModal").style.display="none";
-}
-
-function openEncryptionPopup(){
-  document.getElementById("encryptionPopup").style.display="flex";
-}
-function closeEncryptionPopup(){
-  document.getElementById("encryptionPopup").style.display="none";
-}
-
 // ==== TOGGLE CHAT LOCK ====
 document.getElementById("chatLockToggle").addEventListener("change", function(){
   alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled");
 });
-
-
-
   
 // ===== RENDER INITIAL =====
 renderMessages();
