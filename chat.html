@@ -49,67 +49,6 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer i{color:black;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
-
-
-  .settingItem {
-  background:#fff;
-  padding:12px 16px;
-  border-radius:10px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  border:1px solid #eee;
-  margin-bottom:10px;
-}
-.settingTitle {
-  font-weight:bold;
-  font-size:16px;
-  color:#000;
-}
-.settingDesc {
-  font-size:14px;
-  color:#555;
-}
-.slider {
-  width:100%;
-  margin-top:5px;
-}
-.switch {
-  position:relative;
-  display:inline-block;
-  width:50px;
-  height:28px;
-  margin-top:5px;
-}
-.switch input {
-  opacity:0;
-  width:0;
-  height:0;
-}
-.sliderRound {
-  position:absolute;
-  cursor:pointer;
-  top:0;left:0;right:0;bottom:0;
-  background:#ccc;
-  transition:.4s;
-  border-radius:28px;
-}
-.sliderRound:before {
-  position:absolute;
-  content:"";
-  height:22px;width:22px;
-  left:3px;bottom:3px;
-  background:white;
-  transition:.4s;
-  border-radius:50%;
-}
-input:checked + .sliderRound {
-  background:#128C7E;
-}
-input:checked + .sliderRound:before {
-  transform:translateX(22px);
-}
-
 </style>
 </head>
 <body>
@@ -238,42 +177,13 @@ input:checked + .sliderRound:before {
     </div>
   </div>
 
-   <!-- SETTINGS SECTION -->
+  <!-- SETTINGS SECTION -->
   <div class="settingsContainer">
-    <!-- End-to-End Encryption -->
-    <div class="settingItem">
-      <div class="settingTitle"><i class="fa-solid fa-lock"></i> End-to-End Encryption</div>
-      <div class="settingDesc">Your messages and calls are secured with end-to-end encryption.</div>
-    </div>
-
-    <!-- Mesh Network Form -->
-    <div class="settingItem">
-      <div class="settingTitle"><i class="fa-solid fa-network-wired"></i> Mesh Network Form</div>
-      <div class="settingDesc">How your chat connects in a decentralized network.</div>
-    </div>
-
-    <!-- Chat Lock -->
-    <div class="settingItem">
-      <div class="settingTitle"><i class="fa-solid fa-paint-roller"></i> Chat Lock & Wallpaper</div>
-      <div class="settingDesc">lock and hide this chat on this device.</div>
-       <label class="switch">
-        <input type="checkbox" id="privacyToggle">
-        <span class="sliderRound"></span>
-       </label>
-    </div>
-    </div>
-
-    <!-- Advanced Chat Privacy -->
-    <div class="settingItem">
-      <div class="settingTitle"><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</div>
-      <div class="settingDesc">Enable extra privacy settings for this chat.</div>
-      <label class="switch">
-        <input type="checkbox" id="privacyToggle">
-        <span class="sliderRound"></span>
-      </label>
-    </div>
+    <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Lock </button>
+    <button><i class="fa-solid fa-shield"></i> disappearing messages </button>
   </div>
-
   
   <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
@@ -353,19 +263,6 @@ document.addEventListener("click", e=>{ if(!menuBtn.contains(e.target) && !menuP
 friendNameEl.onclick=openFriendInfo; friendPhotoEl.onclick=openFriendInfo;
 function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; }
 function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; }
-
-
-
-  // ===== SETTINGS INTERACTIONS =====
-document.getElementById("privacyToggle").addEventListener("change", e => {
-  if(e.target.checked) alert("Advanced Chat Privacy ON");
-  else alert("Advanced Chat Privacy OFF");
-});
-
-document.getElementById("chatSlider").addEventListener("input", e => {
-  console.log("Chat wallpaper/theme intensity:", e.target.value);
-});
-
 
 // ===== DELETE CHAT =====
 function deleteChat(){ if(confirm("Delete all messages?")){ messages=[]; saveMessages(); renderMessages(); } }
