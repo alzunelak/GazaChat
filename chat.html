@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,23 +50,6 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer i{color:black;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
-.popupBox {
-  display:none;
-  position:fixed;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  background:#fff;padding:20px;width:300px;
-  border-radius:12px;z-index:6000;
-  box-shadow:0 6px 18px rgba(0,0,0,0.2);
-  text-align:center;
-}
-.popupBox h3 {margin-top:0;}
-.popupBox button {
-  margin-top:15px;padding:8px 12px;background:#128C7E;
-  color:white;border:none;border-radius:6px;cursor:pointer;
-}
-
-  
 </style>
 </head>
 <body>
@@ -195,61 +179,12 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   </div>
 
   <!-- SETTINGS SECTION -->
-<div class="settingsContainer">
-  <button onclick="openPopup('encryptionPopup')">
-    <i class="fa-solid fa-lock"></i> End-to-End Encryption
-  </button>
-  <button onclick="openPopup('meshPopup')">
-    <i class="fa-solid fa-network-wired"></i> Mesh Network Form
-  </button>
-  <button onclick="openPopup('chatLockPopup')">
-    <i class="fa-solid fa-paint-roller"></i> Chat Lock
-  </button>
-  <button onclick="openPopup('disappearPopup')">
-    <i class="fa-solid fa-shield"></i> Disappearing Messages
-  </button>
-</div>
-
-<!-- POPUPS -->
-<div id="popupOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:5000;"></div>
-
-<!-- ENCRYPTION POPUP -->
-<div class="popupBox" id="encryptionPopup">
-  <h3>End-to-End Encryption</h3>
-  <p>Messages are secured with end-to-end encryption.</p>
-  <p>Verification completed for this chat.</p>
-  <button onclick="closePopup()">Done</button>
-</div>
-
-<!-- MESH POPUP -->
-
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">mesh network </div>
-    <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
- 
-
-
-
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">chat lock</div>
-    <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
+  <div class="settingsContainer">
+    <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
+    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
+    <button><i class="fa-solid fa-paint-roller"></i> Chat Lock </button>
+    <button><i class="fa-solid fa-shield"></i> disappearing messages </button>
   </div>
-  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
-
-<div id="backupModal" class="modal">
-    <div class="modal-content">
-        <h2 desapeat</h2>
-        <div class="option-group">
-            <label><input type="radio" name="backup" value="on"> 23</label>
-            <label><input type="radio" name="backup" value="off"> O4</label>
-           option 2hrs 3hrs 
-
-
-        </div>
-        <button class="close-btn" onclick="closeBackupModal()">Done</button>
   
   <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
@@ -304,39 +239,6 @@ function appendMessageBubble(obj){
   chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight;
 }
 function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
-
-
-
-
-
-  // === POPUP FUNCTIONS ===
-function openPopup(id){
-  document.getElementById("popupOverlay").style.display="block";
-  document.querySelectorAll(".popupBox").forEach(p=>p.style.display="none");
-  document.getElementById(id).style.display="block";
-}
-function closePopup(){
-  document.getElementById("popupOverlay").style.display="none";
-  document.querySelectorAll(".popupBox").forEach(p=>p.style.display="none");
-}
-
-// === CHAT LOCK SLIDER ===
-const chatLockSlider=document.getElementById("chatLockSlider");
-chatLockSlider.addEventListener("input",()=>{
-  const status=chatLockSlider.value==="1"?"ON":"OFF";
-  document.getElementById("chatLockStatus").textContent=`Chat Lock: ${status}`;
-});
-
-// === DISAPPEARING MESSAGES ===
-const disappearSelect=document.getElementById("disappearSelect");
-disappearSelect.addEventListener("change",()=>{
-  const val=disappearSelect.value;
-  let text="Off";
-  if(val==="1") text="1 hour";
-  else if(val==="24") text="24 hours";
-  else if(val==="168") text="7 days";
-  document.getElementById("disappearStatus").textContent=`Current: ${text}`;
-});
 
 // ===== SEND MESSAGE =====
 msgInput.addEventListener("keydown", e=>{
@@ -441,4 +343,4 @@ micBtn.onclick=async()=>{
 renderMessages();
 </script>
 </body>
-</html> the seting words 
+</html> 
