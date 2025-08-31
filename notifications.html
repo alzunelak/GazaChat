@@ -67,6 +67,14 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
     <label class="switch"><input type="checkbox" id="keepMuted"><span class="slider"></span></label>
 </div>
 
+<div class="setting-item">
+    <div class="setting-text">
+        <div class="setting-title">Notify Me</div>
+        <div class="setting-desc">Receive notifications for all activity</div>
+    </div>
+    <label class="switch"><input type="checkbox" id="notifyMe"><span class="slider"></span></label>
+</div>
+
 <div class="section-divider"></div>
 
 <!-- Vibrate -->
@@ -105,9 +113,9 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
     <div class="modal-content">
         <h2>Choose Notification Tone</h2>
         <div class="option-group">
-            <label><input type="radio" name="tone" value="Small"> Small</label>
-            <label><input type="radio" name="tone" value="Medium"> Medium</label>
-            <label><input type="radio" name="tone" value="Large"> Large</label>
+            <label><input type="radio" name="tone" value="Aurora"> Aurora</label>
+            <label><input type="radio" name="tone" value="Alpha"> Alpha</label>
+            <label><input type="radio" name="tone" value="Alien"> Alien</label>
         </div>
         <button class="close-btn" onclick="closeToneModal()">Done</button>
     </div>
@@ -118,6 +126,7 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
 const sendEnter = document.getElementById('sendEnter');
 const linkPreview = document.getElementById('linkPreview');
 const keepMuted = document.getElementById('keepMuted');
+const notifyMe = document.getElementById('notifyMe');
 
 // Desc elements
 const vibrateDesc = document.getElementById('vibrate-desc');
@@ -130,6 +139,7 @@ function loadSettings() {
     if(localStorage.sendEnter) sendEnter.checked = JSON.parse(localStorage.sendEnter);
     if(localStorage.linkPreview) linkPreview.checked = JSON.parse(localStorage.linkPreview);
     if(localStorage.keepMuted) keepMuted.checked = JSON.parse(localStorage.keepMuted);
+    if(localStorage.notifyMe) notifyMe.checked = JSON.parse(localStorage.notifyMe);
 }
 loadSettings();
 
@@ -143,10 +153,11 @@ document.querySelectorAll('input[name="tone"]').forEach(r => r.addEventListener(
     localStorage.setItem('tone', e.target.value);
 }));
 
-// Toggles
+// Save toggle settings
 sendEnter.addEventListener('change', e=>localStorage.setItem('sendEnter', e.target.checked));
 linkPreview.addEventListener('change', e=>localStorage.setItem('linkPreview', e.target.checked));
 keepMuted.addEventListener('change', e=>localStorage.setItem('keepMuted', e.target.checked));
+notifyMe.addEventListener('change', e=>localStorage.setItem('notifyMe', e.target.checked));
 
 // Modals
 function openVibrateModal(){ document.getElementById('vibrateModal').style.display='flex'; }
