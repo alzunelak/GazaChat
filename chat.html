@@ -51,19 +51,29 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
 
-
-.modal {
-  display: none;
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: rgba(0,0,0,0.4);
-  z-index:4000;
+.settingsItem {
+  display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
 }
 
+.settingsItem small {
+  font-size: 14px;
+  color: #555;
+}
 
+/* Optional: keep switch aligned nicely */
+.settingsItem label.switch {
+  margin: 0;
+}
 
   /* ==== MODAL STYLES ==== */
 .modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
@@ -212,30 +222,20 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 
 
-
 <!-- SETTINGS FEATURES SECTION -->
-<div class="settingsContainer" style="margin-top:20px; gap:10px;">
+<div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
 
-<!-- END-TO-END ENCRYPTION POPUP -->
-<div id="encryptionPopup" class="modal">
-  <div class="modal-content" style="text-align:center;">
-    <h2>End-to-End Encryption</h2>
-    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" 
-         alt="Encryption" style="width:100px;margin-bottom:15px;">
-    <p>Your messages and calls are secured with end-to-end encryption.</p>
-    <p style="color:green;font-weight:bold;">✔ Verification Completed</p>
-    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
-  </div>
-</div>
+  <button class="settingsItem" onclick="openEncryptionPopup()">
+    <span>End-to-End Encryption</span>
+    <i class="fa-solid fa-circle-info"></i>
+  </button>
 
-   <!-- Mesh Network -->
-  <div style="display:flex;flex-direction:column;padding:12px;background:#fff;border:1px solid #eee;border-radius:8px;">
-    <span>Mesh Network</span>
-    <small style="color:#555;">Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
-  </div>
+  <button class="settingsItem" onclick="openDisappearModal()">
+    <span>Disappearing Messages</span>
+    <i class="fa-solid fa-clock"></i>
+  </button>
 
-  <!-- Chat Lock -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#fff;border:1px solid #eee;border-radius:8px;">
+  <div class="settingsItem">
     <span>Chat Lock</span>
     <label class="switch">
       <input type="checkbox" id="chatLockToggle">
@@ -243,20 +243,12 @@ input:checked + .slider:before {transform:translateX(26px);}
     </label>
   </div>
 
-  <!-- DISAPPEARING MESSAGES MODAL -->
-<div id="disappearModal" class="modal">
-  <div class="modal-content">
-    <h2>Disappearing Messages</h2>
-    <div class="option-group">
-      <label><input type="radio" name="disappear" value="off" checked> Off</label>
-      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
-      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
-      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
-    </div>
-    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
+  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
+    <span>Mesh Network</span>
+    <small style="color:#555;">Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
   </div>
 </div>
-
+  
   <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
     <div style="display:flex;align-items:center;justify-content:space-between;">
