@@ -50,7 +50,9 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer i{color:black;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
-  .settingsItem {
+  
+<style>
+.settingsItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -61,11 +63,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   width: 100%;
   box-sizing: border-box;
   font-size: 16px;
-}
-
-/* Add border only for the first two buttons */
-.settingsItem:nth-child(-n+2) {
-  border: 1px solid #eee;
+  border: none; /* no borders at all */
 }
 
 /* Small text for Mesh Network */
@@ -79,7 +77,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   margin: 0;
 }
 
-/* Optional: disable pointer for Mesh Network */
+/* Disable pointer for Mesh Network */
 .settingsItem:last-child {
   pointer-events: none;
 }
@@ -230,34 +228,32 @@ input:checked + .slider:before {transform:translateX(26px);}
     </div>
   </div>
 
-
 <!-- SETTINGS FEATURES SECTION -->
 <div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
 
   <button class="settingsItem" onclick="openEncryptionPopup()">
-    <span>End-to-End Encryption</span>
+    <span>✔ End-to-End Encryption</span>
     <i class="fa-solid fa-circle-info"></i>
   </button>
 
-   <div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:default;">
-    <span>Mesh Network</span>
-    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
-  </div>
+  <button class="settingsItem" onclick="openDisappearModal()">
+    <span>✔ Disappearing Messages</span>
+    <i class="fa-solid fa-clock"></i>
+  </button>
 
   <div class="settingsItem">
-    <span>Chat Lock</span>
+    <span>✔ Chat Lock</span>
     <label class="switch">
       <input type="checkbox" id="chatLockToggle">
       <span class="slider"></span>
     </label>
   </div>
 
-  <button class="settingsItem" onclick="openDisappearModal()">
-    <span>Disappearing Messages</span>
-    <i class="fa-solid fa-clock"></i>
-  </button>
+  <div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:default;">
+    <span>✔ Mesh Network</span>
+    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
+  </div>
 </div>
-  
   
   <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
