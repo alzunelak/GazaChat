@@ -436,19 +436,12 @@ micBtn.onclick=async()=>{
 function openDisappearModal(){document.getElementById("disappearModal").style.display="flex";}
 function closeDisappearModal(){document.getElementById("disappearModal").style.display="none";}
 
-function openChatLockModal(){document.getElementById("chatLockModal").style.display="flex";}
-function closeChatLockModal(){document.getElementById("chatLockModal").style.display="none";}
-
-function openMeshModal(){document.getElementById("meshModal").style.display="flex";}
-function closeMeshModal(){document.getElementById("meshModal").style.display="none";}
 
 function openEncryptionPopup(){document.getElementById("encryptionPopup").style.display="flex";}
 function closeEncryptionPopup(){document.getElementById("encryptionPopup").style.display="none";}
 
 // ==== HOOK BUTTONS ====
 document.querySelector('.settingsContainer button:nth-child(1)').onclick=openEncryptionPopup;
-document.querySelector('.settingsContainer button:nth-child(2)').onclick=openMeshModal;
-document.querySelector('.settingsContainer button:nth-child(3)').onclick=openChatLockModal;
 document.querySelector('.settingsContainer button:nth-child(4)').onclick=openDisappearModal;
 
 
