@@ -250,13 +250,16 @@ input:checked + .slider:before {transform:translateX(26px);}
     </label>
   </div>
   
-  <button class="settingsItem" onclick="openDisappearModal()">
+<!-- Disappearing Messages button with status text -->
+<div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:pointer;">
+  <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:none; padding:0;">
     <span>Disappearing Messages</span>
     <i class="fa-solid fa-clock"></i>
   </button>
+  <small id="disappearStatus" style="color:#555; margin-top:4px;">Off</small>
 </div>
 
-  <!-- POPUP MODAL -->
+<!-- POPUP MODAL -->
 <div id="disappearModal" class="modal">
   <div class="modal-content">
     <h2>Disappearing Messages</h2>
@@ -427,12 +430,23 @@ micBtn.onclick=async()=>{
 document.getElementById("chatLockToggle").addEventListener("change", function(){
   alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled");
 });
+  
 // ==== desappear ====
-  function openDisappearModal(){
-  document.getElementById("disappearModal").style.display="flex";
+const disappearModal = document.getElementById("disappearModal");
+const disappearBtn = document.getElementById("disappearBtn");
+const disappearStatus = document.getElementById("disappearStatus");
+
+// Open modal
+disappearBtn.onclick = () => {
+  disappearModal.style.display = "flex";
 }
+
+// Close modal
 function closeDisappearModal(){
-  document.getElementById("disappearModal").style.display="none";
+  disappearModal.style.display = "none";
+  // Update status text based on selected radio
+  const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim();
+  disappearStatus.textContent = selected;
 }
 // ===== RENDER INITIAL =====
 renderMessages();
