@@ -34,19 +34,15 @@ input[type="radio"] { appearance:none; width:18px; height:18px; border:2px solid
 input[type="radio"]:checked { border-color:#4CAF50; background-color:#4CAF50; }
 input[type="radio"]:checked::after { content:''; position:absolute; top:4px; left:4px; width:6px; height:6px; background-color:white; border-radius:50%; }
 
-.chat-preview { border: 1px solid #ccc; padding: 10px; border-radius: 10px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
-.chat-msg { padding: 6px 12px; border-radius: 15px; margin-bottom: 8px; display: inline-block; max-width: 70%; }
-.sent { background-color: #DCF8C6; align-self: flex-end; text-align: right; }
-.received { background-color: #fff; border:1px solid #ccc; align-self: flex-start; text-align: left; }
-.preview-container { display: flex; flex-direction: column; }
 </style>
 </head>
-<body id="mainBody">
+<body>
 
 <div class="back" onclick="history.back()">⬅ Notification</div>
 
+<h1>Notification Settings</h1>
 
-<!-- notification Settings -->
+<!-- Notification Settings -->
 <div class="setting-item">
     <div class="setting-text">
         <div class="setting-title">Conversation tones</div>
@@ -73,20 +69,20 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
 
 <div class="section-divider"></div>
 
-<!-- Notification tone -->
-<div class="setting-item" onclick="openFontModal()">
+<!-- Vibrate -->
+<div class="setting-item" onclick="openVibrateModal()">
     <div class="setting-text">
-        <div class="setting-title">Notification tone</div>
-        <div class="setting-desc" id="font-desc">Medium</div>
+        <div class="setting-title">Vibrate</div>
+        <div class="setting-desc" id="vibrate-desc">Default</div>
     </div>
 </div>
 
-<div class="setting-item">
+<!-- Notification Tone -->
+<div class="setting-item" onclick="openToneModal()">
     <div class="setting-text">
-        <div class="setting-title">Notify when</div>
-        <div class="setting-desc">Contact joins signal</div>
+        <div class="setting-title">Notification tone</div>
+        <div class="setting-desc" id="tone-desc">Medium</div>
     </div>
-    <label class="switch"><input type="checkbox" id="voiceTrans"><span class="slider"></span></label>
 </div>
 
 <div class="section-divider"></div>
@@ -96,24 +92,24 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
     <div class="modal-content">
         <h2>Choose Vibrate</h2>
         <div class="option-group">
-            <label><input type="radio" name="vibrate" value="system"> Default</label>
-            <label><input type="radio" name="vibrate" value="off"> Off</label>
-            <label><input type="radio" name="vibrate" value="short"> Short</label>
-            <label><input type="radio" name="vibrate" value="long"> Long</label>
+            <label><input type="radio" name="vibrate" value="Default"> Default</label>
+            <label><input type="radio" name="vibrate" value="Off"> Off</label>
+            <label><input type="radio" name="vibrate" value="Short"> Short</label>
+            <label><input type="radio" name="vibrate" value="Long"> Long</label>
         </div>
         <button class="close-btn" onclick="closeVibrateModal()">Done</button>
     </div>
 </div>
 
-<div id="fontModal" class="modal">
+<div id="toneModal" class="modal">
     <div class="modal-content">
-        <h2>Choose notification tone</h2>
+        <h2>Choose Notification Tone</h2>
         <div class="option-group">
-            <label><input type="radio" name="font" value="small"> Small</label>
-            <label><input type="radio" name="font" value="medium"> Medium</label>
-            <label><input type="radio" name="font" value="large"> Large</label>
+            <label><input type="radio" name="tone" value="Small"> Small</label>
+            <label><input type="radio" name="tone" value="Medium"> Medium</label>
+            <label><input type="radio" name="tone" value="Large"> Large</label>
         </div>
-        <button class="close-btn" onclick="closeFontModal()">Done</button>
+        <button class="close-btn" onclick="closeToneModal()">Done</button>
     </div>
 </div>
 
@@ -122,50 +118,46 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
 const sendEnter = document.getElementById('sendEnter');
 const linkPreview = document.getElementById('linkPreview');
 const keepMuted = document.getElementById('keepMuted');
-const voiceTrans = document.getElementById('voiceTrans');
 
 // Desc elements
-const fontDesc = document.getElementById('font-desc');
+const vibrateDesc = document.getElementById('vibrate-desc');
+const toneDesc = document.getElementById('tone-desc');
 
 // Load saved settings
-function loadSettings(){
-    if(localStorage.fontSize){ 
-        fontDesc.textContent = localStorage.fontSize; 
-        document.querySelector(`input[name="font"][value="${localStorage.fontSize.toLowerCase()}"]`).checked=true; 
-        document.body.style.fontSize = localStorage.fontSize==='Small'?'12px':localStorage.fontSize==='Medium'?'16px':'20px';
-    }
+function loadSettings() {
+    if(localStorage.vibrate) vibrateDesc.textContent = localStorage.vibrate;
+    if(localStorage.tone) toneDesc.textContent = localStorage.tone;
     if(localStorage.sendEnter) sendEnter.checked = JSON.parse(localStorage.sendEnter);
     if(localStorage.linkPreview) linkPreview.checked = JSON.parse(localStorage.linkPreview);
     if(localStorage.keepMuted) keepMuted.checked = JSON.parse(localStorage.keepMuted);
-    if(localStorage.voiceTrans) voiceTrans.checked = JSON.parse(localStorage.voiceTrans);
 }
 loadSettings();
 
-// Save settings
-document.querySelectorAll('input[name="font"]').forEach(r => r.addEventListener('change', e => {
-    const val = capitalize(e.target.value);
-    localStorage.setItem('fontSize', val);
-    fontDesc.textContent = val;
-    document.body.style.fontSize = val==='Small'?'12px':val==='Medium'?'16px':'20px';
+// Save vibrate and tone selections
+document.querySelectorAll('input[name="vibrate"]').forEach(r => r.addEventListener('change', e=>{
+    vibrateDesc.textContent = e.target.value;
+    localStorage.setItem('vibrate', e.target.value);
 }));
+document.querySelectorAll('input[name="tone"]').forEach(r => r.addEventListener('change', e=>{
+    toneDesc.textContent = e.target.value;
+    localStorage.setItem('tone', e.target.value);
+}));
+
+// Toggles
 sendEnter.addEventListener('change', e=>localStorage.setItem('sendEnter', e.target.checked));
 linkPreview.addEventListener('change', e=>localStorage.setItem('linkPreview', e.target.checked));
 keepMuted.addEventListener('change', e=>localStorage.setItem('keepMuted', e.target.checked));
-voiceTrans.addEventListener('change', e=>localStorage.setItem('voiceTrans', e.target.checked));
 
 // Modals
-function openFontModal(){ document.getElementById('fontModal').style.display='flex'; }
-function closeFontModal(){ document.getElementById('fontModal').style.display='none'; }
 function openVibrateModal(){ document.getElementById('vibrateModal').style.display='flex'; }
 function closeVibrateModal(){ document.getElementById('vibrateModal').style.display='none'; }
-
-// Capitalize helper
-function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function openToneModal(){ document.getElementById('toneModal').style.display='flex'; }
+function closeToneModal(){ document.getElementById('toneModal').style.display='none'; }
 
 // Close modals clicking outside
 window.onclick = function(event){
-    if(event.target===document.getElementById('fontModal')) closeFontModal();
     if(event.target===document.getElementById('vibrateModal')) closeVibrateModal();
+    if(event.target===document.getElementById('toneModal')) closeToneModal();
 }
 </script>
 </body>
