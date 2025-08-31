@@ -211,26 +211,60 @@ input:checked + .slider:before {transform:translateX(26px);}
     </div>
   </div>
 
- <!-- SETTINGS FEATURES SECTION -->
+
+
+<div onclick="openFriendInfo()">View Info</div> <div onclick="alert('Muted!')">Mesh</div> <div onclick="deleteChat()">Delete Chat</div> <div onclick="openSettings()">Chat Settings</div> <div onclick="openDisappearModal()">Disappearing Messages</div> <!-- NEW --> <div onclick="openEncryptionPopup()">End-to-End Encryption</div> <!-- NEW -->
+
+  
+<!-- FRIEND INFO / SETTINGS PAGE -->
+
+<!-- END-TO-END ENCRYPTION POPUP -->
+<div id="encryptionPopup" class="modal">
+  <div class="modal-content" style="text-align:center;">
+    <h2>End-to-End Encryption</h2>
+    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" 
+         alt="Encryption" style="width:100px;margin-bottom:15px;">
+    <p>Your messages and calls are secured with end-to-end encryption.</p>
+    <p style="color:green;font-weight:bold;">✔ Verification Completed</p>
+    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
+  </div>
+</div>
+
+<!-- DISAPPEARING MESSAGES MODAL -->
+<div id="disappearModal" class="modal">
+  <div class="modal-content">
+    <h2>Disappearing Messages</h2>
+    <div class="option-group">
+      <label><input type="radio" name="disappear" value="off" checked> Off</label>
+      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
+      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
+      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
+    </div>
+    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
+  </div>
+</div>
+
+<!-- CHAT LOCK -->
 <div class="settingsContainer">
-  <button onclick="openEncryptionPopup()">
-    ✔ End-to-End Encryption <i class="fa-solid fa-circle-info"></i>
-  </button>
-  <button onclick="openDisappearModal()">
-    ✔ Disappearing Messages <i class="fa-solid fa-clock"></i>
-  </button>
   <div style="display:flex;align-items:center;justify-content:space-between;">
-    <span>✔ Chat Lock</span>
+    <span>Chat Lock</span>
     <label class="switch">
       <input type="checkbox" id="chatLockToggle">
       <span class="slider"></span>
     </label>
   </div>
+</div>
+
+<!-- MESH NETWORK (STATIC TEXT) -->
+<div class="settingsContainer">
   <div style="display:flex;flex-direction:column;">
-    <span>✔ Mesh Network</span>
-    <small style="color:#555;">Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
+    <strong>Mesh Network</strong>
+    <span style="font-size:14px;color:#555;">
+      Peer-to-peer sync and nearby chat sharing enabled automatically.
+    </span>
   </div>
 </div>
+
 
 
 
