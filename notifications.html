@@ -64,15 +64,6 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
     </div>
     <label class="switch"><input type="checkbox" id="keepMuted"><span class="slider"></span></label>
 </div>
-
-<div class="setting-item">
-    <div class="setting-text">
-        <div class="setting-title">Notify Me</div>
-        <div class="setting-desc">Receive notifications for all activity</div>
-    </div>
-    <label class="switch"><input type="checkbox" id="notifyMe"><span class="slider"></span></label>
-</div>
-
 <div class="section-divider"></div>
 
 <!-- Vibrate -->
@@ -119,6 +110,13 @@ input[type="radio"]:checked::after { content:''; position:absolute; top:4px; lef
     </div>
 </div>
 
+    <div class="setting-item">
+    <div class="setting-text">
+        <div class="setting-title">Notify Me</div>
+        <div class="setting-desc">Receive notifications for all activity</div>
+    </div>
+    <label class="switch"><input type="checkbox" id="notifyMe"><span class="slider"></span></label>
+</div>
 <script>
 // Toggles
 const sendEnter = document.getElementById('sendEnter');
