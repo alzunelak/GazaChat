@@ -50,6 +50,29 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer i{color:black;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
+
+
+
+
+
+  /* ==== MODAL STYLES ==== */
+.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;}
+.modal-content {background:#fff;padding:20px;border-radius:12px;width:300px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.3);}
+.option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;}
+.close-btn {background:#128C7E;color:#fff;border:none;padding:10px 15px;
+  border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
+
+/* SWITCH STYLE */
+.switch {position:relative;display:inline-block;width:50px;height:24px;}
+.switch input {opacity:0;width:0;height:0;}
+.slider {position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+  background:#ccc;transition:.4s;border-radius:24px;}
+.slider:before {position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;
+  background:white;transition:.4s;border-radius:50%;}
+input:checked + .slider {background:#128C7E;}
+input:checked + .slider:before {transform:translateX(26px);}
 </style>
 </head>
 <body>
@@ -185,6 +208,77 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     <button><i class="fa-solid fa-paint-roller"></i> Chat Lock </button>
     <button><i class="fa-solid fa-shield"></i> disappearing messages </button>
   </div>
+  <!-- DISAPPEARING MESSAGES MODAL -->
+<div id="disappearModal" class="modal">
+  <div class="modal-content">
+    <h2>Disappearing Messages</h2>
+    <div class="option-group">
+      <label><input type="radio" name="disappear" value="off" checked> Off</label>
+      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
+      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
+      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
+    </div>
+    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
+  </div>
+</div>
+
+<!-- CHAT LOCK MODAL -->
+<div id="chatLockModal" class="modal">
+  <div class="modal-content">
+    <h2>Chat Lock</h2>
+    <div class="setting-item">
+      <div class="setting-text">
+        <div class="setting-title">Require PIN to Open Chat</div>
+        <div class="setting-desc">Secure this chat with a PIN</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="chatLockToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <button class="close-btn" onclick="closeChatLockModal()">Done</button>
+  </div>
+</div>
+
+<!-- MESH NETWORK MODAL -->
+<div id="meshModal" class="modal">
+  <div class="modal-content">
+    <h2>Mesh Network</h2>
+    <div class="setting-item">
+      <div class="setting-text">
+        <div class="setting-title">Link Previews</div>
+        <div class="setting-desc">Show previews when links are sent</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="linkPreviewToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="setting-item">
+      <div class="setting-text">
+        <div class="setting-title">Peer-to-Peer Sync</div>
+        <div class="setting-desc">Share chats over nearby devices</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="p2pToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <button class="close-btn" onclick="closeMeshModal()">Done</button>
+  </div>
+</div>
+
+<!-- END-TO-END ENCRYPTION POPUP -->
+<div id="encryptionPopup" class="modal">
+  <div class="modal-content" style="text-align:center;">
+    <h2>End-to-End Encryption</h2>
+    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" 
+         alt="Encryption" style="width:100px;margin-bottom:15px;">
+    <p>Your messages and calls are secured with end-to-end encryption.</p>
+    <p style="color:green;font-weight:bold;">✔ Verification Completed</p>
+    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
+  </div>
+</div>
   
   <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
@@ -339,6 +433,32 @@ micBtn.onclick=async()=>{
   else { mediaRecorder.stop(); micBtn.style.background="#25D366"; }
 };
 
+
+
+
+
+
+// ==== OPEN/CLOSE MODALS ====
+function openDisappearModal(){document.getElementById("disappearModal").style.display="flex";}
+function closeDisappearModal(){document.getElementById("disappearModal").style.display="none";}
+
+function openChatLockModal(){document.getElementById("chatLockModal").style.display="flex";}
+function closeChatLockModal(){document.getElementById("chatLockModal").style.display="none";}
+
+function openMeshModal(){document.getElementById("meshModal").style.display="flex";}
+function closeMeshModal(){document.getElementById("meshModal").style.display="none";}
+
+function openEncryptionPopup(){document.getElementById("encryptionPopup").style.display="flex";}
+function closeEncryptionPopup(){document.getElementById("encryptionPopup").style.display="none";}
+
+// ==== HOOK BUTTONS ====
+document.querySelector('.settingsContainer button:nth-child(1)').onclick=openEncryptionPopup;
+document.querySelector('.settingsContainer button:nth-child(2)').onclick=openMeshModal;
+document.querySelector('.settingsContainer button:nth-child(3)').onclick=openChatLockModal;
+document.querySelector('.settingsContainer button:nth-child(4)').onclick=openDisappearModal;
+
+
+  
 // ===== RENDER INITIAL =====
 renderMessages();
 </script>
