@@ -81,7 +81,15 @@
     max-width: 400px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
-  .modal-content h2 { color: #000; margin-bottom: 15px; font-weight: bold; font-size: 1.4em; }
+
+  /* Modal small title like Blocked Contacts */
+  .modal-title-small { 
+    font-size: 16px; 
+    font-weight: 500; 
+    color: #000; 
+    margin-bottom: 15px;
+  }
+
   .option-group strong { color: #000; display: block; margin-bottom: 8px; }
 
   .close-btn {
@@ -140,7 +148,7 @@
 <div id="phoneModal" class="modal">
   <div class="modal-content">
     <!-- Small title like Blocked Contacts -->
-    <div class="setting-title" style="margin-bottom: 15px;">Phone Number Privacy</div>
+    <div class="modal-title-small">Phone Number Privacy</div>
     
     <div class="option-group">
       <strong>Who can see my number?</strong>
