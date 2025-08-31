@@ -5,46 +5,129 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat Settings</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; color: #333; }
-.back { margin-bottom: 20px; cursor: pointer; color: #000; display: inline-block; font-size: 1.2em; font-weight: bold; }
-h1 { font-size: 2em; margin-bottom: 20px; }
-.setting-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; cursor: pointer; }
-.setting-text { flex: 1; margin-right: 12px; }
-.setting-title { font-size: 14px; font-weight: 500; color: #000; }
-.setting-desc { font-size: 13px; color: #666; margin-top: 4px; }
-.section-divider { border-bottom: 1px solid #ccc; margin: 15px 0; }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f8f9fa;
+    color: #333;
+}
+.back {
+    margin-bottom: 20px;
+    cursor: pointer;
+    color: #000;
+    display: inline-block;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+/* Setting item style */
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+}
+.setting-text {
+    flex: 1;
+    margin-right: 12px;
+}
+.setting-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+}
+.setting-desc {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+.section-divider {
+    border-bottom: 1px solid #ccc;
+    margin: 15px 0;
+}
+
+/* Toggle switch */
 .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; top:0; left:0; right:0; bottom:0; background-color: #ccc; border-radius: 24px; transition:0.3s; }
-.slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background-color:white; border-radius:50%; transition:0.3s; }
+.slider {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc; border-radius: 24px; transition: 0.3s;
+}
+.slider:before {
+  position: absolute; content: ""; height: 18px; width: 18px;
+  left: 3px; bottom: 3px; background-color: white; border-radius: 50%;
+  transition: 0.3s;
+}
 .switch input:checked + .slider { background-color: #4CAF50; }
 .switch input:checked + .slider:before { transform: translateX(26px); }
 
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
-.modal-content { background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+/* Modal */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.4); 
+    justify-content: center; 
+    align-items: center;
+}
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
 .modal-content h2 { color: #000; margin-bottom: 15px; font-weight: bold; font-size: 1.4em; }
-.close-btn { background: #4CAF50; color: #fff; border: none; padding: 10px 16px; margin-top: 15px; border-radius: 6px; cursor: pointer; float: right; }
+.close-btn {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    margin-top: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    float: right;
+}
 .close-btn:hover { background: #45a049; }
-.option-group label { display:block; margin:6px 0; font-size:14px; cursor:pointer; }
-.option-group .info-text { font-size: 13px; color:#555; margin:4px 0 10px 0; }
+.option-group label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; }
+.option-group .info-text { font-size: 13px; color: #555; margin: 4px 0 10px 0; }
 
 /* Green radio buttons */
-input[type="radio"] { appearance:none; width:18px; height:18px; border:2px solid #ccc; border-radius:50%; margin-right:8px; position:relative; cursor:pointer; outline:none; }
-input[type="radio"]:checked { border-color:#4CAF50; background-color:#4CAF50; }
-input[type="radio"]:checked::after { content:''; position:absolute; top:4px; left:4px; width:6px; height:6px; background-color:white; border-radius:50%; }
-
-/* Chat preview */
-.chat-preview { border: 1px solid #ccc; padding: 10px; border-radius: 10px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
-.chat-msg { padding: 6px 12px; border-radius: 15px; margin-bottom: 8px; display: inline-block; max-width: 70%; }
-.sent { background-color: #DCF8C6; align-self: flex-end; text-align: right; }
-.received { background-color: #fff; border:1px solid #ccc; align-self: flex-start; text-align: left; }
-.preview-container { display: flex; flex-direction: column; }
-
-/* Body preview for theme */
-body-preview { width:100%; height:100%; }
+input[type="radio"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-right: 8px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+}
+input[type="radio"]:checked {
+    border-color: #4CAF50;
+    background-color: #4CAF50;
+}
+input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
+}
 </style>
 </head>
-<body id="mainBody">
+<body>
 
 <div class="back" onclick="history.back()">⬅ Back</div>
 <h1>Chat Settings</h1>
@@ -61,8 +144,35 @@ body-preview { width:100%; height:100%; }
 <div class="setting-item" onclick="openChatThemeModal()">
     <div class="setting-text">
         <div class="setting-title">Default Chat Theme</div>
-        <div class="setting-desc" id="chat-theme-desc">System Default</div>
+        <div class="setting-desc" id="chatTheme-desc">System Default</div>
     </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- Chat Settings -->
+<div class="setting-item">
+    <div class="setting-text">
+        <div class="setting-title">Send with Enter</div>
+        <div class="setting-desc">Enable to send message by pressing Enter</div>
+    </div>
+    <label class="switch"><input type="checkbox" id="sendEnter"><span class="slider"></span></label>
+</div>
+
+<div class="setting-item">
+    <div class="setting-text">
+        <div class="setting-title">Link Previews</div>
+        <div class="setting-desc">Show previews when links are sent</div>
+    </div>
+    <label class="switch"><input type="checkbox" id="linkPreview" checked><span class="slider"></span></label>
+</div>
+
+<div class="setting-item">
+    <div class="setting-text">
+        <div class="setting-title">Keep Muted Chats Archived</div>
+        <div class="setting-desc">Muted chats will remain in archive</div>
+    </div>
+    <label class="switch"><input type="checkbox" id="keepMuted" checked><span class="slider"></span></label>
 </div>
 
 <div class="section-divider"></div>
@@ -75,31 +185,23 @@ body-preview { width:100%; height:100%; }
     </div>
 </div>
 
+<!-- Voice Message Transcription -->
+<div class="setting-item">
+    <div class="setting-text">
+        <div class="setting-title">Voice Message Transcription</div>
+        <div class="setting-desc">Automatically transcribe voice messages</div>
+    </div>
+    <label class="switch"><input type="checkbox" id="voiceTrans"><span class="slider"></span></label>
+</div>
+
+<div class="section-divider"></div>
+
 <!-- Chat Backup -->
 <div class="setting-item" onclick="openBackupModal()">
     <div class="setting-text">
         <div class="setting-title">Chat Backup</div>
         <div class="setting-desc">Backup your chats to cloud</div>
         <div class="info-text" id="backup-status">Backup is Off</div>
-    </div>
-</div>
-
-<!-- Default Chat Theme Modal with Preview -->
-<div id="chatThemeModal" class="modal">
-    <div class="modal-content">
-        <h2>Choose Chat Theme</h2>
-        <div class="option-group">
-            <label><input type="radio" name="chatTheme" value="system" checked> System Default</label>
-            <label><input type="radio" name="chatTheme" value="light"> Light</label>
-            <label><input type="radio" name="chatTheme" value="dark"> Dark</label>
-            <label><input type="radio" name="chatTheme" value="blue"> Blue</label>
-            <label><input type="radio" name="chatTheme" value="green"> Green</label>
-        </div>
-        <div class="chat-preview preview-container" id="chat-preview">
-            <div class="chat-msg received">Hello! How are you?</div>
-            <div class="chat-msg sent">I am good, thanks!</div>
-        </div>
-        <button class="close-btn" onclick="closeChatThemeModal()">Done</button>
     </div>
 </div>
 
@@ -112,11 +214,22 @@ body-preview { width:100%; height:100%; }
             <label><input type="radio" name="theme" value="light"> Light</label>
             <label><input type="radio" name="theme" value="dark"> Dark</label>
         </div>
-        <div class="chat-preview preview-container" id="theme-preview">
-            <div class="chat-msg received">Sample received message</div>
-            <div class="chat-msg sent">Sample sent message</div>
-        </div>
         <button class="close-btn" onclick="closeThemeModal()">Done</button>
+    </div>
+</div>
+
+<!-- Default Chat Theme Modal -->
+<div id="chatThemeModal" class="modal">
+    <div class="modal-content">
+        <h2>Choose Chat Theme</h2>
+        <div class="option-group">
+            <label><input type="radio" name="chatTheme" value="system" checked> System Default</label>
+            <label><input type="radio" name="chatTheme" value="light"> Light</label>
+            <label><input type="radio" name="chatTheme" value="dark"> Dark</label>
+            <label><input type="radio" name="chatTheme" value="blue"> Blue</label>
+            <label><input type="radio" name="chatTheme" value="green"> Green</label>
+        </div>
+        <button class="close-btn" onclick="closeChatThemeModal()">Done</button>
     </div>
 </div>
 
@@ -128,10 +241,6 @@ body-preview { width:100%; height:100%; }
             <label><input type="radio" name="font" value="small"> Small</label>
             <label><input type="radio" name="font" value="medium" checked> Medium</label>
             <label><input type="radio" name="font" value="large"> Large</label>
-        </div>
-        <div class="chat-preview preview-container" id="font-preview">
-            <div class="chat-msg received">Hello! Font preview</div>
-            <div class="chat-msg sent">I am good!</div>
         </div>
         <button class="close-btn" onclick="closeFontModal()">Done</button>
     </div>
@@ -150,102 +259,61 @@ body-preview { width:100%; height:100%; }
 </div>
 
 <script>
-const chatThemeModal = document.getElementById("chatThemeModal");
-const chatThemeDesc = document.getElementById("chat-theme-desc");
-const chatPreview = document.getElementById("chat-preview");
-
 const themeModal = document.getElementById("themeModal");
-const themeDesc = document.getElementById("theme-desc");
-const themePreview = document.getElementById("theme-preview");
-
+const chatThemeModal = document.getElementById("chatThemeModal");
 const fontModal = document.getElementById("fontModal");
-const fontDesc = document.getElementById("font-desc");
-const fontPreview = document.getElementById("font-preview");
-
 const backupModal = document.getElementById("backupModal");
 const backupStatus = document.getElementById("backup-status");
+const themeDesc = document.getElementById("theme-desc");
+const chatThemeDesc = document.getElementById("chatTheme-desc");
+const fontDesc = document.getElementById("font-desc");
 
-// Open/Close Modals
-function openChatThemeModal(){ chatThemeModal.style.display='flex'; }
-function closeChatThemeModal(){
-    chatThemeModal.style.display='none';
-    const val = document.querySelector('input[name="chatTheme"]:checked').value;
-    chatThemeDesc.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-}
-
+// Open/close modals
 function openThemeModal(){ themeModal.style.display='flex'; }
-function closeThemeModal(){
-    themeModal.style.display='none';
-    const val = document.querySelector('input[name="theme"]:checked').value;
-    themeDesc.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-}
-
+function closeThemeModal(){ themeModal.style.display='none'; }
+function openChatThemeModal(){ chatThemeModal.style.display='flex'; }
+function closeChatThemeModal(){ chatThemeModal.style.display='none'; }
 function openFontModal(){ fontModal.style.display='flex'; }
-function closeFontModal(){
-    fontModal.style.display='none';
-    const val = document.querySelector('input[name="font"]:checked').value;
-    fontDesc.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-}
-
+function closeFontModal(){ fontModal.style.display='none'; }
 function openBackupModal(){ backupModal.style.display='flex'; }
 function closeBackupModal(){ 
     backupModal.style.display='none';
-    const val = document.querySelector('input[name="backup"]:checked').value;
-    backupStatus.textContent = "Backup is " + (val==='on'?'On':'Off');
+    const backupValue = document.querySelector('input[name="backup"]:checked').value;
+    backupStatus.textContent = "Backup is " + (backupValue==='on'?'On':'Off');
+    localStorage.setItem('backup', backupValue);
 }
 
-// Live preview for Chat Theme
-document.querySelectorAll('input[name="chatTheme"]').forEach(radio => {
-    radio.addEventListener('change', function(){
-        let sentColor, receivedColor, bgColor;
-        switch(this.value){
-            case 'system': sentColor="#DCF8C6"; receivedColor="#fff"; bgColor="#f8f9fa"; break;
-            case 'light': sentColor="#E1FFC7"; receivedColor="#FFFFFF"; bgColor="#FFFFFF"; break;
-            case 'dark': sentColor="#2C2F33"; receivedColor="#23272A"; bgColor="#1C1E21"; break;
-            case 'blue': sentColor="#D0E6FF"; receivedColor="#FFFFFF"; bgColor="#E6F0FF"; break;
-            case 'green': sentColor="#CCFFCC"; receivedColor="#FFFFFF"; bgColor="#E6FFE6"; break;
-        }
-        chatPreview.style.background = bgColor;
-        chatPreview.querySelector('.sent').style.background = sentColor;
-        chatPreview.querySelector('.received').style.background = receivedColor;
+// Save settings to localStorage
+document.querySelectorAll('input[name="theme"]').forEach(r=>{
+    r.addEventListener('change', function(){
+        localStorage.setItem('theme', this.value);
+        themeDesc.textContent = this.nextSibling.textContent.trim();
+    });
+});
+document.querySelectorAll('input[name="chatTheme"]').forEach(r=>{
+    r.addEventListener('change', function(){
+        localStorage.setItem('chatTheme', this.value);
+        chatThemeDesc.textContent = this.nextSibling.textContent.trim();
+    });
+});
+document.querySelectorAll('input[name="font"]').forEach(r=>{
+    r.addEventListener('change', function(){
+        localStorage.setItem('fontSize', this.value);
+        fontDesc.textContent = this.nextSibling.textContent.trim();
     });
 });
 
-// Live preview for Theme
-document.querySelectorAll('input[name="theme"]').forEach(radio => {
-    radio.addEventListener('change', function(){
-        let bg, sent, received;
-        switch(this.value){
-            case 'system': bg="#f8f9fa"; sent="#DCF8C6"; received="#fff"; break;
-            case 'light': bg="#FFFFFF"; sent="#E1FFC7"; received="#FFFFFF"; break;
-            case 'dark': bg="#1C1E21"; sent="#2C2F33"; received="#23272A"; break;
-        }
-        themePreview.style.background = bg;
-        themePreview.querySelector('.sent').style.background = sent;
-        themePreview.querySelector('.received').style.background = received;
-        document.getElementById('mainBody').style.background = bg; // live background change
-    });
-});
+// Save toggles
+document.getElementById('sendEnter').addEventListener('change', e => localStorage.setItem('sendEnter', e.target.checked));
+document.getElementById('linkPreview').addEventListener('change', e => localStorage.setItem('linkPreview', e.target.checked));
+document.getElementById('keepMuted').addEventListener('change', e => localStorage.setItem('keepMuted', e.target.checked));
+document.getElementById('voiceTrans').addEventListener('change', e => localStorage.setItem('voiceTrans', e.target.checked));
 
-// Live preview for Font Size
-document.querySelectorAll('input[name="font"]').forEach(radio => {
-    radio.addEventListener('change', function(){
-        let size;
-        switch(this.value){
-            case 'small': size='12px'; break;
-            case 'medium': size='16px'; break;
-            case 'large': size='20px'; break;
-        }
-        fontPreview.querySelectorAll('.chat-msg').forEach(msg => msg.style.fontSize=size);
-        document.getElementById('mainBody').style.fontSize = size; // live body font
-    });
-});
-
-// Close modals when clicking outside
+// Close modals on outside click
 window.onclick = function(event){
-    if(event.target === chatThemeModal) closeChatThemeModal();
-    if(event.target === themeModal) closeThemeModal();
-    if(event.target === fontModal) closeFontModal();
+    if(event.target === themeModal) themeModal.style.display='none';
+    if(event.target === chatThemeModal) chatThemeModal.style.display='none';
+    if(event.target === fontModal) fontModal.style.display='none';
     if(event.target === backupModal) closeBackupModal();
 }
 </script>
