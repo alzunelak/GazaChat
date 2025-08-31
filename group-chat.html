@@ -667,17 +667,17 @@ document.getElementById("addMemberBtn").onclick = ()=>{
   localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
   window.location.href = "addMembers.html";
 };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const storedMembers = JSON.parse(localStorage.getItem('currentGroupMembers') || '[]');
-    if(storedMembers.length > 0) {
-        currentGroupMembers = storedMembers;
+function addMember(name){
+    if(!currentGroupMembers.includes(name)){
+        currentGroupMembers.push(name);
+        currentGroup.members.push({name:name, accepted:true});
+        groups[currentGroupIndex] = currentGroup;
+        localStorage.setItem('groups', JSON.stringify(groups));
         renderGroupMembers();
-        localStorage.removeItem('currentGroupMembers'); // optional cleanup
     }
-});
+}
 
-
+  
 // ===== NAVIGATION =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
 function openGroupInfo(){
