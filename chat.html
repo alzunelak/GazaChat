@@ -6,8 +6,8 @@
 <title>GazaChat App</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* --------- General --------- */
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100vh;display:flex;flex-direction:column;}
+/* ---------- GENERAL STYLES ---------- */
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f8f9fa;height:100vh;display:flex;flex-direction:column;}
 #chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
 .header{display:flex;align-items:center;justify-content:space-between;background:#128C7E;padding:10px;border-bottom:1px solid #ccc;position:relative;}
 .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
@@ -48,10 +48,9 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
 .settingsContainer button:hover{background:#f1f1f1;}
 .settingsContainer i{color:black;font-size:18px;}
-.settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
 
-/* --------- SETTINGS MODAL --------- */
+/* ---------- SETTINGS MODAL ---------- */
 #settingsModal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:12px;padding:20px;width:300px;z-index:5000;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
 #settingsModal h3{margin-top:0;text-align:center;margin-bottom:15px;}
 .setting-group{margin-bottom:12px;}
@@ -129,7 +128,6 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     </div>
   </div>
 
-  <!-- SETTINGS SECTION -->
   <div class="settingsContainer">
     <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
     <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
@@ -171,138 +169,107 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 </div>
 
 <script>
-// --------- USER DATA ---------
-const myName = "Me";
-const myId = "user123";
-const friendsList = JSON.parse(localStorage.getItem("friends") || "[]");
-const friendParam = new URLSearchParams(window.location.search).get("friend");
-const friendObj = friendsList.find(f => f.name === friendParam);
-const friendData = { name: friendObj ? friendObj.name : (friendParam || "Friend"), photo: friendObj && friendObj.photo ? friendObj.photo : "default-profile.png" };
+// ---------- USER & FRIEND DATA ----------
+const myName="Me"; const myId="user123";
+const friendsList=JSON.parse(localStorage.getItem("friends")||"[]");
+const friendParam=new URLSearchParams(window.location.search).get("friend");
+const friendObj=friendsList.find(f=>f.name===friendParam);
+const friendData={name:friendObj?friendObj.name:(friendParam||"Friend"),photo:friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"};
 
-// DOM Elements
-const friendNameEl = document.getElementById("friendName");
-const friendPhotoEl = document.getElementById("friendPhoto");
-const infoFriendNameEl = document.getElementById("infoFriendName");
-const infoFriendPhotoEl = document.getElementById("infoFriendPhoto");
-const chatBox = document.getElementById("chatBox");
-const msgInput = document.getElementById("msgInput");
+// ---------- DOM ELEMENTS ----------
+const friendNameEl=document.getElementById("friendName");
+const friendPhotoEl=document.getElementById("friendPhoto");
+const infoFriendNameEl=document.getElementById("infoFriendName");
+const infoFriendPhotoEl=document.getElementById("infoFriendPhoto");
+const chatBox=document.getElementById("chatBox");
+const msgInput=document.getElementById("msgInput");
 
-// Initialize headers
-friendNameEl.textContent = friendData.name;
-friendPhotoEl.src = friendData.photo;
-friendPhotoEl.onerror = ()=>friendPhotoEl.src="default-profile.png";
-infoFriendNameEl.textContent = friendData.name;
-infoFriendPhotoEl.src = friendData.photo;
-infoFriendPhotoEl.onerror = ()=>infoFriendPhotoEl.src="default-profile.png";
+// Initialize friend headers
+friendNameEl.textContent=friendData.name;
+friendPhotoEl.src=friendData.photo; friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png";
+infoFriendNameEl.textContent=friendData.name;
+infoFriendPhotoEl.src=friendData.photo; infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png";
 
-// Messages array
-let messages = JSON.parse(localStorage.getItem(`chat_${friendData.name}`) || "[]");
-
-// Utility
-function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-function timeNow(){ return new Date().toLocaleTimeString(); }
-function saveMessages(){ localStorage.setItem(`chat_${friendData.name}`, JSON.stringify(messages)); }
-
-function appendMessageBubble(obj){
-  const div = document.createElement("div");
-  div.className = "msg"+(obj.senderId===myId?" self":"");
-  div.innerHTML = `<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
+// ---------- MESSAGES ----------
+let messages=JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
+function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);}
+function timeNow(){ return new Date().toLocaleTimeString();}
+function saveMessages(){ localStorage.setItem(`chat_${friendData.name}`,JSON.stringify(messages));}
+function appendMessageBubble(obj){const div=document.createElement("div");div.className="msg"+(obj.senderId===myId?" self":"");div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;chatBox.appendChild(div);chatBox.scrollTop=chatBox.scrollHeight;}
+function renderMessages(){chatBox.innerHTML="";messages.forEach(appendMessageBubble);}
 renderMessages();
 
-// Send text message
-msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    const txt = msgInput.value.trim();
-    if(!txt) return;
-    const msg = {id:uid(), senderId:myId, text:txt, time:timeNow()};
-    messages.push(msg); saveMessages(); appendMessageBubble(msg);
-    msgInput.value="";
-  }
-});
+// ---------- SEND TEXT ----------
+msgInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const txt=msgInput.value.trim();if(!txt)return;const msg={id:uid(),senderId:myId,text:txt,time:timeNow()};messages.push(msg);saveMessages();appendMessageBubble(msg);msgInput.value="";}});
 
-// Emoji picker
-const emojiPicker = document.getElementById("emojiPicker");
-document.getElementById("emojiBtn").onclick = ()=>{ emojiPicker.style.display = emojiPicker.style.display==="block"?"none":"block"; };
-emojiPicker.addEventListener("click", e=>{
-  if(e.target.tagName==="SPAN"){ msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus(); }
-});
+// ---------- EMOJI PICKER ----------
+const emojiPicker=document.getElementById("emojiPicker");
+document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";};
+emojiPicker.addEventListener("click",e=>{if(e.target.tagName==="SPAN"){msgInput.value+=e.target.textContent;emojiPicker.style.display="none";msgInput.focus();}});
 
-// Menu popup
-const menuBtn = document.getElementById("menuBtn");
-const menuPopup = document.getElementById("menuPopup");
-menuBtn.onclick = ()=>{ menuPopup.style.display = menuPopup.style.display==="block"?"none":"block"; };
-document.addEventListener("click", e=>{ if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none"; });
+// ---------- MENU POPUP ----------
+const menuBtn=document.getElementById("menuBtn");const menuPopup=document.getElementById("menuPopup");
+menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";};
+document.addEventListener("click",e=>{if(!menuBtn.contains(e.target)&&!menuPopup.contains(e.target))menuPopup.style.display="none";});
 
-// Friend info
-friendNameEl.onclick = openFriendInfo;
-friendPhotoEl.onclick = openFriendInfo;
-function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; }
-function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; }
+// ---------- FRIEND INFO ----------
+friendNameEl.onclick=openFriendInfo; friendPhotoEl.onclick=openFriendInfo;
+function openFriendInfo(){document.getElementById("chatPage").style.display="none";document.getElementById("friendInfoPage").style.display="flex";}
+function backToChat(){document.getElementById("friendInfoPage").style.display="none";document.getElementById("chatPage").style.display="flex";}
 
-// Delete chat
-function deleteChat(){ if(confirm("Delete all messages?")){ messages=[]; saveMessages(); renderMessages(); } }
+// ---------- DELETE CHAT ----------
+function deleteChat(){if(confirm("Delete all messages?")){messages=[];saveMessages();renderMessages();}}
 
-// Attachments
-const attachBtn = document.getElementById("plusBtn");
-const attachPopup = document.getElementById("attachPopup");
-attachBtn.onclick = e=>{ e.stopPropagation(); attachPopup.style.display = attachPopup.style.display==="block"?"none":"block"; };
-document.addEventListener("click", e=>{ if(!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) attachPopup.style.display="none"; });
-function sendAttachmentMessage(text){ const msg={id:uid(), senderId:myId, text, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none"; }
-document.getElementById("galleryInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`); e.target.value=""; } });
-document.getElementById("cameraInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`); e.target.value=""; } });
-document.getElementById("documentInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`📄 Document: ${file.name}`); e.target.value=""; } });
-document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; } });
-document.getElementById("sendLocation").onclick = ()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`); }); }else alert("Geolocation not supported"); };
-document.getElementById("sendContact").onclick = ()=>{ sendAttachmentMessage(`👤 Shared a contact`); };
+// ---------- ATTACHMENTS ----------
+const attachBtn=document.getElementById("plusBtn"); const attachPopup=document.getElementById("attachPopup");
+attachBtn.onclick=e=>{e.stopPropagation();attachPopup.style.display=attachPopup.style.display==="block"?"none":"block";};
+document.addEventListener("click",e=>{if(!attachBtn.contains(e.target)&&!attachPopup.contains(e.target))attachPopup.style.display="none";});
+function sendAttachmentMessage(text){const msg={id:uid(),senderId:myId,text,time:timeNow()};messages.push(msg);saveMessages();appendMessageBubble(msg);attachPopup.style.display="none";}
+document.getElementById("galleryInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`);e.target.value="";}});
+document.getElementById("cameraInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`);e.target.value="";}});
+document.getElementById("documentInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`📄 Document: ${file.name}`);e.target.value="";}});
+document.getElementById("audioInput").addEventListener("change",e=>{const file=e.target.files[0];if(file){sendAttachmentMessage(`🎵 Audio: ${file.name}`);e.target.value="";}});
+document.getElementById("sendLocation").onclick=()=>{if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{const lat=pos.coords.latitude.toFixed(5),lng=pos.coords.longitude.toFixed(5);sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`);});}else alert("Geolocation not supported");};
+document.getElementById("sendContact").onclick=()=>{sendAttachmentMessage(`👤 Shared a contact`);};
 
-// --------- SETTINGS ---------
-const settingsModal = document.getElementById("settingsModal");
-const themeSelect = document.getElementById("themeSelect");
-const chatThemeSelect = document.getElementById("chatThemeSelect");
-const fontSizeSelect = document.getElementById("fontSizeSelect");
-
-function openSettings(){ settingsModal.style.display="block"; themeSelect.value = localStorage.getItem("theme")||"system"; chatThemeSelect.value=localStorage.getItem("chatTheme")||"system"; fontSizeSelect.value=localStorage.getItem("fontSize")||"medium"; applySettings(); }
-function closeSettings(){ settingsModal.style.display="none"; }
-themeSelect.onchange = chatThemeSelect.onchange = fontSizeSelect.onchange = applySettings;
-
+// ---------- SETTINGS ----------
+const settingsModal=document.getElementById("settingsModal");
+const themeSelect=document.getElementById("themeSelect");
+const chatThemeSelect=document.getElementById("chatThemeSelect");
+const fontSizeSelect=document.getElementById("fontSizeSelect");
+function openSettings(){settingsModal.style.display="block";themeSelect.value=localStorage.getItem("theme")||"system";chatThemeSelect.value=localStorage.getItem("chatTheme")||"system";fontSizeSelect.value=localStorage.getItem("fontSize")||"medium";applySettings();}
+function closeSettings(){settingsModal.style.display="none";}
+themeSelect.onchange=chatThemeSelect.onchange=fontSizeSelect.onchange=applySettings;
 function applySettings(){
-  const theme = themeSelect.value;
-  const chatTheme = chatThemeSelect.value;
-  const fontSize = fontSizeSelect.value;
-  localStorage.setItem("theme", theme);
-  localStorage.setItem("chatTheme", chatTheme);
-  localStorage.setItem("fontSize", fontSize);
-
+  const theme=themeSelect.value,chatTheme=chatThemeSelect.value,fontSize=fontSizeSelect.value;
+  localStorage.setItem("theme",theme); localStorage.setItem("chatTheme",chatTheme); localStorage.setItem("fontSize",fontSize);
   // Theme background
-  switch(theme){
-    case "system": document.body.style.background="#f8f9fa"; break;
-    case "light": document.body.style.background="#fff"; break;
-    case "dark": document.body.style.background="#1c1e21"; break;
-  }
-
+  switch(theme){case"system":document.body.style.background="#f8f9fa";break;case"light":document.body.style.background="#fff";break;case"dark":document.body.style.background="#1c1e21";break;}
   // Chat bubbles
   document.querySelectorAll(".msg").forEach(msg=>{
     if(msg.classList.contains("self")){
-      switch(chatTheme){ case "system": msg.style.background="#dcf8c6"; break; case "light": msg.style.background="#E1FFC7"; break; case "dark": msg.style.background="#2c2f33"; break; case "blue": msg.style.background="#D0E6FF"; break; case "green": msg.style.background="#CCFFCC"; break; } 
-    }else{
-      switch(chatTheme){ case "system": msg.style.background="#fff"; break; case "light": msg.style.background="#fff"; break; case "dark": msg.style.background="#23272A"; break; case "blue": msg.style.background="#fff"; break; case "green": msg.style.background="#fff"; break; } 
-    }
+      switch(chatTheme){case"system":msg.style.background="#dcf8c6";break;case"light":msg.style.background="#E1FFC7";break;case"dark":msg.style.background="#2c2f33";break;case"blue":msg.style.background="#D0E6FF";break;case"green":msg.style.background="#CCFFCC";break;}
+    }else{switch(chatTheme){case"system":msg.style.background="#fff";break;case"light":msg.style.background="#fff";break;case"dark":msg.style.background="#23272A";break;case"blue":msg.style.background="#fff";break;case"green":msg.style.background="#fff";break;}}
   });
-
   // Font size
-  let size="16px";
-  switch(fontSize){ case "small": size="12px"; break; case "medium": size="16px"; break; case "large": size="20px"; break; }
+  let size="16px"; switch(fontSize){case"small":size="12px";break;case"medium":size="16px";break;case"large":size="20px";break;}
   document.querySelectorAll(".msg").forEach(msg=>msg.style.fontSize=size);
   document.body.style.fontSize=size;
 }
-
-// Apply on page load
 applySettings();
+
+// ---------- MIC RECORDING ----------
+const micBtn=document.getElementById("micBtn"); let mediaRecorder, audioChunks=[];
+micBtn.onclick=async()=>{
+  if(!mediaRecorder){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){alert("Microphone not supported");return;}
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream);
+    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+    mediaRecorder.onstop=()=>{const blob=new Blob(audioChunks,{type:"audio/webm"});audioChunks=[];sendAttachmentMessage(`🎤 Voice message (${(blob.size/1024).toFixed(1)} KB)`);}
+  }
+  if(mediaRecorder.state==="inactive"){mediaRecorder.start();micBtn.style.background="red";}else{mediaRecorder.stop();micBtn.style.background="#25D366";}
+};
 </script>
 
 </body>
