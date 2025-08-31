@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+is still not working <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -23,7 +23,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
 .input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
-#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;cursor:pointer;}
+#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
 .popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
 .popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
 .popup div:hover{background:#f1f1f1;}
@@ -68,9 +68,45 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
       <div onclick="openFriendInfo()">View Info</div>
       <div onclick="alert('Muted!')">Mute</div>
       <div onclick="deleteChat()">Delete Chat</div>
+      <div onclick="chatsettings()">Chat Settings</div>
     </div>
   </div>
 
+  <!-- CHAT SETTINGS MODAL -->
+  <div id="settingsModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;z-index:3000;box-shadow:0 6px 18px rgba(0,0,0,0.2);width:300px;">
+  <h3>Chat Settings</h3>
+  <div style="margin-top:10px;">
+    <label>Theme: 
+      <select id="themeSelect" style="margin-left:5px;">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
+  </div>
+ <div style="margin-top:10px;">
+    <label>Chat Bubble: 
+      <select id="chatThemeSelect" style="margin-left:5px;">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+      </select>
+    </label>
+  </div>
+  <div style="margin-top:10px;">
+    <label>Font Size: 
+      <select id="fontSizeSelect" style="margin-left:5px;">
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+      </select>
+    </label>
+  </div>
+  <button style="margin-top:15px;padding:8px 12px;background:#128C7E;color:white;border:none;border-radius:6px;cursor:pointer;" onclick="closeSettings()">Close</button>
+</div>
+  
   <div id="chatBox">
     <div class="msg system">🔒 Messages are end-to-end encrypted</div>
   </div>
@@ -141,6 +177,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 </div>
   </div>
 
+  <!-- SETTINGS SECTION -->
   <div class="settingsContainer">
     <button><i class="fa-solid fa-lock"></i> End-to-End Encryption</button>
     <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
@@ -148,6 +185,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
   </div>
   
+  <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <span>No groups in common</span>
@@ -155,6 +193,10 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     </div>
   </div>
 
+
+ 
+
+ <!-- BLOCK & REPORT SECTION -->
 <div class="settingsContainer">
   <div style="display:flex;flex-direction:column;gap:8px;">
     <button class="blockBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#f44336;cursor:pointer;font-weight:bold;">
@@ -163,16 +205,22 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#ff5722;cursor:pointer;font-weight:bold;">
       <span><i class="fa-solid fa-flag"></i> Report User</span>
     </button>
+  
+  
   </div>
 </div>
+
 
 <script>
 /* --------- USER DATA --------- */
 const myName = "Me";
 const myId = "user123";
+
+/* Fetch friends list from localStorage */
 const friendsList = JSON.parse(localStorage.getItem("friends") || "[]");
 const friendParam = new URLSearchParams(window.location.search).get("friend");
 const friendObj = friendsList.find(f => f.name === friendParam);
+
 const friendData = {
   name: friendObj ? friendObj.name : (friendParam || "Friend"),
   photo: friendObj && friendObj.photo ? friendObj.photo : "default-profile.png"
@@ -190,6 +238,7 @@ const msgInput = document.getElementById("msgInput");
 friendNameEl.textContent = friendData.name;
 friendPhotoEl.src = friendData.photo;
 friendPhotoEl.onerror = ()=>friendPhotoEl.src="default-profile.png";
+
 infoFriendNameEl.textContent = friendData.name;
 infoFriendPhotoEl.src = friendData.photo;
 infoFriendPhotoEl.onerror = ()=>infoFriendPhotoEl.src="default-profile.png";
@@ -211,7 +260,7 @@ function appendMessageBubble(obj){
 }
 
 function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
-
+  
 /* Send text message */
 msgInput.addEventListener("keydown", e=>{
   if(e.key==="Enter"){
@@ -223,7 +272,7 @@ msgInput.addEventListener("keydown", e=>{
     msgInput.value="";
   }
 });
-
+  
 /* Emoji picker */
 const emojiPicker = document.getElementById("emojiPicker");
 document.getElementById("emojiBtn").onclick = ()=>{ emojiPicker.style.display = emojiPicker.style.display==="block"?"none":"block"; };
@@ -251,6 +300,7 @@ const attachBtn = document.getElementById("plusBtn");
 const attachPopup = document.getElementById("attachPopup");
 attachBtn.onclick = e=>{ e.stopPropagation(); attachPopup.style.display = attachPopup.style.display==="block"?"none":"block"; };
 document.addEventListener("click", e=>{ if(!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) attachPopup.style.display="none"; });
+
 function sendAttachmentMessage(text){ const msg={id:uid(), senderId:myId, text, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none"; }
 
 /* File handlers */
@@ -281,61 +331,180 @@ document.getElementById("sendContact").onclick = ()=>{
 /* Add Friend Button */
 document.getElementById("addFriendBtn").onclick = ()=>{ alert(`${friendData.name} added as friend!`); };
 
+
+/* Guard: if this user is blocked, kick them back immediately */
+let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+if (blockedUsers.includes(friendData.name)) {
+  alert("This user is blocked. Returning to home.");
+  window.location.replace("./home.html"); // safer redirect
+}
+
+
+  
 /* Block User */
 document.querySelector(".blockBtn").addEventListener("click", function(e){
-    e.preventDefault();
+    e.preventDefault(); // stop default action
+
     if(confirm("Block this user?")){
         let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-        blocked.push(friendData.name);
-        localStorage.setItem("blockedUsers", JSON.stringify(blocked));
-        alert(friendData.name+" blocked. Redirecting to home.");
-        window.location.href = "./home.html";
+        let friends = JSON.parse(localStorage.getItem("friends") || "[]");
+
+        if(!blocked.includes(friendData.name)){
+            blocked.push(friendData.name);
+            localStorage.setItem("blockedUsers", JSON.stringify(blocked));
+
+            // Remove user from friends list
+            friends = friends.filter(f => f.name !== friendData.name);
+            localStorage.setItem("friends", JSON.stringify(friends));
+
+            alert("User blocked.");
+
+            //  Close chat/profile and go home
+            setTimeout(()=>{
+                window.location.href = "home.html";
+            }, 200); 
+        }
     }
 });
 
+
+
 /* Report User */
-document.querySelector(".reportBtn").addEventListener("click", function(e){
-    e.preventDefault();
-    alert("Reported "+friendData.name);
-});
+document.querySelector(".reportBtn").onclick = ()=>{
+    if(confirm("Report this user?")) alert("User reported.");
+};
 
-/* ----------- Microphone Feature ----------- */
-const micBtn = document.getElementById("micBtn");
-let mediaRecorder, audioChunks = [], recording=false;
+/* ---------------------------
+   FRIEND INFO PAGE BUTTON REDIRECTS
+   Handles Video Call, Audio Call, and Search buttons
+   Do NOT mix with other chat or message scripts
+---------------------------- */
+const friendName = encodeURIComponent(friendData.name);
+const friendPhoto = encodeURIComponent(friendData.photo);
 
-micBtn.addEventListener("mousedown", async ()=>{
-  if(!recording){
-    recording=true;
-    micBtn.style.background="#128C7E";
-    try{
-      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-      mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.start();
-      audioChunks=[];
-      mediaRecorder.ondataavailable = e=>{ audioChunks.push(e.data); };
-      mediaRecorder.onstop = e=>{
-        const audioBlob = new Blob(audioChunks,{type:"audio/webm"});
-        const url = URL.createObjectURL(audioBlob);
-        sendAttachmentMessage(`🎤 Voice Message: [click to play]`);
-        const audioEl = document.createElement("audio");
-        audioEl.controls=true; audioEl.src=url;
-        chatBox.appendChild(audioEl);
-        chatBox.scrollTop=chatBox.scrollHeight;
-      };
-    }catch(err){ alert("Microphone access denied!"); recording=false; micBtn.style.background="#25D366"; }
+// Video Call button
+document.getElementById("videoCallBtn").onclick = () => {
+    window.location.href = `video-call.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+// Audio Call button
+document.getElementById("audioCallBtn").onclick = () => {
+    window.location.href = `audio-call.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+// Search button (optional: redirect to calls.html)
+document.getElementById("searchBtn").onclick = () => {
+    window.location.href = `chat.html?friend=${friendName}&img=${friendPhoto}`;
+};
+
+
+  // Header Call button behaves like the Audio Call button
+document.getElementById("callBtn").onclick = () => {
+    const friendNameEncoded = encodeURIComponent(friendData.name);
+    const friendPhotoEncoded = encodeURIComponent(friendData.photo);
+    window.location.href = `audio-call.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
+};
+
+// ---------- CHAT SETTINGS ----------
+const settingsModal = document.getElementById("settingsModal");
+const themeSelect = document.getElementById("themeSelect");
+const chatThemeSelect = document.getElementById("chatThemeSelect");
+const fontSizeSelect = document.getElementById("fontSizeSelect");
+
+function openSettings(){
+  settingsModal.style.display="block";
+  themeSelect.value = localStorage.getItem("theme") || "system";
+  chatThemeSelect.value = localStorage.getItem("chatTheme") || "system";
+  fontSizeSelect.value = localStorage.getItem("fontSize") || "medium";
+  applySettings();
+}
+
+function closeSettings(){ settingsModal.style.display="none"; }
+
+themeSelect.onchange = chatThemeSelect.onchange = fontSizeSelect.onchange = applySettings;
+
+function applySettings(){
+  const theme = themeSelect.value;
+  const chatTheme = chatThemeSelect.value;
+  const fontSize = fontSizeSelect.value;
+
+  localStorage.setItem("theme", theme);
+  localStorage.setItem("chatTheme", chatTheme);
+  localStorage.setItem("fontSize", fontSize);
+
+  // Body background
+  switch(theme){
+    case "system": document.body.style.background="#f8f9fa"; break;
+    case "light": document.body.style.background="#fff"; break;
+    case "dark": document.body.style.background="#1c1e21"; break;
   }
-});
 
-micBtn.addEventListener("mouseup", ()=>{
-  if(recording){
-    recording=false;
+  // Chat bubbles
+  document.querySelectorAll(".msg").forEach(msg=>{
+    if(msg.classList.contains("self")){
+      switch(chatTheme){
+        case "system": msg.style.background="#dcf8c6"; break;
+        case "light": msg.style.background="#E1FFC7"; break;
+        case "dark": msg.style.background="#2c2f33"; break;
+        case "blue": msg.style.background="#D0E6FF"; break;
+        case "green": msg.style.background="#CCFFCC"; break;
+      }
+    } else {
+      switch(chatTheme){
+        case "system": msg.style.background="#fff"; break;
+        case "light": msg.style.background="#fff"; break;
+        case "dark": msg.style.background="#23272A"; break;
+        case "blue": msg.style.background="#fff"; break;
+        case "green": msg.style.background="#fff"; break;
+      }
+    }
+  });
+
+  // Font size
+  let size="16px";
+  switch(fontSize){
+    case "small": size="12px"; break;
+    case "medium": size="16px"; break;
+    case "large": size="20px"; break;
+  }
+  document.querySelectorAll(".msg").forEach(msg=>msg.style.fontSize=size);
+  document.body.style.fontSize=size;
+}
+
+applySettings();
+
+// ---------- MIC RECORDING ----------
+const micBtn=document.getElementById("micBtn"); 
+let mediaRecorder, audioChunks=[];
+
+micBtn.onclick=async()=>{
+  if(!mediaRecorder){
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      alert("Microphone not supported"); return;
+    }
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, {type:"audio/webm"});
+      audioChunks = [];
+      sendAttachmentMessage(`🎤 Voice message (${(blob.size/1024).toFixed(1)} KB)`);
+    };
+  }
+  if(mediaRecorder.state==="inactive"){
+    mediaRecorder.start();
+    micBtn.style.background="red";
+  } else {
+    mediaRecorder.stop();
     micBtn.style.background="#25D366";
-    if(mediaRecorder && mediaRecorder.state!=="inactive") mediaRecorder.stop();
   }
-});
+};
 
-/* Render messages on load */
+   
+
+  
+/* Render messages initially */
 renderMessages();
 </script>
 </body>
-</html>
+</html> 
