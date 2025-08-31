@@ -202,7 +202,8 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 
  
-  <!-- DISAPPEARING MESSAGES MODAL -->
+
+<!-- DISAPPEARING MESSAGES MODAL -->
 <div id="disappearModal" class="modal">
   <div class="modal-content">
     <h2>Disappearing Messages</h2>
@@ -216,12 +217,26 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-<!-- CHAT LOCK MODAL -->
-<div id="chatLockModal" class="modal"> ... </div>
+<!-- CHAT LOCK (TOGGLE ONLY) -->
+<div class="settingsContainer">
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <span>Chat Lock</span>
+    <label class="switch">
+      <input type="checkbox" id="chatLockToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
 
-<!-- MESH NETWORK MODAL -->
-<div id="meshModal" class="modal"> ... </div>
-
+<!-- MESH NETWORK (STATIC TEXT) -->
+<div class="settingsContainer">
+  <div style="display:flex;flex-direction:column;">
+    <strong>Mesh Network</strong>
+    <span style="font-size:14px;color:#555;">
+      Peer-to-peer sync and nearby chat sharing enabled automatically.
+    </span>
+  </div>
+</div>
 
 <!-- END-TO-END ENCRYPTION POPUP -->
 <div id="encryptionPopup" class="modal">
@@ -233,6 +248,8 @@ input:checked + .slider:before {transform:translateX(26px);}
     <p style="color:green;font-weight:bold;">✔ Verification Completed</p>
     <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
   </div>
+</div>
+
 </div>
   
   <!-- NO GROUPS SECTION -->
@@ -392,18 +409,26 @@ micBtn.onclick=async()=>{
 
 
 
+// ==== POPUP FUNCTIONS ====
+function openDisappearModal(){
+  document.getElementById("disappearModal").style.display="flex";
+}
+function closeDisappearModal(){
+  document.getElementById("disappearModal").style.display="none";
+}
 
-// ==== OPEN/CLOSE MODALS ====
-function openDisappearModal(){document.getElementById("disappearModal").style.display="flex";}
-function closeDisappearModal(){document.getElementById("disappearModal").style.display="none";}
+function openEncryptionPopup(){
+  document.getElementById("encryptionPopup").style.display="flex";
+}
+function closeEncryptionPopup(){
+  document.getElementById("encryptionPopup").style.display="none";
+}
 
+// ==== TOGGLE CHAT LOCK ====
+document.getElementById("chatLockToggle").addEventListener("change", function(){
+  alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled");
+});
 
-function openEncryptionPopup(){document.getElementById("encryptionPopup").style.display="flex";}
-function closeEncryptionPopup(){document.getElementById("encryptionPopup").style.display="none";}
-
-// ==== HOOK BUTTONS ====
-document.querySelector('.settingsContainer button:nth-child(1)').onclick=openEncryptionPopup;
-document.querySelector('.settingsContainer button:nth-child(4)').onclick=openDisappearModal;
 
 
   
