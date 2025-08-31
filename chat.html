@@ -11,7 +11,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .header{display:flex;align-items:center;justify-content:space-between;background:#128C7E;padding:10px;border-bottom:1px solid #ccc;position:relative;}
 .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
 .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
-.header-info h2{margin:0;font-size:16px;cursor:pointer;color:white;}
+.header-info h2{margin:0;font-size:16px;cursor:pointer;}
 .header-actions{display:flex;align-items:center;gap:15px;}
 .header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:white;}
 #chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;display:flex;flex-direction:column;gap:6px;}
@@ -68,44 +68,44 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
       <div onclick="openFriendInfo()">View Info</div>
       <div onclick="alert('Muted!')">Mute</div>
       <div onclick="deleteChat()">Delete Chat</div>
-      <div onclick="chatsettings()">Chat Settings</div>
+      <div onclick="openSettings()">Chat Settings</div>
     </div>
   </div>
 
   <!-- CHAT SETTINGS MODAL -->
   <div id="settingsModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;z-index:3000;box-shadow:0 6px 18px rgba(0,0,0,0.2);width:300px;">
-  <h3>Chat Settings</h3>
-  <div style="margin-top:10px;">
-    <label>Theme: 
-      <select id="themeSelect" style="margin-left:5px;">
-        <option value="system">System</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-      </select>
-    </label>
+    <h3>Chat Settings</h3>
+    <div style="margin-top:10px;">
+      <label>Theme: 
+        <select id="themeSelect" style="margin-left:5px;">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+    </div>
+    <div style="margin-top:10px;">
+      <label>Chat Bubble: 
+        <select id="chatThemeSelect" style="margin-left:5px;">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+        </select>
+      </label>
+    </div>
+    <div style="margin-top:10px;">
+      <label>Font Size: 
+        <select id="fontSizeSelect" style="margin-left:5px;">
+          <option value="small">Small</option>
+          <option value="medium">Medium</option>
+          <option value="large">Large</option>
+        </select>
+      </label>
+    </div>
+    <button style="margin-top:15px;padding:8px 12px;background:#128C7E;color:white;border:none;border-radius:6px;cursor:pointer;" onclick="closeSettings()">Close</button>
   </div>
- <div style="margin-top:10px;">
-    <label>Chat Bubble: 
-      <select id="chatThemeSelect" style="margin-left:5px;">
-        <option value="system">System</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-        <option value="blue">Blue</option>
-        <option value="green">Green</option>
-      </select>
-    </label>
-  </div>
-  <div style="margin-top:10px;">
-    <label>Font Size: 
-      <select id="fontSizeSelect" style="margin-left:5px;">
-        <option value="small">Small</option>
-        <option value="medium">Medium</option>
-        <option value="large">Large</option>
-      </select>
-    </label>
-  </div>
-  <button style="margin-top:15px;padding:8px 12px;background:#128C7E;color:white;border:none;border-radius:6px;cursor:pointer;" onclick="closeSettings()">Close</button>
-</div>
   
   <div id="chatBox">
     <div class="msg system">🔒 Messages are end-to-end encrypted</div>
@@ -170,11 +170,11 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
     <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
     <h2 id="infoFriendName">Friend Name</h2>
-   <div class="actionButtons">
-  <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
-  <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
-  <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-</div>
+    <div class="actionButtons">
+      <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+      <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+    </div>
   </div>
 
   <!-- SETTINGS SECTION -->
@@ -206,173 +206,205 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 </div>
 
 <script>
-/* -------------------- USER & FRIEND DATA -------------------- */
-const myName="Me", myId="user123";
-const friendsList=JSON.parse(localStorage.getItem("friends")||"[]");
-const friendParam=new URLSearchParams(window.location.search).get("friend");
-const friendObj=friendsList.find(f=>f.name===friendParam);
-const friendData={
-  name: friendObj?friendObj.name:(friendParam||"Friend"),
-  photo: friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"
-};
+// ======== INITIALIZATION ========
+let chatBox = document.getElementById('chatBox');
+let msgInput = document.getElementById('msgInput');
+let micBtn = document.getElementById('micBtn');
+let emojiBtn = document.getElementById('emojiBtn');
+let emojiPicker = document.getElementById('emojiPicker');
+let plusBtn = document.getElementById('plusBtn');
+let attachPopup = document.getElementById('attachPopup');
+let menuBtn = document.getElementById('menuBtn');
+let menuPopup = document.getElementById('menuPopup');
+let friendName = document.getElementById('friendName');
+let friendPhoto = document.getElementById('friendPhoto');
 
-/* -------------------- DOM ELEMENTS -------------------- */
-const friendNameEl=document.getElementById("friendName");
-const friendPhotoEl=document.getElementById("friendPhoto");
-const infoFriendNameEl=document.getElementById("infoFriendName");
-const infoFriendPhotoEl=document.getElementById("infoFriendPhoto");
-const chatBox=document.getElementById("chatBox");
-const msgInput=document.getElementById("msgInput");
+let chatPage = document.getElementById('chatPage');
+let friendInfoPage = document.getElementById('friendInfoPage');
+let infoFriendName = document.getElementById('infoFriendName');
+let infoFriendPhoto = document.getElementById('infoFriendPhoto');
 
-/* Initialize headers */
-friendNameEl.textContent=friendData.name;
-friendPhotoEl.src=friendData.photo;
-friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png";
-infoFriendNameEl.textContent=friendData.name;
-infoFriendPhotoEl.src=friendData.photo;
-infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png";
+// Load messages from localStorage
+let messages = JSON.parse(localStorage.getItem('messages')) || [];
 
-/* -------------------- MESSAGES -------------------- */
-let messages=JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
-
-function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-function timeNow(){ return new Date().toLocaleTimeString(); }
-function saveMessages(){ localStorage.setItem(`chat_${friendData.name}`, JSON.stringify(messages)); }
-
-function appendMessageBubble(obj){
-  const div=document.createElement("div");
-  div.className="msg"+(obj.senderId===myId?" self":"");
-  div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
-
-  // Apply current settings
-  const chatTheme=localStorage.getItem("chatTheme")||"system";
-  const fontSize=localStorage.getItem("fontSize")||"medium";
-  if(div.classList.contains("self")){
-    switch(chatTheme){
-      case"system":div.style.background="#dcf8c6";break;
-      case"light":div.style.background="#E1FFC7";break;
-      case"dark":div.style.background="#2c2f33";break;
-      case"blue":div.style.background="#D0E6FF";break;
-      case"green":div.style.background="#CCFFCC";break;
-    }
-  }else{
-    switch(chatTheme){
-      case"system":div.style.background="#fff";break;
-      case"light":div.style.background="#fff";break;
-      case"dark":div.style.background="#23272A";break;
-      case"blue":div.style.background="#fff";break;
-      case"green":div.style.background="#fff";break;
-    }
-  }
-  let size="16px";
-  switch(fontSize){case"small":size="12px";break;case"medium":size="16px";break;case"large":size="20px";break;}
-  div.style.fontSize=size;
-  chatBox.appendChild(div);
-  chatBox.scrollTop=chatBox.scrollHeight;
+// ======== DISPLAY FRIEND INFO ========
+function loadFriendInfo() {
+    friendName.textContent = "Alice";
+    friendPhoto.src = "default-profile.png";
+    infoFriendName.textContent = "Alice";
+    infoFriendPhoto.src = "default-profile.png";
 }
+loadFriendInfo();
 
-function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
-
-/* Send text message */
-msgInput.addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    const txt=msgInput.value.trim();
-    if(!txt)return;
-    const msg={id:uid(),senderId:myId,text:txt,time:timeNow()};
-    messages.push(msg);
-    saveMessages();
-    appendMessageBubble(msg);
-    msgInput.value="";
-  }
-});
-
-/* -------------------- MENU POPUP -------------------- */
-const menuBtn=document.getElementById("menuBtn");
-const menuPopup=document.getElementById("menuPopup");
-menuBtn.addEventListener("click",()=>menuPopup.style.display=menuPopup.style.display==="block"?"none":"block");
-document.addEventListener("click",e=>{if(!menuPopup.contains(e.target)&&!menuBtn.contains(e.target))menuPopup.style.display="none";});
-
-/* -------------------- CHAT SETTINGS -------------------- */
-function chatsettings(){
-  document.getElementById("settingsModal").style.display="block";
-  const theme=localStorage.getItem("theme")||"system";
-  const chatTheme=localStorage.getItem("chatTheme")||"system";
-  const fontSize=localStorage.getItem("fontSize")||"medium";
-  document.getElementById("themeSelect").value=theme;
-  document.getElementById("chatThemeSelect").value=chatTheme;
-  document.getElementById("fontSizeSelect").value=fontSize;
+// ======== CHAT RENDER FUNCTION ========
+function renderMessages() {
+    chatBox.innerHTML = '<div class="msg system">🔒 Messages are end-to-end encrypted</div>';
+    messages.forEach(msg => {
+        let div = document.createElement('div');
+        div.className = 'msg ' + (msg.self ? 'self' : '');
+        if(msg.type==='text'){
+            div.innerHTML = msg.content + `<span class="meta">${msg.time}</span>`;
+        } else if(msg.type==='image'){
+            let img = document.createElement('img');
+            img.src = msg.content;
+            img.style.maxWidth = "200px";
+            img.style.borderRadius="12px";
+            div.appendChild(img);
+        } else if(msg.type==='audio'){
+            let audio = document.createElement('audio');
+            audio.controls = true;
+            audio.src = msg.content;
+            div.appendChild(audio);
+        } else if(msg.type==='system'){
+            div.className = 'msg system';
+            div.textContent = msg.content;
+        }
+        chatBox.appendChild(div);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
-
-function closeSettings(){
-  const theme=document.getElementById("themeSelect").value;
-  const chatTheme=document.getElementById("chatThemeSelect").value;
-  const fontSize=document.getElementById("fontSizeSelect").value;
-  localStorage.setItem("theme",theme);
-  localStorage.setItem("chatTheme",chatTheme);
-  localStorage.setItem("fontSize",fontSize);
-  applySettings();
-  document.getElementById("settingsModal").style.display="none";
-}
-
-function applySettings(){
-  const theme=localStorage.getItem("theme")||"system";
-  const fontSize=localStorage.getItem("fontSize")||"medium";
-  switch(theme){
-    case"system":document.body.style.background="#f8f9fa";break;
-    case"light":document.body.style.background="#fff";break;
-    case"dark":document.body.style.background="#1c1e21";break;
-  }
-  document.querySelectorAll(".msg").forEach(msg=>{
-    const chatTheme=localStorage.getItem("chatTheme")||"system";
-    if(msg.classList.contains("self")){
-      switch(chatTheme){
-        case"system":msg.style.background="#dcf8c6";break;
-        case"light":msg.style.background="#E1FFC7";break;
-        case"dark":msg.style.background="#2c2f33";break;
-        case"blue":msg.style.background="#D0E6FF";break;
-        case"green":msg.style.background="#CCFFCC";break;
-      }
-    }else{
-      switch(chatTheme){
-        case"system":msg.style.background="#fff";break;
-        case"light":msg.style.background="#fff";break;
-        case"dark":msg.style.background="#23272A";break;
-        case"blue":msg.style.background="#fff";break;
-        case"green":msg.style.background="#fff";break;
-      }
-    }
-    let size="16px";
-    switch(fontSize){case"small":size="12px";break;case"medium":size="16px";break;case"large":size="20px";break;}
-    msg.style.fontSize=size;
-  });
-  document.body.style.fontSize=fontSize==="small"?"12px":fontSize==="medium"?"16px":"20px";
-}
-
-applySettings();
 renderMessages();
 
-/* -------------------- FRIEND INFO PAGE -------------------- */
-function openFriendInfo(){document.getElementById("chatPage").style.display="none";document.getElementById("friendInfoPage").style.display="flex";}
-function backToChat(){document.getElementById("friendInfoPage").style.display="none";document.getElementById("chatPage").style.display="flex";}
+// ======== SEND MESSAGE ========
+function sendMessage(content,type='text'){
+    if(!content) return;
+    let now = new Date();
+    let time = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+    let msg = {content,type,self:true,time};
+    messages.push(msg);
+    localStorage.setItem('messages',JSON.stringify(messages));
+    renderMessages();
+    msgInput.value='';
+}
 
-/* -------------------- DELETE CHAT -------------------- */
-function deleteChat(){if(confirm("Delete all messages?")){messages=[];saveMessages();renderMessages();}}
+// ======== INPUT EVENT ========
+msgInput.addEventListener('keydown',e=>{
+    if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMessage(msgInput.value,'text');
+    }
+});
 
-/* -------------------- EMOJI PICKER -------------------- */
-const emojiBtn=document.getElementById("emojiBtn");
-const emojiPicker=document.getElementById("emojiPicker");
-emojiBtn.addEventListener("click",()=>emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block");
-emojiPicker.querySelectorAll("span").forEach(emoji=>emoji.addEventListener("click",()=>{msgInput.value+=emoji.textContent;msgInput.focus();}));
+// ======== EMOJI PICKER ========
+emojiBtn.addEventListener('click',()=>{
+    emojiPicker.style.display = emojiPicker.style.display==='block'?'none':'block';
+});
+emojiPicker.querySelectorAll('span').forEach(emoji=>{
+    emoji.addEventListener('click',()=>{msgInput.value+=emoji.textContent; msgInput.focus();});
+});
+document.addEventListener('click',e=>{
+    if(!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)){
+        emojiPicker.style.display='none';
+    }
+});
 
-/* -------------------- ATTACHMENTS -------------------- */
-const plusBtn=document.getElementById("plusBtn");
-const attachPopup=document.getElementById("attachPopup");
-plusBtn.addEventListener("click",()=>attachPopup.style.display=attachPopup.style.display==="block"?"none":"block");
+// ======== ATTACHMENTS ========
+plusBtn.addEventListener('click',()=>{attachPopup.style.display = attachPopup.style.display==='block'?'none':'block';});
 
-/* -------------------- BLOCK & REPORT -------------------- */
-document.querySelector(".blockBtn").addEventListener("click",()=>alert(friendData.name+" blocked!"));
-document.querySelector(".reportBtn").addEventListener("click",()=>alert(friendData.name+" reported!"));
+// Gallery
+document.getElementById('galleryInput').addEventListener('change',e=>{
+    let file = e.target.files[0];
+    if(file){
+        let reader = new FileReader();
+        reader.onload = function(){ sendMessage(reader.result,'image'); }
+        reader.readAsDataURL(file);
+    }
+});
+// Camera
+document.getElementById('cameraInput').addEventListener('change',e=>{
+    let file = e.target.files[0];
+    if(file){
+        let reader = new FileReader();
+        reader.onload = function(){ sendMessage(reader.result,'image'); }
+        reader.readAsDataURL(file);
+    }
+});
+// Audio
+document.getElementById('audioInput').addEventListener('change',e=>{
+    let file = e.target.files[0];
+    if(file){
+        let reader = new FileReader();
+        reader.onload = function(){ sendMessage(reader.result,'audio'); }
+        reader.readAsDataURL(file);
+    }
+});
+// Document
+document.getElementById('documentInput').addEventListener('change',e=>{
+    let file = e.target.files[0];
+    if(file){
+        sendMessage(file.name,'system');
+    }
+});
+// Location
+document.getElementById('sendLocation').addEventListener('click',()=>{
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(pos=>{
+            sendMessage(`Location: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`,'system');
+        });
+    } else alert('Geolocation not supported');
+});
+// Contact
+document.getElementById('sendContact').addEventListener('click',()=>{
+    let name = prompt('Enter contact name');
+    if(name) sendMessage(`Contact: ${name}`,'system');
+});
+
+// ======== MIC RECORDING LIKE WHATSAPP ========
+let mediaRecorder, audioChunks=[];
+micBtn.addEventListener('mousedown',async ()=>{
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ alert('Mic not supported'); return; }
+    let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e=>{audioChunks.push(e.data);}
+    mediaRecorder.onstop = e=>{
+        let blob = new Blob(audioChunks,{type:'audio/mp3'});
+        let url = URL.createObjectURL(blob);
+        sendMessage(url,'audio');
+    }
+    mediaRecorder.start();
+});
+micBtn.addEventListener('mouseup',()=>{
+    if(mediaRecorder) mediaRecorder.stop();
+});
+
+// ======== MENU POPUP ========
+menuBtn.addEventListener('click',()=>{menuPopup.style.display=menuPopup.style.display==='block'?'none':'block';});
+document.addEventListener('click',e=>{
+    if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)){
+        menuPopup.style.display='none';
+    }
+});
+
+// ======== FRIEND INFO ========
+function openFriendInfo(){
+    chatPage.style.display='none';
+    friendInfoPage.style.display='flex';
+}
+function backToChat(){
+    chatPage.style.display='flex';
+    friendInfoPage.style.display='none';
+}
+
+// ======== CHAT SETTINGS ========
+function openSettings(){document.getElementById('settingsModal').style.display='block';}
+function closeSettings(){document.getElementById('settingsModal').style.display='none';}
+
+// ======== DELETE CHAT ========
+function deleteChat(){
+    if(confirm('Delete all messages?')){
+        messages=[];
+        localStorage.setItem('messages',JSON.stringify(messages));
+        renderMessages();
+    }
+}
+
+// ======== BLOCK & REPORT ========
+document.querySelector('.blockBtn').addEventListener('click',()=>alert('User Blocked!'));
+document.querySelector('.reportBtn').addEventListener('click',()=>alert('User Reported!'));
+
+// ======== INITIAL RENDER ========
+renderMessages();
 
 </script>
 </body>
