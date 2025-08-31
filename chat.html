@@ -369,7 +369,7 @@ document.getElementById("callBtn").onclick = () => {
     window.location.href = `audio-call.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
 };
 
-  <script>
+  /* theme */
 window.addEventListener('DOMContentLoaded', () => {
     const theme = localStorage.getItem('theme') || 'system';
     const chatTheme = localStorage.getItem('chatTheme') || 'system';
@@ -418,7 +418,6 @@ window.addEventListener('DOMContentLoaded', () => {
     chatPreview.forEach(msg => msg.style.fontSize = size);
     body.style.fontSize = size;
 });
-</script>
 
   
 /* Render messages initially */
