@@ -139,24 +139,13 @@ input[type="radio"]:checked::after {
         <div class="setting-desc">System default</div>
     </div>
 </div>
-    <!-- Default Chat Theme Modal -->
-<div id="chatThemeModal" class="modal">
-  <div class="modal-content">
-    <h2>Choose Chat Theme</h2>
-    <div class="option-group">
-      <label><input type="radio" name="chatTheme" value="system" checked> System Default</label>
-      <label><input type="radio" name="chatTheme" value="light"> Light</label>
-      <label><input type="radio" name="chatTheme" value="dark"> Dark</label>
-      <label><input type="radio" name="chatTheme" value="blue"> Blue</label>
-      <label><input type="radio" name="chatTheme" value="green"> Green</label>
+
+<!-- Default Chat Theme -->
+<div class="setting-item" onclick="openChatThemeModal()">
+    <div class="setting-text">
+        <div class="setting-title">Default Chat Theme</div>
+        <div class="setting-desc">Tap to choose</div>
     </div>
-    <!-- Live preview box -->
-    <div id="themePreview" style="border:1px solid #ccc; border-radius:8px; padding:10px; margin-top:10px; height:120px; display:flex; flex-direction:column; justify-content:flex-end;">
-      <div style="background:#fff; padding:8px 12px; border-radius:20px; margin:4px 0; width:60%; align-self:flex-start;">Hi, this is a preview message</div>
-      <div style="background:#dcf8c6; padding:8px 12px; border-radius:20px; margin:4px 0; width:60%; align-self:flex-end;">Hello! Looks good</div>
-    </div>
-    <button class="close-btn" onclick="closeChatThemeModal()">Done</button>
-  </div>
 </div>
 
 <div class="section-divider"></div>
@@ -229,6 +218,21 @@ input[type="radio"]:checked::after {
     </div>
 </div>
 
+<!-- Default Chat Theme Modal -->
+<div id="chatThemeModal" class="modal">
+    <div class="modal-content">
+        <h2>Choose Chat Theme</h2>
+        <div class="option-group">
+            <label><input type="radio" name="chatTheme" value="system" checked> System Default</label>
+            <label><input type="radio" name="chatTheme" value="light"> Light</label>
+            <label><input type="radio" name="chatTheme" value="dark"> Dark</label>
+            <label><input type="radio" name="chatTheme" value="blue"> Blue</label>
+            <label><input type="radio" name="chatTheme" value="green"> Green</label>
+        </div>
+        <button class="close-btn" onclick="closeChatThemeModal()">Done</button>
+    </div>
+</div>
+
 <!-- Font Modal -->
 <div id="fontModal" class="modal">
     <div class="modal-content">
@@ -256,6 +260,7 @@ input[type="radio"]:checked::after {
 
 <script>
 const themeModal = document.getElementById("themeModal");
+const chatThemeModal = document.getElementById("chatThemeModal");
 const fontModal = document.getElementById("fontModal");
 const backupModal = document.getElementById("backupModal");
 const backupStatus = document.getElementById("backup-status");
@@ -263,8 +268,13 @@ const backupStatus = document.getElementById("backup-status");
 // Open/close modals
 function openThemeModal(){ themeModal.style.display='flex'; }
 function closeThemeModal(){ themeModal.style.display='none'; }
+
+function openChatThemeModal(){ chatThemeModal.style.display='flex'; }
+function closeChatThemeModal(){ chatThemeModal.style.display='none'; }
+
 function openFontModal(){ fontModal.style.display='flex'; }
 function closeFontModal(){ fontModal.style.display='none'; }
+
 function openBackupModal(){ backupModal.style.display='flex'; }
 function closeBackupModal(){ 
     backupModal.style.display='none';
@@ -275,47 +285,10 @@ function closeBackupModal(){
 // Close modals on outside click
 window.onclick = function(event){
     if(event.target === themeModal) themeModal.style.display='none';
+    if(event.target === chatThemeModal) chatThemeModal.style.display='none';
     if(event.target === fontModal) fontModal.style.display='none';
     if(event.target === backupModal) closeBackupModal();
 }
-const themePreview = document.getElementById("themePreview");
-document.querySelectorAll('input[name="chatTheme"]').forEach(el => {
-  el.addEventListener("change", function(){
-    switch(this.value){
-      case 'system':
-      case 'light':
-        themePreview.style.background = '#fff';
-        themePreview.querySelectorAll('div').forEach((msg,i)=>{
-          msg.style.background = i===0?'#fff':'#dcf8c6';
-          msg.style.color = '#000';
-        });
-        break;
-      case 'dark':
-        themePreview.style.background = '#2c2c2c';
-        themePreview.querySelectorAll('div').forEach((msg,i)=>{
-          msg.style.background = i===0?'#3a3a3a':'#056162';
-          msg.style.color = '#fff';
-        });
-        break;
-      case 'blue':
-        themePreview.style.background = '#e6f0ff';
-        themePreview.querySelectorAll('div').forEach((msg,i)=>{
-          msg.style.background = i===0?'#cce0ff':'#99c2ff';
-          msg.style.color = '#000';
-        });
-        break;
-      case 'green':
-        themePreview.style.background = '#e6ffe6';
-        themePreview.querySelectorAll('div').forEach((msg,i)=>{
-          msg.style.background = i===0?'#ccffcc':'#99ff99';
-          msg.style.color = '#000';
-        });
-        break;
-    }
-  });
-});
-
-    
 </script>
 </body>
 </html>
