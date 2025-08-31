@@ -23,8 +23,31 @@
 
 <div class="option">Network Usage <span>&#9654;</span></div>
 <div class="option">Storage Management <span>&#9654;</span></div>
-<div class="option">Media Auto-Download <div class="toggle" onclick="this.classList.toggle('active')"></div></div>
-<div class="option">Low Data Usage <div class="toggle" onclick="this.classList.toggle('active')"></div></div>
+<div class="option">Media Auto-Download <div class="toggle" id="mediaToggle"></div></div>
+<div class="option">Low Data Usage <div class="toggle" id="lowDataToggle"></div></div>
+
+<script>
+// Get toggles
+const mediaToggle = document.getElementById('mediaToggle');
+const lowDataToggle = document.getElementById('lowDataToggle');
+
+// Load saved states from localStorage
+if(localStorage.mediaAutoDownload === 'true') mediaToggle.classList.add('active');
+if(localStorage.lowDataUsage === 'true') lowDataToggle.classList.add('active');
+
+// Toggle function with localStorage saving
+mediaToggle.addEventListener('click', function(e){
+    e.stopPropagation(); // prevent parent div click
+    this.classList.toggle('active');
+    localStorage.setItem('mediaAutoDownload', this.classList.contains('active'));
+});
+
+lowDataToggle.addEventListener('click', function(e){
+    e.stopPropagation();
+    this.classList.toggle('active');
+    localStorage.setItem('lowDataUsage', this.classList.contains('active'));
+});
+</script>
 
 </body>
 </html>
