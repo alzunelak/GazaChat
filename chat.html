@@ -11,7 +11,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .header{display:flex;align-items:center;justify-content:space-between;background:#128C7E;padding:10px;border-bottom:1px solid #ccc;position:relative;}
 .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
 .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
-.header-info h2{margin:0;font-size:16px;cursor:pointer;}
+.header-info h2{margin:0;font-size:16px;cursor:pointer;color:white;}
 .header-actions{display:flex;align-items:center;gap:15px;}
 .header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:white;}
 #chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;display:flex;flex-direction:column;gap:6px;}
@@ -193,9 +193,6 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     </div>
   </div>
 
-
- 
-
  <!-- BLOCK & REPORT SECTION -->
 <div class="settingsContainer">
   <div style="display:flex;flex-direction:column;gap:8px;">
@@ -205,306 +202,178 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
     <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#ff5722;cursor:pointer;font-weight:bold;">
       <span><i class="fa-solid fa-flag"></i> Report User</span>
     </button>
-  
-  
   </div>
 </div>
 
-
 <script>
-/* --------- USER DATA --------- */
-const myName = "Me";
-const myId = "user123";
-
-/* Fetch friends list from localStorage */
-const friendsList = JSON.parse(localStorage.getItem("friends") || "[]");
-const friendParam = new URLSearchParams(window.location.search).get("friend");
-const friendObj = friendsList.find(f => f.name === friendParam);
-
-const friendData = {
-  name: friendObj ? friendObj.name : (friendParam || "Friend"),
-  photo: friendObj && friendObj.photo ? friendObj.photo : "default-profile.png"
+/* -------------------- USER & FRIEND DATA -------------------- */
+const myName="Me", myId="user123";
+const friendsList=JSON.parse(localStorage.getItem("friends")||"[]");
+const friendParam=new URLSearchParams(window.location.search).get("friend");
+const friendObj=friendsList.find(f=>f.name===friendParam);
+const friendData={
+  name: friendObj?friendObj.name:(friendParam||"Friend"),
+  photo: friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"
 };
 
-/* DOM Elements */
-const friendNameEl  = document.getElementById("friendName");
-const friendPhotoEl = document.getElementById("friendPhoto");
-const infoFriendNameEl  = document.getElementById("infoFriendName");
-const infoFriendPhotoEl = document.getElementById("infoFriendPhoto");
-const chatBox = document.getElementById("chatBox");
-const msgInput = document.getElementById("msgInput");
+/* -------------------- DOM ELEMENTS -------------------- */
+const friendNameEl=document.getElementById("friendName");
+const friendPhotoEl=document.getElementById("friendPhoto");
+const infoFriendNameEl=document.getElementById("infoFriendName");
+const infoFriendPhotoEl=document.getElementById("infoFriendPhoto");
+const chatBox=document.getElementById("chatBox");
+const msgInput=document.getElementById("msgInput");
 
 /* Initialize headers */
-friendNameEl.textContent = friendData.name;
-friendPhotoEl.src = friendData.photo;
-friendPhotoEl.onerror = ()=>friendPhotoEl.src="default-profile.png";
+friendNameEl.textContent=friendData.name;
+friendPhotoEl.src=friendData.photo;
+friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png";
+infoFriendNameEl.textContent=friendData.name;
+infoFriendPhotoEl.src=friendData.photo;
+infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png";
 
-infoFriendNameEl.textContent = friendData.name;
-infoFriendPhotoEl.src = friendData.photo;
-infoFriendPhotoEl.onerror = ()=>infoFriendPhotoEl.src="default-profile.png";
+/* -------------------- MESSAGES -------------------- */
+let messages=JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
 
-/* Messages array */
-let messages = JSON.parse(localStorage.getItem(`chat_${friendData.name}`) || "[]");
-
-/* Utility */
 function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 function timeNow(){ return new Date().toLocaleTimeString(); }
 function saveMessages(){ localStorage.setItem(`chat_${friendData.name}`, JSON.stringify(messages)); }
 
 function appendMessageBubble(obj){
-  const div = document.createElement("div");
-  div.className = "msg"+(obj.senderId===myId?" self":"");
-  div.innerHTML = `<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
+  const div=document.createElement("div");
+  div.className="msg"+(obj.senderId===myId?" self":"");
+  div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
+
+  // Apply current settings
+  const chatTheme=localStorage.getItem("chatTheme")||"system";
+  const fontSize=localStorage.getItem("fontSize")||"medium";
+  if(div.classList.contains("self")){
+    switch(chatTheme){
+      case"system":div.style.background="#dcf8c6";break;
+      case"light":div.style.background="#E1FFC7";break;
+      case"dark":div.style.background="#2c2f33";break;
+      case"blue":div.style.background="#D0E6FF";break;
+      case"green":div.style.background="#CCFFCC";break;
+    }
+  }else{
+    switch(chatTheme){
+      case"system":div.style.background="#fff";break;
+      case"light":div.style.background="#fff";break;
+      case"dark":div.style.background="#23272A";break;
+      case"blue":div.style.background="#fff";break;
+      case"green":div.style.background="#fff";break;
+    }
+  }
+  let size="16px";
+  switch(fontSize){case"small":size="12px";break;case"medium":size="16px";break;case"large":size="20px";break;}
+  div.style.fontSize=size;
   chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  chatBox.scrollTop=chatBox.scrollHeight;
 }
 
 function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
-  
+
 /* Send text message */
-msgInput.addEventListener("keydown", e=>{
+msgInput.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     e.preventDefault();
-    const txt = msgInput.value.trim();
-    if(!txt) return;
-    const msg = {id:uid(), senderId:myId, text:txt, time:timeNow()};
-    messages.push(msg); saveMessages(); appendMessageBubble(msg);
+    const txt=msgInput.value.trim();
+    if(!txt)return;
+    const msg={id:uid(),senderId:myId,text:txt,time:timeNow()};
+    messages.push(msg);
+    saveMessages();
+    appendMessageBubble(msg);
     msgInput.value="";
   }
 });
-  
-/* Emoji picker */
-const emojiPicker = document.getElementById("emojiPicker");
-document.getElementById("emojiBtn").onclick = ()=>{ emojiPicker.style.display = emojiPicker.style.display==="block"?"none":"block"; };
-emojiPicker.addEventListener("click", e=>{
-  if(e.target.tagName==="SPAN"){ msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus(); }
-});
 
-/* Menu popup */
-const menuBtn = document.getElementById("menuBtn");
-const menuPopup = document.getElementById("menuPopup");
-menuBtn.onclick = ()=>{ menuPopup.style.display = menuPopup.style.display==="block"?"none":"block"; };
-document.addEventListener("click", e=>{ if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none"; });
+/* -------------------- MENU POPUP -------------------- */
+const menuBtn=document.getElementById("menuBtn");
+const menuPopup=document.getElementById("menuPopup");
+menuBtn.addEventListener("click",()=>menuPopup.style.display=menuPopup.style.display==="block"?"none":"block");
+document.addEventListener("click",e=>{if(!menuPopup.contains(e.target)&&!menuBtn.contains(e.target))menuPopup.style.display="none";});
 
-/* Friend info */
-friendNameEl.onclick = openFriendInfo;
-friendPhotoEl.onclick = openFriendInfo;
-function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; }
-function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; }
-
-/* Delete chat */
-function deleteChat(){ if(confirm("Delete all messages?")){ messages=[]; saveMessages(); renderMessages(); } }
-
-/* Attachments */
-const attachBtn = document.getElementById("plusBtn");
-const attachPopup = document.getElementById("attachPopup");
-attachBtn.onclick = e=>{ e.stopPropagation(); attachPopup.style.display = attachPopup.style.display==="block"?"none":"block"; };
-document.addEventListener("click", e=>{ if(!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) attachPopup.style.display="none"; });
-
-function sendAttachmentMessage(text){ const msg={id:uid(), senderId:myId, text, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none"; }
-
-/* File handlers */
-document.getElementById("galleryInput").addEventListener("change", e=>{
-  const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`); e.target.value=""; }
-});
-document.getElementById("cameraInput").addEventListener("change", e=>{
-  const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`); e.target.value=""; }
-});
-document.getElementById("documentInput").addEventListener("change", e=>{
-  const file=e.target.files[0]; if(file){ sendAttachmentMessage(`📄 Document: ${file.name}`); e.target.value=""; }
-});
-document.getElementById("audioInput").addEventListener("change", e=>{
-  const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; }
-});
-document.getElementById("sendLocation").onclick = ()=>{
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
-      const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5);
-      sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`);
-    }, ()=>sendAttachmentMessage("📍 Location sharing denied"));
-  }else sendAttachmentMessage("📍 Geolocation not supported");
-};
-document.getElementById("sendContact").onclick = ()=>{
-  const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }
-};
-
-/* Add Friend Button */
-document.getElementById("addFriendBtn").onclick = ()=>{ alert(`${friendData.name} added as friend!`); };
-
-
-/* Guard: if this user is blocked, kick them back immediately */
-let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-if (blockedUsers.includes(friendData.name)) {
-  alert("This user is blocked. Returning to home.");
-  window.location.replace("./home.html"); // safer redirect
+/* -------------------- CHAT SETTINGS -------------------- */
+function chatsettings(){
+  document.getElementById("settingsModal").style.display="block";
+  const theme=localStorage.getItem("theme")||"system";
+  const chatTheme=localStorage.getItem("chatTheme")||"system";
+  const fontSize=localStorage.getItem("fontSize")||"medium";
+  document.getElementById("themeSelect").value=theme;
+  document.getElementById("chatThemeSelect").value=chatTheme;
+  document.getElementById("fontSizeSelect").value=fontSize;
 }
 
-
-  
-/* Block User */
-document.querySelector(".blockBtn").addEventListener("click", function(e){
-    e.preventDefault(); // stop default action
-
-    if(confirm("Block this user?")){
-        let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-        let friends = JSON.parse(localStorage.getItem("friends") || "[]");
-
-        if(!blocked.includes(friendData.name)){
-            blocked.push(friendData.name);
-            localStorage.setItem("blockedUsers", JSON.stringify(blocked));
-
-            // Remove user from friends list
-            friends = friends.filter(f => f.name !== friendData.name);
-            localStorage.setItem("friends", JSON.stringify(friends));
-
-            alert("User blocked.");
-
-            //  Close chat/profile and go home
-            setTimeout(()=>{
-                window.location.href = "home.html";
-            }, 200); 
-        }
-    }
-});
-
-
-
-/* Report User */
-document.querySelector(".reportBtn").onclick = ()=>{
-    if(confirm("Report this user?")) alert("User reported.");
-};
-
-/* ---------------------------
-   FRIEND INFO PAGE BUTTON REDIRECTS
-   Handles Video Call, Audio Call, and Search buttons
-   Do NOT mix with other chat or message scripts
----------------------------- */
-const friendName = encodeURIComponent(friendData.name);
-const friendPhoto = encodeURIComponent(friendData.photo);
-
-// Video Call button
-document.getElementById("videoCallBtn").onclick = () => {
-    window.location.href = `video-call.html?friend=${friendName}&img=${friendPhoto}`;
-};
-
-// Audio Call button
-document.getElementById("audioCallBtn").onclick = () => {
-    window.location.href = `audio-call.html?friend=${friendName}&img=${friendPhoto}`;
-};
-
-// Search button (optional: redirect to calls.html)
-document.getElementById("searchBtn").onclick = () => {
-    window.location.href = `chat.html?friend=${friendName}&img=${friendPhoto}`;
-};
-
-
-  // Header Call button behaves like the Audio Call button
-document.getElementById("callBtn").onclick = () => {
-    const friendNameEncoded = encodeURIComponent(friendData.name);
-    const friendPhotoEncoded = encodeURIComponent(friendData.photo);
-    window.location.href = `audio-call.html?friend=${friendNameEncoded}&img=${friendPhotoEncoded}`;
-};
-
-// ---------- CHAT SETTINGS ----------
-const settingsModal = document.getElementById("settingsModal");
-const themeSelect = document.getElementById("themeSelect");
-const chatThemeSelect = document.getElementById("chatThemeSelect");
-const fontSizeSelect = document.getElementById("fontSizeSelect");
-
-function openSettings(){
-  settingsModal.style.display="block";
-  themeSelect.value = localStorage.getItem("theme") || "system";
-  chatThemeSelect.value = localStorage.getItem("chatTheme") || "system";
-  fontSizeSelect.value = localStorage.getItem("fontSize") || "medium";
+function closeSettings(){
+  const theme=document.getElementById("themeSelect").value;
+  const chatTheme=document.getElementById("chatThemeSelect").value;
+  const fontSize=document.getElementById("fontSizeSelect").value;
+  localStorage.setItem("theme",theme);
+  localStorage.setItem("chatTheme",chatTheme);
+  localStorage.setItem("fontSize",fontSize);
   applySettings();
+  document.getElementById("settingsModal").style.display="none";
 }
-
-function closeSettings(){ settingsModal.style.display="none"; }
-
-themeSelect.onchange = chatThemeSelect.onchange = fontSizeSelect.onchange = applySettings;
 
 function applySettings(){
-  const theme = themeSelect.value;
-  const chatTheme = chatThemeSelect.value;
-  const fontSize = fontSizeSelect.value;
-
-  localStorage.setItem("theme", theme);
-  localStorage.setItem("chatTheme", chatTheme);
-  localStorage.setItem("fontSize", fontSize);
-
-  // Body background
+  const theme=localStorage.getItem("theme")||"system";
+  const fontSize=localStorage.getItem("fontSize")||"medium";
   switch(theme){
-    case "system": document.body.style.background="#f8f9fa"; break;
-    case "light": document.body.style.background="#fff"; break;
-    case "dark": document.body.style.background="#1c1e21"; break;
+    case"system":document.body.style.background="#f8f9fa";break;
+    case"light":document.body.style.background="#fff";break;
+    case"dark":document.body.style.background="#1c1e21";break;
   }
-
-  // Chat bubbles
   document.querySelectorAll(".msg").forEach(msg=>{
+    const chatTheme=localStorage.getItem("chatTheme")||"system";
     if(msg.classList.contains("self")){
       switch(chatTheme){
-        case "system": msg.style.background="#dcf8c6"; break;
-        case "light": msg.style.background="#E1FFC7"; break;
-        case "dark": msg.style.background="#2c2f33"; break;
-        case "blue": msg.style.background="#D0E6FF"; break;
-        case "green": msg.style.background="#CCFFCC"; break;
+        case"system":msg.style.background="#dcf8c6";break;
+        case"light":msg.style.background="#E1FFC7";break;
+        case"dark":msg.style.background="#2c2f33";break;
+        case"blue":msg.style.background="#D0E6FF";break;
+        case"green":msg.style.background="#CCFFCC";break;
       }
-    } else {
+    }else{
       switch(chatTheme){
-        case "system": msg.style.background="#fff"; break;
-        case "light": msg.style.background="#fff"; break;
-        case "dark": msg.style.background="#23272A"; break;
-        case "blue": msg.style.background="#fff"; break;
-        case "green": msg.style.background="#fff"; break;
+        case"system":msg.style.background="#fff";break;
+        case"light":msg.style.background="#fff";break;
+        case"dark":msg.style.background="#23272A";break;
+        case"blue":msg.style.background="#fff";break;
+        case"green":msg.style.background="#fff";break;
       }
     }
+    let size="16px";
+    switch(fontSize){case"small":size="12px";break;case"medium":size="16px";break;case"large":size="20px";break;}
+    msg.style.fontSize=size;
   });
-
-  // Font size
-  let size="16px";
-  switch(fontSize){
-    case "small": size="12px"; break;
-    case "medium": size="16px"; break;
-    case "large": size="20px"; break;
-  }
-  document.querySelectorAll(".msg").forEach(msg=>msg.style.fontSize=size);
-  document.body.style.fontSize=size;
+  document.body.style.fontSize=fontSize==="small"?"12px":fontSize==="medium"?"16px":"20px";
 }
 
 applySettings();
-
-// ---------- MIC RECORDING ----------
-const micBtn=document.getElementById("micBtn"); 
-let mediaRecorder, audioChunks=[];
-
-micBtn.onclick=async()=>{
-  if(!mediaRecorder){
-    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-      alert("Microphone not supported"); return;
-    }
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(audioChunks, {type:"audio/webm"});
-      audioChunks = [];
-      sendAttachmentMessage(`🎤 Voice message (${(blob.size/1024).toFixed(1)} KB)`);
-    };
-  }
-  if(mediaRecorder.state==="inactive"){
-    mediaRecorder.start();
-    micBtn.style.background="red";
-  } else {
-    mediaRecorder.stop();
-    micBtn.style.background="#25D366";
-  }
-};
-
-   
-
-  
-/* Render messages initially */
 renderMessages();
+
+/* -------------------- FRIEND INFO PAGE -------------------- */
+function openFriendInfo(){document.getElementById("chatPage").style.display="none";document.getElementById("friendInfoPage").style.display="flex";}
+function backToChat(){document.getElementById("friendInfoPage").style.display="none";document.getElementById("chatPage").style.display="flex";}
+
+/* -------------------- DELETE CHAT -------------------- */
+function deleteChat(){if(confirm("Delete all messages?")){messages=[];saveMessages();renderMessages();}}
+
+/* -------------------- EMOJI PICKER -------------------- */
+const emojiBtn=document.getElementById("emojiBtn");
+const emojiPicker=document.getElementById("emojiPicker");
+emojiBtn.addEventListener("click",()=>emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block");
+emojiPicker.querySelectorAll("span").forEach(emoji=>emoji.addEventListener("click",()=>{msgInput.value+=emoji.textContent;msgInput.focus();}));
+
+/* -------------------- ATTACHMENTS -------------------- */
+const plusBtn=document.getElementById("plusBtn");
+const attachPopup=document.getElementById("attachPopup");
+plusBtn.addEventListener("click",()=>attachPopup.style.display=attachPopup.style.display==="block"?"none":"block");
+
+/* -------------------- BLOCK & REPORT -------------------- */
+document.querySelector(".blockBtn").addEventListener("click",()=>alert(friendData.name+" blocked!"));
+document.querySelector(".reportBtn").addEventListener("click",()=>alert(friendData.name+" reported!"));
+
 </script>
 </body>
-</html> 
+</html>
