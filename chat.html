@@ -50,14 +50,12 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer i{color:black;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
-
-.settingsItem {
+  .settingsItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px;
   background: #fff;
-  border: 1px solid #eee;
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
@@ -65,14 +63,25 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   font-size: 16px;
 }
 
+/* Add border only for the first two buttons */
+.settingsItem:nth-child(-n+2) {
+  border: 1px solid #eee;
+}
+
+/* Small text for Mesh Network */
 .settingsItem small {
   font-size: 14px;
   color: #555;
 }
 
-/* Optional: keep switch aligned nicely */
+/* Keep Chat Lock switch aligned */
 .settingsItem label.switch {
   margin: 0;
+}
+
+/* Optional: disable pointer for Mesh Network */
+.settingsItem:last-child {
+  pointer-events: none;
 }
 
   /* ==== MODAL STYLES ==== */
@@ -231,7 +240,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   </button>
 
    <div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:default;">
-    <span>✔ Mesh Network</span>
+    <span>Mesh Network</span>
     <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
   </div>
 
