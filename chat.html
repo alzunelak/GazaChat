@@ -255,6 +255,20 @@ input:checked + .slider:before {transform:translateX(26px);}
     <i class="fa-solid fa-clock"></i>
   </button>
 </div>
+
+  <!-- POPUP MODAL -->
+<div id="disappearModal" class="modal">
+  <div class="modal-content">
+    <h2>Disappearing Messages</h2>
+    <div class="option-group">
+      <label><input type="radio" name="disappear" value="off" checked> Off</label>
+      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
+      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
+      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
+    </div>
+    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
+  </div>
+</div>
   
   <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
@@ -413,7 +427,13 @@ micBtn.onclick=async()=>{
 document.getElementById("chatLockToggle").addEventListener("change", function(){
   alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled");
 });
-  
+// ==== desappear ====
+  function openDisappearModal(){
+  document.getElementById("disappearModal").style.display="flex";
+}
+function closeDisappearModal(){
+  document.getElementById("disappearModal").style.display="none";
+}
 // ===== RENDER INITIAL =====
 renderMessages();
 </script>
