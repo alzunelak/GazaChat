@@ -5,22 +5,222 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat Settings</title>
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
-  h1 { font-size:2em; margin-bottom:20px; }
-  .option { background:#fff; padding:15px 20px; border-radius:8px; margin-bottom:15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-  .option:hover { background:#e6f4ea; }
-  .back { margin-bottom:20px; cursor:pointer; color:#007bff; display:inline-block; }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f8f9fa;
+    color: #333;
+}
+.back {
+    margin-bottom: 20px;
+    cursor: pointer;
+    color: #000;
+    display: inline-block;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+/* Settings item */
+.setting-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+}
+.setting-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+}
+.setting-desc {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
+}
+.section-divider {
+    border-bottom: 1px solid #ccc;
+    margin: 15px 0;
+}
+
+/* Toggle switch */
+.switch { position: relative; display: inline-block; width: 50px; height: 24px; margin-top: 6px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc; border-radius: 24px; transition: 0.3s;
+}
+.slider:before {
+  position: absolute; content: ""; height: 18px; width: 18px;
+  left: 3px; bottom: 3px; background-color: white; border-radius: 50%;
+  transition: 0.3s;
+}
+.switch input:checked + .slider { background-color: #4CAF50; }
+.switch input:checked + .slider:before { transform: translateX(26px); }
+
+/* Popup modal */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.4); 
+    justify-content: center; 
+    align-items: center;
+}
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.modal-content h2 { color: #000; margin-bottom: 15px; font-weight: bold; font-size: 1.4em; }
+.close-btn {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    margin-top: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    float: right;
+}
+.close-btn:hover { background: #45a049; }
+.option-group label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; }
+.option-group .info-text { font-size: 13px; color: #555; margin: 4px 0 10px 0; }
 </style>
 </head>
 <body>
 
 <div class="back" onclick="history.back()">⬅ Back</div>
-<h1>Chat</h1>
+<h1>Chat Settings</h1>
 
-<div class="option">Chat Backup <span>&#9654;</span></div>
-<div class="option">Font Size <span>&#9654;</span></div>
-<div class="option">Wallpaper <span>&#9654;</span></div>
-<div class="option">Enter Key Behavior <span>&#9654;</span></div>
+<!-- Theme -->
+<div class="setting-item" onclick="openThemeModal()">
+    <div class="setting-title">Theme</div>
+    <div class="setting-desc">System default</div>
+</div>
 
+<!-- Default Chat -->
+<a href="default-chat.html" style="text-decoration:none; color:inherit;">
+<div class="setting-item">
+    <div class="setting-title">Default Chat Theme</div>
+    <div class="setting-desc">Tap to choose</div>
+</div>
+</a>
+
+<div class="section-divider"></div>
+
+<!-- Chat Settings -->
+<div class="setting-item">
+    <div class="setting-title">Send with Enter</div>
+    <div class="setting-desc">Enable to send message by pressing Enter</div>
+    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+<div class="setting-item">
+    <div class="setting-title">Link Previews</div>
+    <div class="setting-desc">Show previews when links are sent</div>
+    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+</div>
+
+<div class="setting-item">
+    <div class="setting-title">Keep Muted Chats Archived</div>
+    <div class="setting-desc">Muted chats will remain in archive</div>
+    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- Font Size -->
+<div class="setting-item" onclick="openFontModal()">
+    <div class="setting-title">Font Size</div>
+    <div class="setting-desc">Medium</div>
+</div>
+
+<!-- Voice Message Transcription -->
+<div class="setting-item">
+    <div class="setting-title">Voice Message Transcription</div>
+    <div class="setting-desc">Automatically transcribe voice messages</div>
+    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- Chat Backup -->
+<div class="setting-item" onclick="openBackupModal()">
+    <div class="setting-title">Chat Backup</div>
+    <div class="setting-desc">Backup your chats to cloud</div>
+    <div class="info-text" id="backup-status">Backup is Off</div>
+</div>
+
+<!-- Theme Modal -->
+<div id="themeModal" class="modal">
+    <div class="modal-content">
+        <h2>Choose Theme</h2>
+        <div class="option-group">
+            <label><input type="radio" name="theme" value="system" checked> System Default</label>
+            <label><input type="radio" name="theme" value="light"> Light</label>
+            <label><input type="radio" name="theme" value="dark"> Dark</label>
+        </div>
+        <button class="close-btn" onclick="closeThemeModal()">Done</button>
+    </div>
+</div>
+
+<!-- Font Modal -->
+<div id="fontModal" class="modal">
+    <div class="modal-content">
+        <h2>Choose Font Size</h2>
+        <div class="option-group">
+            <label><input type="radio" name="font" value="small"> Small</label>
+            <label><input type="radio" name="font" value="medium" checked> Medium</label>
+            <label><input type="radio" name="font" value="large"> Large</label>
+        </div>
+        <button class="close-btn" onclick="closeFontModal()">Done</button>
+    </div>
+</div>
+
+<!-- Backup Modal -->
+<div id="backupModal" class="modal">
+    <div class="modal-content">
+        <h2>Chat Backup</h2>
+        <div class="option-group">
+            <label><input type="radio" name="backup" value="on"> On</label>
+            <label><input type="radio" name="backup" value="off" checked> Off</label>
+        </div>
+        <button class="close-btn" onclick="closeBackupModal()">Done</button>
+    </div>
+</div>
+
+<script>
+const themeModal = document.getElementById("themeModal");
+const fontModal = document.getElementById("fontModal");
+const backupModal = document.getElementById("backupModal");
+const backupStatus = document.getElementById("backup-status");
+
+// Open/close modals
+function openThemeModal(){ themeModal.style.display='flex'; }
+function closeThemeModal(){ themeModal.style.display='none'; }
+function openFontModal(){ fontModal.style.display='flex'; }
+function closeFontModal(){ fontModal.style.display='none'; }
+function openBackupModal(){ backupModal.style.display='flex'; }
+function closeBackupModal(){ 
+    backupModal.style.display='none';
+    const backupValue = document.querySelector('input[name="backup"]:checked').value;
+    backupStatus.textContent = "Backup is " + (backupValue==='on'?'On':'Off');
+}
+
+// Close modals on outside click
+window.onclick = function(event){
+    if(event.target === themeModal) themeModal.style.display='none';
+    if(event.target === fontModal) fontModal.style.display='none';
+    if(event.target === backupModal) closeBackupModal();
+}
+</script>
 </body>
 </html>
