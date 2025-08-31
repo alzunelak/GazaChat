@@ -44,7 +44,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
 .actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
 .actionButtons i{font-size:20px;margin-bottom:5px;}
-  .settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#fff;border-radius:8px;margin-bottom:15px;}
+.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#fff;border-radius:8px;margin-bottom:15px;}
 .settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
 .settingsContainer button:hover{background:#f1f1f1;}
 .settingsContainer i{color:black;font-size:18px;}
@@ -278,18 +278,21 @@ input:checked + .slider:before {transform:translateX(26px);}
   <div class="settingsContainer">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <span>No groups in common</span>
-      <button class="addFriendBtn" id="addFriendBtn" style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">+ create group </button>
-    </div>
-  </div>
+     <button class="addFriendBtn" id="addFriendBtn" 
+        style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;"
+        onclick="window.location.href='group.html';">
+  + create group
+</button>
+
 
  <!-- BLOCK & REPORT SECTION -->
 <div class="settingsContainer">
   <div style="display:flex;flex-direction:column;gap:8px;">
     <button class="blockBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#f44336;cursor:pointer;font-weight:bold;">
-      <span><i class="fa-solid fa-ban"></i> Block User</span>
+      <span><i class="fa-solid fa-ban" style="color:red;"></i> Block User</span>
     </button>
     <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#ff5722;cursor:pointer;font-weight:bold;">
-      <span><i class="fa-solid fa-flag"></i> Report User</span>
+       <span><i class="fa-solid fa-flag" style="color:red;"></i> Report User</span>
     </button>
   </div>
 </div>
@@ -389,9 +392,6 @@ document.querySelector(".blockBtn").addEventListener("click", e=>{ e.preventDefa
   }
 });
 document.querySelector(".reportBtn").onclick=()=>{ if(confirm("Report this user?")) alert("User reported."); };
-
-// ===== ADD FRIEND =====
-document.getElementById("addFriendBtn").onclick=()=>{ alert(`${friendData.name} added as friend!`); };
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
