@@ -73,6 +73,20 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   background:white;transition:.4s;border-radius:50%;}
 input:checked + .slider {background:#128C7E;}
 input:checked + .slider:before {transform:translateX(26px);}
+
+
+.modal {
+  display: none;
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.4);
+  z-index:4000;
+  align-items: center;
+  justify-content: center;
+}
+
+  
 </style>
 </head>
 <body>
@@ -132,7 +146,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
   
   <div id="chatBox">
-    <div class="msg system">🔒 Messages are end-to-end encrypted</div>
+    <div class="msg system">🔒 Messages d</div>
   </div>
 
   <div id="inputArea">
@@ -201,7 +215,15 @@ input:checked + .slider:before {transform:translateX(26px);}
     </div>
   </div>
 
- 
+ <div class="popup" id="menuPopup">
+  <div onclick="openFriendInfo()">View Info</div>
+  <div onclick="alert('Muted!')">Mute</div>
+  <div onclick="deleteChat()">Delete Chat</div>
+  <div onclick="openSettings()">Chat Settings</div>
+  <div onclick="openDisappearModal()">Disappearing Messages</div> <!-- NEW -->
+  <div onclick="openEncryptionPopup()">End-to-End Encryption</div> <!-- NEW -->
+</div>
+
 
 <!-- DISAPPEARING MESSAGES MODAL -->
 <div id="disappearModal" class="modal">
