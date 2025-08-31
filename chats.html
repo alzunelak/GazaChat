@@ -24,21 +24,26 @@ h1 {
     font-size: 2em;
     margin-bottom: 20px;
 }
-/* Settings item */
+/* Setting item style */
 .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     padding: 12px 0;
-    border-bottom: 1px solid #ccc;
-    cursor: pointer;
+}
+.setting-text {
+    flex: 1;
+    margin-right: 12px;
 }
 .setting-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: #000;
 }
 .setting-desc {
     font-size: 13px;
     color: #666;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 .section-divider {
     border-bottom: 1px solid #ccc;
@@ -46,7 +51,7 @@ h1 {
 }
 
 /* Toggle switch */
-.switch { position: relative; display: inline-block; width: 50px; height: 24px; margin-top: 6px; }
+.switch { position: relative; display: inline-block; width: 50px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -60,7 +65,7 @@ h1 {
 .switch input:checked + .slider { background-color: #4CAF50; }
 .switch input:checked + .slider:before { transform: translateX(26px); }
 
-/* Popup modal */
+/* Modal */
 .modal {
     display: none; 
     position: fixed; 
@@ -93,6 +98,33 @@ h1 {
 .close-btn:hover { background: #45a049; }
 .option-group label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; }
 .option-group .info-text { font-size: 13px; color: #555; margin: 4px 0 10px 0; }
+
+/* Green radio buttons */
+input[type="radio"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-right: 8px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+}
+input[type="radio"]:checked {
+    border-color: #4CAF50;
+    background-color: #4CAF50;
+}
+input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
+}
 </style>
 </head>
 <body>
@@ -102,15 +134,19 @@ h1 {
 
 <!-- Theme -->
 <div class="setting-item" onclick="openThemeModal()">
-    <div class="setting-title">Theme</div>
-    <div class="setting-desc">System default</div>
+    <div class="setting-text">
+        <div class="setting-title">Theme</div>
+        <div class="setting-desc">System default</div>
+    </div>
 </div>
 
 <!-- Default Chat -->
 <a href="default-chat.html" style="text-decoration:none; color:inherit;">
 <div class="setting-item">
-    <div class="setting-title">Default Chat Theme</div>
-    <div class="setting-desc">Tap to choose</div>
+    <div class="setting-text">
+        <div class="setting-title">Default Chat Theme</div>
+        <div class="setting-desc">Tap to choose</div>
+    </div>
 </div>
 </a>
 
@@ -118,20 +154,26 @@ h1 {
 
 <!-- Chat Settings -->
 <div class="setting-item">
-    <div class="setting-title">Send with Enter</div>
-    <div class="setting-desc">Enable to send message by pressing Enter</div>
+    <div class="setting-text">
+        <div class="setting-title">Send with Enter</div>
+        <div class="setting-desc">Enable to send message by pressing Enter</div>
+    </div>
     <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
 
 <div class="setting-item">
-    <div class="setting-title">Link Previews</div>
-    <div class="setting-desc">Show previews when links are sent</div>
+    <div class="setting-text">
+        <div class="setting-title">Link Previews</div>
+        <div class="setting-desc">Show previews when links are sent</div>
+    </div>
     <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
 
 <div class="setting-item">
-    <div class="setting-title">Keep Muted Chats Archived</div>
-    <div class="setting-desc">Muted chats will remain in archive</div>
+    <div class="setting-text">
+        <div class="setting-title">Keep Muted Chats Archived</div>
+        <div class="setting-desc">Muted chats will remain in archive</div>
+    </div>
     <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
 
@@ -139,14 +181,18 @@ h1 {
 
 <!-- Font Size -->
 <div class="setting-item" onclick="openFontModal()">
-    <div class="setting-title">Font Size</div>
-    <div class="setting-desc">Medium</div>
+    <div class="setting-text">
+        <div class="setting-title">Font Size</div>
+        <div class="setting-desc">Medium</div>
+    </div>
 </div>
 
 <!-- Voice Message Transcription -->
 <div class="setting-item">
-    <div class="setting-title">Voice Message Transcription</div>
-    <div class="setting-desc">Automatically transcribe voice messages</div>
+    <div class="setting-text">
+        <div class="setting-title">Voice Message Transcription</div>
+        <div class="setting-desc">Automatically transcribe voice messages</div>
+    </div>
     <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
 
@@ -154,9 +200,11 @@ h1 {
 
 <!-- Chat Backup -->
 <div class="setting-item" onclick="openBackupModal()">
-    <div class="setting-title">Chat Backup</div>
-    <div class="setting-desc">Backup your chats to cloud</div>
-    <div class="info-text" id="backup-status">Backup is Off</div>
+    <div class="setting-text">
+        <div class="setting-title">Chat Backup</div>
+        <div class="setting-desc">Backup your chats to cloud</div>
+        <div class="info-text" id="backup-status">Backup is Off</div>
+    </div>
 </div>
 
 <!-- Theme Modal -->
