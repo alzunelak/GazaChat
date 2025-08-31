@@ -50,8 +50,6 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
 .settingsContainer i{color:black;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
-  
-<style>
 .settingsItem {
   display: flex;
   align-items: center;
@@ -64,9 +62,10 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   box-sizing: border-box;
   font-size: 16px;
   border: none; /* no borders at all */
+  min-height: 50px; /* uniform height */
 }
 
-/* Small text for Mesh Network */
+/* Make Mesh Network text small but keep height same */
 .settingsItem small {
   font-size: 14px;
   color: #555;
@@ -77,9 +76,10 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   margin: 0;
 }
 
-/* Disable pointer for Mesh Network */
+/* Make Mesh Network fully clickable with same height */
 .settingsItem:last-child {
-  pointer-events: none;
+  cursor: default;
+  justify-content: flex-start;
 }
 
   /* ==== MODAL STYLES ==== */
@@ -249,10 +249,11 @@ input:checked + .slider:before {transform:translateX(26px);}
     </label>
   </div>
 
-  <div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:default;">
+  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
     <span>✔ Mesh Network</span>
     <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
   </div>
+
 </div>
   
   <!-- NO GROUPS SECTION -->
