@@ -668,6 +668,16 @@ document.getElementById("addMemberBtn").onclick = ()=>{
   window.location.href = "addMembers.html";
 };
 
+  document.addEventListener('DOMContentLoaded', () => {
+    const storedMembers = JSON.parse(localStorage.getItem('currentGroupMembers') || '[]');
+    if(storedMembers.length > 0) {
+        currentGroupMembers = storedMembers;
+        renderGroupMembers();
+        localStorage.removeItem('currentGroupMembers'); // optional cleanup
+    }
+});
+
+
 // ===== NAVIGATION =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
 function openGroupInfo(){
