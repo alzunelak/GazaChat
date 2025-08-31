@@ -1,227 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy</title>
-<style>
-  body { 
-    font-family: Arial, sans-serif; 
-    margin: 0; 
-    padding: 20px; 
-    background: #f8f9fa; 
-    color: #333;
-  }
-  h1 { font-size: 2em; margin-bottom: 20px; }
-  h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; cursor: pointer; color: #007bff; }
-  a { text-decoration: none; color: inherit; }
-  .back { margin-bottom: 20px; cursor: pointer; color: #007bff; display: inline-block; font-size: 1em; }
-
-  /* Settings item */
-  .setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; 
-    padding: 12px 0; 
-  }
-  .setting-text { flex: 1; margin-right: 12px; }
-  .setting-title { font-size: 16px; font-weight: 500; color: #000; }
-  .setting-desc { margin-top: 4px; font-size: 13px; color: #666; line-height: 1.4; }
-
-  /* Toggle switch */
-  .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-  .switch input { opacity: 0; width: 0; height: 0; }
-  .slider {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc; border-radius: 24px; transition: 0.3s;
-  }
-  .slider:before {
-    position: absolute; content: ""; height: 18px; width: 18px;
-    left: 3px; bottom: 3px; background-color: white; border-radius: 50%;
-    transition: 0.3s;
-  }
-  .switch input:checked + .slider { background-color: #4CAF50; }
-  .switch input:checked + .slider:before { transform: translateX(26px); }
-
-  .section-divider { border-bottom: 1px solid #ccc; margin: 15px 0 0 0; }
-  p { font-size: 0.9em; color: #555; margin: 6px 0 0 0; }
-
-  /* Modal */
-  .modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1000; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.4); 
-    justify-content: center; 
-    align-items: center;
-  }
-  .modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
-  .close-btn {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
-    margin-top: 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    float: right;
-  }
-  .close-btn:hover { background: #0056b3; }
-  .option-group { margin: 15px 0; }
-  .option-group label { display: block; margin: 6px 0; font-size: 14px; }
-  .info-text { font-size: 13px; color: #555; margin: 4px 0 10px 20px; }
-</style>
-</head>
-<body>
-
-<div class="back" onclick="history.back()">⬅ Back</div>
-<h1>Privacy</h1>
-
-<!-- Basic Links -->
-<a href="blockuser.html"><div class="setting-item">Blocked Contacts <span>&#9654;</span></div></a>
-<h2 onclick="openModal()">Phone Number Privacy</h2>
-
 <!-- Modal -->
 <div id="phoneModal" class="modal">
   <div class="modal-content">
     <h2>Phone Number Privacy</h2>
     
+    <!-- Who can see my number -->
     <div class="option-group">
-  <strong>Who can see my number?</strong>
-  <label><input type="radio" name="seeNumber" value="everyone" checked> Everyone</label>
-  <label><input type="radio" name="seeNumber" value="nobody"> Nobody</label>
-  <div class="info-text" id="seeText">Your phone number will be visible to people and groups you message.</div>
-</div>
-
+      <strong>Who can see my number?</strong>
+      <label><input type="radio" name="seeNumber" value="everyone" checked> Everyone</label>
+      <label><input type="radio" name="seeNumber" value="nobody"> Nobody</label>
+      <div class="info-text" id="seeText">Your phone number will be visible to people and groups you message.</div>
+    </div>
 
     <div class="section-divider"></div>
 
+    <!-- Who can find me by my number -->
     <div class="option-group">
-  <strong>Who can find me by my number?</strong>
-  <label><input type="radio" name="findNumber" value="everyone" checked> Everyone</label>
-  <label><input type="radio" name="findNumber" value="nobody"> Nobody</label>
-  <div class="info-text" id="findText">Anyone who has your number can see you are on Signal and can chat with you.</div>
-</div>
+      <strong>Who can find me by my number?</strong>
+      <label><input type="radio" name="findNumber" value="everyone" checked> Everyone</label>
+      <label><input type="radio" name="findNumber" value="nobody"> Nobody</label>
+      <div class="info-text" id="findText">Anyone who has your number can see you are on Signal and can chat with you.</div>
+    </div>
 
     <button class="close-btn" onclick="closeModal()">Done</button>
   </div>
 </div>
 
-<div class="section-divider"></div>
-<h2>Messaging</h2>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Read Receipts</div>
-    <div class="setting-desc">If read receipts are disabled you won't be able to see read receipts from others.</div>
-  </div>
-  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
+<style>
+/* Modal styling */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0; top: 0; 
+  width: 100%; height: 100%; 
+  background-color: rgba(0,0,0,0.4); 
+  justify-content: center; align-items: center;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.close-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  margin-top: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  float: right;
+}
+.close-btn:hover { background: #0056b3; }
 
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Typing Indicator</div>
-    <div class="setting-desc">Show when you are typing to other users in chat.</div>
-  </div>
-  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
+.option-group label {
+  display: block;
+  margin: 6px 0;
+  font-size: 14px;
+  color: #000; /* Option text black */
+}
 
-<div class="section-divider"></div>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Default Timer for New Chats</div>
-  </div>
-  <span>Off</span>
-</div>
-  
-<div class="section-divider"></div>
-<h2>App Security</h2>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Screen Lock</div>
-  </div>
-  <span>Off</span>
-</div>
+/* Radio buttons green */
+input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 8px;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
 
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Screen Security</div>
-    <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
-  </div>
-  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
+input[type="radio"]:checked {
+  border-color: #4CAF50;
+  background-color: #4CAF50;
+}
 
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Incognito Keyboard</div>
-    <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
-  </div>
-  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
-<p>This setting is not guaranteed and your keyboard may ignore it</p>
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 50%;
+}
 
-<div class="section-divider"></div>
-<h2>Camera</h2>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Allow Camera Effects</div>
-    <div class="setting-desc">Use effects in the camera and video calls. <a href="#">Learn more</a>.</div>
-  </div>
-  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
+.option-group strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #000; /* Section title black */
+}
 
-<div class="section-divider"></div>
-<h2>Payment</h2>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Payment Lock</div>
-    <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
-  </div>
-  <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-</div>
-
-<div class="section-divider"></div>
-<h2>Advanced</h2>
-<p>Signal messages and calls are always relay-called and sealed sender.</p>
-<div class="section-divider"></div>
+.info-text {
+  font-size: 13px;
+  color: #555;
+  margin: 4px 0 10px 26px; /* shifted slightly to the right under options */
+}
+</style>
 
 <script>
-  const modal = document.getElementById("phoneModal");
-  const seeText = document.getElementById("seeText");
-  const findText = document.getElementById("findText");
+const modal = document.getElementById("phoneModal");
+const seeText = document.getElementById("seeText");
+const findText = document.getElementById("findText");
 
-  function openModal() { modal.style.display = "flex"; }
-  function closeModal() { modal.style.display = "none"; }
+function openModal() { modal.style.display = "flex"; }
+function closeModal() { modal.style.display = "none"; }
 
-  document.querySelectorAll('input[name="seeNumber"]').forEach(el => {
-    el.addEventListener("change", function() {
-      seeText.textContent = this.value === "everyone"
-        ? "Your phone number will be visible to people and groups you message."
-        : "Your number will not be visible to anyone unless they have it saved in their contacts.";
-    });
+document.querySelectorAll('input[name="seeNumber"]').forEach(el => {
+  el.addEventListener("change", function() {
+    seeText.textContent = this.value === "everyone"
+      ? "Your phone number will be visible to people and groups you message."
+      : "Your number will not be visible to anyone unless they have it saved in their contacts.";
   });
+});
 
-  document.querySelectorAll('input[name="findNumber"]').forEach(el => {
-    el.addEventListener("change", function() {
-      findText.textContent = this.value === "everyone"
-        ? "Anyone who has your number can see you are on Signal and can chat with you."
-        : "It will be harder for people to see you on Signal unless you message them or have an existing chat.";
-    });
+document.querySelectorAll('input[name="findNumber"]').forEach(el => {
+  el.addEventListener("change", function() {
+    findText.textContent = this.value === "everyone"
+      ? "Anyone who has your number can see you are on Signal and can chat with you."
+      : "It will be harder for people to see you on Signal unless you message them or have an existing chat.";
   });
+});
 
-  window.onclick = function(event) {
-    if (event.target === modal) closeModal();
-  }
+window.onclick = function(event) {
+  if (event.target === modal) closeModal();
+}
 </script>
-</body>
-</html>
