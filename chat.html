@@ -212,13 +212,19 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 
  
-<div class="popup" id="menuPopup">
-  <div onclick="openFriendInfo()">View Info</div>
-  <div onclick="alert('Muted!')">Mute</div>
-  <div onclick="deleteChat()">Delete Chat</div>
-  <div onclick="openSettings()">Chat Settings</div>
-  <div onclick="openDisappearModal()">Disappearing Messages</div> <!-- NEW -->
-  <div onclick="openEncryptionPopup()">End-to-End Encryption</div> <!-- NEW -->
+
+<!-- FRIEND INFO / SETTINGS PAGE -->
+
+<!-- END-TO-END ENCRYPTION POPUP -->
+<div id="encryptionPopup" class="modal">
+  <div class="modal-content" style="text-align:center;">
+    <h2>End-to-End Encryption</h2>
+    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" 
+         alt="Encryption" style="width:100px;margin-bottom:15px;">
+    <p>Your messages and calls are secured with end-to-end encryption.</p>
+    <p style="color:green;font-weight:bold;">✔ Verification Completed</p>
+    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
+  </div>
 </div>
 
 <!-- DISAPPEARING MESSAGES MODAL -->
@@ -235,7 +241,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-<!-- CHAT LOCK (TOGGLE ONLY) -->
+<!-- CHAT LOCK -->
 <div class="settingsContainer">
   <div style="display:flex;align-items:center;justify-content:space-between;">
     <span>Chat Lock</span>
@@ -256,19 +262,6 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-<!-- END-TO-END ENCRYPTION POPUP -->
-<div id="encryptionPopup" class="modal">
-  <div class="modal-content" style="text-align:center;">
-    <h2>End-to-End Encryption</h2>
-    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" 
-         alt="Encryption" style="width:100px;margin-bottom:15px;">
-    <p>Your messages and calls are secured with end-to-end encryption.</p>
-    <p style="color:green;font-weight:bold;">✔ Verification Completed</p>
-    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
-  </div>
-</div>
-
-</div>
   
   <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
