@@ -50,7 +50,56 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
 .popup button.closeBtn{margin-top:10px;float:right;}
 .popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
 .popup button.unblockBtn{background:#25D366;color:#fff;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
+.settingsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  border: none; /* no borders at all */
+  min-height: 50px; /* uniform height */
+}
 
+/* Make Mesh Network text small but keep height same */
+.settingsItem small {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Keep Chat Lock switch aligned */
+.settingsItem label.switch {
+  margin: 0;
+}
+
+/* Make Mesh Network fully clickable with same height */
+.settingsItem:last-child {
+  cursor: default;
+  justify-content: flex-start;
+}
+
+  /* ==== MODAL STYLES ==== */
+.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;}
+.modal-content {background:#fff;padding:20px;border-radius:12px;width:300px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.3);}
+.option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;}
+.close-btn {background:#128C7E;color:#fff;border:none;padding:10px 15px;
+  border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
+
+/* SWITCH STYLE */
+.switch {position:relative;display:inline-block;width:50px;height:24px;}
+.switch input {opacity:0;width:0;height:0;}
+.slider {position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+  background:#ccc;transition:.4s;border-radius:24px;}
+.slider:before {position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;
+  background:white;transition:.4s;border-radius:50%;}
+input:checked + .slider {background:#128C7E;}
+input:checked + .slider:before {transform:translateX(26px);}
 
     
   /* Popup menu for 3-dot options */
@@ -169,13 +218,52 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
       <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
     </div>
   </div>
+  <!-- SETTINGS FEATURES SECTION -->
+<div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
 
-  <div class="settingsContainer">
-    <button><i class="fa-solid fa-lock"></i> End-to-end Encryption</button>
-    <button><i class="fa-solid fa-network-wired"></i> Mesh Network Form</button>
-    <button><i class="fa-solid fa-paint-roller"></i> Chat Color & Wallpaper</button>
-    <button><i class="fa-solid fa-shield"></i> Advanced Chat Privacy <input type="checkbox"></button>
+  <button class="settingsItem" onclick="openEncryptionPopup()">
+    <span>End-to-End Encryption</span>
+    <i class="fa-solid fa-circle-info"></i>
+  </button>
+
+  
+  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
+    <span>Mesh Network</span>
+    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
   </div>
+  
+  <div class="settingsItem">
+    <span>Chat Lock</span>
+    <label class="switch">
+      <input type="checkbox" id="chatLockToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+  
+<!-- Disappearing Messages button with status text -->
+<div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:pointer;">
+  <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:none; padding:0;">
+    <span>Disappearing Messages</span>
+    <i class="fa-solid fa-clock"></i>
+  </button>
+  <small id="disappearStatus" style="color:#555; margin-top:4px;">Off</small>
+</div>
+
+<!-- POPUP MODAL -->
+<div id="disappearModal" class="modal">
+  <div class="modal-content">
+    <h2>Disappearing Messages</h2>
+    <div class="option-group">
+      <label><input type="radio" name="disappear" value="off" checked> Off</label>
+      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
+      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
+      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
+    </div>
+    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
+  </div>
+</div>
+</div>
+ 
 
   <div class="container">
     <div class="membersHeader">
@@ -233,12 +321,7 @@ let currentGroupMembers = currentGroup.members.map(m=>m.name);
 let blockedMembers = currentGroup.blocked || [];
 let messages = currentGroup.messages || [];
 
-
-
 const callContainer = document.getElementById("callContainer");
-
-
-
 
 // ===== VIDEO CALL =====
 document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
@@ -732,6 +815,24 @@ document.getElementById("infoGroupName").addEventListener("blur",()=>{
     document.getElementById("groupName").textContent=newName;
   }
 });
+
+    // ==== desappear ====
+const disappearModal = document.getElementById("disappearModal");
+const disappearBtn = document.getElementById("disappearBtn");
+const disappearStatus = document.getElementById("disappearStatus");
+
+// Open modal
+disappearBtn.onclick = () => {
+  disappearModal.style.display = "flex";
+}
+
+// Close modal
+function closeDisappearModal(){
+  disappearModal.style.display = "none";
+  // Update status text based on selected radio
+  const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim();
+  disappearStatus.textContent = selected;
+}
     
 </script>
 </body>
