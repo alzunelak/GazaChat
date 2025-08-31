@@ -100,6 +100,66 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   background:white;transition:.4s;border-radius:50%;}
 input:checked + .slider {background:#128C7E;}
 input:checked + .slider:before {transform:translateX(26px);}
+  /* Phones animation */
+.phoneAnimation {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  height: 100px;
+  gap: 40px;
+}
+
+.phone {
+  width: 50px;
+  height: 90px;
+  border: 2px solid #128C7E;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e6f7f1;
+  animation: bounce 1.5s infinite alternate;
+}
+
+.phone .screen {
+  width: 90%;
+  height: 80%;
+  background: #fff;
+  border-radius: 5px;
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+/* Check mark animation */
+.checkMark {
+  position: absolute;
+  font-size: 30px;
+  color: #25D366;
+  opacity: 0;
+  transform: scale(0);
+  animation: appear 2s forwards 1.5s;
+}
+
+@keyframes appear {
+  0% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Modal styling */
+.encryptionContent {
+  text-align: center;
+}
+
 </style>
 </head>
 <body>
@@ -235,6 +295,30 @@ input:checked + .slider:before {transform:translateX(26px);}
     <span>End-to-End Encryption</span>
     <i class="fa-solid fa-circle-info"></i>
   </button>
+<!-- END-TO-END ENCRYPTION POPUP WITH ANIMATION -->
+<div id="encryptionModal" class="modal">
+  <div class="modal-content encryptionContent">
+    <h2>End-to-End Encryption</h2>
+    <p>Messages and calls in this group are secured with end-to-end encryption.</p>
+
+    <div class="phoneAnimation">
+      <div class="phone leftPhone">
+        <div class="screen"></div>
+      </div>
+      <div class="phone rightPhone">
+        <div class="screen"></div>
+      </div>
+      <div class="checkMark">&#10003;</div>
+    </div>
+
+    <p style="margin-top:20px;">
+      Only participants in this chat can read or listen to them.
+      No one outside this chat, not even the app, can access your messages.
+    </p>
+
+    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
+  </div>
+</div>
 
   
   <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
@@ -450,6 +534,24 @@ function closeDisappearModal(){
   const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim();
   disappearStatus.textContent = selected;
 }
+// ==== end to end ====
+function openEncryptionPopup() {
+    document.getElementById("encryptionModal").style.display = "flex";
+}
+
+function closeEncryptionPopup() {
+    document.getElementById("encryptionModal").style.display = "none";
+
+    // reset check mark animation
+    const check = document.querySelector(".checkMark");
+    check.style.opacity = 0;
+    check.style.transform = "scale(0)";
+    void check.offsetWidth; // force reflow for replay
+    check.style.animation = "appear 2s forwards 1.5s";
+}
+
+
+  
 // ===== RENDER INITIAL =====
 renderMessages();
 </script>
