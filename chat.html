@@ -252,11 +252,15 @@ input:checked + .sliderRound:before {
       <div class="settingDesc">How your chat connects in a decentralized network.</div>
     </div>
 
-    <!-- Chat Lock / Color & Wallpaper -->
+    <!-- Chat Lock -->
     <div class="settingItem">
       <div class="settingTitle"><i class="fa-solid fa-paint-roller"></i> Chat Lock & Wallpaper</div>
-      <div class="settingDesc">Slide to adjust chat theme.</div>
-      <input type="range" min="0" max="100" value="50" class="slider" id="chatSlider">
+      <div class="settingDesc">lock and hide this chat on this device.</div>
+       <label class="switch">
+        <input type="checkbox" id="privacyToggle">
+        <span class="sliderRound"></span>
+       </label>
+    </div>
     </div>
 
     <!-- Advanced Chat Privacy -->
