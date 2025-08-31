@@ -45,6 +45,44 @@
 
   .section-divider { border-bottom: 1px solid #ccc; margin: 15px 0 0 0; }
   p { font-size: 0.9em; color: #555; margin: 6px 0 0 0; }
+
+  <!-- MODAL POPUP -->
+<style>
+  /* Add these styles if not already present */
+  .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.4); 
+    justify-content: center; 
+    align-items: center;
+  }
+  .modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .close-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    margin-top: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    float: right;
+  }
+  .close-btn:hover { background: #0056b3; }
+  .option-group { margin: 15px 0; }
+  .option-group label { display: block; margin: 6px 0; font-size: 14px; }
+  .info-text { font-size: 13px; color: #555; margin: 4px 0 10px 20px; }
 </style>
 </head>
 <body>
@@ -55,16 +93,9 @@
 <!-- Basic Links -->
 <a href="blockuser.html"><div class="setting-item">Blocked Contacts <span>&#9654;</span></div></a>
 
-<div class="section-divider"></div>
-<h2>Messaging</h2>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Read Receipts</div>
-    <div class="setting-desc">If read receipts are disabled you won't be able to see read receipts from others.</div>
-  </div>
-  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-</div>
-<!-- MODAL POPUP -->
+
+
+<!-- Modal -->
 <div id="phoneModal" class="modal">
   <div class="modal-content">
     <h2>Phone Number Privacy</h2>
@@ -88,7 +119,6 @@
     <button class="close-btn" onclick="closeModal()">Done</button>
   </div>
 </div>
-  
 <div class="section-divider"></div>
 <h2>Messaging</h2>
 <div class="setting-item">
@@ -128,9 +158,9 @@
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Screen Security</div>
+    <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-  <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
 </div>
 
 <div class="setting-item">
@@ -168,7 +198,7 @@
 <p>Signal messages and calls are always relay-called and sealed sender.</p>
 <div class="section-divider"></div>
 
-<script>
+  <script>
   const modal = document.getElementById("phoneModal");
   const seeText = document.getElementById("seeText");
   const findText = document.getElementById("findText");
@@ -178,21 +208,17 @@
 
   document.querySelectorAll('input[name="seeNumber"]').forEach(el => {
     el.addEventListener("change", function() {
-      if (this.value === "everyone") {
-        seeText.textContent = "Your phone number will be visible to people and groups you message.";
-      } else {
-        seeText.textContent = "Your number will not be visible to anyone unless they have it saved in their contacts.";
-      }
+      seeText.textContent = this.value === "everyone"
+        ? "Your phone number will be visible to people and groups you message."
+        : "Your number will not be visible to anyone unless they have it saved in their contacts.";
     });
   });
 
   document.querySelectorAll('input[name="findNumber"]').forEach(el => {
     el.addEventListener("change", function() {
-      if (this.value === "everyone") {
-        findText.textContent = "Anyone who has your number can see you are on Signal and can chat with you.";
-      } else {
-        findText.textContent = "It will be harder for people to see you on Signal unless you message them or have an existing chat.";
-      }
+      findText.textContent = this.value === "everyone"
+        ? "Anyone who has your number can see you are on Signal and can chat with you."
+        : "It will be harder for people to see you on Signal unless you message them or have an existing chat.";
     });
   });
 
