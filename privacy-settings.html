@@ -53,10 +53,42 @@
 <h1>Privacy</h1>
 
 <!-- Basic Links -->
-<a href="lastseen.html"><div class="setting-item">Last Seen & Online <span>&#9654;</span></div></a>
-<a href="profilephoto.html"><div class="setting-item">Profile Photo <span>&#9654;</span></div></a>
 <a href="blockuser.html"><div class="setting-item">Blocked Contacts <span>&#9654;</span></div></a>
 
+<div class="section-divider"></div>
+<h2>Messaging</h2>
+<div class="setting-item">
+  <div class="setting-text">
+    <div class="setting-title">Read Receipts</div>
+    <div class="setting-desc">If read receipts are disabled you won't be able to see read receipts from others.</div>
+  </div>
+  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+</div>
+<!-- MODAL POPUP -->
+<div id="phoneModal" class="modal">
+  <div class="modal-content">
+    <h2>Phone Number Privacy</h2>
+    
+    <div class="option-group">
+      <strong>Who can see my number?</strong>
+      <label><input type="radio" name="seeNumber" value="everyone" checked> Everyone</label>
+      <div class="info-text" id="seeText">Your phone number will be visible to people and groups you message.</div>
+      <label><input type="radio" name="seeNumber" value="nobody"> Nobody</label>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="option-group">
+      <strong>Who can find me by my number?</strong>
+      <label><input type="radio" name="findNumber" value="everyone" checked> Everyone</label>
+      <div class="info-text" id="findText">Anyone who has your number can see you are on Signal and can chat with you.</div>
+      <label><input type="radio" name="findNumber" value="nobody"> Nobody</label>
+    </div>
+
+    <button class="close-btn" onclick="closeModal()">Done</button>
+  </div>
+</div>
+  
 <div class="section-divider"></div>
 <h2>Messaging</h2>
 <div class="setting-item">
@@ -98,6 +130,7 @@
     <div class="setting-title">Screen Security</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+  <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
 </div>
 
 <div class="setting-item">
@@ -125,6 +158,7 @@
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Payment Lock</div>
+    <div class="setting-desc">This setting is not guaranteed and your keyboard may ignore it.</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
@@ -134,6 +168,37 @@
 <p>Signal messages and calls are always relay-called and sealed sender.</p>
 <div class="section-divider"></div>
 
+<script>
+  const modal = document.getElementById("phoneModal");
+  const seeText = document.getElementById("seeText");
+  const findText = document.getElementById("findText");
 
+  function openModal() { modal.style.display = "flex"; }
+  function closeModal() { modal.style.display = "none"; }
+
+  document.querySelectorAll('input[name="seeNumber"]').forEach(el => {
+    el.addEventListener("change", function() {
+      if (this.value === "everyone") {
+        seeText.textContent = "Your phone number will be visible to people and groups you message.";
+      } else {
+        seeText.textContent = "Your number will not be visible to anyone unless they have it saved in their contacts.";
+      }
+    });
+  });
+
+  document.querySelectorAll('input[name="findNumber"]').forEach(el => {
+    el.addEventListener("change", function() {
+      if (this.value === "everyone") {
+        findText.textContent = "Anyone who has your number can see you are on Signal and can chat with you.";
+      } else {
+        findText.textContent = "It will be harder for people to see you on Signal unless you message them or have an existing chat.";
+      }
+    });
+  });
+
+  window.onclick = function(event) {
+    if (event.target === modal) closeModal();
+  }
+</script>
 </body>
 </html>
