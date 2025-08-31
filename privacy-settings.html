@@ -96,11 +96,12 @@
 
 
 
+
 <!-- Modal -->
-<div id="phoneModal" class="modal">
+<div id="phoneModal" class="modal" style="display:flex">
   <div class="modal-content">
-    <h2>Phone Number Privacy</h2>
-    
+ <h2>Phone Number Privacy</h2>
+
     <div class="option-group">
       <strong>Who can see my number?</strong>
       <label><input type="radio" name="seeNumber" value="everyone" checked> Everyone</label>
@@ -204,8 +205,13 @@
   const seeText = document.getElementById("seeText");
   const findText = document.getElementById("findText");
 
-  function openModal() { modal.style.display = "flex"; }
-  function closeModal() { modal.style.display = "none"; }
+function openModal() { modal.style.display = "flex"; }
+function closeModal() { modal.style.display = "none"; }
+
+window.onclick = function(event) {
+  if (event.target === modal) closeModal();
+}
+
 
   document.querySelectorAll('input[name="seeNumber"]').forEach(el => {
     el.addEventListener("change", function() {
