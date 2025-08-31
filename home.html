@@ -197,16 +197,21 @@ friends.forEach(f => {
     </div>
   `;
 
-  // Open chat on click
-  div.onclick = () => {
-    const friendName = encodeURIComponent(f.name);
-    const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
-    window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
-  };
+ // Open chat with real info
+      div.onclick = () => {
+        const friendName = encodeURIComponent(f.name);
+        const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
+        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
+      };
 
-  mainContent.appendChild(div);
-});
+      mainContent.appendChild(div);
+    });
+  }
+}
 
+
+
+  
 // --- Three-dots menu ---
 const threeDots = document.querySelector('.three-dots');
 const threeDotsMenu = document.getElementById('threeDotsMenu');
