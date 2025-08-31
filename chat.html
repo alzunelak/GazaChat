@@ -6,54 +6,124 @@
 <title>GazaChat App</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100vh;display:flex;flex-direction:column;}
-#chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
-.header{display:flex;align-items:center;justify-content:space-between;background:#128C7E;padding:10px;border-bottom:1px solid #ccc;position:relative;}
-.header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
-.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
-.header-info h2{margin:0;font-size:16px;cursor:pointer;}
-.header-actions{display:flex;align-items:center;gap:15px;}
-.header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:white;}
-#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;display:flex;flex-direction:column;gap:6px;}
-.msg{max-width:70%;padding:10px 14px;border-radius:18px;background:#f1f1f1;align-self:flex-start;word-break:break-word;}
-.msg.self{background:#dcf8c6;align-self:flex-end;}
-.msg .meta{display:block;margin-top:4px;font-size:10px;color:#999;text-align:right;}
-.msg.system{background:#e1f0ff;color:#333;align-self:center;text-align:center;}
-#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100% - 20px);z-index:100;}
-.input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
-.input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
-#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
-.popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
-.popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
-.popup div:hover{background:#f1f1f1;}
-#emojiPicker{position:absolute;bottom:60px;left:10px;background:#fff;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
-#emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
-#emojiPicker span:hover{background:#eee;border-radius:5px;}
-#attachPopup{display:none;position:absolute;bottom:60px;left:60px;background:#fff;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
-#attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#f8f8f8;border:1px solid #eee;text-align:center;font-size:12px;user-select:none;}
-.attachItem:hover{background:#f1f1f1;}
-.attachItem i{font-size:20px;color:#075E54;}
-.attachItem input{display:none;}
-#friendInfoPage{display:none;flex-direction:column;padding:20px;background:#f5f5f5;}
-.friendHeader{text-align:center;margin-bottom:20px;position:relative;}
-.friendHeader img{width:120px;height:120px;border-radius:50%;margin-bottom:10px;object-fit:cover;}
-.friendHeader h2{margin:0;font-size:22px;margin-bottom:20px;}
-.actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
-.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
-.actionButtons i{font-size:20px;margin-bottom:5px;}
-.backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
-.settingItem{background:#fff;padding:12px 16px;border-radius:10px;display:flex;flex-direction:column;gap:6px;border:1px solid #eee;cursor:pointer;}
-.settingTitle{font-weight:bold;font-size:16px;color:#000;}
-.settingDesc{font-size:14px;color:#555;}
-.slider{width:100%;margin-top:5px;}
-.switch{position:relative;display:inline-block;width:50px;height:28px;margin-top:5px;}
-.switch input{opacity:0;width:0;height:0;}
-.sliderRound{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.4s;border-radius:28px;}
-.sliderRound:before{position:absolute;content:"";height:22px;width:22px;left:3px;bottom:3px;background:white;transition:.4s;border-radius:50%;}
-input:checked + .sliderRound{background:#128C7E;}
-input:checked + .sliderRound:before{transform:translateX(22px);}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+#chatPage,#friendInfoPage {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #128C7E;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+}
+.header img {
+  width: 50px; height: 50px; border-radius: 50%;
+  cursor: pointer; object-fit: cover;
+}
+.header-info { flex: 1; display: flex; flex-direction: column; margin-left: 10px; overflow: hidden; }
+.header-info h2 { margin: 0; font-size: 16px; cursor: pointer; }
+.header-actions { display: flex; align-items: center; gap: 15px; }
+.header-actions button { background: none; border: none; cursor: pointer; font-size: 20px; color: white; }
+#chatBox {
+  flex: 1; overflow-y: auto; padding: 10px;
+  margin-bottom: 100px; display: flex; flex-direction: column; gap: 6px;
+}
+.msg { max-width: 70%; padding: 10px 14px; border-radius: 18px;
+  background: #f1f1f1; align-self: flex-start; word-break: break-word; }
+.msg.self { background: #dcf8c6; align-self: flex-end; }
+.msg .meta { display: block; margin-top: 4px; font-size: 10px; color: #999; text-align: right; }
+.msg.system { background: #e1f0ff; color: #333; align-self: center; text-align: center; }
+#inputArea {
+  display: flex; align-items: center; position: fixed;
+  bottom: 10px; left: 10px; width: calc(100% - 20px); z-index: 100;
+}
+.input-box {
+  display: flex; flex: 1; background: #f1f1f1;
+  border-radius: 25px; padding: 6px 10px; gap: 6px;
+}
+.input-box input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; }
+.input-buttons button { background: transparent; border: none; font-size: 20px; cursor: pointer; color: #128C7E; }
+#micBtn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #25D366; color: white; border: none; font-size: 18px;
+  display: flex; align-items: center; justify-content: center; margin-left: 6px;
+}
+.popup {
+  display: none; position: absolute; top: 50px; right: 10px;
+  background: #fff; border: 1px solid #ccc; border-radius: 8px;
+  z-index: 1000; width: 150px;
+}
+.popup div { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+.popup div:hover { background: #f1f1f1; }
+#emojiPicker {
+  position: absolute; bottom: 60px; left: 10px; background: #fff;
+  border: 1px solid #ccc; padding: 10px; display: none; max-height: 200px;
+  overflow-y: auto; border-radius: 8px;
+}
+#emojiPicker span { font-size: 20px; padding: 5px; cursor: pointer; }
+#emojiPicker span:hover { background: #eee; border-radius: 5px; }
+#attachPopup {
+  display: none; position: absolute; bottom: 60px; left: 60px;
+  background: #fff; border: 1px solid #ccc; border-radius: 12px;
+  padding: 12px; width: 270px; box-shadow: 0 6px 18px rgba(0,0,0,0.2); z-index: 2000;
+}
+#attachGrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.attachItem {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 10px; border-radius: 10px; cursor: pointer;
+  background: #f8f8f8; border: 1px solid #eee; text-align: center; font-size: 12px; user-select: none;
+}
+.attachItem:hover { background: #f1f1f1; }
+.attachItem i { font-size: 20px; color: #075E54; }
+.attachItem input { display: none; }
+#friendInfoPage { display: none; flex-direction: column; padding: 20px; background: #f5f5f5; }
+.friendHeader { text-align: center; margin-bottom: 20px; position: relative; }
+.friendHeader img { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 10px; object-fit: cover; }
+.friendHeader h2 { margin: 0; font-size: 22px; margin-bottom: 20px; }
+.actionButtons {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; width: 100%;
+}
+.actionButtons button {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 10px 0; background: #fff; border: 1px solid #eee; border-radius: 8px; cursor: pointer;
+}
+.actionButtons i { font-size: 20px; margin-bottom: 5px; }
+.settingsContainer {
+  display: flex; flex-direction: column; gap: 8px; padding: 10px;
+  border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;
+  background: #fff; border-radius: 8px; margin-bottom: 15px;
+}
+.settingItem {
+  background: #fff; padding: 12px 16px; border-radius: 10px;
+  display: flex; flex-direction: column; gap: 6px; border: 1px solid #eee; cursor: pointer;
+}
+.settingTitle { font-weight: bold; font-size: 16px; color: #000; }
+.settingDesc { font-size: 14px; color: #555; }
+.slider { width: 100%; margin-top: 5px; }
+.switch { position: relative; display: inline-block; width: 50px; height: 28px; margin-top: 5px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.sliderRound {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background: #ccc; transition: .4s; border-radius: 28px;
+}
+.sliderRound:before {
+  position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
+  background: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .sliderRound { background: #128C7E; }
+input:checked + .sliderRound:before { transform: translateX(22px); }
 </style>
 </head>
 <body>
@@ -62,9 +132,7 @@ input:checked + .sliderRound:before{transform:translateX(22px);}
 <div id="chatPage">
   <div class="header">
     <img id="friendPhoto" src="default-profile.png" alt="friend">
-    <div class="header-info">
-      <h2 id="friendName"></h2>
-    </div>
+    <div class="header-info"><h2 id="friendName"></h2></div>
     <div class="header-actions">
       <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
@@ -77,44 +145,7 @@ input:checked + .sliderRound:before{transform:translateX(22px);}
     </div>
   </div>
 
-  <!-- CHAT SETTINGS MODAL -->
-  <div id="settingsModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;z-index:3000;box-shadow:0 6px 18px rgba(0,0,0,0.2);width:300px;">
-    <h3>Chat Settings</h3>
-    <div style="margin-top:10px;">
-      <label>Theme: 
-        <select id="themeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Chat Bubble: 
-        <select id="chatThemeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="blue">Blue</option>
-          <option value="green">Green</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Font Size: 
-        <select id="fontSizeSelect" style="margin-left:5px;">
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
-        </select>
-      </label>
-    </div>
-    <button style="margin-top:15px;padding:8px 12px;background:#128C7E;color:white;border:none;border-radius:6px;cursor:pointer;" onclick="closeSettings()">Close</button>
-  </div>
-  
-  <div id="chatBox">
-    <div class="msg system">🔒 Messages are end-to-end encrypted</div>
-  </div>
+  <div id="chatBox"><div class="msg system">🔒 Messages are end-to-end encrypted</div></div>
 
   <div id="inputArea">
     <div class="input-box">
@@ -128,7 +159,7 @@ input:checked + .sliderRound:before{transform:translateX(22px);}
   </div>
 </div>
 
-<!-- Emoji Picker -->
+<!-- EMOJI PICKER -->
 <div id="emojiPicker">
   <span>😀</span><span>😂</span><span>😍</span><span>😭</span>
   <span>😎</span><span>😡</span><span>👍</span><span>🙏</span>
@@ -139,31 +170,21 @@ input:checked + .sliderRound:before{transform:translateX(22px);}
 <div id="attachPopup">
   <div id="attachGrid">
     <label class="attachItem">
-      <i class="fa-solid fa-image"></i>
-      <span>Gallery</span>
+      <i class="fa-solid fa-image"></i><span>Gallery</span>
       <input type="file" id="galleryInput" accept="image/*,video/*">
     </label>
     <label class="attachItem">
-      <i class="fa-solid fa-camera"></i>
-      <span>Camera</span>
+      <i class="fa-solid fa-camera"></i><span>Camera</span>
       <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment">
     </label>
-    <div class="attachItem" id="sendLocation">
-      <i class="fa-solid fa-location-dot"></i>
-      <span>Location</span>
-    </div>
+    <div class="attachItem" id="sendLocation"><i class="fa-solid fa-location-dot"></i><span>Location</span></div>
     <label class="attachItem">
-      <i class="fa-solid fa-file"></i>
-      <span>Document</span>
+      <i class="fa-solid fa-file"></i><span>Document</span>
       <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt">
     </label>
-    <div class="attachItem" id="sendContact">
-      <i class="fa-solid fa-user"></i>
-      <span>Contact</span>
-    </div>
+    <div class="attachItem" id="sendContact"><i class="fa-solid fa-user"></i><span>Contact</span></div>
     <label class="attachItem">
-      <i class="fa-solid fa-microphone"></i>
-      <span>Audio</span>
+      <i class="fa-solid fa-microphone"></i><span>Audio</span>
       <input type="file" id="audioInput" accept="audio/*">
     </label>
   </div>
@@ -175,87 +196,63 @@ input:checked + .sliderRound:before{transform:translateX(22px);}
     <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
     <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
     <h2 id="infoFriendName">Friend Name</h2>
-   <div class="actionButtons">
+    <div class="actionButtons">
       <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
       <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
       <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
     </div>
   </div>
 
-class="fa-solid fa-shield"></i> Advanced Chat Privacy</button>
+  <!-- SETTINGS -->
+  <div class="settingsContainer">
+    <div class="settingItem" id="e2eSetting">
+      <div class="settingTitle">End-to-End Encryption</div>
+      <div class="settingDesc">Messages and calls are secured. Tap to verify.</div>
+    </div>
+    <div class="settingItem">
+      <div class="settingTitle">Mesh Network Form</div>
+      <div class="settingDesc">How the chat connects in a decentralized way</div>
+    </div>
+    <div class="settingItem">
+      <div class="settingTitle">Chat Lock & Wallpaper</div>
+      <div class="settingDesc">Slide to adjust chat theme</div>
+      <input type="range" min="0" max="100" value="50" class="slider" id="chatSlider">
+    </div>
+    <div class="settingItem">
+      <div class="settingTitle">Advanced Chat Privacy</div>
+      <div class="settingDesc">Enable extra privacy settings</div>
+      <label class="switch"><input type="checkbox" id="privacyToggle"><span class="sliderRound"></span></label>
+    </div>
   </div>
 
-  
-  <!-- SETTINGS CONTAINER -->
-<div class="settingsContainer">
-
-  <!-- End-to-End Encryption -->
-  <div class="settingItem" id="e2eSetting">
-    <div class="settingTitle">End-to-End Encryption</div>
-    <div class="settingDesc">Messages and calls are secured. Tap to verify.</div>
+  <div class="settingsContainer">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span>No groups in common</span>
+      <button class="addFriendBtn" id="addFriendBtn" style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">+ Create Group</button>
+    </div>
   </div>
 
-  <!-- Mesh Network Form -->
-  <div class="settingItem">
-    <div class="settingTitle">Mesh Network Form</div>
-    <div class="settingDesc">How the chat connects in a decentralized way</div>
+  <div class="settingsContainer">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="blockBtn" style="color:#f44336;"><i class="fa-solid fa-ban"></i> Block User</button>
+      <button class="reportBtn" style="color:#ff5722;"><i class="fa-solid fa-flag"></i> Report User</button>
+    </div>
   </div>
-
-  <!-- Chat Lock / Color & Wallpaper -->
-  <div class="settingItem">
-    <div class="settingTitle">Chat Lock & Wallpaper</div>
-    <div class="settingDesc">Slide to adjust chat theme</div>
-    <input type="range" min="0" max="100" value="50" class="slider" id="chatSlider">
-  </div>
-
-  <!-- Advanced Chat Privacy -->
-  <div class="settingItem">
-    <div class="settingTitle">Advanced Chat Privacy</div>
-    <div class="settingDesc">Enable extra privacy settings</div>
-    <label class="switch">
-      <input type="checkbox" id="privacyToggle">
-      <span class="sliderRound"></span>
-    </label>
-  </div>
-
 </div>
 
 <!-- END-TO-END POPUP -->
-<div id="e2ePopup" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:#fff;padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:3000;width:280px;text-align:center;">
-  
+<div id="e2ePopup" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:3000;width:280px;text-align:center;">
   <h3>End-to-End Encryption</h3>
   <div style="display:flex;justify-content:center;gap:20px;margin:15px 0;">
     <i class="fa-solid fa-mobile-screen-button" style="font-size:40px;color:#128C7E;"></i>
-    <i class="fa-solid fa-lock" style="font-size:30px;color:#128C7E;align-self:center;"></i>
+    <i class="fa-solid fa-lock" style="font-size:30px;color:#128C7E;"></i>
     <i class="fa-solid fa-mobile-screen-button" style="font-size:40px;color:#128C7E;"></i>
   </div>
   <p style="font-size:14px;color:#555;">Messages and calls are end-to-end encrypted.</p>
   <p style="font-size:12px;color:#777;">Security code automatically verified</p>
-  <button onclick="document.getElementById('e2ePopup').style.display='none'" 
-          style="margin-top:12px;padding:8px 12px;background:#128C7E;color:#fff;border:none;border-radius:6px;cursor:pointer;">
-    Close
-  </button>
+  <button onclick="document.getElementById('e2ePopup').style.display='none'" style="margin-top:12px;padding:8px 12px;background:#128C7E;color:#fff;border:none;border-radius:6px;cursor:pointer;">Close</button>
 </div>
-  <!-- NO GROUPS SECTION -->
-  <div class="settingsContainer">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <span>No groups in common</span>
-      <button class="addFriendBtn" id="addFriendBtn" style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">+ create group </button>
-    </div>
-  </div>
 
- <!-- BLOCK & REPORT SECTION -->
-<div class="settingsContainer">
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <button class="blockBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#f44336;cursor:pointer;font-weight:bold;">
-      <span><i class="fa-solid fa-ban"></i> Block User</span>
-    </button>
-    <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#ff5722;cursor:pointer;font-weight:bold;">
-      <span><i class="fa-solid fa-flag"></i> Report User</span>
-    </button>
-  </div>
-</div>
 
 <script>
 // ===== USER DATA & DOM =====
@@ -422,4 +419,4 @@ micBtn.onclick=async()=>{
 renderMessages();
 </script>
 </body>
-</html>
+</html> 
