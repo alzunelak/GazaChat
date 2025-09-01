@@ -6,71 +6,51 @@
 <title>Scan QR</title>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    background: #f5f5f5;
-  }
-  #reader {
-    width: 300px;
-    margin: auto;
-  }
-  #message {
-    margin-top: 20px;
-    font-size: 16px;
-  }
+body{font-family:Arial;text-align:center;padding:20px;background:#f5f5f5;}
+#reader{width:300px;margin:auto;}
+#message{margin-top:20px;font-size:16px;}
 </style>
 </head>
 <body>
-  <h2>Scan Friend QR Code</h2>
-  <div id="reader"></div>
-  <div id="message"></div>
+<h2>Scan Friend QR Code</h2>
+<div id="reader"></div>
+<div id="message"></div>
+<script>
+const messageDiv=document.getElementById('message');
+const channel=new BroadcastChannel('chatapp');
+const defaultProfile="default-profile.png";
 
-  <script>
-    const messageDiv = document.getElementById('message');
-    const channel = new BroadcastChannel('chatapp');
-    const defaultProfile = "default-profile.png";
+function addFriendObject(name,profile){
+  let friends=JSON.parse(localStorage.getItem('friends')||'[]');
+  if(!friends.some(f=>f.name===name)){
+    const newFriend={name,profile:profile||defaultProfile};
+    friends.push(newFriend);
+    localStorage.setItem('friends',JSON.stringify(friends));
+    localStorage.setItem('profilePic_'+name,newFriend.profile);
+    channel.postMessage({type:'addFriend',friend:newFriend});
+    return true;
+  }
+  return false;
+}
 
-    // Save friend in localStorage
-    function addFriendObject(name, profile) {
-      let friends = JSON.parse(localStorage.getItem('friends') || '[]');
-      if (!friends.some(f => f.name === name)) {
-        const newFriend = { name, profile: profile || defaultProfile };
-        friends.push(newFriend);
-        localStorage.setItem('friends', JSON.stringify(friends));
-        localStorage.setItem('profilePic_' + name, newFriend.profile);
-        channel.postMessage({ type: 'addFriend', friend: newFriend });
-        return true;
-      }
-      return false;
-    }
-
-    const qrCodeReader = new Html5Qrcode("reader");
-    qrCodeReader.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      decodedText => {
-        try {
-          const data = JSON.parse(decodedText);
-          if (data.name) {
-            const added = addFriendObject(data.name, data.profile || defaultProfile);
-            messageDiv.style.color = "green";
-            messageDiv.innerText = added ? "Friend added successfully!" : "Friend already exists";
-
-            // Stop camera after successful scan
-            qrCodeReader.stop().then(() => {
-              // Redirect back to home page, opening chat
-              window.location.href = `home.html?friend=${encodeURIComponent(data.name)}&profile=${encodeURIComponent(data.profile || defaultProfile)}`;
-            });
-          } else throw new Error("Invalid QR");
-        } catch (e) {
-          messageDiv.style.color = "red";
-          messageDiv.innerText = "Invalid QR code";
-        }
-      },
-      err => { console.log(err); }
-    );
-  </script>
+const qrCodeReader=new Html5Qrcode("reader");
+qrCodeReader.start({facingMode:"environment"},{fps:10,qrbox:250},
+decodedText=>{
+  try{
+    const data=JSON.parse(decodedText);
+    if(data.name){
+      const added=addFriendObject(data.name,data.profile||defaultProfile);
+      messageDiv.style.color="green";
+      messageDiv.innerText=added?"Friend added successfully!":"Friend already exists";
+      qrCodeReader.stop();
+    } else throw new Error("Invalid QR");
+  } catch(e){
+    messageDiv.style.color="red";
+    messageDiv.innerText="Invalid QR code";
+  }
+},
+err=>{console.log(err);}
+);
+</script>
 </body>
 </html>
