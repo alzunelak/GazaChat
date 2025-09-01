@@ -142,21 +142,6 @@ showQRCodeLink.addEventListener('click', e => {
   }
 });
 
-
-  // --- QR Icon Click ---
-const qrIcon = document.querySelector('.fa-qrcode');
-qrIcon.addEventListener('click', () => {
-  qrContainer.style.display = 'block';
-  noMsg.style.display = 'none';
-  if(!qrGenerated){
-    const qrData = JSON.stringify({name: savedName, profile: profilePic});
-    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
-    qrGenerated = true;
-  }
-});
-
-  
-
 closeQR.addEventListener('click', () => {
   qrContainer.style.display='none';
   noMsg.style.display='block';
@@ -189,6 +174,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
+  // --- QR Icon Click ---
+const qrIcon = document.querySelector('.fa-qrcode');
+qrIcon.addEventListener('click', () => {
+  qrContainer.style.display = 'block';
+  noMsg.style.display = 'none';
+  if(!qrGenerated){
+    const qrData = JSON.stringify({name: savedName, profile: profilePic});
+    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    qrGenerated = true;
+  }
+});
+
+  
+
+  
 // --- Open chat function ---
 function openChat(name, profile){
   // You can customize this to open your chat.html
