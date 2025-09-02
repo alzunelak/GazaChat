@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Setup</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #000; /* black background */
+    flex-direction: column;
+    color: #fff; /* white text */
+  }
+
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #25d366; /* green border */
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5); /* subtle green shadow */
+  }
+
+  input[type=text], input[type=file] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    text-align: center;
+    background: #222; /* dark inside */
+    color: #000; /* black text */
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
+    transition: all 0.3s ease;
+  }
+
+  input[type=text]::placeholder {
+    color: #888; /* placeholder gray */
+  }
+
+  input[type=text]:focus, input[type=file]:focus {
+    outline: none;
+    box-shadow: 0 0 10px #25d366, 0 4px 8px rgba(37, 211, 102, 0.5);
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: #25d366;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background: rgba(37, 211, 102, 0.1);
+    box-shadow: 0 0 15px #25d366, 0 4px 8px rgba(37, 211, 102, 0.5);
+    transform: translateY(-2px);
+  }
+</style>
+</head>
+<body>
+
+<img id="profilePicPreview" class="profile-pic" src="default-profile.png" alt="Profile Picture"><br>
+<input type="file" id="photoInput" accept="image/*"><br>
+<input type="text" id="nameInput" placeholder="Enter your name"><br>
+<button onclick="saveProfile()">Get Started</button>
+
+<script>
+const photoInput = document.getElementById('photoInput');
+const profilePicPreview = document.getElementById('profilePicPreview');
+const nameInput = document.getElementById('nameInput');
+
+// Preview uploaded image
+photoInput.addEventListener('change', () => {
+  if(photoInput.files.length>0){
+    const reader = new FileReader();
+    reader.onload = e => profilePicPreview.src = e.target.result;
+    reader.readAsDataURL(photoInput.files[0]);
+  }
+});
+
+// Save profile info
+function saveProfile(){
+  const name = nameInput.value.trim();
+  if(!name){ alert("Enter your name"); return; }
+  localStorage.setItem("username", name);
+  localStorage.setItem("profilePic", profilePicPreview.src);
+  if(!localStorage.getItem("userId")){
+    localStorage.setItem("userId", name + "_" + Math.floor(Math.random()*100000));
+  }
+  window.location.href="home.html";
+}
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(() => console.log('Service Worker registered'))
+    .catch(err => console.error('Service Worker registration failed', err));
+}
+</script>
+
+</body>
+</html>
