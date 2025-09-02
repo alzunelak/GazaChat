@@ -56,15 +56,15 @@
       background: rgba(37, 211, 102, 0.1); /* Slight green hover */
     }
 
-    /* Language selector with green border */
+    /* Language selector without border, with green shadow */
     .language-selector select {
       padding: 10px;
       border-radius: 5px;
-      border: 2px solid #25d366;
+      border: none; /* Removed border */
       font-size: 1rem;
       background: transparent;
       color: #fff;
-      box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
+      box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5); /* Green shadow */
     }
 
     .language-selector label {
@@ -89,7 +89,7 @@
   <button id="getStarted" class="btn" onclick="window.location.href='permission.html'">Get Started</button>
 
   <div class="language-selector">
-    <label for="language">🌐 Language: </label>
+    <label for="language">🌐</label>
     <select id="language" aria-label="Select Language">
       <option value="en">English</option>
       <option value="ar">Arabic</option>
