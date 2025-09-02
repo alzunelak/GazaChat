@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome - ChatApp</title>
+  <title>Welcome </title>
   <style>
     body {
       margin: 0;
@@ -92,37 +92,59 @@
       <option value="de">German</option>
     </select>
   </div>
+  
+   <script>
+  const langSelect = document.getElementById("language");
+  const greeting = document.getElementById("greeting");
+  const welcome = document.getElementById("welcome");
+  const tagline = document.getElementById("tagline");
+  const privacyLink = document.getElementById("privacyLink");
 
-  <script>
-    const langSelect = document.getElementById("language");
-    const greeting = document.getElementById("greeting");
-    const welcome = document.getElementById("welcome");
-    const tagline = document.getElementById("tagline");
-    const privacyLink = document.getElementById("privacyLink");
+  // Default text (shown immediately)
+  const defaultTexts = {
+    greeting: "As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh",
+    welcome: "Welcome To",
+    tagline: "Simple And Private Messaging No Internet Needed.",
+    privacy: "Terms and Privacy"
+  };
 
-    let translations = {};
+  let translations = {};
 
-    // Load translations from JSON file
-    fetch("translations.json")
-      .then(response => response.json())
-      .then(data => {
-        translations = data;
-        updateLanguage("en"); // Default language
-      })
-      .catch(error => console.error("Error loading translations:", error));
+  // Show default text immediately
+  greeting.textContent = defaultTexts.greeting;
+  welcome.textContent = defaultTexts.welcome;
+  tagline.textContent = defaultTexts.tagline;
+  privacyLink.textContent = defaultTexts.privacy;
 
-    langSelect.addEventListener("change", () => {
-      updateLanguage(langSelect.value);
-    });
+  // Load translations from JSON file
+  fetch("translations.json")
+    .then(response => response.json())
+    .then(data => {
+      translations = data;
+      updateLanguage("en"); // Default language from JSON
+    })
+    .catch(error => console.error("Error loading translations:", error));
 
-    function updateLanguage(lang) {
-      if (!translations[lang]) return; // safety check
-      greeting.textContent = translations[lang].greeting;
-      welcome.textContent = translations[lang].welcome;
-      tagline.textContent = translations[lang].tagline;
-      privacyLink.textContent = translations[lang].privacy;
-      document.documentElement.lang = lang; // update <html> lang
+  langSelect.addEventListener("change", () => {
+    updateLanguage(langSelect.value);
+  });
+
+  function updateLanguage(lang) {
+    if (!translations[lang]) {
+      // fallback to default text if JSON not loaded
+      greeting.textContent = defaultTexts.greeting;
+      welcome.textContent = defaultTexts.welcome;
+      tagline.textContent = defaultTexts.tagline;
+      privacyLink.textContent = defaultTexts.privacy;
+      document.documentElement.lang = "en";
+      return;
     }
+    greeting.textContent = translations[lang].greeting;
+    welcome.textContent = translations[lang].welcome;
+    tagline.textContent = translations[lang].tagline;
+    privacyLink.textContent = translations[lang].privacy;
+    document.documentElement.lang = lang; // update <html> lang
+  }
   </script>
 </body>
 </html>
