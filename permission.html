@@ -15,6 +15,16 @@
       background: #000;
       color: #fff;
       padding: 20px;
+      position: relative;
+    }
+
+    #selectedLangDisplay {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #25d366;
+      font-size: 1rem;
+      font-weight: bold;
     }
 
     h1 {
@@ -165,6 +175,9 @@
 </head>
 <body>
 
+  <!-- Display selected language -->
+  <div id="selectedLangDisplay"></div>
+
   <h1>Allow Permission</h1>
   <p class="subtitle">To help message people you know, GazaChat will request these permissions.</p>
 
@@ -207,6 +220,26 @@
   </div>
 
   <script>
+    // Display selected language from localStorage
+    document.addEventListener("DOMContentLoaded", () => {
+      const selectedLang = localStorage.getItem("selectedLanguage") || "en";
+      const langDisplay = document.getElementById("selectedLangDisplay");
+
+      const langNames = {
+        en: "English",
+        ar: "Arabic",
+        sw: "Swahili",
+        hi: "Hindi",
+        ur: "Urdu",
+        fr: "French",
+        es: "Spanish",
+        zh: "Chinese",
+        de: "German"
+      };
+
+      langDisplay.textContent = "🌐 Language: " + (langNames[selectedLang] || "English");
+    });
+
     const permissions = [
       { title: "Allow Notifications", text: "Allow GazaChat to access your notifications?" },
       { title: "Allow Contacts", text: "Allow GazaChat to access your contacts?" },
