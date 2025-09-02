@@ -16,8 +16,13 @@
       font-size: 2em;
       font-weight: bold;
       color: #000;
-      margin-bottom: 40px;
+      margin-bottom: 0; /* removed extra space */
       text-align: left;
+    }
+    p.subtitle {
+      margin-top: 5px; /* optional small spacing */
+      margin-bottom: 40px;
+      color: #555;
     }
     .section {
       display: flex;
@@ -27,6 +32,7 @@
     .emoji {
       font-size: 3em;
       margin-right: 15px;
+      color: green; /* make all emojis green */
     }
     .text-block {
       display: flex;
@@ -46,7 +52,7 @@
     .next-btn {
       display: inline-block;
       padding: 12px 25px;
-      background:  #25d366; /* Changed to green */
+      background: #25d366; /* green */
       color: white;
       border: none;
       border-radius: 8px;
@@ -110,19 +116,12 @@
         font-size: 2.5em;
       }
     }
-    
-    /* Make only emojis green */
-  .emoji.green {
-    color: green;
-    font-size: 24px; /* optional size */
-  }
   </style>
 </head>
 <body>
 
   <h1>Allow Permission</h1>
-  To help message people you know, GazaChat will request these permissions.
-</p>
+  <p class="subtitle">To help message people you know, GazaChat will request these permissions.</p>
 
   <div class="section">
     <div class="emoji">🔔</div>
