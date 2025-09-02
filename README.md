@@ -16,7 +16,7 @@ Visit the app: [GazaChat](https://alzunelak.github.io/GazaChat/index.html)
 
 ---
 
-##  Team & Contributors
+##  Team Members
 | Name                | Role                     | GitHub Profile                                              |
 |---------------------|--------------------------|-------------------------------------------------------------|
 | Rukhsar             | Back End Developer       | [@rukhsar](https://github.com/yourusername)                 |
