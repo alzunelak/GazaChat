@@ -5,7 +5,7 @@
 > _"As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh"_  
 > _“Take privacy with you, be yourself in every message.”_
 
-Visit the app: [Welcome Page](https://alzunelak.github.io/GazaChat/index.html)
+Visit the app: [GazaChat](https://alzunelak.github.io/GazaChat/index.html)
 
 ---
 
@@ -19,8 +19,8 @@ Visit the app: [Welcome Page](https://alzunelak.github.io/GazaChat/index.html)
 ##  Team & Contributors
 | Name                | Role                     | GitHub Profile                                              |
 |---------------------|--------------------------|-------------------------------------------------------------|
-| Rukhsar             | Back End Developer       | @rukhsar                                                    |
-| Sophia              | Back End Developer       | @sophia                                                     |
+| Rukhsar             | Back End Developer       | @rukhsar(https://github.com/yourusername)                   |
+| Sophia              | Back End Developer       | @sophia(https://github.com/yourusername)                    |
 | Maya                | Front End                | @maya                                                       |
 | Amat                | Front End                | @Amat                                                       |
 | Zainab              | Front End                | @zainab                                                     |
