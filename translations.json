@@ -16,5 +16,41 @@
     "welcome": "Karibu Kwa",
     "tagline": "Beba faragha yako nawe, uwe wewe mwenyewe katika kila ujumbe",
     "privacy": "Masharti na Faragha"
+  },
+  "hi": {
+    "greeting": "आप पर सलामती, रहमत और बरकत हो",
+    "welcome": "स्वागत है",
+    "tagline": "अपनी प्राइवेसी अपने साथ रखें, हर संदेश में खुद बनें",
+    "privacy": "नियम और गोपनीयता"
+  },
+  "ur": {
+    "greeting": "السلام علیکم ورحمة الله وبرکاته",
+    "welcome": "خوش آمدید",
+    "tagline": "اپنی پرائیویسی ساتھ لے جائیں، ہر پیغام میں خود بنیں",
+    "privacy": "شرائط اور رازداری"
+  },
+  "fr": {
+    "greeting": "Que la paix, la miséricorde et les bénédictions de Dieu soient sur vous",
+    "welcome": "Bienvenue à",
+    "tagline": "Gardez votre vie privée avec vous, soyez vous-même dans chaque message",
+    "privacy": "Conditions et Confidentialité"
+  },
+  "es": {
+    "greeting": "Que la paz, la misericordia y las bendiciones de Dios estén contigo",
+    "welcome": "Bienvenido a",
+    "tagline": "Lleva tu privacidad contigo, sé tú mismo en cada mensaje",
+    "privacy": "Términos y Privacidad"
+  },
+  "zh": {
+    "greeting": "愿真主的平安、仁慈和祝福与你同在",
+    "welcome": "欢迎来到",
+    "tagline": "随时保护隐私，在每条消息中做自己",
+    "privacy": "条款和隐私"
+  },
+  "de": {
+    "greeting": "Friede, Barmherzigkeit und Gottes Segen seien mit dir",
+    "welcome": "Willkommen bei",
+    "tagline": "Nimm deine Privatsphäre mit dir, sei du selbst in jeder Nachricht",
+    "privacy": "Bedingungen und Datenschutz"
   }
 }
