@@ -101,7 +101,7 @@
   <a id="privacyLink" href="privacy.html" class="privacy-link">Terms and Privacy</a>
   <button id="getStarted" class="btn" onclick="window.location.href='permission.html'">Get Started</button>
 
- <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
   const langSelect = document.getElementById("language");
   const tagline = document.getElementById("tagline");
@@ -116,19 +116,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let translations = {};
 
-  // Load translations
   fetch("translations.json")
     .then(response => response.json())
     .then(data => {
-      translations = data;
-      // Load saved language or default
+      translations = data.welcome; // Use only the "welcome" section
       const savedLang = localStorage.getItem("selectedLanguage") || "en";
       langSelect.value = savedLang;
       updateLanguage(savedLang);
     })
     .catch(() => console.warn("Using default text."));
 
-  // On language change
   langSelect.addEventListener("change", () => {
     const selectedLang = langSelect.value;
     localStorage.setItem("selectedLanguage", selectedLang);
@@ -136,14 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function updateLanguage(lang) {
-    const t = translations[lang];
-    if (!t) {
-      tagline.textContent = defaultTexts.tagline;
-      privacyLink.textContent = defaultTexts.privacy;
-      getStarted.textContent = defaultTexts.getStarted;
-      document.documentElement.lang = "en";
-      return;
-    }
+    const t = translations[lang] || {};
     tagline.textContent = t.tagline || defaultTexts.tagline;
     privacyLink.textContent = t.privacy || defaultTexts.privacy;
     getStarted.textContent = t.getStarted || defaultTexts.getStarted;
