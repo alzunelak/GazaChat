@@ -1,0 +1,20 @@
+{
+  "en": {
+    "greeting": "As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh",
+    "welcome": "Welcome To",
+    "tagline": "Take privacy with you, be yourself in every message",
+    "privacy": "Terms and Privacy"
+  },
+  "ar": {
+    "greeting": "السلام عليكم ورحمة الله وبركاته",
+    "welcome": "مرحبا بك في",
+    "tagline": "احمل خصوصيتك معك، كن نفسك في كل رسالة",
+    "privacy": "الشروط والخصوصية"
+  },
+  "sw": {
+    "greeting": "Amani iwe juu yako na rehema na baraka za Mwenyezi Mungu",
+    "welcome": "Karibu Kwa",
+    "tagline": "Beba faragha yako nawe, uwe wewe mwenyewe katika kila ujumbe",
+    "privacy": "Masharti na Faragha"
+  }
+}
