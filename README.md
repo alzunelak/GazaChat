@@ -19,8 +19,8 @@ Visit the app: [GazaChat](https://alzunelak.github.io/GazaChat/index.html)
 ##  Team Members
 | Name                | Role                     | GitHub Profile                                              |
 |---------------------|--------------------------|-------------------------------------------------------------|
-| Rukhsar             | Back End Developer       | [@rukhsar](https://github.com/yourusername)                 |
-| Sophia              | Back End Developer       | [@sophia](https://github.com/yourusername)                  |
+| Rukhsar             | Back End                 | [@rukhsar](https://github.com/yourusername)                 |
+| Sophia              | Back End                 | [@sophia](https://github.com/yourusername)                  |
 | Maya                | Front End                | [@maya](https://github.com/yourusername)                    |
 | Amat                | Front End                | [@Amat](https://github.com/yourusername)                    |
 | Zainab              | Front End                | [@zainab](https://github.com/yourusername)                  |
