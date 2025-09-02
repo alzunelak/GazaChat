@@ -64,7 +64,7 @@
     @media screen and (max-width: 768px) {
       h1 { font-size: 1.5rem; }
       h2 { font-size: 1.2rem; }
-      .big-text { font-size: 1.3rem; }
+      .big-text { font-size: 1.3rem; margin: 15px 10px; }
       img { width: 150px; height: 150px; }
       .btn { font-size: 1rem; padding: 12px 25px; }
     }
@@ -80,17 +80,16 @@
 
   <div class="language-selector">
     <label for="language">🌐 Language: </label>
-    <select id="language">
-      <select id="language">
-  <option value="en">English</option>
-  <option value="ar">Arabic</option>
-  <option value="sw">Swahili</option>
-  <option value="hi">Hindi</option>
-  <option value="ur">Urdu</option>
-  <option value="fr">French</option>
-  <option value="es">Spanish</option>
-  <option value="zh">Chinese</option>
-  <option value="de">German</option>
+    <select id="language" aria-label="Select Language">
+      <option value="en">English</option>
+      <option value="ar">Arabic</option>
+      <option value="sw">Swahili</option>
+      <option value="hi">Hindi</option>
+      <option value="ur">Urdu</option>
+      <option value="fr">French</option>
+      <option value="es">Spanish</option>
+      <option value="zh">Chinese</option>
+      <option value="de">German</option>
     </select>
   </div>
 
@@ -108,7 +107,7 @@
       .then(response => response.json())
       .then(data => {
         translations = data;
-        updateLanguage("en"); // Default
+        updateLanguage("en"); // Default language
       })
       .catch(error => console.error("Error loading translations:", error));
 
@@ -117,10 +116,12 @@
     });
 
     function updateLanguage(lang) {
+      if (!translations[lang]) return; // safety check
       greeting.textContent = translations[lang].greeting;
       welcome.textContent = translations[lang].welcome;
       tagline.textContent = translations[lang].tagline;
       privacyLink.textContent = translations[lang].privacy;
+      document.documentElement.lang = lang; // update <html> lang
     }
   </script>
 </body>
