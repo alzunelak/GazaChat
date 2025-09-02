@@ -1,11 +1,11 @@
-# GazaChat — ChatApp
+# GazaChat 
 
 ##  Overview
 **GazaChat** is a privacy-focused chat application with a warm, welcoming design:
 > _"As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh"_  
 > _“Take privacy with you, be yourself in every message.”_
 
-Visit the app: [Welcome Page](https://alzunelak.github.io/GazaChat/welcome.html)
+Visit the app: [Welcome Page](https://alzunelak.github.io/GazaChat/index.html)
 
 ---
 
@@ -16,20 +16,20 @@ Visit the app: [Welcome Page](https://alzunelak.github.io/GazaChat/welcome.html)
 
 ---
 
-Team & Contributors
+##  Team & Contributors
 | Name                | Role                     | GitHub Profile                                              |
 |---------------------|--------------------------|-------------------------------------------------------------|
-| Rukhsar             | Back End Developer       | [@yourusername](https://github.com/yourusername)            |
-| Sophia              | Back End Developer       | [@collab1](https://github.com/collab1)                      |
-| Maya                | Front End                | [@collab2](https://github.com/collab2)                      |
-| Amat                | Front End                | [@collab2](https://github.com/collab2)                      |
-| Zainab              | Front End                | [@collab2](https://github.com/collab2)                      |
-| Nuzlah              | Front End                | [@collab2](https://github.com/collab2)                      |
+| Rukhsar             | Back End Developer       | @rukhsar                                                    |
+| Sophia              | Back End Developer       | @sophia                                                     |
+| Maya                | Front End                | @maya                                                       |
+| Amat                | Front End                | @Amat                                                       |
+| Zainab              | Front End                | @zainab                                                     |
+| Nuzlah              | Front End                | @nuzlah                                                     |
 
 ---
 
 ##  Usage
-1. Visit the [welcome page](https://alzunelak.github.io/GazaChat/welcome.html).
+1. Visit the [GazaChat](https://alzunelak.github.io/GazaChat/index.html).
 2. Click **Get Started** to begin chatting.
 3. Read our **Terms & Privacy** for details on how your data is handled.
 
