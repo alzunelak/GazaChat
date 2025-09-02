@@ -101,58 +101,52 @@
   <a id="privacyLink" href="privacy.html" class="privacy-link">Terms and Privacy</a>
   <button id="getStarted" class="btn" onclick="window.location.href='permission.html'">Get Started</button>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const langSelect = document.getElementById("language");
-      const tagline = document.getElementById("tagline");
-      const privacyLink = document.getElementById("privacyLink");
-      const getStarted = document.getElementById("getStarted");
+      <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const langSelect = document.getElementById("language");
+  const tagline = document.getElementById("tagline");
+  const privacyLink = document.getElementById("privacyLink");
+  const getStarted = document.getElementById("getStarted");
 
-      const defaultTexts = {
-        tagline: "Simple And Private Messaging No Internet Needed.",
-        privacy: "Terms and Privacy",
-        getStarted: "Get Started"
-      };
+  const defaultTexts = {
+    tagline: "Simple And Private Messaging No Internet Needed.",
+    privacy: "Terms and Privacy",
+    getStarted: "Get Started"
+  };
 
+  let translations = {};
+
+  // Load translations
+  fetch("translations.json")
+    .then(response => response.json())
+    .then(data => {
+      translations = data;
+      // Check localStorage for selected language
+      const savedLang = localStorage.getItem("selectedLanguage") || "en";
+      langSelect.value = savedLang;
+      updateLanguage(savedLang);
+    })
+    .catch(() => console.warn("Using default text."));
+
+  // On language change
+  langSelect.addEventListener("change", () => {
+    const selectedLang = langSelect.value;
+    localStorage.setItem("selectedLanguage", selectedLang);
+    updateLanguage(selectedLang);
+  });
+
+  function updateLanguage(lang) {
+    const t = translations[lang];
+    if (!t) {
       tagline.textContent = defaultTexts.tagline;
       privacyLink.textContent = defaultTexts.privacy;
       getStarted.textContent = defaultTexts.getStarted;
+      document.documentElement.lang = "en";
+      return;
+    }
+    tagline.textContent = t.tagline || defaultTexts.tagline;
+    privacyLink.textContent = t.privacy || defaultTexts.privacy;
+    getStarted.textContent = t.getStarted || defaultTexts.getS
 
-      let translations = {};
-      fetch("translations.json")
-        .then(response => response.json())
-        .then(data => {
-          translations = data;
-          updateLanguage("en");
-        })
-        .catch(() => console.warn("Using default text."));
-
-      langSelect.addEventListener("change", () => {
-        updateLanguage(langSelect.value);
-      });
-
-      function updateLanguage(lang) {
-        if (!translations[lang]) {
-          tagline.textContent = defaultTexts.tagline;
-          privacyLink.textContent = defaultTexts.privacy;
-          getStarted.textContent = defaultTexts.getStarted;
-          document.documentElement.lang = "en";
-          return;
-        }
-        tagline.textContent = translations[lang].tagline;
-        privacyLink.textContent = translations[lang].privacy;
-        getStarted.textContent = translations[lang].getStarted || defaultTexts.getStarted;
-        document.documentElement.lang = lang;
-      }
-    });
-
-    // Inside your language select change event on the Welcome page
-langSelect.addEventListener("change", () => {
-  const selectedLang = langSelect.value;
-  localStorage.setItem("selectedLanguage", selectedLang); // Save selected language
-  updateLanguage(selectedLang);
-});
-
-  </script>
 </body>
 </html>
