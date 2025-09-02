@@ -110,23 +110,17 @@
         font-size: 2.5em;
       }
     }
-
-     .section .emoji {
-    font-size: 24px;
-  }
-
-  /* Make specific emojis green */
-  .section:nth-child(1) .emoji, /* Notification */
-  .section:nth-child(2) .emoji, /* Contact */
-  .section:nth-child(3) .emoji  /* Phone Call */ {
+    
+    /* Make only emojis green */
+  .emoji.green {
     color: green;
+    font-size: 24px; /* optional size */
   }
   </style>
 </head>
 <body>
 
   <h1>Allow Permission</h1>
-  <p style="text-align: left; font-size: 1em; color: #555; max-width: 600px; margin-bottom: 30px;">
   To help message people you know, GazaChat will request these permissions.
 </p>
 
