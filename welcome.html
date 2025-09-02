@@ -11,29 +11,23 @@
       font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
-      justify-content: center; /* Center vertically */
+      justify-content: center;
       align-items: center;
       min-height: 100vh;
       background: #f9f9f9;
       text-align: center;
     }
-    h1 {
-      font-size: 2rem;
-      margin: 20px 10px;
-    }
-    h2 {
-      font-size: 1.5rem;
-      margin: 10px 10px;
-    }
+    h1 { font-size: 2rem; margin: 20px 10px; }
+    h2 { font-size: 1.5rem; margin: 10px 10px; }
     img {
       width: 220px;
       max-width: 70%;
-      height: 220px; /* Ensures perfect circle */
-      object-fit: cover; /* Makes sure image fills the circle */
-      border-radius: 50%; /* Makes the image circular */
+      height: 220px;
+      object-fit: cover;
+      border-radius: 50%;
       margin: 20px 0;
-      border: 4px solid #25d366; /* Optional border */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional shadow */
+      border: 4px solid #25d366;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .big-text {
       font-size: 1.8rem;
@@ -49,7 +43,7 @@
       margin-bottom: 15px;
     }
     .btn {
-      margin: 20px 0 40px;
+      margin: 20px 0 20px;
       padding: 14px 30px;
       background: #25d366;
       color: #fff;
@@ -59,41 +53,68 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-    .btn:hover {
-      background: #1ebe57;
+    .btn:hover { background: #1ebe57; }
+    .language-selector { margin: 10px 0 40px; }
+    select {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
     }
-
-    /* Make it mobile-friendly */
     @media screen and (max-width: 768px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-      h2 {
-        font-size: 1.2rem;
-      }
-      .big-text {
-        font-size: 1.3rem;
-      }
-      img {
-        width: 150px;
-        height: 150px;
-      }
-      .btn {
-        font-size: 1rem;
-        padding: 12px 25px;
-      }
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.2rem; }
+      .big-text { font-size: 1.3rem; }
+      img { width: 150px; height: 150px; }
+      .btn { font-size: 1rem; padding: 12px 25px; }
     }
   </style>
 </head>
 <body>
-  <h1>As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh</h1>
-  <h2>Welcome To</h2>
+  <h1 id="greeting">As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh</h1>
+  <h2 id="welcome">Welcome To</h2>
   <img src="logo.jpg" alt="ChatApp Logo">
-
-  <div class="big-text">Take privacy with you, be yourself in every message</div>
-
-  <a href="privacy.html" class="privacy-link">Terms and Privacy</a>
-
+  <div id="tagline" class="big-text">Take privacy with you, be yourself in every message</div>
+  <a id="privacyLink" href="privacy.html" class="privacy-link">Terms and Privacy</a>
   <button class="btn" onclick="window.location.href='permission.html'">Get Started</button>
+
+  <div class="language-selector">
+    <label for="language">🌐 Language: </label>
+    <select id="language">
+      <option value="en">English</option>
+      <option value="ar">Arabic</option>
+      <option value="sw">Swahili</option>
+    </select>
+  </div>
+
+  <script>
+    const langSelect = document.getElementById("language");
+    const greeting = document.getElementById("greeting");
+    const welcome = document.getElementById("welcome");
+    const tagline = document.getElementById("tagline");
+    const privacyLink = document.getElementById("privacyLink");
+
+    let translations = {};
+
+    // Load translations from JSON file
+    fetch("translations.json")
+      .then(response => response.json())
+      .then(data => {
+        translations = data;
+        updateLanguage("en"); // Default
+      })
+      .catch(error => console.error("Error loading translations:", error));
+
+    langSelect.addEventListener("change", () => {
+      updateLanguage(langSelect.value);
+    });
+
+    function updateLanguage(lang) {
+      greeting.textContent = translations[lang].greeting;
+      welcome.textContent = translations[lang].welcome;
+      tagline.textContent = translations[lang].tagline;
+      privacyLink.textContent = translations[lang].privacy;
+    }
+  </script>
 </body>
 </html>
