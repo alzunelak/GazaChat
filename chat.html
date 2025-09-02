@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GazaChat App</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ==== GENERAL STYLES ==== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #000; /* dark background */
+  color: #fff; /* white text */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+#chatPage,#friendInfoPage {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ==== HEADER ==== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #128C7E;
+  padding: 10px;
+  position: relative;
+  border-bottom: 1px solid #25D366;
+}
+.header img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid #25D366;
+}
+.header-info h2 {
+  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+  color: #fff;
+}
+.header-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #fff;
+}
+
+/* ==== CHAT BOX ==== */
+#chatBox {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.msg {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  align-self: flex-start;
+  word-break: break-word;
+  background: #222; /* dark bubble for others */
+  color: #fff;
+}
+.msg.self {
+  background: #25D366; /* green bubble */
+  align-self: flex-end;
+  color: #000;
+}
+.msg .meta {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #ccc;
+  text-align: right;
+}
+.msg.system {
+  background: #111;
+  color: #fff;
+  align-self: center;
+  text-align: center;
+}
+
+/* ==== INPUT AREA ==== */
+#inputArea {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: calc(100% - 20px);
+  z-index: 100;
+}
+.input-box {
+  display: flex;
+  flex: 1;
+  background: #111; /* dark input background */
+  border-radius: 25px;
+  padding: 6px 10px;
+  gap: 6px;
+  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.3);
+}
+.input-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: #000; /* black inside */
+  color: #000; /* black text */
+  padding: 6px;
+  border-radius: 20px;
+}
+.input-buttons button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #25D366;
+}
+#micBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #000;
+  border: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
+  cursor: pointer;
+}
+
+/* ==== POPUPS AND MODALS ==== */
+.popup, #emojiPicker, #attachPopup, .modal {
+  background: #111;
+  color: #fff;
+  border: 1px solid #25D366;
+  border-radius: 8px;
+  z-index: 1000;
+}
+.popup div, #attachPopup .attachItem, .modal-content button {
+  background: #222;
+  color: #fff;
+  border: 1px solid #25D366;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.popup div:hover, #attachPopup .attachItem:hover, .modal-content button:hover {
+  background: #25D366;
+  color: #000;
+}
+
+/* ==== FRIEND INFO PAGE ==== */
+#friendInfoPage {
+  display: none;
+  flex-direction: column;
+  padding: 20px;
+  background: #111;
+}
+.friendHeader img {
+  border: 2px solid #25D366;
+}
+.actionButtons button {
+  background: #222;
+  border: 1px solid #25D366;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+.actionButtons button:hover {
+  background: #25D366;
+  color: #000;
+}
+
+/* ==== SETTINGS ITEMS ==== */
+.settingsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+}
+.settingsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #222;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  color: #fff;
+}
+.settingsItem small {
+  font-size: 14px;
+  color: #ccc;
+}
+.settingsItem label.switch .slider {
+  background: #555;
+}
+.settingsItem label.switch input:checked + .slider {
+  background: #25D366;
+}
+
+/* ==== BUTTONS ==== */
+button.close-btn {
+  background: #25D366;
+  color: #000;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
+}
+button.close-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ==== ANIMATIONS ==== */
+.phoneAnimation .phone {
+  border: 2px solid #25D366;
+}
+.checkMark {
+  color: #25D366;
+}
+</style>
+</head>
+<body>
+
+<!-- CHAT PAGE -->
+<div id="chatPage">
+  <div class="header">
+    <img id="friendPhoto" src="default-profile.png" alt="friend">
+    <div class="header-info">
+      <h2 id="friendName"></h2>
+    </div>
+    <div class="header-actions">
+      <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
+      <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    </div>
+    <div class="popup" id="menuPopup">
+      <div onclick="openFriendInfo()">View Info</div>
+      <div onclick="alert('Muted!')">Mute</div>
+      <div onclick="deleteChat()">Delete Chat</div>
+      <div onclick="openSettings()">Chat Settings</div>
+    </div>
+  </div>
+
+  <div id="chatBox">
+    <div class="msg system">🔒 Messages are end-to-end encrypted</div>
+  </div>
+
+  <div id="inputArea">
+    <div class="input-box">
+      <input id="msgInput" placeholder="Type a message..." autocomplete="off">
+      <div class="input-buttons">
+        <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
+        <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
+      </div>
+    </div>
+    <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
+  </div>
+</div>
+
+<!-- EMOJI PICKER -->
+<div id="emojiPicker">
+  <span>😀</span><span>😂</span><span>😍</span><span>😭</span>
+  <span>😎</span><span>😡</span><span>👍</span><span>🙏</span>
+  <span>🔥</span><span>🎉</span><span>❤️</span>
+</div>
+
+<!-- ATTACHMENTS -->
+<div id="attachPopup">
+  <div id="attachGrid">
+    <label class="attachItem">
+      <i class="fa-solid fa-image"></i>
+      <span>Gallery</span>
+      <input type="file" id="galleryInput" accept="image/*,video/*">
+    </label>
+    <label class="attachItem">
+      <i class="fa-solid fa-camera"></i>
+      <span>Camera</span>
+      <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment">
+    </label>
+    <div class="attachItem" id="sendLocation">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>Location</span>
+    </div>
+    <label class="attachItem">
+      <i class="fa-solid fa-file"></i>
+      <span>Document</span>
+      <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt">
+    </label>
+    <div class="attachItem" id="sendContact">
+      <i class="fa-solid fa-user"></i>
+      <span>Contact</span>
+    </div>
+    <label class="attachItem">
+      <i class="fa-solid fa-microphone"></i>
+      <span>Audio</span>
+      <input type="file" id="audioInput" accept="audio/*">
+    </label>
+  </div>
+</div>
+
+<!-- FRIEND INFO PAGE -->
+<div id="friendInfoPage">
+  <div class="friendHeader">
+    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
+    <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
+    <h2 id="infoFriendName">Friend Name</h2>
+    <div class="actionButtons">
+      <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+      <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+    </div>
+  </div>
+</div>
+
+<script> // ===== USER DATA & DOM ===== const myName="Me", myId="user123"; const friendsList=JSON.parse(localStorage.getItem("friends")||"[]"); const friendParam=new URLSearchParams(window.location.search).get("friend"); const friendObj=friendsList.find(f=>f.name===friendParam); const friendData={name:friendObj?friendObj.name:(friendParam||"Friend"),photo:friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"}; const friendNameEl=document.getElementById("friendName"); const friendPhotoEl=document.getElementById("friendPhoto"); const infoFriendNameEl=document.getElementById("infoFriendName"); const infoFriendPhotoEl=document.getElementById("infoFriendPhoto"); const chatBox=document.getElementById("chatBox"); const msgInput=document.getElementById("msgInput"); friendNameEl.textContent=friendData.name; friendPhotoEl.src=friendData.photo; friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png"; infoFriendNameEl.textContent=friendData.name; infoFriendPhotoEl.src=friendData.photo; infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png"; let messages=JSON.parse(localStorage.getItem(chat_${friendData.name})||"[]"); // ===== UTIL ===== function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); } function timeNow(){ return new Date().toLocaleTimeString(); } function saveMessages(){ localStorage.setItem(chat_${friendData.name}, JSON.stringify(messages)); } function appendMessageBubble(obj){ const div=document.createElement("div"); div.className="msg"+(obj.senderId===myId?" self":""); div.innerHTML=<div>${obj.text}</div><span class="meta">${obj.time}</span>; chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight; } function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); } // ===== SEND MESSAGE ===== msgInput.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); const txt=msgInput.value.trim(); if(!txt) return; const msg={id:uid(), senderId:myId, text:txt, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); msgInput.value=""; } }); // ===== EMOJI ===== const emojiPicker=document.getElementById("emojiPicker"); document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";} emojiPicker.addEventListener("click", e=>{ if(e.target.tagName==="SPAN"){ msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus(); }}); // ===== MENU ===== const menuBtn=document.getElementById("menuBtn"), menuPopup=document.getElementById("menuPopup"); menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";} document.addEventListener("click", e=>{ if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none"; }); // ===== FRIEND INFO PAGE ===== friendNameEl.onclick=openFriendInfo; friendPhotoEl.onclick=openFriendInfo; function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; } function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; } // ===== DELETE CHAT ===== function deleteChat(){ if(confirm("Delete all messages?")){ messages=[]; saveMessages(); renderMessages(); } } // ===== ATTACHMENTS ===== const attachBtn=document.getElementById("plusBtn"), attachPopup=document.getElementById("attachPopup"); attachBtn.onclick=e=>{ e.stopPropagation(); attachPopup.style.display=attachPopup.style.display==="block"?"none":"block"; }; document.addEventListener("click", e=>{ if(!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) attachPopup.style.display="none"; }); function sendAttachmentMessage(text){ const msg={id:uid(), senderId:myId, text, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none"; } document.getElementById("galleryInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}); e.target.value=""; }}); document.getElementById("cameraInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}); e.target.value=""; }}); document.getElementById("documentInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(📄 Document: ${file.name}); e.target.value=""; }}); document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(🎵 Audio: ${file.name}); e.target.value=""; }}); document.getElementById("sendLocation").onclick=()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})); }, ()=>sendAttachmentMessage("📍 Location sharing denied")); } else sendAttachmentMessage("📍 Geolocation not supported");}; document.getElementById("sendContact").onclick=()=>{ const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(👤 Contact: ${name} — ${phone}); } }}; // ===== FRIEND INFO BUTTONS ===== const friendNameEnc=encodeURIComponent(friendData.name), friendPhotoEnc=encodeURIComponent(friendData.photo); document.getElementById("videoCallBtn").onclick=()=>{ window.location.href=video-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}; }; document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}; }; document.getElementById("searchBtn").onclick=()=>{ window.location.href=chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}; }; document.getElementById("callBtn").onclick=()=>{ window.location.href=audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}; }; // ===== BLOCK & REPORT ===== document.querySelector(".blockBtn").addEventListener("click", e=>{ e.preventDefault(); if(confirm("Block this user?")){ let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]"); let friends=JSON.parse(localStorage.getItem("friends")||"[]"); if(!blocked.includes(friendData.name)){ blocked.push(friendData.name); localStorage.setItem("blockedUsers",JSON.stringify(blocked)); friends=friends.filter(f=>f.name!==friendData.name); localStorage.setItem("friends",JSON.stringify(friends)); alert("User blocked."); setTimeout(()=>{ window.location.href="home.html"; },200); } } }); document.querySelector(".reportBtn").onclick=()=>{ if(confirm("Report this user?")) alert("User reported."); }; // ===== CHAT SETTINGS ===== const settingsModal=document.getElementById("settingsModal"); const themeSelect=document.getElementById("themeSelect"); const chatThemeSelect=document.getElementById("chatThemeSelect"); const fontSizeSelect=document.getElementById("fontSizeSelect"); function openSettings(){ settingsModal.style.display="block"; themeSelect.value=localStorage.getItem("theme")||"system"; chatThemeSelect.value=localStorage.getItem("chatTheme")||"system"; fontSizeSelect.value=localStorage.getItem("fontSize")||"medium"; applySettings(); } function closeSettings(){ settingsModal.style.display="none"; } themeSelect.onchange=chatThemeSelect.onchange=fontSizeSelect.onchange=applySettings; function applySettings(){ const theme=themeSelect.value, chatTheme=chatThemeSelect.value, fontSize=fontSizeSelect.value; localStorage.setItem("theme",theme); localStorage.setItem("chatTheme",chatTheme); localStorage.setItem("fontSize",fontSize); switch(theme){ case "system": document.body.style.background="#f8f9fa"; break; case "light": document.body.style.background="#fff"; break; case "dark": document.body.style.background="#1c1e21"; break; } document.querySelectorAll(".msg").forEach(msg=>{ if(msg.classList.contains("self")){ switch(chatTheme){ case "system": msg.style.background="#dcf8c6"; break; case "light": msg.style.background="#E1FFC7"; break; case "dark": msg.style.background="#2c2f33"; break; case "blue": msg.style.background="#D0E6FF"; break; case "green": msg.style.background="#CCFFCC"; break; } } else { switch(chatTheme){ case "system": msg.style.background="#fff"; break; case "light": msg.style.background="#fff"; break; case "dark": msg.style.background="#23272A"; break; case "blue": msg.style.background="#fff"; break; case "green": msg.style.background="#fff"; break; } }}); let size="16px"; switch(fontSize){ case "small": size="12px"; break; case "medium": size="16px"; break; case "large": size="20px"; break; } document.querySelectorAll(".msg").forEach(msg=>msg.style.fontSize=size); document.body.style.fontSize=size; } applySettings(); // ===== MIC RECORDING ===== const micBtn=document.getElementById("micBtn"); let mediaRecorder,audioChunks=[]; micBtn.onclick=async()=>{ if(!mediaRecorder){ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ alert("Microphone not supported"); return; } const stream=await navigator.mediaDevices.getUserMedia({audio:true}); mediaRecorder=new MediaRecorder(stream); mediaRecorder.ondataavailable=e=>audioChunks.push(e.data); mediaRecorder.onstop=()=>{ const blob=new Blob(audioChunks,{type:"audio/webm"}); audioChunks=[]; sendAttachmentMessage(🎤 Voice message (${(blob.size/1024).toFixed(1)} KB)); }; } if(mediaRecorder.state==="inactive"){ mediaRecorder.start(); micBtn.style.background="red"; } else { mediaRecorder.stop(); micBtn.style.background="#25D366"; } }; // ==== TOGGLE CHAT LOCK ==== document.getElementById("chatLockToggle").addEventListener("change", function(){ alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled"); }); // ==== desappear ==== const disappearModal = document.getElementById("disappearModal"); const disappearBtn = document.getElementById("disappearBtn"); const disappearStatus = document.getElementById("disappearStatus"); // Open modal disappearBtn.onclick = () => { disappearModal.style.display = "flex"; } // Close modal function closeDisappearModal(){ disappearModal.style.display = "none"; // Update status text based on selected radio const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim(); disappearStatus.textContent = selected; } // ==== end to end ==== function openEncryptionPopup() { document.getElementById("encryptionModal").style.display = "flex"; } function closeEncryptionPopup() { document.getElementById("encryptionModal").style.display = "none"; // reset check mark animation const check = document.querySelector(".checkMark"); check.style.opacity = 0; check.style.transform = "scale(0)"; void check.offsetWidth; // force reflow for replay check.style.animation = "appear 2s forwards 1.5s"; } // ===== RENDER INITIAL ===== renderMessages(); </script> </body> </html>
