@@ -37,12 +37,19 @@
       margin-bottom: 30px;
     }
 
-    /* Emoji placeholder space */
-    .emoji {
-      width: 3em;  /* keeps space for emoji */
-      height: 3em;
-      margin-right: 15px;
-    }
+    /* Glowing emojis */
+ .emoji {
+  font-size: 3em;
+  margin-right: 15px;
+  color: transparent; /* no fill inside */
+  text-shadow: 0 0 5px #25d366, 0 0 10px #25d366, 0 0 15px #25d366;
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+.section:hover .emoji {
+  transform: scale(1.1);
+  text-shadow: 0 0 8px #25d366, 0 0 16px #25d366, 0 0 24px #25d366;
+}
+
 
     .text-block {
       display: flex;
@@ -151,8 +158,7 @@
         font-size: 0.9em;
       }
       .emoji {
-        width: 2.5em;
-        height: 2.5em;
+        font-size: 2.5em;
       }
       .popup-btns button {
         padding: 10px 20px;
@@ -166,30 +172,31 @@
   <h1>Allow Permission</h1>
   <p class="subtitle">To help message people you know, GazaChat will request these permissions.</p>
 
-<div class="section">
-  <div class="emoji"></div>
-  <div class="text-block">
-    <div class="title">Notification</div>
-    <div class="desc">Get notified when new messages arrive.</div>
+  <div class="section">
+    <div class="emoji"><i class="fa-solid fa-bell"></i></div>
+    <div class="text-block">
+      <div class="title">Notification</div>
+      <div class="desc">Get notified when new messages arrive.</div>
+    </div>
   </div>
-</div>
 
-<div class="section">
-  <div class="emoji"></div>
-  <div class="text-block">
-    <div class="title">Contact</div>
-    <div class="desc">Find people you know. Your contacts are encrypted and not visible to GazaChat servers.</div>
+  <div class="section">
+    <div class="emoji"><i class="fa-solid fa-user"></i></div>
+    <div class="text-block">
+      <div class="title">Contact</div>
+      <div class="desc">Find people you know. Your contacts are encrypted and not visible to GazaChat servers.</div>
+    </div>
   </div>
-</div>
 
-<div class="section">
-  <div class="emoji"></div>
-  <div class="text-block">
-    <div class="title">Phone Call</div>
-    <div class="desc">Make registration easier and enable calling features.</div>
+  <div class="section">
+    <div class="emoji"><i class="fa-solid fa-phone"></i></div>
+    <div class="text-block">
+      <div class="title">Phone Call</div>
+      <div class="desc">Make registration easier and enable calling features.</div>
+    </div>
   </div>
-</div>
 
+  <button class="next-btn" onclick="startPermissions()">Next</button>
 
   <!-- Popup -->
   <div class="popup" id="popup">
@@ -234,4 +241,4 @@
   </script>
 
 </body>
-</html>
+</html> 
