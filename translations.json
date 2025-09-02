@@ -1,104 +1,87 @@
 {
-  "en": {
-    "greeting": "As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh",
-    "welcome": "Welcome To",
-    "tagline": "Simple And Private Messaging No Internet Needed.",
-    "privacy": "Terms and Privacy",
-    "getStarted": "Get Started"
+  "welcome": {
+    "en": {
+      "tagline": "Simple And Private Messaging No Internet Needed.",
+      "privacy": "Terms and Privacy",
+      "getStarted": "Get Started"
+    },
+    "ar": {
+      "tagline": "رسائل بسيطة وخاصة دون الحاجة للإنترنت",
+      "privacy": "الشروط والخصوصية",
+      "getStarted": "ابدأ الآن"
+    },
+    "sw": {
+      "tagline": "Ujumbe rahisi na wa faragha bila mtandao",
+      "privacy": "Masharti na Faragha",
+      "getStarted": "Anza Sasa"
+    },
+    "hi": {
+      "tagline": "सरल और निजी संदेश, बिना इंटरनेट के",
+      "privacy": "नियम और गोपनीयता",
+      "getStarted": "शुरू करें"
+    },
+    "ur": {
+      "tagline": "سادہ اور نجی پیغام رسانی بغیر انٹرنیٹ کے",
+      "privacy": "شرائط اور رازداری",
+      "getStarted": "شروع کریں"
+    },
+    "fr": {
+      "tagline": "Messagerie simple et privée sans internet",
+      "privacy": "Conditions et Confidentialité",
+      "getStarted": "Commencer"
+    },
+    "es": {
+      "tagline": "Mensajería simple y privada sin internet",
+      "privacy": "Términos y Privacidad",
+      "getStarted": "Comenzar"
+    },
+    "zh": {
+      "tagline": "简单且私密的消息传递，无需互联网",
+      "privacy": "条款和隐私",
+      "getStarted": "开始"
+    },
+    "de": {
+      "tagline": "Einfache und private Nachrichten ohne Internet",
+      "privacy": "Bedingungen und Datenschutz",
+      "getStarted": "Loslegen"
+    }
   },
-  "ar": {
-    "greeting": "السلام عليكم ورحمة الله وبركاته",
-    "welcome": "مرحبا بك في",
-    "tagline": "رسائل بسيطة وخاصة دون الحاجة للإنترنت",
-    "privacy": "الشروط والخصوصية",
-    "getStarted": "ابدأ الآن"
-  },
-  "sw": {
-    "greeting": "Amani iwe juu yako na rehema na baraka za Mwenyezi Mungu",
-    "welcome": "Karibu Kwa",
-    "tagline": "Ujumbe rahisi na wa faragha bila mtandao",
-    "privacy": "Masharti na Faragha",
-    "getStarted": "Anza Sasa"
-  },
-  "hi": {
-    "greeting": "आप पर सलामती, रहमत और बरकत हो",
-    "welcome": "स्वागत है",
-    "tagline": "सरल और निजी संदेश, बिना इंटरनेट के",
-    "privacy": "नियम और गोपनीयता",
-    "getStarted": "शुरू करें"
-  },
-  "ur": {
-    "greeting": "السلام علیکم ورحمة الله وبرکاته",
-    "welcome": "خوش آمدید",
-    "tagline": "سادہ اور نجی پیغام رسانی بغیر انٹرنیٹ کے",
-    "privacy": "شرائط اور رازداری",
-    "getStarted": "شروع کریں"
-  },
-  "fr": {
-    "greeting": "Que la paix, la miséricorde et les bénédictions de Dieu soient sur vous",
-    "welcome": "Bienvenue à",
-    "tagline": "Messagerie simple et privée sans internet",
-    "privacy": "Conditions et Confidentialité",
-    "getStarted": "Commencer"
-  },
-  "es": {
-    "greeting": "Que la paz, la misericordia y las bendiciones de Dios estén contigo",
-    "welcome": "Bienvenido a",
-    "tagline": "Mensajería simple y privada sin internet",
-    "privacy": "Términos y Privacidad",
-    "getStarted": "Comenzar"
-  },
-  "zh": {
-    "greeting": "愿真主的平安、仁慈和祝福与你同在",
-    "welcome": "欢迎来到",
-    "tagline": "简单且私密的消息传递，无需互联网",
-    "privacy": "条款和隐私",
-    "getStarted": "开始"
-  },
-  "de": {
-    "greeting": "Friede, Barmherzigkeit und Gottes Segen seien mit dir",
-    "welcome": "Willkommen bei",
-    "tagline": "Einfache und private Nachrichten ohne Internet",
-    "privacy": "Bedingungen und Datenschutz",
-    "getStarted": "Loslegen"
-  }
-}
-{
-  "en": {
-    "permissionsTitle": "Allow Permission",
-    "permissionsSubtitle": "To help message people you know, GazaChat will request these permissions.",
-    "notificationTitle": "Notification",
-    "notificationDesc": "Get notified when new messages arrive.",
-    "contactTitle": "Contact",
-    "contactDesc": "Find people you know. Your contacts are encrypted and not visible to GazaChat servers.",
-    "phoneTitle": "Phone Call",
-    "phoneDesc": "Make registration easier and enable calling features.",
-    "nextBtn": "Next",
-    "allowBtn": "Allow",
-    "denyBtn": "Deny",
-    "popupPermissions": [
-      { "title": "Allow Notifications", "text": "Allow GazaChat to access your notifications?" },
-      { "title": "Allow Contacts", "text": "Allow GazaChat to access your contacts?" },
-      { "title": "Allow Phone Calls", "text": "Allow GazaChat to access your phone call feature?" }
-    ]
-  },
-  "ar": {
-    "permissionsTitle": "السماح بالإذن",
-    "permissionsSubtitle": "لمساعدتك في مراسلة الأشخاص الذين تعرفهم، سيطلب GazaChat هذه الأذونات.",
-    "notificationTitle": "الإشعارات",
-    "notificationDesc": "تلقي إشعارات عند وصول رسائل جديدة.",
-    "contactTitle": "جهات الاتصال",
-    "contactDesc": "اعثر على الأشخاص الذين تعرفهم. جهات اتصالك مشفرة وغير مرئية لخوادم GazaChat.",
-    "phoneTitle": "المكالمات",
-    "phoneDesc": "تسهيل التسجيل وتمكين ميزات المكالمات.",
-    "nextBtn": "التالي",
-    "allowBtn": "السماح",
-    "denyBtn": "رفض",
-    "popupPermissions": [
-      { "title": "السماح بالإشعارات", "text": "هل تسمح لـ GazaChat بالوصول إلى إشعاراتك؟" },
-      { "title": "السماح بجهات الاتصال", "text": "هل تسمح لـ GazaChat بالوصول إلى جهات اتصالك؟" },
-      { "title": "السماح بالمكالمات", "text": "هل تسمح لـ GazaChat بالوصول إلى ميزة المكالمات؟" }
-    ]
+  "permissions": {
+    "en": {
+      "permissionsTitle": "Allow Permission",
+      "permissionsSubtitle": "To help message people you know, GazaChat will request these permissions.",
+      "notificationTitle": "Notification",
+      "notificationDesc": "Get notified when new messages arrive.",
+      "contactTitle": "Contact",
+      "contactDesc": "Find people you know. Your contacts are encrypted and not visible to GazaChat servers.",
+      "phoneTitle": "Phone Call",
+      "phoneDesc": "Make registration easier and enable calling features.",
+      "nextBtn": "Next",
+      "allowBtn": "Allow",
+      "denyBtn": "Deny",
+      "popupPermissions": [
+        { "title": "Allow Notifications", "text": "Allow GazaChat to access your notifications?" },
+        { "title": "Allow Contacts", "text": "Allow GazaChat to access your contacts?" },
+        { "title": "Allow Phone Calls", "text": "Allow GazaChat to access your phone call feature?" }
+      ]
+    },
+    "ar": {
+      "permissionsTitle": "السماح بالإذن",
+      "permissionsSubtitle": "لمساعدتك في مراسلة الأشخاص الذين تعرفهم، سيطلب GazaChat هذه الأذونات.",
+      "notificationTitle": "الإشعارات",
+      "notificationDesc": "تلقي إشعارات عند وصول رسائل جديدة.",
+      "contactTitle": "جهات الاتصال",
+      "contactDesc": "اعثر على الأشخاص الذين تعرفهم. جهات اتصالك مشفرة وغير مرئية لخوادم GazaChat.",
+      "phoneTitle": "المكالمات",
+      "phoneDesc": "تسهيل التسجيل وتمكين ميزات المكالمات.",
+      "nextBtn": "التالي",
+      "allowBtn": "السماح",
+      "denyBtn": "رفض",
+      "popupPermissions": [
+        { "title": "السماح بالإشعارات", "text": "هل تسمح لـ GazaChat بالوصول إلى إشعاراتك؟" },
+        { "title": "السماح بجهات الاتصال", "text": "هل تسمح لـ GazaChat بالوصول إلى جهات اتصالك؟" },
+        { "title": "السماح بالمكالمات", "text": "هل تسمح لـ GazaChat بالوصول إلى ميزة المكالمات؟" }
+      ]
   },
   "ur": {
     "permissionsTitle": "اجازت کی اجازت دیں",
