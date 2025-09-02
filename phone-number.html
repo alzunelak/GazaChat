@@ -32,30 +32,33 @@
     margin-bottom: 5px;
     color: #fff;
   }
-
   select, input[type="text"] {
-    width: 100%;
-    max-width: 300px;
-    padding: 12px;
-    font-size: 1em;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: none;
-    background: #000;
-    color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    transition: all 0.3s ease;
-  }
+  width: 100%;
+  max-width: 300px;
+  padding: 12px;
+  font-size: 1em;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: none;
+  background: #222; /* dark background for input */
+  color: #000;      /* black text */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  transition: all 0.3s ease;
+}
 
-  select option {
-    background: #000;
-    color: #fff;
-  }
+select option {
+  background: #222;
+  color: #000; /* black text inside dropdown */
+}
 
-  select:focus, input[type="text"]:focus {
-    outline: none;
-    box-shadow: 0 0 10px #25d366;
-  }
+input::placeholder {
+  color: #888; /* gray placeholder text */
+}
+
+select:focus, input[type="text"]:focus {
+  outline: none;
+  box-shadow: 0 0 10px #25d366;
+}
 
   /* Next and popup buttons */
   .btn {
