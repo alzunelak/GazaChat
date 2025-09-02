@@ -145,6 +145,14 @@
         document.documentElement.lang = lang;
       }
     });
+
+    // Inside your language select change event on the Welcome page
+langSelect.addEventListener("change", () => {
+  const selectedLang = langSelect.value;
+  localStorage.setItem("selectedLanguage", selectedLang); // Save selected language
+  updateLanguage(selectedLang);
+});
+
   </script>
 </body>
 </html>
