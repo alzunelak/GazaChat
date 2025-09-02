@@ -18,9 +18,6 @@
       color: #fff; /* White text */
       text-align: center;
     }
-    h1, h2, .big-text, .privacy-link, label {
-      color: #fff;
-    }
     .app-name {
       font-size: 4rem;
       font-weight: bold;
@@ -38,56 +35,52 @@
       cursor: pointer;
       margin-bottom: 15px;
     }
-
-    /* Button with NO border, just green shadow */
     .btn {
       margin: 20px 0 20px;
       padding: 14px 30px;
-      background: transparent; /* No fill */
+      background: transparent; 
       color: #25d366; /* Green text */
       font-size: 1.2rem;
-      border: none; /* No border */
+      border: none; 
       border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5); /* Green shadow */
+      box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
       transition: all 0.3s;
     }
     .btn:hover {
-      background: rgba(37, 211, 102, 0.1); /* Slight green hover */
+      background: rgba(37, 211, 102, 0.1);
     }
-
-    /* Language selector with no border, green shadow */
+    .language-selector {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+    }
     .language-selector select {
       padding: 10px;
       border-radius: 5px;
-      border: none; /* Removed border */
+      border: none; 
       font-size: 1rem;
       background: transparent;
       color: #fff;
       box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
     }
-
     .language-selector label {
-      margin-right: 10px;
+      margin-right: 8px;
     }
 
+    /* Mobile responsiveness */
     @media screen and (max-width: 768px) {
       .app-name { font-size: 2.5rem; margin: 30px 0 15px; }
-      h1 { font-size: 1.5rem; }
-      h2 { font-size: 1.2rem; }
       .big-text { font-size: 1.3rem; margin: 15px 10px; }
       .btn { font-size: 1rem; padding: 12px 25px; }
       .language-selector select { font-size: 0.9rem; padding: 8px; }
+      .language-selector label { font-size: 0.85rem; }
     }
   </style>
 </head>
 <body>
   
-  <div class="app-name">ChatApp</div>
-  <div id="tagline" class="small-text">Simple And Private Messaging No Internet Needed.</div>
-  <a id="privacyLink" href="privacy.html" class="privacy-link">Terms and Privacy</a>
-  <button id="getStarted" class="btn" onclick="window.location.href='permission.html'">Get Started</button>
-
+  <!-- Language selector top-left -->
   <div class="language-selector">
     <label for="language">🌐 Language: </label>
     <select id="language" aria-label="Select Language">
@@ -103,25 +96,24 @@
     </select>
   </div>
 
+  <div class="app-name">ChatApp</div>
+  <div id="tagline" class="big-text">Simple And Private Messaging No Internet Needed.</div>
+  <a id="privacyLink" href="privacy.html" class="privacy-link">Terms and Privacy</a>
+  <button id="getStarted" class="btn" onclick="window.location.href='permission.html'">Get Started</button>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const langSelect = document.getElementById("language");
-      const greeting = document.getElementById("greeting");
-      const welcome = document.getElementById("welcome");
       const tagline = document.getElementById("tagline");
       const privacyLink = document.getElementById("privacyLink");
       const getStarted = document.getElementById("getStarted");
 
       const defaultTexts = {
-        greeting: "As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh",
-        welcome: "Welcome To",
         tagline: "Simple And Private Messaging No Internet Needed.",
         privacy: "Terms and Privacy",
         getStarted: "Get Started"
       };
 
-      greeting && (greeting.textContent = defaultTexts.greeting);
-      welcome && (welcome.textContent = defaultTexts.welcome);
       tagline.textContent = defaultTexts.tagline;
       privacyLink.textContent = defaultTexts.privacy;
       getStarted.textContent = defaultTexts.getStarted;
@@ -133,7 +125,7 @@
           translations = data;
           updateLanguage("en");
         })
-        .catch(err => console.warn("Translations not loaded, using defaults.", err));
+        .catch(() => console.warn("Using default text."));
 
       langSelect.addEventListener("change", () => {
         updateLanguage(langSelect.value);
@@ -141,16 +133,12 @@
 
       function updateLanguage(lang) {
         if (!translations[lang]) {
-          greeting && (greeting.textContent = defaultTexts.greeting);
-          welcome && (welcome.textContent = defaultTexts.welcome);
           tagline.textContent = defaultTexts.tagline;
           privacyLink.textContent = defaultTexts.privacy;
           getStarted.textContent = defaultTexts.getStarted;
           document.documentElement.lang = "en";
           return;
         }
-        greeting && (greeting.textContent = translations[lang].greeting);
-        welcome && (welcome.textContent = translations[lang].welcome);
         tagline.textContent = translations[lang].tagline;
         privacyLink.textContent = translations[lang].privacy;
         getStarted.textContent = translations[lang].getStarted || defaultTexts.getStarted;
