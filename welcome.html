@@ -11,33 +11,39 @@
       font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: center; /* Center vertically */
       align-items: center;
       min-height: 100vh;
-      background: #000; /* black background */
+      background: #f9f9f9;
       text-align: center;
-      color: #fff; /* all text white by default */
     }
-    h1, h2, .big-text {
-      color: #fff; /* headings and main text white */
+    h1 {
+      font-size: 2rem;
+      margin: 20px 10px;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 10px 10px;
     }
     img {
       width: 220px;
       max-width: 70%;
-      height: 220px;
-      object-fit: cover;
-      border-radius: 50%; /* circular image */
+      height: 220px; /* Ensures perfect circle */
+      object-fit: cover; /* Makes sure image fills the circle */
+      border-radius: 50%; /* Makes the image circular */
       margin: 20px 0;
+      border: 4px solid #25d366; /* Optional border */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional shadow */
     }
     .big-text {
       font-size: 1.8rem;
       font-weight: bold;
       margin: 20px 15px;
-      color: #fff;
+      color: #222;
     }
     .privacy-link {
       font-size: 1rem;
-      color: #007bff; /* leave as is */
+      color: #007bff;
       text-decoration: underline;
       cursor: pointer;
       margin-bottom: 15px;
@@ -46,7 +52,7 @@
       margin: 20px 0 40px;
       padding: 14px 30px;
       background: #25d366;
-      color: #000;
+      color: #fff;
       font-size: 1.2rem;
       border: none;
       border-radius: 10px;
@@ -57,6 +63,7 @@
       background: #1ebe57;
     }
 
+    /* Make it mobile-friendly */
     @media screen and (max-width: 768px) {
       h1 {
         font-size: 1.5rem;
@@ -80,7 +87,7 @@
 </head>
 <body>
   <h1>As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh</h1>
-  <h2>Welcome To</h2>
+  <h2>Welcome to ChatApp</h2>
   <img src="logo.jpg" alt="ChatApp Logo">
 
   <div class="big-text">Take privacy with you, be yourself in every message</div>
