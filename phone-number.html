@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Number - ChatApp</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
+    padding: 30px 20px;
+  }
+
+  h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+
+  p.desc {
+    font-size: 1em;
+    color: #ccc;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #fff;
+  }
+
+  select, input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px;
+    font-size: 1em;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: none;
+    background: #111;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+  }
+
+  select option {
+    background: #111;
+    color: #fff;
+  }
+
+  select:focus, input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 0 10px #25d366;
+  }
+
+  .next-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+    color: #25d366;
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
+    transition: all 0.3s ease;
+  }
+
+  .next-btn:hover {
+    background: rgba(37, 211, 102, 0.1);
+    box-shadow: 0 0 15px #25d366, 0 4px 8px rgba(37, 211, 102, 0.5);
+    transform: translateY(-2px);
+  }
+
+  /* Popup */
+  .popup {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+  }
+
+  .popup-content {
+    background: #111;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+  }
+
+  .popup-content h2 { margin-bottom: 10px; }
+  .popup-content p { margin-bottom: 20px; }
+
+  .popup-content input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background: #222;
+    color: #fff;
+    font-size: 1em;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+  }
+
+  .popup-content input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 0 10px #25d366;
+  }
+
+  .popup-content button {
+    padding: 10px 20px;
+    margin: 5px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:1em;
+    background: #28a745;
+    color:#fff;
+    transition: all 0.3s ease;
+  }
+
+  .popup-content button:hover {
+    box-shadow: 0 0 10px #25d366;
+  }
+</style>
+</head>
+<body>
+
+<h1>Phone Number</h1>
+<p class="desc">You will receive a verification code. Carrier rates may apply.</p>
+
+<label for="country">Choose your country:</label>
+<select id="country">
+  <option value="+1">United States (+1)</option>
+  <option value="+44">United Kingdom (+44)</option>
+  <option value="+91">India (+91)</option>
+  <option value="+61">Australia (+61)</option>
+  <option value="+81">Japan (+81)</option>
+  <option value="+49">Germany (+49)</option>
+  <option value="+33">France (+33)</option>
+  <option value="+39">Italy (+39)</option>
+  <option value="+34">Spain (+34)</option>
+  <option value="+55">Brazil (+55)</option>
+  <option value="+7">Russia (+7)</option>
+  <option value="+27">South Africa (+27)</option>
+  <option value="+254">Kenya (+254)</option>
+  <option value="+234">Nigeria (+234)</option>
+  <option value="+82">South Korea (+82)</option>
+  <option value="+66">Thailand (+66)</option>
+  <option value="+52">Mexico (+52)</option>
+  <option value="+64">New Zealand (+64)</option>
+  <option value="+31">Netherlands (+31)</option>
+  <option value="+46">Sweden (+46)</option>
+  <option value="+41">Switzerland (+41)</option>
+  <option value="+970">Palestine (+970)</option>
+  <option value="+92">Pakistan (+92)</option>
+  <option value="+966">Saudi Arabia (+966)</option>
+</select>
+
+<label for="phoneNumber">Phone Number:</label>
+<input type="text" id="phoneNumber" placeholder="Country code + phone number">
+
+<button class="next-btn" onclick="nextStep()">Next</button>
+
+<!-- Popup for confirmation -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h2>Is this phone number correct?</h2>
+    <p id="popupNumber"></p>
+    <button onclick="showCodeInput()" class="allow-btn">OK</button>
+  </div>
+</div>
+
+<!-- Verification code input -->
+<div class="popup" id="codePopup">
+  <div class="popup-content">
+    <h2>Enter Verification Code</h2>
+    <p>A verification code will be sent to this number.</p>
+    <input type="text" id="codeInput" placeholder="Enter code here" maxlength="6">
+    <br>
+    <button onclick="verifyCode()" class="allow-btn">Verify</button>
+  </div>
+</div>
+
+<script>
+function nextStep() {
+  const number = document.getElementById('phoneNumber').value;
+  if(!number) {
+    alert("Please enter your phone number.");
+    return;
+  }
+  document.getElementById('popupNumber').textContent = number;
+  document.getElementById('popup').style.display = 'flex';
+}
+
+function showCodeInput() {
+  document.getElementById('popup').style.display = 'none';
+  document.getElementById('codePopup').style.display = 'flex';
+}
+
+function verifyCode() {
+  const code = document.getElementById('codeInput').value;
+  if(code.length === 0){
+    alert("Please enter the verification code.");
+    return;
+  }
+  alert("Verification successful!");
+  window.location.href = 'profile.html';
+}
+</script>
+
+</body>
+</html>
