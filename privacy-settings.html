@@ -189,26 +189,21 @@
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
 
-<div class="section-divider"></div>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Default Timer for New Chats</div>
-  </div>
-  <span>Off</span>
-  <span>On</span>
-</div>
-
-       <div class="section-divider"></div>
-<div class="setting-item">
-  <div class="setting-text">
-    <div class="setting-title">Default Timer for New Chats</div>
-  </div>
-        <div class="option-group">
-            <label><input type="radio" name="backup" value="on"> On</label>
-            <label><input type="radio" name="backup" value="off"> Off</label>
-        </div>
-        <button class="close-btn" onclick="closeBackupModal()">Done</button>
+<!-- Modal -->
+<div id="backupModal" class="modal-overlay" style="display: block;">
+  <div class="modal">
+    <div class="section-divider"></div>
+    <div class="setting-item">
+      <div class="setting-text">
+        <div class="setting-title">Default Timer for New Chats</div>
+      </div>
+      <div class="option-group">
+        <label><input type="radio" name="backup" value="on"> On</label>
+        <label><input type="radio" name="backup" value="off"> Off</label>
+      </div>
+      <button class="close-btn" onclick="closeBackupModal()">Done</button>
     </div>
+  </div>
 </div>
 
 <div class="section-divider"></div>
@@ -282,14 +277,18 @@
   document.querySelectorAll('input[name="findNumber"]').forEach(el => {
     el.addEventListener("change", function() {
       findText.textContent = this.value === "everyone"
-        ? "Anyone who has your number can see you are on Signal and can chat with you."
-        : "It will be harder for people to see you on Signal unless you message them or have an existing chat.";
+        ? "Anyone who has your number can see you are on GazaChat and can chat with you."
+        : "It will be harder for people to see you on GazaChat unless you message them or have an existing chat.";
     });
   });
 
   window.onclick = function(event) {
     if (event.target === modal) closeModal();
   }
+
+  function closeBackupModal() {
+  document.getElementById('backupModal').style.display = 'none';
+}
 </script>
 </body>
 </html>
