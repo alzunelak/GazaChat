@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome</title>
+  <title>Welcome - ChatApp</title>
   <style>
     body {
       margin: 0;
@@ -68,6 +68,7 @@
       margin-right: 8px;
     }
 
+    /* Mobile responsiveness */
     @media screen and (max-width: 768px) {
       .app-name { font-size: 2.5rem; margin: 30px 0 15px; }
       .big-text { font-size: 1.3rem; margin: 15px 10px; }
@@ -78,10 +79,10 @@
   </style>
 </head>
 <body>
-
-  <!-- Language selector -->
+  
+  <!-- Language selector top-left -->
   <div class="language-selector">
-    <label for="language">🌐 </label>
+    <label for="language">🌐 Language: </label>
     <select id="language" aria-label="Select Language">
       <option value="en">English</option>
       <option value="ar">Arabic</option>
@@ -95,12 +96,55 @@
     </select>
   </div>
 
-  <div class="app-name">GazaChat</div>
+  <div class="app-name">ChatApp</div>
   <div id="tagline" class="big-text">Simple And Private Messaging No Internet Needed.</div>
   <a id="privacyLink" href="privacy.html" class="privacy-link">Terms and Privacy</a>
   <button id="getStarted" class="btn" onclick="window.location.href='permission.html'">Get Started</button>
 
-  <script src="language.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const langSelect = document.getElementById("language");
+      const tagline = document.getElementById("tagline");
+      const privacyLink = document.getElementById("privacyLink");
+      const getStarted = document.getElementById("getStarted");
 
+      const defaultTexts = {
+        tagline: "Simple And Private Messaging No Internet Needed.",
+        privacy: "Terms and Privacy",
+        getStarted: "Get Started"
+      };
+
+      tagline.textContent = defaultTexts.tagline;
+      privacyLink.textContent = defaultTexts.privacy;
+      getStarted.textContent = defaultTexts.getStarted;
+
+      let translations = {};
+      fetch("translations.json")
+        .then(response => response.json())
+        .then(data => {
+          translations = data;
+          updateLanguage("en");
+        })
+        .catch(() => console.warn("Using default text."));
+
+      langSelect.addEventListener("change", () => {
+        updateLanguage(langSelect.value);
+      });
+
+      function updateLanguage(lang) {
+        if (!translations[lang]) {
+          tagline.textContent = defaultTexts.tagline;
+          privacyLink.textContent = defaultTexts.privacy;
+          getStarted.textContent = defaultTexts.getStarted;
+          document.documentElement.lang = "en";
+          return;
+        }
+        tagline.textContent = translations[lang].tagline;
+        privacyLink.textContent = translations[lang].privacy;
+        getStarted.textContent = translations[lang].getStarted || defaultTexts.getStarted;
+        document.documentElement.lang = lang;
+      }
+    });
+  </script>
 </body>
 </html>
