@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Permissions</title>
+
+  <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     body {
       margin: 0;
@@ -12,16 +15,6 @@
       background: #000;
       color: #fff;
       padding: 20px;
-      position: relative;
-    }
-
-    #selectedLangDisplay {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      color: #25d366;
-      font-size: 1rem;
-      font-weight: bold;
     }
 
     h1 {
@@ -47,11 +40,11 @@
     .emoji {
       font-size: 3em;
       margin-right: 15px;
-      color: #25d366; 
+      color: #25d366; /* Green icons */
       transition: transform 0.3s ease;
     }
     .section:hover .emoji {
-      transform: scale(1.1);
+      transform: scale(1.1); /* subtle hover */
     }
 
     .text-block {
@@ -73,6 +66,7 @@
       max-width: 500px;
     }
 
+    /* Next button style matching your .btn */
     .next-btn {
       margin: 20px 0 20px;
       padding: 14px 30px;
@@ -92,6 +86,7 @@
       background: rgba(37, 211, 102, 0.1);
     }
 
+    /* Popup overlay */
     .popup {
       display: none;
       position: fixed;
@@ -170,88 +165,48 @@
 </head>
 <body>
 
-  <div id="selectedLangDisplay"></div>
-
-  <h1 id="pageTitle">Allow Permission</h1>
-  <p class="subtitle" id="pageSubtitle">To help message people you know, GazaChat will request these permissions.</p>
+  <h1>Allow Permission</h1>
+  <p class="subtitle">To help message people you know, GazaChat will request these permissions.</p>
 
   <div class="section">
     <div class="emoji"><i class="fa-solid fa-bell"></i></div>
     <div class="text-block">
-      <div class="title" id="permNotification">Notification</div>
-      <div class="desc" id="descNotification">Get notified when new messages arrive.</div>
+      <div class="title">Notification</div>
+      <div class="desc">Get notified when new messages arrive.</div>
     </div>
   </div>
 
   <div class="section">
     <div class="emoji"><i class="fa-solid fa-user"></i></div>
     <div class="text-block">
-      <div class="title" id="permContact">Contact</div>
-      <div class="desc" id="descContact">Find people you know. Your contacts are encrypted and not visible to GazaChat servers.</div>
+      <div class="title">Contact</div>
+      <div class="desc">Find people you know. Your contacts are encrypted and not visible to GazaChat servers.</div>
     </div>
   </div>
 
   <div class="section">
     <div class="emoji"><i class="fa-solid fa-phone"></i></div>
     <div class="text-block">
-      <div class="title" id="permPhone">Phone Call</div>
-      <div class="desc" id="descPhone">Make registration easier and enable calling features.</div>
+      <div class="title">Phone Call</div>
+      <div class="desc">Make registration easier and enable calling features.</div>
     </div>
   </div>
 
-  <button class="next-btn" id="nextBtn" onclick="startPermissions()">Next</button>
+  <button class="next-btn" onclick="startPermissions()">Next</button>
 
+  <!-- Popup -->
   <div class="popup" id="popup">
     <div class="popup-content">
       <h2 id="popupTitle"></h2>
       <p id="popupText"></p>
       <div class="popup-btns">
-        <button class="allow-btn" onclick="handlePermission(true)" id="allowBtn">Allow</button>
-        <button class="deny-btn" onclick="handlePermission(false)" id="denyBtn">Deny</button>
+        <button class="allow-btn" onclick="handlePermission(true)">Allow</button>
+        <button class="deny-btn" onclick="handlePermission(false)">Deny</button>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const selectedLang = localStorage.getItem("selectedLanguage") || "en";
-      const langDisplay = document.getElementById("selectedLangDisplay");
-
-      const langNames = {
-        en: "English", ar: "Arabic", sw: "Swahili", hi: "Hindi", ur: "Urdu",
-        fr: "French", es: "Spanish", zh: "Chinese", de: "German"
-      };
-      langDisplay.textContent = "🌐 Language: " + (langNames[selectedLang] || "English");
-
-      fetch("translations.json")
-        .then(res => res.json())
-        .then(translations => {
-          const t = translations[selectedLang] || translations["en"];
-
-          document.getElementById("pageTitle").textContent = t.permissionsTitle || "Allow Permission";
-          document.getElementById("pageSubtitle").textContent = t.permissionsSubtitle || "To help message people you know, GazaChat will request these permissions.";
-
-          document.getElementById("permNotification").textContent = t.notificationTitle || "Notification";
-          document.getElementById("descNotification").textContent = t.notificationDesc || "Get notified when new messages arrive.";
-
-          document.getElementById("permContact").textContent = t.contactTitle || "Contact";
-          document.getElementById("descContact").textContent = t.contactDesc || "Find people you know. Your contacts are encrypted and not visible to GazaChat servers.";
-
-          document.getElementById("permPhone").textContent = t.phoneTitle || "Phone Call";
-          document.getElementById("descPhone").textContent = t.phoneDesc || "Make registration easier and enable calling features.";
-
-          document.getElementById("nextBtn").textContent = t.nextBtn || "Next";
-          document.getElementById("allowBtn").textContent = t.allowBtn || "Allow";
-          document.getElementById("denyBtn").textContent = t.denyBtn || "Deny";
-
-          permissions.forEach((perm, index) => {
-            perm.title = t.popupPermissions && t.popupPermissions[index] ? t.popupPermissions[index].title : perm.title;
-            perm.text = t.popupPermissions && t.popupPermissions[index] ? t.popupPermissions[index].text : perm.text;
-          });
-        })
-        .catch(err => console.warn("Translations not loaded, using defaults.", err));
-    });
-
     const permissions = [
       { title: "Allow Notifications", text: "Allow GazaChat to access your notifications?" },
       { title: "Allow Contacts", text: "Allow GazaChat to access your contacts?" },
@@ -280,5 +235,6 @@
       }
     }
   </script>
+
 </body>
-</html>
+</html> 
