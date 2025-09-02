@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GazaChat App</title>
+<title>GazaChat Green Theme</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 /* ==== GENERAL STYLES ==== */
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #000;
-  color: #fff;
+  background: #25D366; /* Main green background */
+  color: #000;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -28,7 +28,7 @@ body {
   background: #128C7E;
   padding: 10px;
   position: relative;
-  border-bottom: 1px solid #25D366;
+  border-bottom: 1px solid #0F7A63;
 }
 .header img {
   width: 50px;
@@ -36,7 +36,7 @@ body {
   border-radius: 50%;
   cursor: pointer;
   object-fit: cover;
-  border: 2px solid #25D366;
+  border: 2px solid #0F7A63;
 }
 .header-info h2 { margin: 0; font-size: 16px; cursor: pointer; color: #fff; }
 .header-actions button { background: none; border: none; cursor: pointer; font-size: 20px; color: #fff; }
@@ -48,11 +48,11 @@ body {
   flex-direction: column;
   padding: 10px;
   border-radius: 8px;
-  background: #111;
-  border: 1px solid #25D366;
+  background: #128C7E;
+  border: 1px solid #0F7A63;
 }
-.popup div { padding: 8px; cursor: pointer; border-radius: 6px; }
-.popup div:hover { background: #25D366; color: #000; }
+.popup div { padding: 8px; cursor: pointer; border-radius: 6px; color: #fff; }
+.popup div:hover { background: #0F7A63; }
 
 /* ==== CHAT BOX ==== */
 #chatBox {
@@ -64,17 +64,17 @@ body {
   flex-direction: column;
   gap: 6px;
 }
-.msg { max-width: 70%; padding: 10px 14px; border-radius: 18px; word-break: break-word; background: #222; color: #fff; align-self: flex-start; }
-.msg.self { background: #25D366; color: #000; align-self: flex-end; }
+.msg { max-width: 70%; padding: 10px 14px; border-radius: 18px; word-break: break-word; background: #128C7E; color: #fff; align-self: flex-start; }
+.msg.self { background: #075E44; color: #fff; align-self: flex-end; }
 .msg .meta { display: block; margin-top: 4px; font-size: 10px; color: #ccc; text-align: right; }
-.msg.system { background: #111; color: #fff; text-align: center; align-self: center; }
+.msg.system { background: #0F7A63; color: #fff; text-align: center; align-self: center; }
 
 /* ==== INPUT AREA ==== */
 #inputArea { display: flex; align-items: center; position: fixed; bottom: 10px; left: 10px; width: calc(100% - 20px); z-index: 100; }
-.input-box { display: flex; flex: 1; background: #111; border-radius: 25px; padding: 6px 10px; gap: 6px; box-shadow: 0 4px 8px rgba(37,211,102,0.3); }
-.input-box input { flex: 1; border: none; outline: none; font-size: 14px; background: #000; color: #fff; padding: 6px; border-radius: 20px; }
-.input-buttons button { background: transparent; border: none; font-size: 20px; cursor: pointer; color: #25D366; }
-#micBtn { width: 40px; height: 40px; border-radius: 50%; background: #25D366; color: #000; border: none; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-left: 6px; box-shadow: 0 4px 8px rgba(37,211,102,0.4); cursor: pointer; }
+.input-box { display: flex; flex: 1; background: #0F7A63; border-radius: 25px; padding: 6px 10px; gap: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+.input-box input { flex: 1; border: none; outline: none; font-size: 14px; background: #25D366; color: #000; padding: 6px; border-radius: 20px; }
+.input-buttons button { background: transparent; border: none; font-size: 20px; cursor: pointer; color: #fff; }
+#micBtn { width: 40px; height: 40px; border-radius: 50%; background: #075E44; color: #fff; border: none; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-left: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; }
 
 /* ==== EMOJI PICKER ==== */
 #emojiPicker {
@@ -82,8 +82,8 @@ body {
   bottom: 70px;
   left: 10px;
   width: 250px;
-  background: #111;
-  border: 1px solid #25D366;
+  background: #0F7A63;
+  border: 1px solid #075E44;
   border-radius: 8px;
   display: none;
   flex-wrap: wrap;
@@ -91,7 +91,7 @@ body {
   gap: 8px;
 }
 #emojiPicker span { font-size: 20px; cursor: pointer; }
-#emojiPicker span:hover { background: #25D366; color: #000; border-radius: 6px; padding: 2px; }
+#emojiPicker span:hover { background: #075E44; color: #fff; border-radius: 6px; padding: 2px; }
 
 /* ==== ATTACHMENTS ==== */
 #attachPopup {
@@ -99,8 +99,8 @@ body {
   bottom: 70px;
   left: 10px;
   width: 300px;
-  background: #111;
-  border: 1px solid #25D366;
+  background: #0F7A63;
+  border: 1px solid #075E44;
   border-radius: 8px;
   display: none;
   padding: 10px;
@@ -113,31 +113,31 @@ body {
   width: 80px;
   height: 80px;
   margin: 5px;
-  background: #222;
+  background: #128C7E;
   border-radius: 8px;
   cursor: pointer;
-  border: 1px solid #25D366;
+  border: 1px solid #075E44;
+  color: #fff;
 }
-#attachPopup .attachItem:hover { background: #25D366; color: #000; }
-#attachPopup .attachItem input { display: none; }
+#attachPopup .attachItem:hover { background: #075E44; }
 
 /* ==== FRIEND INFO PAGE ==== */
-#friendInfoPage { display: none; flex-direction: column; padding: 20px; background: #111; }
-.friendHeader img { border: 2px solid #25D366; border-radius: 50%; width: 120px; height: 120px; object-fit: cover; }
+#friendInfoPage { display: none; flex-direction: column; padding: 20px; background: #128C7E; }
+.friendHeader img { border: 2px solid #075E44; border-radius: 50%; width: 120px; height: 120px; object-fit: cover; }
 .friendHeader h2 { margin: 10px 0 20px 0; font-size: 22px; color: #fff; text-align: center; }
 .actionButtons { display: flex; justify-content: space-around; margin-bottom: 20px; }
-.actionButtons button { background: #222; border: 1px solid #25D366; border-radius: 8px; color: #fff; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; gap: 5px; cursor: pointer; width: 80px; }
-.actionButtons button:hover { background: #25D366; color: #000; }
+.actionButtons button { background: #075E44; border: none; border-radius: 8px; color: #fff; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; gap: 5px; cursor: pointer; width: 80px; }
+.actionButtons button:hover { background: #0F7A63; }
 
 /* ==== SETTINGS ==== */
 .settingsContainer { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 8px; }
-.settingsItem { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #222; border-radius: 8px; cursor: pointer; width: 100%; color: #fff; }
-.settingsItem:hover { background: #25D366; color: #000; }
-.blockBtn, .reportBtn { background: #222; border: 1px solid #25D366; border-radius: 8px; padding: 12px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; margin-top: 5px; }
-.blockBtn:hover, .reportBtn:hover { background: #25D366; color: #000; }
+.settingsItem { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #075E44; border-radius: 8px; cursor: pointer; width: 100%; color: #fff; }
+.settingsItem:hover { background: #0F7A63; }
+.blockBtn, .reportBtn { background: #075E44; border-radius: 8px; padding: 12px; color: #fff; cursor: pointer; width: 100%; font-weight: bold; margin-top: 5px; }
+.blockBtn:hover, .reportBtn:hover { background: #0F7A63; }
 
 /* ==== BUTTONS ==== */
-button.close-btn, .addFriendBtn { background: #25D366; color: #000; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; box-shadow: 0 4px 8px rgba(37,211,102,0.4); }
+button.close-btn, .addFriendBtn { background: #075E44; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 button.close-btn:hover, .addFriendBtn:hover { transform: translateY(-2px); }
 </style>
 </head>
