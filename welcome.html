@@ -91,44 +91,46 @@
   <option value="zh">Chinese</option>
   <option value="de">German</option>
 </select>
-  </div>
-  
-  <script>
-    const langSelect = document.getElementById("language");
-    const greeting = document.getElementById("greeting");
-    const welcome = document.getElementById("welcome");
-    const tagline = document.getElementById("tagline");
-    const privacyLink = document.getElementById("privacyLink");
-
-    let translations = {};
-
-    // Load translations from JSON file
-    fetch("translations.json")
-      .then(response => response.json())
-      .then(data => {
-        translations = data;
-        updateLanguage("en"); // Default
-      })
-      .catch(error => console.error("Error loading translations:", error));
-
-    langSelect.addEventListener("change", () => {
-      updateLanguage(langSelect.value);
-    });
-
-    function updateLanguage(lang) {
-      greeting.textContent = translations[lang].greeting;
-      welcome.textContent = translations[lang].welcome;
-      tagline.textContent = translations[lang].tagline;
-      privacyLink.textContent = translations[lang].privacy;
-    }
-
 const langSelect = document.getElementById("language");
+const greeting = document.getElementById("greeting");
+const welcome = document.getElementById("welcome");
+const tagline = document.getElementById("tagline");
+const privacyLink = document.getElementById("privacyLink");
 
+let translations = {};
+
+// Load translations from JSON file
+fetch("translations.json")
+  .then(response => response.json())
+  .then(data => {
+    translations = data;
+
+    // Load saved language from localStorage or default to English
+    const savedLang = localStorage.getItem("lang") || "en";
+    langSelect.value = savedLang;
+    updateLanguage(savedLang);
+  })
+  .catch(error => console.error("Error loading translations:", error));
+
+// When user selects a language
 langSelect.addEventListener("change", () => {
   const selectedLang = langSelect.value;
   localStorage.setItem("lang", selectedLang); // Save selection
+  updateLanguage(selectedLang);
 });
 
+// Function to update page content
+function updateLanguage(lang) {
+  if (!translations[lang]) return;
+
+  greeting.textContent = translations[lang].greeting;
+  welcome.textContent = translations[lang].welcome;
+  tagline.textContent = translations[lang].tagline;
+  privacyLink.textContent = translations[lang].privacy;
+
+  // Right-to-left for Arabic & Urdu
+  document.body.style.direction = (lang === "ar" || lang === "ur") ? "rtl" : "ltr";
+}
   </script>
 </body>
 </html>
