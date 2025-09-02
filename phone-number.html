@@ -41,14 +41,14 @@
     margin-bottom: 15px;
     border-radius: 8px;
     border: none;
-    background: #111;
+    background: #000;
     color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     transition: all 0.3s ease;
   }
 
   select option {
-    background: #111;
+    background: #000;
     color: #fff;
   }
 
@@ -57,10 +57,8 @@
     box-shadow: 0 0 10px #25d366;
   }
 
-  .next-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 20px;
+  /* Next and popup buttons */
+  .btn {
     padding: 12px 30px;
     font-size: 1.1em;
     border: none;
@@ -72,10 +70,16 @@
     transition: all 0.3s ease;
   }
 
-  .next-btn:hover {
+  .btn:hover {
     background: rgba(37, 211, 102, 0.1);
     box-shadow: 0 0 15px #25d366, 0 4px 8px rgba(37, 211, 102, 0.5);
     transform: translateY(-2px);
+  }
+
+  .next-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
   }
 
   /* Popup */
@@ -108,7 +112,7 @@
     padding: 10px;
     border-radius: 6px;
     border: none;
-    background: #222;
+    background: #000;
     color: #fff;
     font-size: 1em;
     margin-bottom: 15px;
@@ -121,21 +125,26 @@
     box-shadow: 0 0 10px #25d366;
   }
 
-  .popup-content button {
-    padding: 10px 20px;
-    margin: 5px;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    font-size:1em;
-    background: #28a745;
-    color:#fff;
-    transition: all 0.3s ease;
+  /* Success popup */
+  #successPopup {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
   }
 
-  .popup-content button:hover {
-    box-shadow: 0 0 10px #25d366;
+  #successPopup .popup-content {
+    background: #111;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
   }
+
 </style>
 </head>
 <body>
@@ -174,25 +183,33 @@
 <label for="phoneNumber">Phone Number:</label>
 <input type="text" id="phoneNumber" placeholder="Country code + phone number">
 
-<button class="next-btn" onclick="nextStep()">Next</button>
+<button class="btn next-btn" onclick="nextStep()">Next</button>
 
-<!-- Popup for confirmation -->
+<!-- Confirmation Popup -->
 <div class="popup" id="popup">
   <div class="popup-content">
     <h2>Is this phone number correct?</h2>
     <p id="popupNumber"></p>
-    <button onclick="showCodeInput()" class="allow-btn">OK</button>
+    <button class="btn" onclick="showCodeInput()">OK</button>
   </div>
 </div>
 
-<!-- Verification code input -->
+<!-- Verification Code Popup -->
 <div class="popup" id="codePopup">
   <div class="popup-content">
     <h2>Enter Verification Code</h2>
     <p>A verification code will be sent to this number.</p>
     <input type="text" id="codeInput" placeholder="Enter code here" maxlength="6">
     <br>
-    <button onclick="verifyCode()" class="allow-btn">Verify</button>
+    <button class="btn" onclick="verifyCode()">Verify</button>
+  </div>
+</div>
+
+<!-- Success Popup -->
+<div class="popup" id="successPopup">
+  <div class="popup-content">
+    <h2>Verification Successful!</h2>
+    <button class="btn" onclick="goToProfile()">Continue</button>
   </div>
 </div>
 
@@ -218,7 +235,11 @@ function verifyCode() {
     alert("Please enter the verification code.");
     return;
   }
-  alert("Verification successful!");
+  document.getElementById('codePopup').style.display = 'none';
+  document.getElementById('successPopup').style.display = 'flex';
+}
+
+function goToProfile() {
   window.location.href = 'profile.html';
 }
 </script>
