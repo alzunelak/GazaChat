@@ -1,50 +1,47 @@
 {
-  "welcome": {
-    "en": {
-      "tagline": "Simple And Private Messaging No Internet Needed.",
-      "privacy": "Terms and Privacy",
-      "getStarted": "Get Started"
-    },
-    "ar": {
-      "tagline": "رسائل بسيطة وخاصة دون الحاجة للإنترنت",
-      "privacy": "الشروط والخصوصية",
-      "getStarted": "ابدأ الآن"
-    },
-    "sw": {
-      "tagline": "Ujumbe rahisi na wa faragha bila mtandao",
-      "privacy": "Masharti na Faragha",
-      "getStarted": "Anza Sasa"
-    },
-    "hi": {
-      "tagline": "सरल और निजी संदेश, बिना इंटरनेट के",
-      "privacy": "नियम और गोपनीयता",
-      "getStarted": "शुरू करें"
-    },
-    "ur": {
-      "tagline": "سادہ اور نجی پیغام رسانی بغیر انٹرنیٹ کے",
-      "privacy": "شرائط اور رازداری",
-      "getStarted": "شروع کریں"
-    },
-    "fr": {
-      "tagline": "Messagerie simple et privée sans internet",
-      "privacy": "Conditions et Confidentialité",
-      "getStarted": "Commencer"
-    },
-    "es": {
-      "tagline": "Mensajería simple y privada sin internet",
-      "privacy": "Términos y Privacidad",
-      "getStarted": "Comenzar"
-    },
-    "zh": {
-      "tagline": "简单且私密的消息传递，无需互联网",
-      "privacy": "条款和隐私",
-      "getStarted": "开始"
-    },
-    "de": {
-      "tagline": "Einfache und private Nachrichten ohne Internet",
-      "privacy": "Bedingungen und Datenschutz",
-      "getStarted": "Loslegen"
-    }
+  "en": {
+    "tagline": "Simple And Private Messaging No Internet Needed.",
+    "privacy": "Terms and Privacy",
+    "getStarted": "Get Started"
   },
- 
-  
+  "ar": {
+    "tagline": "رسائل بسيطة وخاصة دون الحاجة للإنترنت",
+    "privacy": "الشروط والخصوصية",
+    "getStarted": "ابدأ الآن"
+  },
+  "sw": {
+    "tagline": "Ujumbe rahisi na wa faragha bila mtandao",
+    "privacy": "Masharti na Faragha",
+    "getStarted": "Anza Sasa"
+  },
+  "hi": {
+    "tagline": "सरल और निजी संदेश, बिना इंटरनेट के",
+    "privacy": "नियम और गोपनीयता",
+    "getStarted": "शुरू करें"
+  },
+  "ur": {
+    "tagline": "سادہ اور نجی پیغام رسانی بغیر انٹرنیٹ کے",
+    "privacy": "شرائط اور رازداری",
+    "getStarted": "شروع کریں"
+  },
+  "fr": {
+    "tagline": "Messagerie simple et privée sans internet",
+    "privacy": "Conditions et Confidentialité",
+    "getStarted": "Commencer"
+  },
+  "es": {
+    "tagline": "Mensajería simple y privada sin internet",
+    "privacy": "Términos y Privacidad",
+    "getStarted": "Comenzar"
+  },
+  "zh": {
+    "tagline": "简单且私密的消息传递，无需互联网",
+    "privacy": "条款和隐私",
+    "getStarted": "开始"
+  },
+  "de": {
+    "tagline": "Einfache und private Nachrichten ohne Internet",
+    "privacy": "Bedingungen und Datenschutz",
+    "getStarted": "Loslegen"
+  }
+}
