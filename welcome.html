@@ -74,13 +74,14 @@
   <h1 id="greeting">As-salāmu ʿalaykum wa raḥmatullāhi wa barakātuh</h1>
   <h2 id="welcome">Welcome To</h2>
   <img src="logo.jpg" alt="ChatApp Logo">
-  <div id="tagline" class="big-text">Take privacy with you, be yourself in every message</div>
+  <div id="tagline" class="big-text">Simple And Private Messaging No Internet Needed</div>
   <a id="privacyLink" href="privacy.html" class="privacy-link">Terms and Privacy</a>
   <button class="btn" onclick="window.location.href='permission.html'">Get Started</button>
 
   <div class="language-selector">
-    <label for="language">🌐Languages: </label>
+    <label for="language">🌐 Language: </label>
     <select id="language">
+      <select id="language">
   <option value="en">English</option>
   <option value="ar">Arabic</option>
   <option value="sw">Swahili</option>
@@ -90,47 +91,37 @@
   <option value="es">Spanish</option>
   <option value="zh">Chinese</option>
   <option value="de">German</option>
-</select>
-const langSelect = document.getElementById("language");
-const greeting = document.getElementById("greeting");
-const welcome = document.getElementById("welcome");
-const tagline = document.getElementById("tagline");
-const privacyLink = document.getElementById("privacyLink");
+    </select>
+  </div>
 
-let translations = {};
+  <script>
+    const langSelect = document.getElementById("language");
+    const greeting = document.getElementById("greeting");
+    const welcome = document.getElementById("welcome");
+    const tagline = document.getElementById("tagline");
+    const privacyLink = document.getElementById("privacyLink");
 
-// Load translations from JSON file
-fetch("translations.json")
-  .then(response => response.json())
-  .then(data => {
-    translations = data;
+    let translations = {};
 
-    // Load saved language from localStorage or default to English
-    const savedLang = localStorage.getItem("lang") || "en";
-    langSelect.value = savedLang;
-    updateLanguage(savedLang);
-  })
-  .catch(error => console.error("Error loading translations:", error));
+    // Load translations from JSON file
+    fetch("translations.json")
+      .then(response => response.json())
+      .then(data => {
+        translations = data;
+        updateLanguage("en"); // Default
+      })
+      .catch(error => console.error("Error loading translations:", error));
 
-// When user selects a language
-langSelect.addEventListener("change", () => {
-  const selectedLang = langSelect.value;
-  localStorage.setItem("lang", selectedLang); // Save selection
-  updateLanguage(selectedLang);
-});
+    langSelect.addEventListener("change", () => {
+      updateLanguage(langSelect.value);
+    });
 
-// Function to update page content
-function updateLanguage(lang) {
-  if (!translations[lang]) return;
-
-  greeting.textContent = translations[lang].greeting;
-  welcome.textContent = translations[lang].welcome;
-  tagline.textContent = translations[lang].tagline;
-  privacyLink.textContent = translations[lang].privacy;
-
-  // Right-to-left for Arabic & Urdu
-  document.body.style.direction = (lang === "ar" || lang === "ur") ? "rtl" : "ltr";
-}
+    function updateLanguage(lang) {
+      greeting.textContent = translations[lang].greeting;
+      welcome.textContent = translations[lang].welcome;
+      tagline.textContent = translations[lang].tagline;
+      privacyLink.textContent = translations[lang].privacy;
+    }
   </script>
 </body>
 </html>
