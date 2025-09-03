@@ -13,15 +13,6 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
 .header-info h2{margin:0;font-size:16px;cursor:pointer;}
 .header-info #members{font-size:12px;color:#000;}
- 
-/* Icon styling */
-.icon {
-  font-size: 24px;   /* increase icon size */
-  cursor: pointer;
-  margin-left: 19px; /* space between icons */
-  color: #fff;
-}
-
 #chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
 .msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#000;align-self:flex-start;position:relative;word-break:break-word;}
 .msg.self{background:#000;align-self:flex-end;}
@@ -34,7 +25,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 .groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#000;color:#fff;margin-bottom:10px;border-radius:10px;position:relative;}
 .groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
 .groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
-.backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;color:#fff;}
+.backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;color:#000;}
 .actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
 .actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#000;color:#fff;border:1px solid #eee;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);border-radius:8px;cursor:pointer;}
 .actionButtons i{font-size:20px;margin-bottom:5px;}
@@ -54,11 +45,11 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#000;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
-.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:white;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
+.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:black;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
 .popup h3{margin-top:0;}
 .popup button.closeBtn{margin-top:10px;float:right;}
 .popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
-.popup button.unblockBtn{background:#000;color:#white;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
+.popup button.unblockBtn{background:#25D366;color:#black;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
 .settingsItem {
   display: flex;
   align-items: center;
@@ -120,8 +111,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 .phone .screen {
   width: 90%;
   height: 80%;
-  background: #000;
-  color:#fff;
+  background: #fff;
   border-radius: 5px;
 }
 
@@ -148,11 +138,19 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* ==== MODAL STYLES ==== */ 
-  .modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%; background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;} 
-  .modal-content {background:#000;color:#fff;padding:20px;border-radius:12px;width:300px; box-shadow:0 6px 18px rgba(0,0,0,0.3);} 
-  .option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;} 
-  .close-btn {color:#fff;border:none;padding:10px 15px; border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
+/* Modal styling */
+.encryptionContent {
+  text-align: center;
+}
+
+  /* ==== MODAL STYLES ==== */
+.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;}
+.modal-content {background:#fff;padding:20px;border-radius:12px;width:300px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.3);}
+.option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;}
+.close-btn {background:#128C7E;color:#fff;border:none;padding:10px 15px;
+  border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
 
 /* SWITCH STYLE */
 .switch {position:relative;display:inline-block;width:50px;height:24px;}
@@ -171,8 +169,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   position:absolute;
   right:10px;
   top:60px;
-  background:#000;
-  color:#fff;
+  background:#fff;
   border:1px solid #ccc;
   border-radius:6px;
   box-shadow:0 2px 6px rgba(0,0,0,0.2);
@@ -229,11 +226,11 @@ input:checked + .slider:before {transform:translateX(26px);}
       <h2 id="groupName">My Group</h2>
       <div id="members"></div>
     </div>
-     <!-- Icons only, no wrapper -->
+    <div class="header-actions">
       <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
     </div>
-</div>
+  </div>
 
 
   
@@ -283,7 +280,7 @@ input:checked + .slider:before {transform:translateX(26px);}
     </div>
   </div>
   <!-- SETTINGS FEATURES SECTION -->
-<div class="settingsContainer" style="margin-top:20px; gap:10px;background:#000;color:#fff; display:flex; flex-direction:column;">
+<div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
 <button class="settingsItem" onclick="openEncryptionPopup()">
   <span>End-to-End Encryption</span>
   <i class="fa-solid fa-circle-info"></i>
