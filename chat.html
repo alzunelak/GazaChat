@@ -56,37 +56,76 @@ color: #fff; /* white text */height:100vh;display:flex;flex-direction:column;}
 .actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
 .actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#000;color: #fff; /* white text */border:1px solid #25d366;border-radius:8px;cursor:pointer;}
 .actionButtons i{font-size:20px;margin-bottom:5px;}
-.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#000;color: #fff; /* white text */border-radius:8px;margin-bottom:15px;}
-.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#000;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
-.settingsContainer button:hover{background:#000;}
-.settingsContainer i{color:black;font-size:18px;}
-.settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
-
-  .settingsContainer {
+/* SETTINGS CONTAINERS */
+.settingsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
   background: #000;       /* black background */
   color: #fff;            /* white text */
+  border: 1px solid #000; /* black border */
   box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4); /* green glow */
-  border-radius: 8px;     /* rounded corners */
-  padding: 10px;          /* optional padding */
-  margin-bottom: 15px;    /* spacing between containers */
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
-  .addFriendBtn {
+
+/* SETTINGS ITEMS (buttons inside container) */
+.settingsContainer button.settingsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 6px;
   background: #000;       /* black background */
   color: #fff;            /* white text */
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.settingsContainer button.settingsItem:hover {
+  box-shadow: 0 0 10px #25d366;
+}
+
+/* ADD GROUP BUTTON */
+.addFriendBtn {
+  background: #000;       
+  color: #fff;            
+  border: 1px solid #25d366; 
   box-shadow: 0 2px 6px rgba(37, 211, 102, 0.4);
   border-radius: 6px;
   padding: 6px 12px;
   cursor: pointer;
 }
 
+.addFriendBtn:hover {
+  box-shadow: 0 0 10px #25d366;
+}
+
+/* BLOCK & REPORT BUTTONS */
 .blockBtn, .reportBtn {
-  background: #000;       /* black background */
-  color: #fff;            /* white text */
-  box-shadow: 0 2px 6px rgba(37, 211, 102, 0.4); /* green glow */
+  background: #000;       
+  color: red;            
+  border: 1px solid #25d366; 
+  box-shadow: 0 2px 6px rgba(37, 211, 102, 0.4); 
   border-radius: 8px;
   font-weight: bold;
   padding: 12px;
+  cursor: pointer;
 }
+
+.blockBtn:hover, .reportBtn:hover {
+  box-shadow: 0 0 10px #25d366;
+}
+
+/* ICONS inside buttons */
+.settingsContainer i, .addFriendBtn i, .blockBtn i, .reportBtn i {
+  color: red; /* red */
+}
+
 
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
 .settingsItem {
