@@ -6,7 +6,6 @@
 <title>GazaChat Group</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-
 /* === GLOBAL === */
 body {
   margin:0; font-family:'Segoe UI',Arial,sans-serif;
@@ -97,86 +96,6 @@ input:checked + .slider:before{transform:translateX(26px);}
   #inputArea{bottom:20px;}
   #chatBox{margin-bottom:120px;}
 }
-
-
-/* Make Mesh Network text small but keep height same */
-.settingsItem small {
-  font-size: 14px;
-  color: #555;
-}
-
-/* Keep Chat Lock switch aligned */
-.settingsItem label.switch {
-  margin: 0;
-}
-
-/* Make Mesh Network fully clickable with same height */
-.settingsItem:last-child {
-  cursor: default;
-  justify-content: flex-start;
-}
-
-
-  /* Phones animation */
-.phoneAnimation {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-  height: 100px;
-  gap: 40px;
-}
-
-.phone {
-  width: 50px;
-  height: 90px;
-  border: 2px solid #128C7E;
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #e6f7f1;
-  animation: bounce 1.5s infinite alternate;
-}
-
-.phone .screen {
-  width: 90%;
-  height: 80%;
-  background: #fff;
-  border-radius: 5px;
-}
-
-/* Bounce animation */
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0); }
-}
-
-/* Check mark animation */
-.checkMark {
-  position: absolute;
-  font-size: 30px;
-  color: #25D366;
-  opacity: 0;
-  transform: scale(0);
-  animation: appear 2s forwards 1.5s;
-}
-
-@keyframes appear {
-  0% { opacity: 0; transform: scale(0); }
-  50% { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-/* Modal styling */
-.encryptionContent {
-  text-align: center;
-}
-    
 </style>
 </head>
 <body>
@@ -195,15 +114,12 @@ input:checked + .slider:before{transform:translateX(26px);}
     </div>
   </div>
 
+  <div id="menuPopup" class="popupMenu">
+    <div class="menuItem" id="viewInfo"><i class="fa-solid fa-circle-info"></i> View Info</div>
+    <div class="menuItem" id="muteChat"><i class="fa-solid fa-bell-slash"></i> Mute</div>
+    <div class="menuItem" id="deleteChat"><i class="fa-solid fa-trash"></i> Delete Chat</div>
+  </div>
 
-  
-<div id="menuPopup" class="popupMenu">
-  <div class="menuItem" id="viewInfo"><i class="fa-solid fa-circle-info"></i> View Info</div>
-  <div class="menuItem" id="muteChat"><i class="fa-solid fa-bell-slash"></i> Mute</div>
-  <div class="menuItem" id="deleteChat"><i class="fa-solid fa-trash"></i> Delete Chat</div>
-</div>
-
-  
   <div id="chatBox"></div>
   <div id="inputArea">
     <div class="input-box">
@@ -217,8 +133,6 @@ input:checked + .slider:before{transform:translateX(26px);}
   </div>
 </div>
 
-
-
 <!-- ATTACHMENT MENU -->
 <div id="attachmentMenu" class="popupMenu" style="top:auto; bottom:60px; right:10px; display:none; width:200px;">
   <div class="menuItem" id="attachGallery"><i class="fa-solid fa-image"></i> Gallery</div>
@@ -229,7 +143,14 @@ input:checked + .slider:before{transform:translateX(26px);}
   <div class="menuItem" id="attachLocation"><i class="fa-solid fa-location-dot"></i> Location</div>
 </div>
 
-  
+<!-- Hidden Inputs for Attachments -->
+<input type="file" id="galleryInput" accept="image/*" style="display:none">
+<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
+<input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt" style="display:none">
+<input type="file" id="audioInput" accept="audio/*" style="display:none">
+<input type="file" id="contactInput" style="display:none">
+<input type="file" id="locationInput" style="display:none">
+
 <!-- GROUP INFO PAGE -->
 <div id="groupInfoPage" style="display:none;">
   <div class="groupHeader">
@@ -242,75 +163,31 @@ input:checked + .slider:before{transform:translateX(26px);}
       <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
     </div>
   </div>
-  <!-- SETTINGS FEATURES SECTION -->
-<div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
-<button class="settingsItem" onclick="openEncryptionPopup()">
-  <span>End-to-End Encryption</span>
-  <i class="fa-solid fa-circle-info"></i>
-</button>
-
-<!-- END-TO-END ENCRYPTION POPUP WITH ANIMATION -->
-<div id="encryptionModal" class="modal">
-  <div class="modal-content encryptionContent">
-    <h2>End-to-End Encryption</h2>
-    <p>Messages and calls in this group are secured with end-to-end encryption.</p>
-
-    <div class="phoneAnimation">
-      <div class="phone leftPhone">
-        <div class="screen"></div>
-      </div>
-      <div class="phone rightPhone">
-        <div class="screen"></div>
-      </div>
-      <div class="checkMark">&#10003;</div>
+  <!-- SETTINGS AND MEMBERS -->
+  <div class="settingsContainer">
+    <button class="settingsItem" onclick="openEncryptionPopup()">
+      <span>End-to-End Encryption</span>
+      <i class="fa-solid fa-circle-info"></i>
+    </button>
+    <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
+      <span>Mesh Network</span>
+      <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
     </div>
-
-    <p style="margin-top:20px;">
-      Only participants in this chat can read or listen to them.
-      No one outside this chat, not even the app, can access your messages.
-    </p>
-
-    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
-  </div>
-</div>
-
-  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
-    <span>Mesh Network</span>
-    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
-  </div>
-  
-  <div class="settingsItem">
-    <span>Chat Lock</span>
-    <label class="switch">
-      <input type="checkbox" id="chatLockToggle">
-      <span class="slider"></span>
-    </label>
-  </div>
-  
-<!-- Disappearing Messages button with status text -->
-<div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:pointer;">
-  <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:none; padding:0;">
-    <span>Disappearing Messages</span>
-    <i class="fa-solid fa-clock"></i>
-  </button>
-  <small id="disappearStatus" style="color:#555; margin-top:4px;">Off</small>
-</div>
-
-<!-- POPUP MODAL -->
-<div id="disappearModal" class="modal">
-  <div class="modal-content">
-    <h2>Disappearing Messages</h2>
-    <div class="option-group">
-      <label><input type="radio" name="disappear" value="off" checked> Off</label>
-      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
-      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
-      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
+    <div class="settingsItem">
+      <span>Chat Lock</span>
+      <label class="switch">
+        <input type="checkbox" id="chatLockToggle">
+        <span class="slider"></span>
+      </label>
     </div>
-    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
+    <div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:pointer;">
+      <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:none; padding:0;">
+        <span>Disappearing Messages</span>
+        <i class="fa-solid fa-clock"></i>
+      </button>
+      <small id="disappearStatus" style="color:#555; margin-top:4px;">Off</small>
+    </div>
   </div>
-</div>
-</div>
- 
 
   <div class="container">
     <div class="membersHeader">
@@ -319,594 +196,66 @@ input:checked + .slider:before{transform:translateX(26px);}
     </div>
     <div id="groupMembersList"></div>
   </div>
-
-  <div class="container" id="groupLinks">
-    <button id="showGroupLink">Group Link</button>
-    <button id="showBlockedUsers">Blocked Users</button>
-    <button id="showRequestInvite">Request / Invite</button>
-  </div>
-
-  <div class="container actionBox">
-    <button><i class="fa-solid fa-sign-out"></i> Leave Group</button>
-    <button><i class="fa-solid fa-ban"></i> Block Group</button>
-    <button><i class="fa-solid fa-flag"></i> Report Group</button>
-    <button><i class="fa-solid fa-trash"></i> Delete Group</button>
-  </div>
-
-  <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
-<!-- POPUPS -->
-<div id="linkPopup" class="popup">
-  <h3>Invite Link</h3>
-  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
-  <button onclick="copyLink()">Copy</button>
-  <button class="closeBtn" onclick="closePopup()">Close</button>
-</div>
-
-<div id="blockedPopup" class="popup">
-  <h3>Blocked Users</h3>
-  <div id="blockedList"></div>
-  <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
+<!-- MODALS -->
+<div id="encryptionModal" class="modal">
+  <div class="modal-content encryptionContent">
+    <h2>End-to-End Encryption</h2>
+    <p>Messages and calls in this group are secured with end-to-end encryption.</p>
+    <div class="phoneAnimation">
+      <div class="phone leftPhone"><div class="screen"></div></div>
+      <div class="phone rightPhone"><div class="screen"></div></div>
+      <i class="fa-solid fa-check checkMark"></i>
+    </div>
+    <button class="close-btn" onclick="closeEncryptionPopup()">OK</button>
+  </div>
 </div>
 
 <script>
-// ===== STATE =====
-let myName = "You"; // current user
-let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "-1");
-let currentGroup = groups[currentGroupIndex];
+const chatBox = document.getElementById('chatBox');
+const msgInput = document.getElementById('msgInput');
+const micBtn = document.getElementById('micBtn');
+const plusBtn = document.getElementById('plusBtn');
+const attachmentMenu = document.getElementById('attachmentMenu');
 
-if(!currentGroup){
-  alert("No group selected. Redirecting...");
-  window.location.href = "groups.html";
-}
-
-let currentUser = myName;
-let isAdmin = (currentGroup.admin === myName);
-let currentGroupMembers = currentGroup.members.map(m=>m.name);
-let blockedMembers = currentGroup.blocked || [];
-let messages = currentGroup.messages || [];
-
-const callContainer = document.getElementById("callContainer");
-
-// ===== VIDEO CALL =====
-document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-
-    // Create video container
-    const container = document.createElement("div");
-    container.style.position = "relative";
-    container.style.border = "2px solid #128C7E";
-    container.style.borderRadius = "10px";
-    container.style.marginTop = "10px";
-    container.style.width = "100%";
-    container.style.maxHeight = "400px";
-    container.style.background = "#000";
-
-    // Video element
-    const videoEl = document.createElement("video");
-    videoEl.srcObject = stream;
-    videoEl.autoplay = true;
-    videoEl.style.width = "100%";
-    videoEl.style.height = "300px";
-    container.appendChild(videoEl);
-
-    // Close button
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "End Call";
-    closeBtn.style.position = "absolute";
-    closeBtn.style.top = "5px";
-    closeBtn.style.right = "5px";
-    closeBtn.style.padding = "5px 10px";
-    closeBtn.style.background = "#25D366";
-    closeBtn.style.color = "#fff";
-    closeBtn.style.border = "none";
-    closeBtn.style.borderRadius = "5px";
-    closeBtn.style.cursor = "pointer";
-    closeBtn.onclick = () => {
-      stream.getTracks().forEach(track => track.stop());
-      container.remove();
-    };
-    container.appendChild(closeBtn);
-
-    document.getElementById("groupInfoPage").appendChild(container);
-
-  } catch (err) {
-    alert("Cannot access camera/microphone. Check permissions.");
-    console.error(err);
-  }
-};
-
-// ===== AUDIO CALL =====
-document.querySelector(".actionButtons button:nth-child(2)").onclick = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    // Create audio container
-    const container = document.createElement("div");
-    container.style.position = "relative";
-    container.style.border = "2px solid #128C7E";
-    container.style.borderRadius = "10px";
-    container.style.marginTop = "10px";
-    container.style.padding = "10px";
-    container.style.background = "#f1f1f1";
-
-    // Audio element
-    const audioEl = document.createElement("audio");
-    audioEl.srcObject = stream;
-    audioEl.autoplay = true;
-    container.appendChild(audioEl);
-
-    // Close button
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "End Call";
-    closeBtn.style.position = "absolute";
-    closeBtn.style.top = "5px";
-    closeBtn.style.right = "5px";
-    closeBtn.style.padding = "5px 10px";
-    closeBtn.style.background = "#25D366";
-    closeBtn.style.color = "#fff";
-    closeBtn.style.border = "none";
-    closeBtn.style.borderRadius = "5px";
-    closeBtn.style.cursor = "pointer";
-    closeBtn.onclick = () => {
-      stream.getTracks().forEach(track => track.stop());
-      container.remove();
-    };
-    container.appendChild(closeBtn);
-
-    document.getElementById("groupInfoPage").appendChild(container);
-
-  } catch (err) {
-    alert("Cannot access microphone. Check permissions.");
-    console.error(err);
-  }
-};
-
-// ===== SEARCH MESSAGES =====
-document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
-  const keyword = prompt("Enter keyword to search in messages:");
-  if (!keyword) return;
-
-  chatBox.innerHTML = "";
-  messages.forEach(m => {
-    if (blockedMembers.includes(m.user)) return;
-    if (m.text.toLowerCase().includes(keyword.toLowerCase())) {
-      const div = document.createElement("div");
-      div.className = "msg" + (m.user === currentUser ? " self" : "");
-      div.innerHTML = `<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
-      chatBox.appendChild(div);
-    }
-  });
-
-  // Add reset button
-  if (!document.getElementById("resetSearchBtn")) {
-    const resetBtn = document.createElement("button");
-    resetBtn.textContent = "Reset Search";
-    resetBtn.id = "resetSearchBtn";
-    resetBtn.style.margin = "10px";
-    resetBtn.style.padding = "5px 10px";
-    resetBtn.style.background = "#128C7E";
-    resetBtn.style.color = "#fff";
-    resetBtn.style.border = "none";
-    resetBtn.style.borderRadius = "5px";
-    resetBtn.style.cursor = "pointer";
-    resetBtn.onclick = () => {
-      renderMessages();
-      resetBtn.remove();
-    };
-    chatBox.parentElement.insertBefore(resetBtn, chatBox);
-  }
-};
-
-    
-
-// ===== MENU BUTTON TOGGLE =====
-const menuBtn = document.getElementById("menuBtn");
-const menuPopup = document.getElementById("menuPopup");
-
-menuBtn.addEventListener("click", (e)=>{
-  e.stopPropagation();
-  menuPopup.style.display = (menuPopup.style.display==="block") ? "none" : "block";
+plusBtn.addEventListener('click', () => {
+  attachmentMenu.style.display = attachmentMenu.style.display==='flex'?'none':'flex';
 });
 
-// Close menu when clicking outside
-document.addEventListener("click", ()=> menuPopup.style.display="none");
+// Attachment handlers
+document.getElementById('attachGallery').onclick = () => document.getElementById('galleryInput').click();
+document.getElementById('attachCamera').onclick = () => document.getElementById('cameraInput').click();
+document.getElementById('attachDocument').onclick = () => document.getElementById('documentInput').click();
+document.getElementById('attachAudio').onclick = () => document.getElementById('audioInput').click();
+document.getElementById('attachContact').onclick = () => document.getElementById('contactInput').click();
+document.getElementById('attachLocation').onclick = () => document.getElementById('locationInput').click();
 
-// ===== MENU ITEM ACTIONS =====
-document.getElementById("viewInfo").onclick = ()=>{
-  openGroupInfo();
-  menuPopup.style.display="none";
+// Encryption popup
+function openEncryptionPopup(){document.getElementById('encryptionModal').style.display='flex';}
+function closeEncryptionPopup(){document.getElementById('encryptionModal').style.display='none';}
+
+// Group info navigation
+document.getElementById('viewInfo').onclick = () => {
+  document.getElementById('chatPage').style.display='none';
+  document.getElementById('groupInfoPage').style.display='flex';
 };
-
-document.getElementById("muteChat").onclick = ()=>{
-  alert("Chat muted.");
-  menuPopup.style.display="none";
-};
-
-document.getElementById("deleteChat").onclick = ()=>{
-  if(confirm("Delete all messages?")){
-    messages = [];
-    currentGroup.messages = [];
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
-    renderMessages();
-  }
-  menuPopup.style.display="none";
-};
-
-
-
-
-const plusBtn = document.getElementById("plusBtn");
-const attachmentMenu = document.getElementById("attachmentMenu");
-
-// Toggle attachment menu
-plusBtn.addEventListener("click", e=>{
-  e.stopPropagation();
-  attachmentMenu.style.display = (attachmentMenu.style.display==="block") ? "none" : "block";
-});
-document.addEventListener("click", ()=> attachmentMenu.style.display="none");
-
-// Trigger file/location inputs
-document.getElementById("attachGallery").onclick = () => { document.getElementById("galleryInput").click(); };
-document.getElementById("attachCamera").onclick = () => { document.getElementById("cameraInput").click(); };
-document.getElementById("attachDocument").onclick = () => { document.getElementById("documentInput").click(); };
-document.getElementById("attachAudio").onclick = () => { document.getElementById("audioInput").click(); };
-document.getElementById("attachContact").onclick = () => { document.getElementById("contactInput").click(); };
-document.getElementById("attachLocation").onclick = () => { document.getElementById("locationInput").click(); };
-
-
-
- // ===== AUDIO RECORDING =====
-let mediaRecorder;
-let audioChunks = [];
-const micBtn = document.getElementById("micBtn");
-
-micBtn.addEventListener("mousedown", startRecording);   // PC press
-micBtn.addEventListener("touchstart", startRecording);  // Mobile press
-micBtn.addEventListener("mouseup", stopRecording);      // PC release
-micBtn.addEventListener("touchend", stopRecording);     // Mobile release
-
-function startRecording() {
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      mediaRecorder = new MediaRecorder(stream);
-      audioChunks = [];
-      mediaRecorder.start();
-      mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-    })
-    .catch(err => {
-      console.error("Mic error:", err);
-      alert("Cannot access microphone. Check permissions or use HTTPS/localhost.");
-    });
-}
-
-
-function stopRecording() {
-  if (!mediaRecorder) return;
-
-  mediaRecorder.stop();
-  mediaRecorder.onstop = () => {
-    const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-    const audioUrl = URL.createObjectURL(audioBlob);
-
-    // create message with audio
-    const newMsg = {
-      id: uid(),
-      text: "",
-      audio: audioUrl,   // <-- store audio
-      self: true,
-      user: currentUser,
-      time: new Date().toLocaleString()
-    };
-    messages.push(newMsg);
-
-    // Save
-    currentGroup.messages = messages;
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
-
-    renderMessages();
-  };
-}
-function renderMessages() {
-  chatBox.innerHTML = "";
-  messages.forEach(m => {
-    if (blockedMembers.includes(m.user)) return;
-    const div = document.createElement("div");
-    div.className = "msg" + (m.user === currentUser ? " self" : "");
-
-    if (m.audio) {
-      div.innerHTML = `
-        <div class="content"><b>${m.user}:</b> 
-          <audio controls src="${m.audio}"></audio>
-        </div>
-        <div class="meta">${m.time}</div>`;
-    } else {
-      div.innerHTML = `
-        <div class="content"><b>${m.user}:</b> ${m.text}</div>
-        <div class="meta">${m.time}</div>`;
-    }
-    chatBox.appendChild(div);
-  });
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-
-  
-  
-// ===== CHAT =====
-const chatBox = document.getElementById("chatBox");
-const msgInput = document.getElementById("msgInput");
-
-function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-
-msgInput.addEventListener("keydown", e => {
-  if(e.key==="Enter"){
-    e.preventDefault();
-    const txt=msgInput.value.trim();
-    if(!txt) return;
-    const newMsg = {id:uid(), text:txt, self:true, user:currentUser, time:new Date().toLocaleString()};
-    messages.push(newMsg);
-    msgInput.value="";
-    renderMessages();
-
-    // Save message to group
-    currentGroup.messages = messages;
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
-  }
-});
-
-function renderMessages(){
-  chatBox.innerHTML="";
-  messages.forEach(m=>{
-    if(blockedMembers.includes(m.user)) return;
-    const div=document.createElement("div");
-    div.className="msg"+(m.user===currentUser?" self":"");
-    div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
-    chatBox.appendChild(div);
-  });
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// ===== GROUP MEMBERS =====
-function renderGroupMembers(){
-  const membersDiv=document.getElementById("groupMembersList");
-  membersDiv.innerHTML="";
-  const activeMembers=currentGroupMembers.filter(m=>!blockedMembers.includes(m));
-  if(activeMembers.length===0){
-    const div=document.createElement("div");
-    div.textContent="No active members"; div.style.fontStyle="italic"; div.style.color="#555";
-    membersDiv.appendChild(div);
-  } else {
-    activeMembers.forEach(name=>{
-      const div=document.createElement("div");
-      div.className="memberBox"; div.textContent=name;
-      if(isAdmin && name!==currentUser){
-        const btn=document.createElement("button");
-        btn.textContent="Block"; btn.style.marginLeft="10px";
-        btn.onclick=()=>blockMember(name);
-        div.appendChild(btn);
-      }
-      membersDiv.appendChild(div);
-    });
-  }
-  document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
-
-  // Update in groups array
-  currentGroup.members = currentGroupMembers.map(n=>({name:n, accepted:true}));
-  currentGroup.blocked = blockedMembers;
-  groups[currentGroupIndex] = currentGroup;
-  localStorage.setItem("groups", JSON.stringify(groups));
-
-  // Update chat header members
-  document.getElementById("members").textContent = activeMembers.join(", ");
-}
-
-// ===== ADD MEMBER =====
-document.getElementById("addMemberBtn").onclick = ()=>{
-  localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
-  window.location.href = "addMembers.html";
-};
-function addMember(name){
-    if(!currentGroupMembers.includes(name)){
-        currentGroupMembers.push(name);
-        currentGroup.members.push({name:name, accepted:true});
-        groups[currentGroupIndex] = currentGroup;
-        localStorage.setItem('groups', JSON.stringify(groups));
-        renderGroupMembers();
-    }
-}
-
-  
-// ===== NAVIGATION =====
-document.getElementById("groupName").onclick = ()=>openGroupInfo();
-function openGroupInfo(){
-  document.getElementById("chatPage").style.display="none";
-  document.getElementById("groupInfoPage").style.display="block";
-  renderGroupMembers();
-}
 function backToChat(){
-  document.getElementById("groupInfoPage").style.display="none";
-  document.getElementById("chatPage").style.display="flex";
+  document.getElementById('groupInfoPage').style.display='none';
+  document.getElementById('chatPage').style.display='flex';
 }
 
-// ===== GROUP PHOTO =====
-document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
-document.getElementById("groupPhotoFile").addEventListener("change",e=>{
-  const file=e.target.files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const url=reader.result;
-      document.getElementById("infoGroupPhoto").src=url;
-      document.getElementById("groupPhoto").src=url;
-      currentGroup.photo = url;
-      groups[currentGroupIndex] = currentGroup;
-      localStorage.setItem("groups", JSON.stringify(groups));
-    };
-    reader.readAsDataURL(file);
+// Sending message example
+msgInput.addEventListener('keypress', function(e){
+  if(e.key==='Enter' && msgInput.value.trim()!==''){
+    let div = document.createElement('div');
+    div.className='msg self';
+    div.innerHTML = msgInput.value + '<div class="meta">Now</div>';
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    msgInput.value='';
   }
 });
-
-// ===== BLOCK MEMBER =====
-function blockMember(name){
-  if(confirm(`Block ${name}?`)){
-    blockedMembers.push(name);
-    renderGroupMembers();
-  }
-}
-
-// ===== BLOCKED USERS POPUP =====
-document.getElementById("showBlockedUsers").onclick = ()=>{
-  renderBlockedUsersPopup();
-  document.getElementById("blockedPopup").style.display="block";
-};
-function renderBlockedUsersPopup(){
-  const listDiv=document.getElementById("blockedList");
-  listDiv.innerHTML="";
-  if(blockedMembers.length===0){
-    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
-  } else {
-    blockedMembers.forEach((u,index)=>{
-      const div=document.createElement("div");
-      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
-      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
-      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
-      unblockBtn.className="unblockBtn";
-      unblockBtn.onclick=()=>{
-        blockedMembers.splice(index,1);
-        renderBlockedUsersPopup();
-        renderGroupMembers();
-      };
-      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
-    });
-  }
-}
-function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
-
-// ===== GROUP LINK =====
-document.getElementById("showGroupLink").onclick = ()=>{
-  const inviteLink = `${window.location.origin}/join.html?group=${currentGroupIndex}`;
-  document.getElementById("groupLinkInput").value = inviteLink;
-  document.getElementById("linkPopup").style.display="block";
-};
-function copyLink(){
-  const input = document.getElementById("groupLinkInput");
-  input.select(); input.setSelectionRange(0,99999);
-  navigator.clipboard.writeText(input.value);
-  alert("Group link copied!");
-}
-function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
-
-// ===== REQUEST/INVITE =====
-document.getElementById("showRequestInvite").onclick = () => {
-    window.location.href = "requestInvite.html";
-};
-
-// ===== ACTION BOX BUTTONS =====
-const leaveBtn = document.querySelector(".actionBox button:nth-child(1)");
-const blockGroupBtn = document.querySelector(".actionBox button:nth-child(2)");
-const reportGroupBtn = document.querySelector(".actionBox button:nth-child(3)");
-const deleteGroupBtn = document.querySelector(".actionBox button:nth-child(4)");
-
-leaveBtn.onclick = () => {
-  if(confirm("Are you sure you want to leave the group?")){
-    currentGroupMembers = currentGroupMembers.filter(n=>n!==myName);
-    renderGroupMembers();
-    currentGroup.members = currentGroupMembers.map(n=>({name:n,accepted:true}));
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
-    window.location.href = "groups.html";
-  }
-};
-
-blockGroupBtn.onclick = () => {
-  if(confirm("Are you sure you want to block this group?")){
-    alert("Group blocked.");
-    window.location.href = "groups.html";
-  }
-};
-
-reportGroupBtn.onclick = () => {
-  if(confirm("Are you sure you want to report this group?")){
-    alert("Group reported.");
-    window.location.href = "groups.html";
-  }
-};
-
-deleteGroupBtn.onclick = () => {
-  if(!isAdmin){
-    alert("Only admin can delete the group!");
-    return;
-  }
-  if(confirm("Are you sure you want to DELETE the group? This cannot be undone.")){
-    groups.splice(currentGroupIndex,1);
-    localStorage.setItem("groups", JSON.stringify(groups));
-    window.location.href = "groups.html";
-  }
-};
-
-// ===== INITIAL RENDER =====
-document.getElementById("groupName").textContent = currentGroup.name;
-document.getElementById("infoGroupName").textContent = currentGroup.name;
-document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
-document.getElementById("infoGroupPhoto").src = currentGroup.photo || "group.png";
-
-renderMessages();
-renderGroupMembers();
-
-// ===== EDIT GROUP NAME =====
-document.getElementById("infoGroupName").addEventListener("blur",()=>{
-  const newName=document.getElementById("infoGroupName").textContent.trim();
-  if(newName){
-    currentGroup.name=newName;
-    groups[currentGroupIndex]=currentGroup;
-    localStorage.setItem("groups",JSON.stringify(groups));
-    document.getElementById("groupName").textContent=newName;
-  }
-});
-
-    // ==== desappear ====
-const disappearModal = document.getElementById("disappearModal");
-const disappearBtn = document.getElementById("disappearBtn");
-const disappearStatus = document.getElementById("disappearStatus");
-
-// Open modal
-disappearBtn.onclick = () => {
-  disappearModal.style.display = "flex";
-}
-
-// Close modal
-function closeDisappearModal(){
-  disappearModal.style.display = "none";
-  // Update status text based on selected radio
-  const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim();
-  disappearStatus.textContent = selected;
-}
-
-// ==== end to end ====
-  function openEncryptionPopup() {
-    document.getElementById("encryptionModal").style.display = "flex";
-}
-
-function closeEncryptionPopup() {
-    document.getElementById("encryptionModal").style.display = "none";
-
-    // reset check mark animation
-    const check = document.querySelector(".checkMark");
-    check.style.opacity = 0;
-    check.style.transform = "scale(0)";
-    void check.offsetWidth; // force reflow for replay
-    check.style.animation = "appear 2s forwards 1.5s";
-}
-
 </script>
 </body>
 </html>
