@@ -43,9 +43,9 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 #groupLinks{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 #groupLinks button{width:100%;padding:10px;border:none;border-radius:5px;background:#000;color:#fff;cursor:pointer;text-align:left;}
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
-.actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
+.actionBox button{width:100%;padding:12px 15px;border:none;background:#000;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
-.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
+.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:white;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
 .popup h3{margin-top:0;}
 .popup button.closeBtn{margin-top:10px;float:right;}
 .popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
@@ -353,9 +353,10 @@ input:checked + .slider:before {transform:translateX(26px);}
     <div class="membersHeader">
       <span id="memberCount">0 Members</span>
       <button id="addMemberBtn">+</button>
+      </div>
     <div id="groupMembersList"></div>
   </div>
-  </div>
+
     
   <div class="container" id="groupLinks">
     <button id="showGroupLink">Group Link</button>
