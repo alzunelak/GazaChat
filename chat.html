@@ -6,55 +6,53 @@
 <title>GazaChat App</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* Base Layout */
+/* ==== GLOBAL STYLES ==== */
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #000; /* Black background */
-  color: #fff; /* White text */
+  background: #000; /* black background */
+  color: #fff; /* white text */
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Containers */
-#chatPage, #friendInfoPage {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #25d366; border-radius: 3px; }
 
-/* Header */
+/* ==== HEADER ==== */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #111; /* Darker header */
+  background: #111;
   padding: 10px;
+  border-bottom: 1px solid #222;
   position: relative;
 }
 .header img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  cursor: pointer;
   object-fit: cover;
-  border: 2px solid #25d366; /* Green border for highlight */
+  cursor: pointer;
 }
 .header-info h2 {
   margin: 0;
   font-size: 16px;
-  color: #fff; /* White text */
+  color: #fff;
 }
 .header-actions button {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 20px;
-  color: #25d366; /* Green icons */
+  color: #25d366;
 }
 
-/* Chat Box */
+/* ==== CHAT BOX ==== */
 #chatBox {
   flex: 1;
   overflow-y: auto;
@@ -68,30 +66,31 @@ body {
   max-width: 70%;
   padding: 10px 14px;
   border-radius: 18px;
-  background: #222; /* Dark bubble */
-  align-self: flex-start;
+  background: #222;
   color: #fff;
+  align-self: flex-start;
   word-break: break-word;
 }
 .msg.self {
-  background: #25d366; /* Green bubble for self */
-  color: #000; /* Black text on green */
+  background: #25d366;
+  color: #000;
+  align-self: flex-end;
 }
 .msg .meta {
   display: block;
   margin-top: 4px;
   font-size: 10px;
-  color: #aaa;
+  color: #ccc;
   text-align: right;
 }
 .msg.system {
-  background: #333;
-  color: #fff;
-  align-self: center;
+  background: transparent;
+  color: #bbb;
   text-align: center;
+  font-size: 12px;
 }
 
-/* Input Area */
+/* ==== INPUT AREA ==== */
 #inputArea {
   display: flex;
   align-items: center;
@@ -108,7 +107,7 @@ body {
   border-radius: 25px;
   padding: 6px 10px;
   gap: 6px;
-  border: 1px solid #333;
+  border: 1px solid #25d366;
 }
 .input-box input {
   flex: 1;
@@ -118,58 +117,56 @@ body {
   background: transparent;
   color: #fff;
 }
+.input-box input::placeholder { color: #888; }
 .input-buttons button {
-  background: transparent;
+  background: none;
   border: none;
   font-size: 20px;
-  cursor: pointer;
   color: #25d366;
+  cursor: pointer;
 }
 #micBtn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background: #25d366;
-  color: #000;
+  color: black;
   border: none;
   font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-left: 6px;
-  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
-  transition: all 0.3s;
+  box-shadow: 0 0 10px #25d366;
 }
 
-/* Popups */
+/* ==== POPUPS ==== */
 .popup {
   display: none;
   position: absolute;
   top: 50px;
   right: 10px;
   background: #111;
-  border: 1px solid #333;
+  border: 1px solid #25d366;
   border-radius: 8px;
-  z-index: 1000;
   width: 150px;
+  z-index: 1000;
 }
 .popup div {
   padding: 10px;
   cursor: pointer;
-  border-bottom: 1px solid #333;
   color: #fff;
+  border-bottom: 1px solid #222;
 }
-.popup div:hover {
-  background: #222;
-}
+.popup div:hover { background: #25d366; color: #000; }
 
-/* Emoji Picker */
+/* ==== EMOJI PICKER ==== */
 #emojiPicker {
   position: absolute;
   bottom: 60px;
   left: 10px;
   background: #111;
-  border: 1px solid #333;
+  border: 1px solid #25d366;
   padding: 10px;
   display: none;
   max-height: 200px;
@@ -182,182 +179,56 @@ body {
   cursor: pointer;
 }
 #emojiPicker span:hover {
-  background: #222;
+  background: #25d366;
   border-radius: 5px;
 }
 
-/* Attachments Popup */
+/* ==== ATTACH POPUP ==== */
 #attachPopup {
   display: none;
   position: absolute;
   bottom: 60px;
   left: 60px;
   background: #111;
-  border: 1px solid #333;
+  border: 1px solid #25d366;
   border-radius: 12px;
   padding: 12px;
   width: 270px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+  box-shadow: 0 0 10px #25d366;
   z-index: 2000;
 }
 .attachItem {
   background: #222;
-  border: 1px solid #333;
   color: #fff;
+  border: 1px solid #25d366;
 }
-.attachItem:hover {
-  background: #333;
-}
+.attachItem i { color: #25d366; }
 
-/* Friend Info */
-#friendInfoPage {
-  background: #000;
-  color: #fff;
-}
-.friendHeader h2 {
-  color: #fff;
-}
-
-/* Settings Panels */
-.settingsContainer {
+/* ==== FRIEND INFO PAGE ==== */
+#friendInfoPage { background: #000; color: #fff; }
+.friendHeader img { border: 2px solid #25d366; }
+.actionButtons button {
   background: #111;
-  border: 1px solid #333;
-  color: #fff;
-}
-.settingsContainer button {
-  background: #111;
-  color: #fff;
-  border: none;
-}
-.settingsContainer button:hover {
-  background: #222;
+  border: 1px solid #25d366;
+  color: #25d366;
+  box-shadow: 0 0 5px #25d366;
 }
 
-/* Modals */
+/* ==== SETTINGS MODALS ==== */
 .modal-content {
   background: #111;
   color: #fff;
+  border: 1px solid #25d366;
+  box-shadow: 0 0 10px #25d366;
 }
 .close-btn {
-  background: #25d366;
-  color: #000;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 15px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(37,211,102,0.4);
+  background: transparent;
+  border: 2px solid #25d366;
+  color: #25d366;
+  box-shadow: 0 0 5px #25d366;
   transition: 0.3s;
 }
-.close-btn:hover {
-  background: #1da851;
-}
-
-/* Animation & Other */
-.phone {
-  background: #222;
-  border: 2px solid #25d366;
-}
-.phone .screen {
-  background: #000;
-}
-.checkMark {
-  color: #25d366;
-}
-
-/* Make Mesh Network text small but keep height same */
-.settingsItem small {
-  font-size: 14px;
-  color: #555;
-}
-
-/* Keep Chat Lock switch aligned */
-.settingsItem label.switch {
-  margin: 0;
-}
-
-/* Make Mesh Network fully clickable with same height */
-.settingsItem:last-child {
-  cursor: default;
-  justify-content: flex-start;
-}
-
-  /* ==== MODAL STYLES ==== */
-.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;}
-.modal-content {background:#fff;padding:20px;border-radius:12px;width:300px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.3);}
-.option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;}
-.close-btn {background:#128C7E;color:#fff;border:none;padding:10px 15px;
-  border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
-
-/* SWITCH STYLE */
-.switch {position:relative;display:inline-block;width:50px;height:24px;}
-.switch input {opacity:0;width:0;height:0;}
-.slider {position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
-  background:#ccc;transition:.4s;border-radius:24px;}
-.slider:before {position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;
-  background:white;transition:.4s;border-radius:50%;}
-input:checked + .slider {background:#128C7E;}
-input:checked + .slider:before {transform:translateX(26px);}
-  /* Phones animation */
-.phoneAnimation {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-  height: 100px;
-  gap: 40px;
-}
-
-.phone {
-  width: 50px;
-  height: 90px;
-  border: 2px solid #128C7E;
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #e6f7f1;
-  animation: bounce 1.5s infinite alternate;
-}
-
-.phone .screen {
-  width: 90%;
-  height: 80%;
-  background: #fff;
-  border-radius: 5px;
-}
-
-/* Bounce animation */
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0); }
-}
-
-/* Check mark animation */
-.checkMark {
-  position: absolute;
-  font-size: 30px;
-  color: #25D366;
-  opacity: 0;
-  transform: scale(0);
-  animation: appear 2s forwards 1.5s;
-}
-
-@keyframes appear {
-  0% { opacity: 0; transform: scale(0); }
-  50% { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-/* Modal styling */
-.encryptionContent {
-  text-align: center;
-}
+.close-btn:hover { background: #25d366; color: #000; }
 
 </style>
 </head>
