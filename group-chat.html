@@ -6,42 +6,42 @@
 <title>GazaChat Group</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;height:100vh;display:flex;flex-direction:column; }
+body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#fff;height:100vh;display:flex;flex-direction:column; }
 #chatPage,#groupInfoPage{display:flex;flex-direction:column;flex:1;}
-.header{display:flex;align-items:center;justify-content:space-between;background:#075E54;color:white;padding:10px;}
+.header{display:flex;align-items:center;justify-content:space-between;background:#000;color:white;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);padding:10px;}
 .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
 .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
 .header-info h2{margin:0;font-size:16px;cursor:pointer;}
-.header-info #members{font-size:12px;color:#d0f0e3;}
+.header-info #members{font-size:12px;color:#000;}
 #chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
-.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#f1f1f1;align-self:flex-start;position:relative;word-break:break-word;}
-.msg.self{background:#dcf8c6;align-self:flex-end;}
-.msg .meta{font-size:10px;color:#999;text-align:right;}
+.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#000;align-self:flex-start;position:relative;word-break:break-word;}
+.msg.self{background:#000;align-self:flex-end;}
+.msg .meta{font-size:10px;color:#000;text-align:right;}
 #inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100%-20px);z-index:100;}
-.input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
+.input-box{display:flex;flex:1;background:#000;border-radius:25px;padding:6px 10px;gap:6px;}
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
+.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:fff;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);}
 #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
 .groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#fff;color:#000;margin-bottom:10px;border-radius:10px;position:relative;}
 .groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
 .groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
-.backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;color:#000;}
+.backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;background:#000;color:#25d366;}
 .actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
-.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
+.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#000;color:#fff;border:1px solid #eee;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);border-radius:8px;cursor:pointer;}
 .actionButtons i{font-size:20px;margin-bottom:5px;}
-.container{background:#fff;padding:10px;margin:10px;border-radius:10px;}
-.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#fff;border-radius:8px;}
-.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
-.settingsContainer button:hover{background:#f1f1f1;}
-.settingsContainer i{color:black;font-size:18px;}
+.container{background:#000;color:#fff;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);padding:10px;margin:10px;border-radius:10px;}
+.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#000;border-radius:8px;}
+.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
+.settingsContainer button:hover{background:#25d366;}
+.settingsContainer i{color:white;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
 #groupMembersList{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .memberBox{padding:5px 10px;background:#eee;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
 .membersHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 #memberCount{font-weight:500;font-size:16px;}
-#addMemberBtn{width:30px;height:30px;border-radius:50%;background:#128C7E;color:white;font-size:20px;border:none;cursor:pointer;}
+#addMemberBtn{width:30px;height:30px;border-radius:50%;background:#25d366;color:black;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);font-size:20px;border:none;cursor:pointer;}
 #groupLinks{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
-#groupLinks button{width:100%;padding:10px;border:none;border-radius:5px;background:#fff;color:#000;cursor:pointer;text-align:left;}
+#groupLinks button{width:100%;padding:10px;border:none;border-radius:5px;background:#000;color:#fff;cursor:pointer;text-align:left;}
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
@@ -55,7 +55,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#0
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-  background: #fff;
+  background: #000;
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
