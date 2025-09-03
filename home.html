@@ -3,660 +3,304 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GazaChat App</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>Chat Home</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 <style>
-/* Base Layout */
 body {
-  margin: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #000; /* Black background */
-  color: #fff; /* White text */
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  font-family: Arial, sans-serif;
+  margin:0; padding:0;
+  background:#000; /* black background */
+  color:#fff; /* white text */
 }
 
-/* Containers */
-#chatPage, #friendInfoPage {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-/* Header */
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #111; /* Darker header */
-  padding: 10px;
-  position: relative;
-}
-.header img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  object-fit: cover;
-  border: 2px solid #25d366; /* Green border for highlight */
-}
-.header-info h2 {
-  margin: 0;
-  font-size: 16px;
-  color: #fff; /* White text */
-}
-.header-actions button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  color: #25d366; /* Green icons */
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 15px; background:#111; /* dark header */
+  box-shadow:0 1px 3px rgba(0,255,0,0.2);
+  position:relative;
 }
 
-/* Chat Box */
-#chatBox {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  margin-bottom: 100px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.msg {
-  max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 18px;
-  background: #222; /* Dark bubble */
-  align-self: flex-start;
-  color: #fff;
-  word-break: break-word;
-}
-.msg.self {
-  background: #25d366; /* Green bubble for self */
-  color: #000; /* Black text on green */
-}
-.msg .meta {
-  display: block;
-  margin-top: 4px;
-  font-size: 10px;
-  color: #aaa;
-  text-align: right;
-}
-.msg.system {
-  background: #333;
-  color: #fff;
-  align-self: center;
-  text-align: center;
-}
+.profile { display:flex; align-items:center; }
+.profile img { width:50px; height:50px; border-radius:50%; margin-right:10px; border:2px solid #25d366; box-shadow:0 4px 8px rgba(37,211,102,0.5); }
+.profile-name { font-weight:bold; font-size:16px; color:#fff; }
 
-/* Input Area */
-#inputArea {
+.right-icons {
   display: flex;
   align-items: center;
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  width: calc(100% - 20px);
-  z-index: 100;
+  gap: 15px;
 }
-.input-box {
-  display: flex;
-  flex: 1;
-  background: #111;
-  border-radius: 25px;
-  padding: 6px 10px;
-  gap: 6px;
-  border: 1px solid #333;
-}
-.input-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-  color: #fff;
-}
-.input-buttons button {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #25d366;
-}
-#micBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #25d366;
-  color: #000;
-  border: none;
+
+.fa-qrcode,
+.three-dots {
   font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 6px;
-  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
-  transition: all 0.3s;
-}
-
-/* Popups */
-.popup {
-  display: none;
-  position: absolute;
-  top: 50px;
-  right: 10px;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 8px;
-  z-index: 1000;
-  width: 150px;
-}
-.popup div {
-  padding: 10px;
   cursor: pointer;
-  border-bottom: 1px solid #333;
   color: #fff;
-}
-.popup div:hover {
-  background: #222;
+  transition: color 0.2s ease;
 }
 
-/* Emoji Picker */
-#emojiPicker {
-  position: absolute;
-  bottom: 60px;
-  left: 10px;
-  background: #111;
-  border: 1px solid #333;
-  padding: 10px;
-  display: none;
-  max-height: 200px;
-  overflow-y: auto;
-  border-radius: 8px;
+.fa-qrcode:hover,
+.three-dots:hover { color: #25d366; }
+
+.main-content { padding:20px; min-height:70vh; }
+.no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
+
+.tabs {
+  display:flex; justify-content:space-around;
+  padding:10px 0; background:#111; position:fixed; bottom:0; width:100%; border-top:1px solid #333;
 }
-#emojiPicker span {
-  font-size: 20px;
-  padding: 5px;
-  cursor: pointer;
+.tabs div { font-weight:bold; cursor:pointer; color:#fff; }
+
+.add-button-container { position:fixed; bottom:60px; right:20px; z-index:100; }
+#addBtn {
+  width:60px; height:60px; border-radius:50%; font-size:32px;
+  cursor:pointer; background:transparent; color:#25d366; border:none;
+  box-shadow:0 4px 8px rgba(37,211,102,0.5); transition: all 0.3s;
 }
-#emojiPicker span:hover {
-  background: #222;
-  border-radius: 5px;
+#addBtn:hover { background: rgba(37,211,102,0.1); transform: translateY(-2px); box-shadow:0 0 15px #25d366,0 4px 8px rgba(37,211,102,0.5); }
+
+.popup-options {
+  display:none; position:absolute; bottom:70px; right:0;
+  background:#111; color:#fff; border-radius:8px; box-shadow:0 4px 10px rgba(0,255,0,0.2);
+  padding:5px 0; min-width:140px; text-align:left;
+}
+.popup-options a {
+  display:block; padding:8px 12px; color:#fff; text-decoration:none;
+}
+.popup-options a:hover { background: rgba(37,211,102,0.1); color:#25d366; }
+
+#qrContainer {
+  display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+  background:#111; color:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,255,0,0.3); z-index:200; text-align:center;
+}
+#qrContainer button {
+  position:absolute; top:5px; right:5px; border:none;
+  background:#25d366; color:#000; border-radius:50%; width:25px; height:25px; cursor:pointer;
 }
 
-/* Attachments Popup */
-#attachPopup {
-  display: none;
-  position: absolute;
-  bottom: 60px;
-  left: 60px;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 12px;
-  width: 270px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-  z-index: 2000;
+.friend {
+  padding:10px; background:#111; margin:5px 0; border-radius:8px; cursor:pointer;
+  box-shadow:0 1px 3px rgba(37,211,102,0.2); display:flex; align-items:center;
 }
-.attachItem {
-  background: #222;
-  border: 1px solid #333;
-  color: #fff;
-}
-.attachItem:hover {
-  background: #333;
-}
+.friend img { width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover; border:1px solid #25d366; }
 
-/* Friend Info */
-#friendInfoPage {
-  background: #000;
-  color: #fff;
+.three-dots-menu {
+  position:absolute; top:45px; right:15px; background:#111; color:#fff;
+  border-radius:8px; box-shadow:0 4px 12px rgba(37,211,102,0.3); display:none; min-width:140px; z-index:500;
 }
-.friendHeader h2 {
-  color: #fff;
+.three-dots-menu a {
+  display:block; padding:10px 15px; color:#fff; text-decoration:none; font-weight:500;
 }
-
-/* Settings Panels */
-.settingsContainer {
-  background: #111;
-  border: 1px solid #333;
-  color: #fff;
-}
-.settingsContainer button {
-  background: #111;
-  color: #fff;
-  border: none;
-}
-.settingsContainer button:hover {
-  background: #222;
-}
-
-/* Modals */
-.modal-content {
-  background: #111;
-  color: #fff;
-}
-.close-btn {
-  background: #25d366;
-  color: #000;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 15px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(37,211,102,0.4);
-  transition: 0.3s;
-}
-.close-btn:hover {
-  background: #1da851;
-}
-
-/* Animation & Other */
-.phone {
-  background: #222;
-  border: 2px solid #25d366;
-}
-.phone .screen {
-  background: #000;
-}
-.checkMark {
-  color: #25d366;
-}
+.three-dots-menu a:hover { background: rgba(37,211,102,0.1); color:#25d366; }
 </style>
 </head>
 <body>
 
-<!-- CHAT PAGE -->
-<div id="chatPage">
-  <div class="header">
-    <img id="friendPhoto" src="default-profile.png" alt="friend">
-    <div class="header-info">
-      <h2 id="friendName"></h2>
-    </div>
-    <div class="header-actions">
-      <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
-      <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-    </div>
-    <div class="popup" id="menuPopup">
-      <div onclick="openFriendInfo()">View Info</div>
-      <div onclick="alert('Muted!')">Mute</div>
-      <div onclick="deleteChat()">Delete Chat</div>
-      <div onclick="openSettings()">Chat Settings</div>
-    </div>
+<div class="header">
+  <div class="profile">
+    <img id="profilePic" src="default-profile.png" alt="Profile">
+    <div class="profile-name" id="profileName">User</div>
   </div>
-
-  <!-- CHAT SETTINGS MODAL -->
-  <div id="settingsModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;z-index:3000;box-shadow:0 6px 18px rgba(0,0,0,0.2);width:300px;">
-    <h3>Chat Settings</h3>
-    <div style="margin-top:10px;">
-      <label>Theme: 
-        <select id="themeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Chat Bubble: 
-        <select id="chatThemeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="blue">Blue</option>
-          <option value="green">Green</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Font Size: 
-        <select id="fontSizeSelect" style="margin-left:5px;">
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
-        </select>
-      </label>
-    </div>
-    <button style="margin-top:15px;padding:8px 12px;background:#128C7E;color:white;border:none;border-radius:6px;cursor:pointer;" onclick="closeSettings()">Close</button>
-  </div>
-  
-  <div id="chatBox">
-    <div class="msg system">🔒 Messages are end-to-end encrypted</div>
-  </div>
-
-  <div id="inputArea">
-    <div class="input-box">
-      <input id="msgInput" placeholder="Type a message..." autocomplete="off">
-      <div class="input-buttons">
-        <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
-        <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
-      </div>
-    </div>
-    <button id="micBtn"><i class="fa-solid fa-microphone"></i></button>
+  <div class="right-icons">
+    <i class="fa-solid fa-qrcode"></i>
+    <div class="three-dots">&#8942;</div>
   </div>
 </div>
 
-<!-- Emoji Picker -->
-<div id="emojiPicker">
-  <span>😀</span><span>😂</span><span>😍</span><span>😭</span>
-  <span>😎</span><span>😡</span><span>👍</span><span>🙏</span>
-  <span>🔥</span><span>🎉</span><span>❤️</span>
+<div class="three-dots-menu" id="threeDotsMenu">
+  <a href="groups.html">New Group </a>
+  <a href="Mark-all-read.html">Mark All Read</a>
+  <a href="starred.html">Starred</a>
+  <a href="filter-unread-chats">Filter Unread Chats</a>
+  <a href="settings.html">Settings</a>
+  <a href="linkeddevices.html">Linked Devices </a>
 </div>
 
-<!-- ATTACHMENTS -->
-<div id="attachPopup">
-  <div id="attachGrid">
-    <label class="attachItem">
-      <i class="fa-solid fa-image"></i>
-      <span>Gallery</span>
-      <input type="file" id="galleryInput" accept="image/*,video/*">
-    </label>
-    <label class="attachItem">
-      <i class="fa-solid fa-camera"></i>
-      <span>Camera</span>
-      <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment">
-    </label>
-    <div class="attachItem" id="sendLocation">
-      <i class="fa-solid fa-location-dot"></i>
-      <span>Location</span>
-    </div>
-    <label class="attachItem">
-      <i class="fa-solid fa-file"></i>
-      <span>Document</span>
-      <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt">
-    </label>
-    <div class="attachItem" id="sendContact">
-      <i class="fa-solid fa-user"></i>
-      <span>Contact</span>
-    </div>
-    <label class="attachItem">
-      <i class="fa-solid fa-microphone"></i>
-      <span>Audio</span>
-      <input type="file" id="audioInput" accept="audio/*">
-    </label>
+<div class="main-content" id="mainContent">
+  <div class="no-msg">No messages yet<br>Add a friend using the + button</div>
+</div>
+
+<div id="qrContainer">
+  <button id="closeQR">X</button>
+  <canvas id="userQRCode"></canvas>
+  <p>Your QR Code</p>
+</div>
+
+<div class="add-button-container">
+  <button id="addBtn">+</button>
+  <div id="popupOptions" class="popup-options">
+    <a href="#" id="showQRCode">My Code</a>
+    <a href="scan.html">Scan Code</a>
+    <a href="search.html">Search Friend</a>
   </div>
 </div>
 
-<!-- FRIEND INFO PAGE -->
-<div id="friendInfoPage">
-  <div class="friendHeader">
-    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
-    <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
-    <h2 id="infoFriendName">Friend Name</h2>
-   <div class="actionButtons">
-      <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
-      <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
-      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-    </div>
-  </div>
-
-<!-- SETTINGS FEATURES SECTION -->
-<div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
-
-  <button class="settingsItem" onclick="openEncryptionPopup()">
-    <span>End-to-End Encryption</span>
-    <i class="fa-solid fa-circle-info"></i>
-  </button>
-<!-- END-TO-END ENCRYPTION POPUP WITH ANIMATION -->
-<div id="encryptionModal" class="modal">
-  <div class="modal-content encryptionContent">
-    <h2>End-to-End Encryption</h2>
-    <p>Messages and calls in this group are secured with end-to-end encryption.</p>
-
-    <div class="phoneAnimation">
-      <div class="phone leftPhone">
-        <div class="screen"></div>
-      </div>
-      <div class="phone rightPhone">
-        <div class="screen"></div>
-      </div>
-      <div class="checkMark">&#10003;</div>
-    </div>
-
-    <p style="margin-top:20px;">
-      Only participants in this chat can read or listen to them.
-      No one outside this chat, not even the app, can access your messages.
-    </p>
-
-    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
-  </div>
+<div class="tabs">
+  <div id="tabChat">Chat</div>
+  <a href="groups.html"><div>Group</div></a>
+  <a href="calls.html"><div>Call</div></a>
 </div>
 
-  
-  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
-    <span>Mesh Network</span>
-    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
-  </div>
-  
-  <div class="settingsItem">
-    <span>Chat Lock</span>
-    <label class="switch">
-      <input type="checkbox" id="chatLockToggle">
-      <span class="slider"></span>
-    </label>
-  </div>
-  
-<!-- Disappearing Messages button with status text -->
-<div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:pointer;">
-  <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:none; padding:0;">
-    <span>Disappearing Messages</span>
-    <i class="fa-solid fa-clock"></i>
-  </button>
-  <small id="disappearStatus" style="color:#555; margin-top:4px;">Off</small>
-</div>
-
-<!-- POPUP MODAL -->
-<div id="disappearModal" class="modal">
-  <div class="modal-content">
-    <h2>Disappearing Messages</h2>
-    <div class="option-group">
-      <label><input type="radio" name="disappear" value="off" checked> Off</label>
-      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
-      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
-      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
-    </div>
-    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
-  </div>
-</div>
-</div>
-  
-  <!-- NO GROUPS SECTION -->
-  <div class="settingsContainer">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <span>No groups in common</span>
-     <button class="addFriendBtn" id="addFriendBtn" 
-        style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;"
-        onclick="window.location.href='groups.html';">
-  + create group
-</button>
-    </div>
-  </div>
-
- <!-- BLOCK & REPORT SECTION -->
-<div class="settingsContainer">
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <button class="blockBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#f44336;cursor:pointer;font-weight:bold;">
-      <span><i class="fa-solid fa-ban" style="color:red;"></i> Block User</span>
-    </button>
-    <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#ff5722;cursor:pointer;font-weight:bold;">
-       <span><i class="fa-solid fa-flag" style="color:red;"></i> Report User</span>
-    </button>
-  </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 <script>
-// ===== USER DATA & DOM =====
-const myName="Me", myId="user123";
-const friendsList=JSON.parse(localStorage.getItem("friends")||"[]");
-const friendParam=new URLSearchParams(window.location.search).get("friend");
-const friendObj=friendsList.find(f=>f.name===friendParam);
-const friendData={name:friendObj?friendObj.name:(friendParam||"Friend"),photo:friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"};
+// --- Profile setup ---
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
+  document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+});
 
-const friendNameEl=document.getElementById("friendName");
-const friendPhotoEl=document.getElementById("friendPhoto");
-const infoFriendNameEl=document.getElementById("infoFriendName");
-const infoFriendPhotoEl=document.getElementById("infoFriendPhoto");
-const chatBox=document.getElementById("chatBox");
-const msgInput=document.getElementById("msgInput");
+// --- Floating + button ---
+const addBtn = document.getElementById('addBtn');
+const popupOptions = document.getElementById('popupOptions');
+addBtn.addEventListener('click', () => {
+  popupOptions.style.display = popupOptions.style.display === 'block' ? 'none' : 'block';
+});
+document.addEventListener('click', e => {
+  if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display = 'none';
+});
 
-friendNameEl.textContent=friendData.name;
-friendPhotoEl.src=friendData.photo; friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png";
-infoFriendNameEl.textContent=friendData.name;
-infoFriendPhotoEl.src=friendData.photo; infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png";
+// --- QR popup ---
+const showQRCodeLink = document.getElementById('showQRCode');
+const qrContainer = document.getElementById('qrContainer');
+const noMsg = document.querySelector('.no-msg');
+const closeQR = document.getElementById('closeQR');
+let qrGenerated = false;
+const savedName = localStorage.getItem('username') || 'User';
+const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
 
-let messages=JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
-
-// ===== UTIL =====
-function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-function timeNow(){ return new Date().toLocaleTimeString(); }
-function saveMessages(){ localStorage.setItem(`chat_${friendData.name}`, JSON.stringify(messages)); }
-function appendMessageBubble(obj){
-  const div=document.createElement("div");
-  div.className="msg"+(obj.senderId===myId?" self":"");
-  div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
-  chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight;
-}
-function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
-
-// ===== SEND MESSAGE =====
-msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){
-    e.preventDefault(); const txt=msgInput.value.trim();
-    if(!txt) return;
-    const msg={id:uid(), senderId:myId, text:txt, time:timeNow()};
-    messages.push(msg); saveMessages(); appendMessageBubble(msg); msgInput.value="";
+showQRCodeLink.addEventListener('click', e => {
+  e.preventDefault();
+  qrContainer.style.display = 'block';
+  noMsg.style.display = 'none';
+  if(!qrGenerated){
+    const qrData = JSON.stringify({name: savedName, profile: profilePic});
+    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    qrGenerated = true;
   }
 });
 
-// ===== EMOJI =====
-const emojiPicker=document.getElementById("emojiPicker");
-document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";}
-emojiPicker.addEventListener("click", e=>{ if(e.target.tagName==="SPAN"){ msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus(); }});
+closeQR.addEventListener('click', () => {
+  qrContainer.style.display='none';
+  noMsg.style.display='block';
+});
+// --- Check URL parameter for auto-chat ---
+function getQueryParam(param) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(param);
+}
 
-// ===== MENU =====
-const menuBtn=document.getElementById("menuBtn"), menuPopup=document.getElementById("menuPopup");
-menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";}
-document.addEventListener("click", e=>{ if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none"; });
+document.addEventListener('DOMContentLoaded', () => {
+  const friendNameParam = getQueryParam('friend');
+  const friendProfileParam = getQueryParam('profile');
 
-// ===== FRIEND INFO PAGE =====
-friendNameEl.onclick=openFriendInfo; friendPhotoEl.onclick=openFriendInfo;
-function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; }
-function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; }
-
-// ===== DELETE CHAT =====
-function deleteChat(){ if(confirm("Delete all messages?")){ messages=[]; saveMessages(); renderMessages(); } }
-
-// ===== ATTACHMENTS =====
-const attachBtn=document.getElementById("plusBtn"), attachPopup=document.getElementById("attachPopup");
-attachBtn.onclick=e=>{ e.stopPropagation(); attachPopup.style.display=attachPopup.style.display==="block"?"none":"block"; };
-document.addEventListener("click", e=>{ if(!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) attachPopup.style.display="none"; });
-
-function sendAttachmentMessage(text){ const msg={id:uid(), senderId:myId, text, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none"; }
-
-document.getElementById("galleryInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`); e.target.value=""; }});
-document.getElementById("cameraInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`); e.target.value=""; }});
-document.getElementById("documentInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`📄 Document: ${file.name}`); e.target.value=""; }});
-document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; }});
-document.getElementById("sendLocation").onclick=()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`); }, ()=>sendAttachmentMessage("📍 Location sharing denied")); } else sendAttachmentMessage("📍 Geolocation not supported");};
-document.getElementById("sendContact").onclick=()=>{ const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }};
-
-// ===== FRIEND INFO BUTTONS =====
-const friendNameEnc=encodeURIComponent(friendData.name), friendPhotoEnc=encodeURIComponent(friendData.photo);
-document.getElementById("videoCallBtn").onclick=()=>{ window.location.href=`video-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-
-// ===== BLOCK & REPORT =====
-document.querySelector(".blockBtn").addEventListener("click", e=>{ e.preventDefault();
-  if(confirm("Block this user?")){
-    let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]");
-    let friends=JSON.parse(localStorage.getItem("friends")||"[]");
-    if(!blocked.includes(friendData.name)){ blocked.push(friendData.name); localStorage.setItem("blockedUsers",JSON.stringify(blocked));
-      friends=friends.filter(f=>f.name!==friendData.name); localStorage.setItem("friends",JSON.stringify(friends));
-      alert("User blocked."); setTimeout(()=>{ window.location.href="home.html"; },200);
+  if(friendNameParam){
+    const friends = getFriends();
+    const friend = friends.find(f => f.name === decodeURIComponent(friendNameParam));
+    if(friend){
+      // Open chat automatically
+      openChat(friend.name, friend.profile);
+    } else if(friendProfileParam){
+      // In case friend not yet in localStorage, add and open chat
+      const newFriend = {
+        name: decodeURIComponent(friendNameParam),
+        profile: decodeURIComponent(friendProfileParam)
+      };
+      addFriend(newFriend);
+      openChat(newFriend.name, newFriend.profile);
     }
   }
 });
-document.querySelector(".reportBtn").onclick=()=>{ if(confirm("Report this user?")) alert("User reported."); };
 
-// ===== CHAT SETTINGS =====
-const settingsModal=document.getElementById("settingsModal");
-const themeSelect=document.getElementById("themeSelect");
-const chatThemeSelect=document.getElementById("chatThemeSelect");
-const fontSizeSelect=document.getElementById("fontSizeSelect");
-function openSettings(){ settingsModal.style.display="block"; themeSelect.value=localStorage.getItem("theme")||"system"; chatThemeSelect.value=localStorage.getItem("chatTheme")||"system"; fontSizeSelect.value=localStorage.getItem("fontSize")||"medium"; applySettings(); }
-function closeSettings(){ settingsModal.style.display="none"; }
-themeSelect.onchange=chatThemeSelect.onchange=fontSizeSelect.onchange=applySettings;
-function applySettings(){
-  const theme=themeSelect.value, chatTheme=chatThemeSelect.value, fontSize=fontSizeSelect.value;
-  localStorage.setItem("theme",theme); localStorage.setItem("chatTheme",chatTheme); localStorage.setItem("fontSize",fontSize);
-  switch(theme){ case "system": document.body.style.background="#f8f9fa"; break; case "light": document.body.style.background="#fff"; break; case "dark": document.body.style.background="#1c1e21"; break; }
-  document.querySelectorAll(".msg").forEach(msg=>{ if(msg.classList.contains("self")){ switch(chatTheme){ case "system": msg.style.background="#dcf8c6"; break; case "light": msg.style.background="#E1FFC7"; break; case "dark": msg.style.background="#2c2f33"; break; case "blue": msg.style.background="#D0E6FF"; break; case "green": msg.style.background="#CCFFCC"; break; } } else { switch(chatTheme){ case "system": msg.style.background="#fff"; break; case "light": msg.style.background="#fff"; break; case "dark": msg.style.background="#23272A"; break; case "blue": msg.style.background="#fff"; break; case "green": msg.style.background="#fff"; break; } }});
-  let size="16px"; switch(fontSize){ case "small": size="12px"; break; case "medium": size="16px"; break; case "large": size="20px"; break; } document.querySelectorAll(".msg").forEach(msg=>msg.style.fontSize=size); document.body.style.fontSize=size;
-}
-applySettings();
 
-// ===== MIC RECORDING =====
-const micBtn=document.getElementById("micBtn"); let mediaRecorder,audioChunks=[];
-micBtn.onclick=async()=>{
-  if(!mediaRecorder){
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ alert("Microphone not supported"); return; }
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder=new MediaRecorder(stream);
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>{
-      const blob=new Blob(audioChunks,{type:"audio/webm"}); audioChunks=[];
-      sendAttachmentMessage(`🎤 Voice message (${(blob.size/1024).toFixed(1)} KB)`);
-    };
+  // --- QR Icon Click ---
+const qrIcon = document.querySelector('.fa-qrcode');
+qrIcon.addEventListener('click', () => {
+  qrContainer.style.display = 'block';
+  noMsg.style.display = 'none';
+  if(!qrGenerated){
+    const qrData = JSON.stringify({name: savedName, profile: profilePic});
+    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    qrGenerated = true;
   }
-  if(mediaRecorder.state==="inactive"){ mediaRecorder.start(); micBtn.style.background="red"; } 
-  else { mediaRecorder.stop(); micBtn.style.background="#25D366"; }
-};
-
-// ==== TOGGLE CHAT LOCK ====
-document.getElementById("chatLockToggle").addEventListener("change", function(){
-  alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled");
 });
-  
-// ==== desappear ====
-const disappearModal = document.getElementById("disappearModal");
-const disappearBtn = document.getElementById("disappearBtn");
-const disappearStatus = document.getElementById("disappearStatus");
-
-// Open modal
-disappearBtn.onclick = () => {
-  disappearModal.style.display = "flex";
-}
-
-// Close modal
-function closeDisappearModal(){
-  disappearModal.style.display = "none";
-  // Update status text based on selected radio
-  const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim();
-  disappearStatus.textContent = selected;
-}
-// ==== end to end ====
-function openEncryptionPopup() {
-    document.getElementById("encryptionModal").style.display = "flex";
-}
-
-function closeEncryptionPopup() {
-    document.getElementById("encryptionModal").style.display = "none";
-
-    // reset check mark animation
-    const check = document.querySelector(".checkMark");
-    check.style.opacity = 0;
-    check.style.transform = "scale(0)";
-    void check.offsetWidth; // force reflow for replay
-    check.style.animation = "appear 2s forwards 1.5s";
-}
-
 
   
-// ===== RENDER INITIAL =====
-renderMessages();
+
+  
+// --- Open chat function ---
+function openChat(name, profile){
+  // You can customize this to open your chat.html
+  // Example: redirect with parameters
+  window.location.href = `chat.html?friend=${encodeURIComponent(name)}&profile=${encodeURIComponent(profile)}`;
+}
+
+// --- Friends management ---
+function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
+function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
+function addFriend(friend){
+  let friends = getFriends();
+  if(!friends.some(f => f.name === friend.name)){
+    // Ensure photo exists, fallback to default
+    if(!friend.profile) friend.profile = 'default-profile.png';
+    friends.push(friend);
+    saveFriends(friends);
+    renderFriends();
+  }
+}
+
+// --- Real-time updates ---
+const channel = new BroadcastChannel('chatapp');
+channel.onmessage = (e) => {
+  if(e.data.type === 'addFriend') addFriend(e.data.friend);
+}
+
+// --- Render friends ---
+function renderFriends(){
+  const mainContent = document.getElementById('mainContent');
+  const friends = getFriends();
+  mainContent.innerHTML = '';
+  if(friends.length===0){
+    mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
+  } else {
+friends.forEach(f => {
+  const div = document.createElement('div');
+  div.className='friend';
+
+  // Get latest message for this friend from localStorage
+  const messages = JSON.parse(localStorage.getItem(`chat_${f.name}`) || '[]');
+  const latestMsg = messages.length > 0 ? messages[messages.length - 1].text : 'No messages yet';
+
+  div.innerHTML = `
+    <img src="${f.profile || 'default-profile.png'}">
+    <div>
+      <span style="font-weight:bold">${f.name}</span><br>
+      <span style="font-size:12px; color:#888;">${latestMsg}</span>
+    </div>
+  `;
+
+ // Open chat with real info
+      div.onclick = () => {
+        const friendName = encodeURIComponent(f.name);
+        const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
+        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
+      };
+
+      mainContent.appendChild(div);
+    });
+  }
+}
+
+
+
+  
+// --- Three-dots menu ---
+const threeDots = document.querySelector('.three-dots');
+const threeDotsMenu = document.getElementById('threeDotsMenu');
+threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; });
+document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
+
+// Render friends on load
+document.addEventListener('DOMContentLoaded', renderFriends);
 </script>
 </body>
-</html> 
+</html>
