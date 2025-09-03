@@ -159,38 +159,44 @@ document.addEventListener('click', e => {
   if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display = 'none';
 });
 
-// --- QR popup ---
+// --- QR popup functionality ---
 const showQRCodeLink = document.getElementById('showQRCode');
+const qrIcon = document.querySelector('.fa-qrcode');
 const qrContainer = document.getElementById('qrContainer');
 const noMsg = document.querySelector('.no-msg');
 const closeQR = document.getElementById('closeQR');
-let qrGenerated = false;
 const savedName = localStorage.getItem('username') || 'User';
 const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
 
-showQRCodeLink.addEventListener('click', e => {
-  e.preventDefault();
+// Function to show QR popup
+function showQRCode() {
   qrContainer.style.display = 'block';
   noMsg.style.display = 'none';
-  if(!qrGenerated){
-    const qrData = JSON.stringify({name: savedName, profile: profilePic});
-    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
-    qrGenerated = true;
-  }
-});
 
-closeQR.addEventListener('click', () => {
-  qrContainer.style.display='none';
-  noMsg.style.display='block';
-});
+  // Always regenerate QR
+  const qrCanvas = document.getElementById('userQRCode');
+  new QRious({
+    element: qrCanvas,
+    value: JSON.stringify({ name: savedName, profile: profilePic }),
+    size: 150
+  });
+}
+
+// Event listeners
+showQRCodeLink.addEventListener('click', e => { e.preventDefault(); showQRCode(); });
+qrIcon.addEventListener('click', () => { showQRCode(); });
+closeQR.addEventListener('click', () => { qrContainer.style.display = 'none'; noMsg.style.display = 'block'; });
 
 // --- Three-dots menu ---
 const threeDots = document.querySelector('.three-dots');
 const threeDotsMenu = document.getElementById('threeDotsMenu');
-threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; });
+threeDots.addEventListener('click', e => { 
+  e.stopPropagation(); 
+  threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; 
+});
 document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
 
-// --- Render friends ---
+// --- Friends handling ---
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
 function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
 function addFriend(friend){
@@ -225,7 +231,7 @@ function renderFriends(){
       div.onclick = () => {
         const friendName = encodeURIComponent(f.name);
         const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
-        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
+        window.location.href = \`chat.html?friend=\${friendName}&profile=\${friendProfile}\`;
       };
       mainContent.appendChild(div);
     });
@@ -239,6 +245,5 @@ channel.onmessage = (e) => { if(e.data.type === 'addFriend') addFriend(e.data.fr
 // Render friends on load
 document.addEventListener('DOMContentLoaded', renderFriends);
 </script>
-
 </body>
 </html>
