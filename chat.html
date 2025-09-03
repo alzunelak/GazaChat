@@ -19,18 +19,18 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;height:100
 .msg{max-width:70%;padding:10px 14px;border-radius:18px;background:#000;align-self:flex-start;word-break:break-word;}
 .msg.self{background:#000;align-self:flex-end;}
 .msg .meta{display:block;margin-top:4px;font-size:10px;color:#999;text-align:right;}
-.msg.system{background:#e1f0ff;color:#333;align-self:center;text-align:center;}
+.msg.system{background:#000;color:#25d366;align-self:center;text-align:center;}
 #inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100% - 20px);z-index:100;}
 .input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
-#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#25d366;}
+#micBtn{width:40px;height:40px;border-radius:50%;background:#25d366;;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
 .popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
-.popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
+.popup div{padding:10px;cursor:pointer;border-bottom:1px solid #25d366;}
 .popup div:hover{background:#f1f1f1;}
-#emojiPicker{position:absolute;bottom:60px;left:10px;background:#fff;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
+#emojiPicker{position:absolute;bottom:60px;left:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
 #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
-#emojiPicker span:hover{background:#eee;border-radius:5px;}
+#emojiPicker span:hover{background:#25d366;border-radius:5px;}
 #attachPopup{display:none;position:absolute;bottom:60px;left:60px;background:#fff;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
 #attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#f8f8f8;border:1px solid #eee;text-align:center;font-size:12px;user-select:none;}
