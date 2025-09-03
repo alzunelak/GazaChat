@@ -159,49 +159,88 @@ document.addEventListener('click', e => {
   if (!addBtn.contains(e.target) && !popupOptions.contains(e.target)) popupOptions.style.display = 'none';
 });
 
-// --- QR popup functionality ---
+// --- QR popup ---
 const showQRCodeLink = document.getElementById('showQRCode');
-const qrIcon = document.querySelector('.fa-qrcode');
 const qrContainer = document.getElementById('qrContainer');
 const noMsg = document.querySelector('.no-msg');
 const closeQR = document.getElementById('closeQR');
+let qrGenerated = false;
 const savedName = localStorage.getItem('username') || 'User';
 const profilePic = localStorage.getItem('profilePic') || 'default-profile.png';
 
-// Function to show QR popup
-function showQRCode() {
+showQRCodeLink.addEventListener('click', e => {
+  e.preventDefault();
   qrContainer.style.display = 'block';
   noMsg.style.display = 'none';
+  if(!qrGenerated){
+    const qrData = JSON.stringify({name: savedName, profile: profilePic});
+    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    qrGenerated = true;
+  }
+});
 
-  // Always regenerate QR
-  const qrCanvas = document.getElementById('userQRCode');
-  new QRious({
-    element: qrCanvas,
-    value: JSON.stringify({ name: savedName, profile: profilePic }),
-    size: 150
-  });
+closeQR.addEventListener('click', () => {
+  qrContainer.style.display='none';
+  noMsg.style.display='block';
+});
+// --- Check URL parameter for auto-chat ---
+function getQueryParam(param) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(param);
 }
 
-// Event listeners
-showQRCodeLink.addEventListener('click', e => { e.preventDefault(); showQRCode(); });
-qrIcon.addEventListener('click', () => { showQRCode(); });
-closeQR.addEventListener('click', () => { qrContainer.style.display = 'none'; noMsg.style.display = 'block'; });
+document.addEventListener('DOMContentLoaded', () => {
+  const friendNameParam = getQueryParam('friend');
+  const friendProfileParam = getQueryParam('profile');
 
-// --- Three-dots menu ---
-const threeDots = document.querySelector('.three-dots');
-const threeDotsMenu = document.getElementById('threeDotsMenu');
-threeDots.addEventListener('click', e => { 
-  e.stopPropagation(); 
-  threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; 
+  if(friendNameParam){
+    const friends = getFriends();
+    const friend = friends.find(f => f.name === decodeURIComponent(friendNameParam));
+    if(friend){
+      // Open chat automatically
+      openChat(friend.name, friend.profile);
+    } else if(friendProfileParam){
+      // In case friend not yet in localStorage, add and open chat
+      const newFriend = {
+        name: decodeURIComponent(friendNameParam),
+        profile: decodeURIComponent(friendProfileParam)
+      };
+      addFriend(newFriend);
+      openChat(newFriend.name, newFriend.profile);
+    }
+  }
 });
-document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
 
-// --- Friends handling ---
+
+  // --- QR Icon Click ---
+const qrIcon = document.querySelector('.fa-qrcode');
+qrIcon.addEventListener('click', () => {
+  qrContainer.style.display = 'block';
+  noMsg.style.display = 'none';
+  if(!qrGenerated){
+    const qrData = JSON.stringify({name: savedName, profile: profilePic});
+    new QRious({ element: document.getElementById('userQRCode'), value: qrData, size:150 });
+    qrGenerated = true;
+  }
+});
+
+  
+
+  
+// --- Open chat function ---
+function openChat(name, profile){
+  // You can customize this to open your chat.html
+  // Example: redirect with parameters
+  window.location.href = `chat.html?friend=${encodeURIComponent(name)}&profile=${encodeURIComponent(profile)}`;
+}
+
+// --- Friends management ---
 function getFriends(){ return JSON.parse(localStorage.getItem('friends')||'[]'); }
 function saveFriends(friends){ localStorage.setItem('friends', JSON.stringify(friends)); }
 function addFriend(friend){
   let friends = getFriends();
   if(!friends.some(f => f.name === friend.name)){
+    // Ensure photo exists, fallback to default
     if(!friend.profile) friend.profile = 'default-profile.png';
     friends.push(friend);
     saveFriends(friends);
@@ -209,6 +248,13 @@ function addFriend(friend){
   }
 }
 
+// --- Real-time updates ---
+const channel = new BroadcastChannel('chatapp');
+channel.onmessage = (e) => {
+  if(e.data.type === 'addFriend') addFriend(e.data.friend);
+}
+
+// --- Render friends ---
 function renderFriends(){
   const mainContent = document.getElementById('mainContent');
   const friends = getFriends();
@@ -216,31 +262,42 @@ function renderFriends(){
   if(friends.length===0){
     mainContent.innerHTML = `<div class="no-msg">No messages yet<br>Add a friend using the + button</div>`;
   } else {
-    friends.forEach(f => {
-      const div = document.createElement('div');
-      div.className='friend';
-      const messages = JSON.parse(localStorage.getItem(`chat_${f.name}`) || '[]');
-      const latestMsg = messages.length > 0 ? messages[messages.length - 1].text : 'No messages yet';
-      div.innerHTML = `
-        <img src="${f.profile || 'default-profile.png'}">
-        <div>
-          <span style="font-weight:bold">${f.name}</span><br>
-          <span style="font-size:12px; color:#888;">${latestMsg}</span>
-        </div>
-      `;
+friends.forEach(f => {
+  const div = document.createElement('div');
+  div.className='friend';
+
+  // Get latest message for this friend from localStorage
+  const messages = JSON.parse(localStorage.getItem(`chat_${f.name}`) || '[]');
+  const latestMsg = messages.length > 0 ? messages[messages.length - 1].text : 'No messages yet';
+
+  div.innerHTML = `
+    <img src="${f.profile || 'default-profile.png'}">
+    <div>
+      <span style="font-weight:bold">${f.name}</span><br>
+      <span style="font-size:12px; color:#888;">${latestMsg}</span>
+    </div>
+  `;
+
+ // Open chat with real info
       div.onclick = () => {
         const friendName = encodeURIComponent(f.name);
         const friendProfile = encodeURIComponent(f.profile || 'default-profile.png');
-        window.location.href = \`chat.html?friend=\${friendName}&profile=\${friendProfile}\`;
+        window.location.href = `chat.html?friend=${friendName}&profile=${friendProfile}`;
       };
+
       mainContent.appendChild(div);
     });
   }
 }
 
-// --- Real-time updates ---
-const channel = new BroadcastChannel('chatapp');
-channel.onmessage = (e) => { if(e.data.type === 'addFriend') addFriend(e.data.friend); }
+
+
+  
+// --- Three-dots menu ---
+const threeDots = document.querySelector('.three-dots');
+const threeDotsMenu = document.getElementById('threeDotsMenu');
+threeDots.addEventListener('click', e => { e.stopPropagation(); threeDotsMenu.style.display = threeDotsMenu.style.display === 'block' ? 'none' : 'block'; });
+document.addEventListener('click', () => { threeDotsMenu.style.display = 'none'; });
 
 // Render friends on load
 document.addEventListener('DOMContentLoaded', renderFriends);
