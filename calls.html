@@ -4,28 +4,181 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calls</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body{font-family:Arial;margin:0;padding:20px;background:#f5f5f5;}
-h2{margin-bottom:10px;}
-.add-friend{margin-bottom:15px;}
-.add-friend input{padding:5px 10px;margin-right:5px;border-radius:5px;border:1px solid #ccc;}
-.add-friend button{padding:5px 10px;border:none;border-radius:5px;background:#2196F3;color:#fff;cursor:pointer;}
-.friend{display:flex;align-items:center;background:white;padding:10px;margin:10px 0;border-radius:8px;}
-.friend img{width:50px;height:50px;border-radius:50%;margin-right:15px;}
-.friend-info{flex:1;}
-.friend-buttons button{margin:0 5px;padding:6px 10px;border:none;border-radius:5px;cursor:pointer;}
-.audio{background:#25d366;color:white;}
-.video{background:#34b7f1;color:white;}
-.status{font-size:14px;margin-top:5px;}
-.accepted{color:green;}
-.declined{color:red;}
-.missed{color:orange;}
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #000; /* Black background */
+    color: #fff;      /* White text */
+    padding-bottom: 70px; /* Make space for bottom nav */
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #25d366;
+  }
+
+  .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .back-arrow:hover { color: #25d366; }
+
+  .menu-btn {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  /* Dropdown Menu */
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    z-index: 200;
+    flex-direction: column;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  }
+  .dropdown button {
+    background: none;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+  }
+  .dropdown button:hover {
+    background: #222;
+  }
+
+  /* Friends List */
+  h2 {
+    margin: 20px;
+    font-size: 1.5em;
+  }
+
+  #friendsList {
+    padding: 0 15px;
+  }
+
+  .friend {
+    display: flex;
+    align-items: center;
+    background: #111;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #333;
+    box-shadow: 0 2px 5px rgba(37, 211, 102, 0.3);
+  }
+
+  .friend img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 2px solid #25d366;
+    object-fit: cover;
+  }
+
+  .friend-info {
+    flex: 1;
+  }
+
+  .friend-info strong {
+    font-size: 1.2em;
+  }
+
+  .status {
+    font-size: 14px;
+    margin-top: 5px;
+    color: #bbb;
+  }
+  .accepted { color: #25d366; }
+  .declined { color: red; }
+  .missed { color: orange; }
+
+  .friend-buttons button {
+    margin: 0 5px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+
+  .audio { background: #25d366; color: white; }
+  .audio:hover { background: #1da955; }
+  .video { background: #34b7f1; color: white; }
+  .video:hover { background: #2596c8; }
+
+  /* Bottom Navigation Bar */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #111;
+    border-top: 1px solid #333;
+    padding: 10px 0;
+    z-index: 100;
+  }
+  .bottom-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.2s;
+  }
+  .bottom-nav a:hover { color: #25d366; }
 </style>
 </head>
 <body>
-<h2>Friends Call Logs</h2>
 
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()">&#8592;</div>
+  <div>Calls</div>
+  <i class="fas fa-ellipsis-v menu-btn" id="menuBtn"></i>
+  <div class="dropdown" id="dropdownMenu">
+    <button onclick="clearCallHistory()">Clear Call History</button>
+    <button onclick="window.location.href='settings.html'">Settings</button>
+  </div>
+</div>
+
+<h2>Friends Call Logs</h2>
 <div id="friendsList"></div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <a href="home.html">Chats</a>
+  <a href="groups.html">Groups</a>
+  <a href="calls.html">Calls</a>
+</div>
 
 <script>
 let friends = JSON.parse(localStorage.getItem("friends") || JSON.stringify([
@@ -57,13 +210,29 @@ function renderFriends(){
         <button class="audio">Audio</button>
         <button class="video">Video</button>
       </div>`;
-    const audioBtn=div.querySelector(".audio");
-    const videoBtn=div.querySelector(".video");
-    audioBtn.onclick=()=>{window.location.href=`audio-call.html?friend=${encodeURIComponent(f.name)}&img=${encodeURIComponent(f.img)}`};
-    videoBtn.onclick=()=>{window.location.href=`video-call.html?friend=${encodeURIComponent(f.name)}&img=${encodeURIComponent(f.img)}`};
+    div.querySelector(".audio").onclick=()=>{window.location.href=\`audio-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`};
+    div.querySelector(".video").onclick=()=>{window.location.href=\`video-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`};
     container.appendChild(div);
   });
 }
+
+function clearCallHistory() {
+  localStorage.removeItem("callStatus");
+  alert("Call history cleared!");
+  renderFriends();
+}
+
+// Dropdown toggle
+const menuBtn = document.getElementById("menuBtn");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+menuBtn.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
+});
+document.addEventListener("click", ()=>{
+  dropdownMenu.style.display = "none";
+});
 
 renderFriends();
 </script>
