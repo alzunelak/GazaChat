@@ -40,14 +40,8 @@ h2 { text-align:center; }
     gap:5px; 
 }
 p { color:#aaa; font-style:italic; }
-</style>
-</head>
-<body>
-
-<div class="backBtn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</div>
-<h2>Request / Invite</h2>
-<div id="requestList"></div>
-
+    
+    </style>
 <script>
 // ===== DEFAULT DATA =====
 const defaultRequests = ["Charlie", "David"];
@@ -105,6 +99,7 @@ function renderRequests() {
             localStorage.setItem("groupMembers", JSON.stringify(groupMembers));
             localStorage.setItem("groupRequests", JSON.stringify(requests));
             renderRequests();
+            alert(r + " added to the group!");
         };
 
         const rejectBtn = document.createElement("button");
