@@ -4,28 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>App Language</title>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
-  h1 { font-size:2em; margin-bottom:20px; }
-  select { width:100%; max-width:300px; padding:12px; font-size:1em; border-radius:8px; border:1px solid #ccc; }
-  .back { margin-bottom:20px; cursor:pointer; color:#007bff; display:inline-block; }
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background:#000; 
+    color:#fff; 
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+    gap: 10px; /* Space between arrow and text */
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover {
+    color: #25d366; /* Green on hover */
+  }
+
+  h1 {
+    font-size: 2em;
+    margin: 20px;
+    color: #fff;
+  }
+
+  select {
+    width: calc(100% - 40px);
+    max-width: 300px;
+    padding: 12px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 1px solid #25d366;
+    background: #111;
+    color: #fff;
+    margin: 20px;
+    outline: none;
+  }
+
+  select option {
+    background: #111;
+    color: #fff;
+  }
 </style>
 </head>
 <body>
 
-<div class="back" onclick="history.back()">⬅ Back</div>
-<h1>App Language</h1>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>App Language</div>
+</div>
+
+<h1>Select Language</h1>
 
 <select>
-  <option value="en">English</option>
   <option value="ar">Arabic</option>
-  <option value="fr">French</option>
-  <option value="es">Spanish</option>
-  <option value="de">German</option>
-  <option value="zh">Chinese</option>
+  <option value="en">English</option>
   <option value="hi">Hindi</option>
-  <option value="hi">urdu</option>
-
+  <option value="ur">Urdu</option>
+  <option value="sw">swahili</option>
 </select>
 
 </body>
