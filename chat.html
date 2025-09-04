@@ -40,10 +40,10 @@ color: #fff; /* white text */height:100vh;display:flex;flex-direction:column;}
 .popup{display:none;position:absolute;top:50px;right:10px;background:#000;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
 .popup div{padding:10px;cursor:pointer;border-bottom:1px solid #25d366;}
 .popup div:hover{background:#000;}
-#emojiPicker{position:absolute;bottom:60px;left:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
+#emojiPicker{position:absolute;bottom:60px;right:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
 #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
 #emojiPicker span:hover{background:#000;border-radius:5px;}
-#attachPopup{display:none;position:absolute;bottom:60px;left:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
+#attachPopup{display:none;position:absolute;bottom:60px;right:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
 #attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#000;border:1px solid #25d366;text-align:center;font-size:12px;user-select:none;}
 .attachItem:hover{background:#25d366;}
@@ -471,12 +471,6 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-  <!-- Toast Notification -->
-<div id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:#000;color:#fff;padding:10px 20px;border-radius:8px;box-shadow:0 4px 8px rgba(37,211,102,0.4);
-  display:none;z-index:5000;font-weight:bold;">Message</div>
-
-
 <script>
 // ===== USER DATA & DOM =====
 const myName="Me", myId="user123";
@@ -560,16 +554,21 @@ document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=`audi
 document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 
-// Show custom toast
-function showToast(message, color="#fff") {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.style.color = color;
-  toast.style.display = "block";
-  setTimeout(() => { toast.style.display = "none"; }, 2000);
-}
+// ===== BLOCK & REPORT =====
+  // OPEN CUSTOM MODAL
+document.querySelector(".blockBtn").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "flex";
+};
+document.querySelector(".reportBtn").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "flex";
+};
 
-// Update your confirm handlers
+// CANCEL BUTTON
+document.getElementById("cancelBlockReport").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "none";
+};
+
+// CONFIRM BLOCK
 document.getElementById("confirmBlock").onclick = () => {
   let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
   let friends = JSON.parse(localStorage.getItem("friends") || "[]");
@@ -577,16 +576,17 @@ document.getElementById("confirmBlock").onclick = () => {
   localStorage.setItem("blockedUsers", JSON.stringify(blocked));
   friends = friends.filter(f => f.name !== friendData.name);
   localStorage.setItem("friends", JSON.stringify(friends));
-
+  alert("User blocked.");
   document.getElementById("blockReportModal").style.display = "none";
-  showToast("User blocked", "red"); // custom toast
-  setTimeout(() => { window.location.href = "home.html"; }, 2000);
+  setTimeout(() => { window.location.href = "home.html"; }, 200);
 };
 
+// CONFIRM REPORT
 document.getElementById("confirmReport").onclick = () => {
+  alert("User reported.");
   document.getElementById("blockReportModal").style.display = "none";
-  showToast("User reported", "red"); // custom toast
 };
+
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
