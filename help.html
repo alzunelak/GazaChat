@@ -4,22 +4,94 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Help</title>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
-  h1 { font-size:2em; margin-bottom:20px; }
-  .option { background:#fff; padding:15px 20px; border-radius:8px; margin-bottom:15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-  .option:hover { background:#e6f4ea; }
-  .back { margin-bottom:20px; cursor:pointer; color:#007bff; display:inline-block; }
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background:#000; 
+    color:#fff; 
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+    gap: 10px; /* space between arrow and text */
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover {
+    color: #25d366;
+  }
+
+  /* Options */
+  .option { 
+    background:#111; 
+    padding:15px 20px; 
+    border-radius:8px; 
+    margin:10px 15px; 
+    cursor:pointer; 
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+    box-shadow:0 2px 5px rgba(0,255,0,0.1);
+    transition: background 0.2s;
+  }
+  .option:hover { background:#222; }
+
+  .option-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .arrow {
+    font-size: 1.2em;
+    color: #fff;
+  }
 </style>
 </head>
 <body>
 
-<div class="back" onclick="history.back()">⬅ Back</div>
-<h1>Help</h1>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Help</div>
+</div>
 
-<div class="option">FAQ <span>&#9654;</span></div>
-<div class="option">Contact Support <span>&#9654;</span></div>
-<div class="option">Report a Problem <span>&#9654;</span></div>
+<!-- Options -->
+<div class="option">
+  <div class="option-title"><i class="fa-solid fa-circle-question"></i> FAQ</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
+
+<div class="option">
+  <div class="option-title"><i class="fa-solid fa-headset"></i> Contact Support</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
+
+<div class="option">
+  <div class="option-title"><i class="fa-solid fa-triangle-exclamation"></i> Report a Problem</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
 
 </body>
 </html>
