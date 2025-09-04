@@ -27,7 +27,7 @@
     font-size: 20px;
     font-weight: bold;
     border-bottom: 2px solid #111;
-    gap: 10px; /* Space between arrow and text */
+    gap: 10px;
   }
   .header .back-arrow {
     font-size: 22px;
@@ -41,9 +41,7 @@
   .content {
     padding: 20px;
   }
-
   h1 { margin-top: 0; font-size: 1.8em; }
-
   p { margin-bottom: 20px; color:#ccc; }
 
   button {
@@ -56,8 +54,38 @@
     font-weight: bold;
     transition: all 0.2s;
   }
-  button:hover {
-    background: #1da851;
+  button:hover { background: #1da851; }
+
+  /* Popup */
+  .popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #111;
+    color: #fff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+    text-align: center;
+    z-index: 1000;
+  }
+  .popup h2 { margin-top:0; font-size:1.5em; }
+  .popup button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #25d366;
+    color: #000;
+    border-radius: 8px;
+  }
+
+  /* Overlay */
+  .overlay {
+    display: none;
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.7);
+    z-index: 900;
   }
 </style>
 </head>
@@ -72,13 +100,28 @@
 <!-- Content -->
 <div class="content">
   <p>Click the button below to mark all chats as read.</p>
-  <button onclick="markRead()">Mark All Read</button>
+  <button onclick="showPopup()"><i class="fa-solid fa-check"></i> Mark All Read</button>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Popup -->
+<div class="popup" id="popup">
+  <h2>Success!</h2>
+  <p>All chats have been marked as read.</p>
+  <button onclick="closePopup()">OK</button>
 </div>
 
 <script>
-function markRead(){
-  alert("All chats have been marked as read.");
-  // Optional: reset unread counters in localStorage
+function showPopup(){
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('popup').style.display = 'block';
+}
+
+function closePopup(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('popup').style.display = 'none';
 }
 </script>
 
