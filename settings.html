@@ -8,37 +8,52 @@
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #f8f9fa;
-    color: #333;
+    background: #000;   /* black background */
+    color: #fff;        /* white text */
     padding: 20px;
   }
+
+  /* Header with page title and user */
   .header {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
     padding: 15px;
-    background: #fff;
+    background: #111;   /* dark header */
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,255,0,0.1);
     margin-bottom: 20px;
   }
-  .header img {
+
+  .header-title {
+    font-size: 2em;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .profile img {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    margin-right: 15px;
+    border: 2px solid #25d366; /* green border */
     object-fit: cover;
   }
-  .header-name {
+
+  .profile-name {
     font-size: 1.3em;
     font-weight: bold;
+    color: #fff;
   }
-  h1 {
-    font-size: 2em;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
+
+  /* Settings sections */
   .section {
-    background: #fff;
+    background: #111;  /* dark section */
     border-radius: 8px;
     margin-bottom: 15px;
     padding: 15px 20px;
@@ -46,31 +61,37 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,255,0,0.1);
     transition: background 0.2s;
   }
+
   .section:hover {
-    background: #e6f4ea;
+    background: #222;  /* slightly lighter on hover */
   }
+
   .section-title {
     font-size: 1.2em;
     font-weight: bold;
+    color: #fff;
   }
+
   .arrow {
     font-size: 1.2em;
+    color: #fff;
     transition: transform 0.3s;
   }
 </style>
 </head>
 <body>
 
-<!-- Profile at top -->
+<!-- Header -->
 <div class="header">
-  <img id="profilePic" src="default-profile.png" alt="Profile Picture">
-  <div class="header-name" id="profileName">User</div>
+  <div class="header-title">Settings</div>
+  <div class="profile">
+    <img id="profilePic" src="default-profile.png" alt="Profile Picture">
+    <div class="profile-name" id="profileName">User</div>
+  </div>
 </div>
-
-<h1>Settings</h1>
 
 <!-- Sections -->
 <div class="section" onclick="window.location.href='account.html'">
