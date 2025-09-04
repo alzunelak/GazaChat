@@ -4,114 +4,134 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Join Group</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 body {
-  font-family: Arial;
-  background: #ece5dd;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+  margin:0;
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:#000;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:20px;
+  min-height:100vh;
+}
+.groupHeader {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-bottom:20px;
+}
+.groupHeader img {
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:10px;
+  border:2px solid #25D366;
+}
+.groupHeader h2 {
+  font-size:22px;
+  margin:0;
 }
 .container {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #888;
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
+  width:100%;
+  max-width:400px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
 }
-button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 6px;
-  background: #25d366;
-  color: white;
-  cursor: pointer;
-  margin-top: 10px;
+#groupLink {
+  padding:10px;
+  width:100%;
+  border-radius:8px;
+  border:none;
+  font-size:16px;
+  text-align:center;
 }
-input {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 90%;
-  margin-top: 10px;
+#copyBtn {
+  padding:10px;
+  width:100%;
+  background:#25D366;
+  color:#000;
+  border:none;
+  font-size:16px;
+  border-radius:8px;
+  cursor:pointer;
+}
+#qrCode {
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
 }
 </style>
 </head>
 <body>
 
+<div class="groupHeader">
+  <img id="groupPhoto" src="group.png" alt="Group Photo">
+  <h2 id="groupName">Loading...</h2>
+</div>
+
 <div class="container">
-  <h2 id="groupName"></h2>
-  <p id="message"></p>
-  <input id="userName" placeholder="Enter your name">
-  <br>
-  <button id="joinBtn">Join Group</button>
+  <input type="text" id="groupLink" readonly>
+  <button id="copyBtn"><i class="fa-solid fa-copy"></i> Copy Link</button>
+  <div id="qrCode"></div>
 </div>
 
 <script>
-// Read URL parameters
-const urlParams = new URLSearchParams(window.location.search);
-const groupNameParam = urlParams.get("group");
-const invitedUserParam = urlParams.get("user");
+// ===== CONFIG =====
+const currentUser = prompt("Enter your name to join the group:") || "Guest";
 
-// Load groups from localStorage
-let groups = JSON.parse(localStorage.getItem("groups") || "[]");
-let groupIndex = groups.findIndex(g => g.name === groupNameParam);
+// ===== GET GROUP INDEX =====
+const params = new URLSearchParams(window.location.search);
+const groupIndex = params.get('group');
+let groups = JSON.parse(localStorage.getItem('groups') || '[]');
+let currentGroup = groups[groupIndex];
 
-const groupNameEl = document.getElementById("groupName");
-const messageEl = document.getElementById("message");
-const userNameInput = document.getElementById("userName");
-const joinBtn = document.getElementById("joinBtn");
-
-if (groupIndex === -1) {
-  // Group not found
-  groupNameEl.innerText = "Group not found";
-  messageEl.innerText = "Invalid or expired link.";
-  joinBtn.style.display = "none";
+// ===== VALIDATION =====
+if(!currentGroup){
+  alert("Invalid or expired group link!");
+  document.getElementById("groupName").textContent = "Unknown Group";
 } else {
-  const group = groups[groupIndex];
-  groupNameEl.innerText = group.name;
+  document.getElementById("groupName").textContent = currentGroup.name;
+  document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
 
-  // Prefill invited username if present in URL
-  if (invitedUserParam) {
-    userNameInput.value = invitedUserParam;
-    userNameInput.disabled = true; // prevent changing
+  // Auto-join: add user to members if not already in group
+  const memberNames = currentGroup.members.map(m=>m.name);
+  if(!memberNames.includes(currentUser)){
+    currentGroup.members.push({name: currentUser, accepted:true});
+    groups[groupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    alert(`You have joined "${currentGroup.name}"`);
   }
 
-  joinBtn.onclick = () => {
-    const name = userNameInput.value.trim();
-    if (!name) { alert("Enter your name"); return; }
+  // Redirect to chat page after 2 seconds
+  setTimeout(()=>{
+    window.location.href = `chat.html?group=${groupIndex}&user=${encodeURIComponent(currentUser)}`;
+  }, 2000);
 
-    // Check if invited
-    if (!group.invited.includes(name) && group.admin !== name) {
-      alert("You are not invited to this group!");
-      return;
-    }
-
-    // Add member if not already in the group
-    if (!group.members.find(m => m.name === name)) {
-      group.members.push({ name, accepted: true });
-    }
-
-    // Set first member as admin if none
-    if (!group.admin) group.admin = name;
-
-    // Remove from invited list
-    group.invited = group.invited.filter(u => u !== name);
-
-    // Save changes
-    groups[groupIndex] = group;
-    localStorage.setItem("groups", JSON.stringify(groups));
-    localStorage.setItem("currentGroupIndex", groupIndex);
-
-    alert(`Welcome ${name}! You joined ${group.name}`);
-    window.location.href = "group.html"; // redirect to group chat
-  };
+  // Display group link and QR code
+  const link = `${window.location.origin}/join.html?group=${groupIndex}`;
+  document.getElementById("groupLink").value = link;
+  new QRCode(document.getElementById("qrCode"), {
+    text: link,
+    width:200,
+    height:200
+  });
 }
-</script>
 
+// ===== COPY LINK =====
+document.getElementById("copyBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("groupLink");
+  input.select();
+  input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Group link copied!");
+});
+</script>
 </body>
 </html>
