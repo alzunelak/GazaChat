@@ -5,74 +5,189 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Audio Call</title>
 <style>
-body{font-family:Arial;background:#e5ddd5;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
-#friendProfile{width:100px;height:100px;border-radius:50%;margin-bottom:20px;border:4px solid #25d366;}
-.ringing{animation:ring 1s infinite;}
-@keyframes ring{0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}}
-#controls button{margin:10px;padding:10px 20px;border:none;border-radius:8px;color:white;font-size:16px;cursor:pointer;}
-.accept{background:#25d366;}
-.decline{background:red;}
-.hangup{background:#555;display:none;}
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #e5ddd5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+  }
+
+  /* Top Bar */
+  .top-bar {
+    background: #075E54;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    font-size: 18px;
+  }
+  .top-bar h2 {
+    margin: 0;
+    font-size: 20px;
+    flex: 1;
+    text-align: center;
+  }
+  .top-bar button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* Middle Section */
+  .middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .middle img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #25d366;
+    margin-bottom: 10px;
+  }
+  .middle p {
+    font-size: 18px;
+    color: #333;
+  }
+
+  /* Timer */
+  #timer {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #555;
+  }
+
+  /* Bottom Bar */
+  .bottom-bar {
+    background: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #ccc;
+  }
+  .bottom-bar button {
+    border: none;
+    background: none;
+    font-size: 22px;
+    cursor: pointer;
+  }
+  .end-call {
+    background: red;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50%;
+    font-size: 18px;
+  }
+
+  /* Three Dot Menu */
+  .menu {
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown {
+    display: none;
+    position: absolute;
+    bottom: 40px;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .dropdown button {
+    padding: 10px 20px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .dropdown button:hover {
+    background: #f1f1f1;
+  }
 </style>
 </head>
 <body>
-<img id="friendProfile">
-<h2 id="friendName"></h2>
-<p id="callStatus">Incoming Audio Call...</p>
-<p id="timer">00:00</p>
-<div id="controls">
-  <button id="acceptBtn" class="accept">Accept</button>
-  <button id="declineBtn" class="decline">Decline</button>
-  <button id="hangupBtn" class="hangup">Hang Up</button>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <button id="addParticipant">➕</button>
+  <h2 id="friendName">Friend Name</h2>
+  <div class="menu">
+    <button id="menuBtn">⋮</button>
+    <div class="dropdown" id="menuDropdown">
+      <button>Add Participants</button>
+      <button>Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- Middle -->
+<div class="middle">
+  <img id="userPic" src="https://via.placeholder.com/120" alt="Your Picture">
+  <p>Audio Call in Progress...</p>
+  <p id="timer">Connecting...</p>
+</div>
+
+<!-- Bottom Bar -->
+<div class="bottom-bar">
+  <button id="videoBtn">📹</button>
+  <button id="speakerBtn">🔊</button>
+  <button id="muteBtn">🎙️</button>
+  <button id="endCallBtn" class="end-call">🔴</button>
 </div>
 
 <script>
-const urlParams=new URLSearchParams(window.location.search);
-const friendName=urlParams.get("friend");
-const friendImg=urlParams.get("img");
-document.getElementById("friendName").innerText=friendName;
-document.getElementById("friendProfile").src=friendImg;
-document.getElementById("friendProfile").classList.add("ringing");
+  // Get friend from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const friendName = urlParams.get("friend") || "Unknown Friend";
+  document.getElementById("friendName").innerText = friendName;
 
-let timerInterval; let seconds=0;
-
-function formatTime(sec){let m=Math.floor(sec/60);let s=sec%60;return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;}
-function startTimer(){timerInterval=setInterval(()=>{seconds++;document.getElementById("timer").innerText=formatTime(seconds);},1000);}
-
-function saveStatus(status){
-  const callStatus=JSON.parse(localStorage.getItem("callStatus")||"{}");
-  callStatus[friendName]={text:status.text,class:status.class};
-  localStorage.setItem("callStatus",JSON.stringify(callStatus));
-}
-
-document.getElementById("acceptBtn").onclick=()=>{
-  document.getElementById("callStatus").innerText="In Audio Call with "+friendName;
-  document.getElementById("acceptBtn").style.display="none";
-  document.getElementById("declineBtn").style.display="none";
-  document.getElementById("hangupBtn").style.display="inline-block";
-  document.getElementById("friendProfile").classList.remove("ringing");
-  saveStatus({text:"Audio Call Accepted",class:"accepted"});
-  startTimer();
-};
-
-document.getElementById("declineBtn").onclick=()=>{
-  saveStatus({text:"Call Declined",class:"declined"});
-  window.location.href="calls.html";
-};
-
-document.getElementById("hangupBtn").onclick=()=>{
-  clearInterval(timerInterval);
-  saveStatus({text:"Call Ended",class:"declined"});
-  window.location.href="calls.html";
-};
-
-// Auto Missed if no answer in 25s
-setTimeout(()=>{
-  if(document.getElementById("acceptBtn").style.display!=="none"){
-    saveStatus({text:"Missed Call",class:"missed"});
-    window.location.href="calls.html";
+  // Timer with delay
+  let seconds = 0;
+  function formatTime(sec){
+    let m = Math.floor(sec/60), s = sec%60;
+    return `${m<10?"0":""}${m}:${s<10?"0":""}${s}`;
   }
-},25000);
+  setTimeout(() => {
+    document.getElementById("timer").innerText = "00:00";
+    setInterval(() => {
+      seconds++;
+      document.getElementById("timer").innerText = formatTime(seconds);
+    }, 1000);
+  }, 3000);
+
+  // Menu toggle
+  const menuBtn = document.getElementById("menuBtn");
+  const menuDropdown = document.getElementById("menuDropdown");
+  menuBtn.addEventListener("click", () => {
+    menuDropdown.style.display = menuDropdown.style.display === "block" ? "none" : "block";
+  });
+
+  // Close menu if click outside
+  document.addEventListener("click", (e) => {
+    if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+      menuDropdown.style.display = "none";
+    }
+  });
+
+  // End Call
+  document.getElementById("endCallBtn").onclick = () => {
+    alert("Call Ended");
+    window.location.href = "calls.html";
+  };
 </script>
+
 </body>
 </html>
