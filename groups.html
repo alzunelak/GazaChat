@@ -16,13 +16,14 @@ body {
 }
 h1 { margin-bottom: 10px; }
 
-/* Top-left back arrow */
+/* header */
 .backArrow {
   position: absolute;
   left: 20px;
   top: 20px;
   font-size: 24px;
   cursor: pointer;
+  background:#111;
   color: #fff;
 }
 
@@ -33,6 +34,7 @@ h1 { margin-bottom: 10px; }
   top: 20px;
   font-size: 24px;
   cursor: pointer;
+  background: #111;
   color: #fff;
   z-index: 200;
 }
@@ -166,8 +168,11 @@ button#createGroupBtn {
 </head>
 <body>
 
-  <!-- Top-left back arrow -->
-  <i class="fas fa-arrow-left backArrow" onclick="goBack()"></i>
+  <!-- Header -->
+<div class="header">
+  <h1>My Groups</h1>
+  <i class="fas fa-ellipsis-v topMoreBtn" id="menuBtn"></i>
+</div>
 
   <!-- Top-right three-dot menu -->
   <i class="fas fa-ellipsis-v topMoreBtn" onclick="toggleTopMenu()"></i>
@@ -175,10 +180,11 @@ button#createGroupBtn {
     <button onclick="topOption1()">settings</button>
   </div>
 
-<h1>My Groups</h1>
+<!-- Main content -->
+<main>
 <button id="createGroupBtn">+ Create Group</button>
 <div id="groupsList"></div>
-
+</main>
 
 <!-- Bottom bar -->
 <div class="bottomBar">
@@ -262,7 +268,7 @@ document.addEventListener('click', (e) => {
 });
 // Bottom
   function goToChat() {
-  window.location.href = "chat.html";
+  window.location.href = "home.html";
 }
 
 function goToGroups() {
@@ -303,4 +309,4 @@ window.addEventListener('storage', renderGroups);
 renderGroups();
 </script>
 </body>
-</html> the bottom are not showing and when i click to tale to calls.html
+</html> 
