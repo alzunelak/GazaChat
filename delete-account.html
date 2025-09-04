@@ -6,75 +6,42 @@
 <title>Delete Account</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body { 
-    font-family: Arial, sans-serif; 
-    margin:0; 
-    padding:0; 
-    background:#000; 
-    color:#fff; 
-  }
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#000; color:#fff; text-align:center; }
 
   /* Header */
   .header {
-    position: relative;
-    height: 50px;
-    background: #111;
-    color: #fff;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    font-size: 20px;
-    font-weight: bold;
-    border-bottom: 2px solid #111;
-    gap: 10px;
+    display:flex; align-items:center; gap:10px; padding:10px 20px;
+    background:#111; font-size:20px; font-weight:bold;
   }
-  .header .back-arrow {
-    font-size: 22px;
-    cursor: pointer;
-    color: #fff;
-    transition: color 0.2s;
-  }
-  .header .back-arrow:hover {
-    color: #25d366; 
-  }
+  .header .back-arrow { font-size:22px; cursor:pointer; color:#fff; transition:0.2s; }
+  .header .back-arrow:hover { color:#25d366; }
 
   /* Container */
-  .container { 
-    max-width: 400px; 
-    margin: 50px auto; 
-    background:#111; 
-    padding: 20px; 
-    border-radius:8px; 
-    box-shadow:0 4px 15px rgba(37, 211, 102, 0.3); 
-    text-align:center; 
+  .container {
+    max-width:400px; margin:50px auto; background:#111; padding:20px; border-radius:12px;
+    box-shadow:0 4px 15px rgba(37,211,102,0.3);
   }
-
-  h2 { 
-    margin-bottom: 20px; 
-    font-size: 1.8em;
-  }
-  p { 
-    color: #ccc;
-    margin-bottom: 30px; 
-  }
+  h2 { margin-bottom:15px; font-size:1.8em; }
+  p { color:#ccc; margin-bottom:30px; }
 
   /* Delete Button */
-  button { 
-    padding:12px 20px; 
-    font-size:16px; 
-    border:none; 
-    border-radius:6px; 
-    cursor:pointer; 
-    transition: 0.2s;
+  .delete-btn {
+    padding:12px 20px; font-size:16px; border:none; border-radius:8px; cursor:pointer;
+    background:#f44336; color:#fff; transition:0.2s;
   }
-  .delete-btn { 
-    background:#f44336; 
-    color:white; 
+  .delete-btn:hover { background:#d32f2f; }
+
+  /* Popup */
+  .popup {
+    display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+    background:#111; color:#fff; padding:20px; border-radius:12px; text-align:center;
+    box-shadow:0 0 20px rgba(37,211,102,0.4); width:90%; max-width:300px; word-wrap:break-word; z-index:500;
   }
-  .delete-btn:hover { 
-    background:#d32f2f; 
+  .popup button {
+    margin-top:15px; padding:10px 20px; border:none; border-radius:8px;
+    background:#25d366; color:#000; font-weight:bold; cursor:pointer;
   }
+  .popup button:hover { background:#1aa34a; }
 </style>
 </head>
 <body>
@@ -92,19 +59,37 @@
   <button class="delete-btn" id="deleteAccountBtn"><i class="fa-solid fa-trash"></i> Delete Account</button>
 </div>
 
+<!-- Popup -->
+<div class="popup" id="confirmPopup"></div>
+
 <script>
 const deleteBtn = document.getElementById('deleteAccountBtn');
+const popup = document.getElementById('confirmPopup');
 
-deleteBtn.addEventListener('click', () => {
-  const confirmDelete = confirm("Are you sure you want to delete your account? This cannot be undone.");
-  if(confirmDelete){
-    // Clear all user data
-    localStorage.clear();
-    alert("Account deleted successfully!");
-    // Redirect to index page
-    window.location.href = "index.html"; // replace with your index page URL
-  }
-});
+deleteBtn.onclick = () => {
+  showPopup(`⚠ Are you sure you want to delete your account? This cannot be undone.<br>
+  <button onclick="confirmDelete()">Yes, Delete</button> <button onclick="closePopup()">Cancel</button>`);
+}
+
+function confirmDelete(){
+  // Clear all user data
+  localStorage.clear();
+  showPopup("Account deleted successfully!<br><button onclick='closePopupRedirect()'>OK</button>");
+}
+
+function showPopup(message){
+  popup.innerHTML = message;
+  popup.style.display = 'block';
+}
+
+function closePopup(){
+  popup.style.display = 'none';
+}
+
+function closePopupRedirect(){
+  // Close popup and redirect to index page
+  window.location.href = "index.html"; // Replace with your landing page
+}
 </script>
 
 </body>
