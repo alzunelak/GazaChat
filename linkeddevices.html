@@ -53,9 +53,10 @@
     align-items:center;
     box-shadow:0 2px 5px rgba(37,211,102,0.2);
     transition: background 0.2s;
+    flex-wrap:wrap;
   }
   .device:hover { background:#222; }
-  .device-info { display:flex; flex-direction:column; }
+  .device-info { display:flex; flex-direction:column; margin-bottom:5px; }
   .device-name { font-weight:bold; font-size:1em; color:#fff; }
   .device-details { font-size:0.9em; color:#aaa; }
   .device button {
@@ -83,6 +84,48 @@
 
   /* No devices message */
   .no-devices { text-align:center; color:#888; margin-top:50px; }
+
+  /* Popup Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left:0; top:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-content {
+    background:#111;
+    padding:20px;
+    border-radius:8px;
+    width:90%; max-width:400px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.5);
+  }
+  .modal-content input {
+    width:100%;
+    padding:10px;
+    margin-bottom:15px;
+    border:none;
+    border-radius:5px;
+    font-size:1em;
+  }
+  .modal-content button {
+    padding:10px 15px;
+    border:none;
+    border-radius:5px;
+    font-size:1em;
+    margin:5px;
+    cursor:pointer;
+  }
+  .btn-save { background:#25d366; color:white; }
+  .btn-cancel { background:#dc3545; color:white; }
+
+  @media (max-width:600px) {
+    h1 { font-size:1.5em; }
+    .device { flex-direction:column; align-items:flex-start; }
+    .add-device { font-size:0.9em; }
+  }
 </style>
 </head>
 <body>
@@ -97,7 +140,19 @@
 <div class="content">
   <p>Manage devices linked to your ChatApp account. Log out of any device you no longer use.</p>
   <div id="devicesContainer"></div>
-  <button class="add-device" onclick="addDevice()">Link New Device</button>
+  <button class="add-device" onclick="openModal()">Link New Device</button>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="deviceModal">
+  <div class="modal-content">
+    <h2>Link New Device</h2>
+    <input type="text" id="deviceNameInput" placeholder="Enter device name">
+    <div>
+      <button class="btn-save" onclick="saveDevice()">Save</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -132,16 +187,25 @@ function removeDevice(index){
   }
 }
 
-function addDevice(){
-  const deviceName = prompt('Enter device name (e.g., "Laptop", "Tablet")');
-  if(deviceName){
-    const newDevice = {
-      name: deviceName,
-      lastActive: new Date().toLocaleString()
-    };
-    devices.push(newDevice);
+function openModal(){
+  document.getElementById('deviceModal').style.display = 'flex';
+  document.getElementById('deviceNameInput').focus();
+}
+
+function closeModal(){
+  document.getElementById('deviceModal').style.display = 'none';
+  document.getElementById('deviceNameInput').value = '';
+}
+
+function saveDevice(){
+  const name = document.getElementById('deviceNameInput').value.trim();
+  if(name){
+    devices.push({ name, lastActive: new Date().toLocaleString() });
     localStorage.setItem('linkedDevices', JSON.stringify(devices));
     renderDevices();
+    closeModal();
+  } else {
+    alert("Please enter a device name.");
   }
 }
 
