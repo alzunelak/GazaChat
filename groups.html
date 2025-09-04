@@ -12,86 +12,60 @@ body {
   padding:20px;
   background:#000;
   color:#fff;
-  position: relative;
 }
 h1 { margin-bottom: 10px; }
 
-/* header */
-.{
+/* Header */
+.header {
+  position: relative;
+  height: 50px;
+}
+.topMoreBtn {
   position: absolute;
-  left: 20px;
-  top: 20px;
+  right: 0;
+  top: 0;
   font-size: 24px;
   cursor: pointer;
   background:#111;
-  color: #fff;
-}
-
-/* Top-right three-dot */
-.topMoreBtn {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  font-size: 24px;
-  cursor: pointer;
-  background: #111;
-  color: #fff;
+  color:#fff;
+  padding:5px;
+  border-radius:4px;
   z-index: 200;
 }
 
-/* Dropdown for top menu */
+/* Dropdown */
 .dropdownTop {
   display: none;
   position: absolute;
-  top: 60px;
-  right: 20px;
-  background: #000;
-  border: 1px solid #25d366;
-  border-radius: 8px;
+  top: 40px;
+  right: 0;
+  background:#000;
+  border:1px solid #25d366;
+  border-radius:8px;
   flex-direction: column;
   z-index: 200;
 }
 .dropdownTop button {
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  text-align: left;
-  border-bottom: 1px solid #25d366;
+  background:#000;
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  cursor:pointer;
+  text-align:left;
+  border-bottom:1px solid #25d366;
 }
 .dropdownTop button:last-child { border-bottom:none; }
 .dropdownTop button:hover { background:#25d366; color:#000; }
 
-/* Create group button */
-button#createGroupBtn {
-  padding: 10px 15px;
+/* Create Group Button */
+#createGroupBtn {
+  padding:10px 15px;
   background:#25d366;
   color:white;
   border:none;
   border-radius:8px;
   cursor:pointer;
   margin-bottom:10px;
-}
-.bottomBar {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  background: #111;
-  position: fixed; /* stay at bottom */
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  color: #25d366;
-}
-
-.bottomBar button {
-  background: none;
-  border: none;
-  color: #25d366;
-  font-size: 16px;
-  cursor: pointer;
 }
 
 /* Group cards */
@@ -105,26 +79,11 @@ button#createGroupBtn {
   cursor:pointer;
   position:relative;
 }
-.group img {
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  margin-right:10px;
-  object-fit:cover;
-}
+.group img { width:50px; height:50px; border-radius:50%; margin-right:10px; object-fit:cover; }
 .group .info { flex:1; }
 .group .info h3 { margin:0; font-size:16px; }
 .group .info p { margin:0; font-size:12px; color:gray; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-.red-dot {
-  position:absolute;
-  right:10px;
-  top:15px;
-  width:10px;
-  height:10px;
-  background:red;
-  border-radius:50%;
-}
+.red-dot { position:absolute; right:10px; top:15px; width:10px; height:10px; background:red; border-radius:50%; }
 
 /* Bottom bar */
 .bottomBar {
@@ -133,7 +92,10 @@ button#createGroupBtn {
   align-items:center;
   padding:10px 0;
   background:#111;
-  flex-shrink:0;
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
 }
 .bottomBar button {
   background:none;
@@ -143,7 +105,6 @@ button#createGroupBtn {
   cursor:pointer;
 }
 
-  
 /* NEW GROUP POPUP */
 #newGroupPopup {
   display:none;
@@ -155,45 +116,34 @@ button#createGroupBtn {
   color:#fff;
   padding:15px;
   border-radius:8px;
-  box-shadow: 0 0 15px #25d366;
+  box-shadow:0 0 15px #25d366;
   flex-direction:column;
 }
-#newGroupPopup input {
-  width:200px;
-  margin-bottom:10px;
-  padding:5px;
-}
+#newGroupPopup input { width:200px; margin-bottom:10px; padding:5px; }
 #newGroupPopup button { padding:5px 10px; margin-right:5px; }
 </style>
 </head>
 <body>
 
-  <!-- Header -->
 <div class="header">
   <h1>My Groups</h1>
   <i class="fas fa-ellipsis-v topMoreBtn" id="menuBtn"></i>
+  <div id="topDropdown" class="dropdownTop">
+    <button onclick="goToSettings()">Settings</button>
+  </div>
 </div>
 
-  <!-- Top-right three-dot menu -->
-  <i class="fas fa-ellipsis-v topMoreBtn" onclick="toggleTopMenu()"></i>
-  <div id="topDropdown" class="dropdownTop">
-    <button onclick="topOption1()">settings</button>
-  </div>
-
-<!-- Main content -->
 <main>
-<button id="createGroupBtn">+ Create Group</button>
-<div id="groupsList"></div>
+  <button id="createGroupBtn">+ Create Group</button>
+  <div id="groupsList"></div>
 </main>
 
-<!-- Bottom bar -->
 <div class="bottomBar">
   <button onclick="goToChat()">Chat</button>
   <button onclick="goToGroups()">Groups</button>
   <button onclick="goToCalls()">Calls</button>
 </div>
 
-  
 <div id="newGroupPopup">
   <h3>New Group</h3>
   <input type="text" id="newGroupName" placeholder="Group Name"><br>
@@ -205,96 +155,87 @@ button#createGroupBtn {
 </div>
 
 <script>
-const myName = "You";
-let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+const myName="You";
+let groups = JSON.parse(localStorage.getItem("groups")||"[]");
 
 const groupsListDiv = document.getElementById("groupsList");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
+const menuBtn = document.getElementById("menuBtn");
+const topDropdown = document.getElementById("topDropdown");
 
-createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
-function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
+// Show create group popup
+createGroupBtn.onclick = ()=>{ newGroupPopup.style.display="flex"; };
+function closeNewGroupPopup(){ newGroupPopup.style.display="none"; }
 
+// Render groups
 function renderGroups(){
-  groups = JSON.parse(localStorage.getItem("groups") || "[]");
-  groupsListDiv.innerHTML = "";
-
-  const myGroups = groups.filter(g => g.members.some(m=>m.name === myName));
-
+  groups = JSON.parse(localStorage.getItem("groups")||"[]");
+  groupsListDiv.innerHTML="";
+  const myGroups = groups.filter(g=>g.members.some(m=>m.name===myName));
   myGroups.sort((a,b)=>{
-    const aTime = a.messages && a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
-    const bTime = b.messages && b.messages.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
-    return bTime - aTime;
+    const aTime=a.messages?.length?new Date(a.messages[a.messages.length-1].time).getTime():0;
+    const bTime=b.messages?.length?new Date(b.messages[b.messages.length-1].time).getTime():0;
+    return bTime-aTime;
   });
-
   myGroups.forEach((g,index)=>{
-    const div = document.createElement("div");
-    div.className = "group";
-    div.innerHTML = `
-      <img src="${g.photo || 'group.png'}">
+    const div=document.createElement("div");
+    div.className="group";
+    div.innerHTML=`
+      <img src="${g.photo||'group.png'}">
       <div class="info">
         <h3>${g.name}</h3>
-        <p title="${g.messages && g.messages.length ? g.messages[g.messages.length-1].text : 'No messages yet'}">
-          ${g.messages && g.messages.length ? (g.messages[g.messages.length-1].text.slice(0,20)+'...') : 'No messages yet'}
+        <p title="${g.messages?.length?g.messages[g.messages.length-1].text:'No messages yet'}">
+          ${g.messages?.length?(g.messages[g.messages.length-1].text.slice(0,20)+'...'):'No messages yet'}
         </p>
       </div>
-      ${g.unread ? '<div class="red-dot"></div>' : ''}
+      ${g.unread?'<div class="red-dot"></div>':''}
     `;
     groupsListDiv.appendChild(div);
-
-    // Group click opens chat
-    div.querySelector('.info').onclick = () => {
-      g.unread = false;
-      groups = groups.map(gr=>gr.name===g.name ? g : gr);
+    div.querySelector('.info').onclick=()=>{
+      g.unread=false;
+      groups=groups.map(gr=>gr.name===g.name?g:gr);
       localStorage.setItem("groups",JSON.stringify(groups));
-      localStorage.setItem("currentGroupIndex", index);
-      window.location = "group-chat.html";
+      localStorage.setItem("currentGroupIndex",index);
+      window.location="group-chat.html";
     };
   });
 }
 
 // Top menu toggle
-function goToSettings() {
-  window.location.href = "setting.html";
-}
+menuBtn.addEventListener('click', e=>{
+  e.stopPropagation();
+  topDropdown.style.display = topDropdown.style.display==='block'?'none':'block';
+});
 
-// Close top dropdown if clicking outside
-document.addEventListener('click', (e) => {
-  const dropdown = document.getElementById("topDropdown");
-  const btn = document.querySelector('.topMoreBtn');
-  if(!dropdown.contains(e.target) && !btn.contains(e.target)){
-    dropdown.style.display = 'none';
+// Close dropdown if click outside
+document.addEventListener('click', e=>{
+  if(!topDropdown.contains(e.target) && !menuBtn.contains(e.target)){
+    topDropdown.style.display='none';
   }
 });
-// Bottom
-  function goToChat() {
-  window.location.href = "home.html";
-}
 
-function goToGroups() {
-  window.location.href = "groups.html"; // stays on current page
-}
+// Settings page
+function goToSettings(){ window.location.href="setting.html"; }
 
-function goToCalls() {
-  window.location.href = "calls.html";
-}
+// Bottom nav
+function goToChat(){ window.location.href="home.html"; }
+function goToGroups(){ window.location.href="groups.html"; }
+function goToCalls(){ window.location.href="calls.html"; }
 
-
-// Create new group
+// Create group
 function createGroup(){
-  const name = document.getElementById("newGroupName").value.trim();
+  const name=document.getElementById("newGroupName").value.trim();
   if(!name){ alert("Enter a group name!"); return; }
-
-  const fileInput = document.getElementById("newGroupPhoto");
+  const fileInput=document.getElementById("newGroupPhoto");
   if(fileInput.files && fileInput.files[0]){
-    const reader = new FileReader();
-    reader.onload = e => saveGroup(name,e.target.result);
+    const reader=new FileReader();
+    reader.onload=e=>saveGroup(name,e.target.result);
     reader.readAsDataURL(fileInput.files[0]);
   } else saveGroup(name,"group.png");
 }
-
 function saveGroup(name,img){
-  const newGroup = { name, photo: img, admin: myName, members:[{name:myName,accepted:true}], invited:[], blocked:[], messages:[], unread:false };
+  const newGroup={ name, photo:img, admin:myName, members:[{name:myName,accepted:true}], invited:[], blocked:[], messages:[], unread:false };
   groups.push(newGroup);
   localStorage.setItem("groups",JSON.stringify(groups));
   renderGroups();
@@ -303,10 +244,9 @@ function saveGroup(name,img){
   document.getElementById("newGroupPhoto").value="";
 }
 
-function goBack() { window.history.back(); }
-
 window.addEventListener('storage', renderGroups);
 renderGroups();
 </script>
+
 </body>
-</html> 
+</html>
