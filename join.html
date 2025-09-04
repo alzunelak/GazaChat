@@ -83,16 +83,14 @@ body {
 </div>
 
 <script>
-// ===== CONFIG =====
-const currentUser = prompt("Enter your name to join the group:") || "Guest";
-
-// ===== GET GROUP INDEX =====
+// Get group index from URL
 const params = new URLSearchParams(window.location.search);
 const groupIndex = params.get('group');
+
+// Fetch group data from localStorage
 let groups = JSON.parse(localStorage.getItem('groups') || '[]');
 let currentGroup = groups[groupIndex];
 
-// ===== VALIDATION =====
 if(!currentGroup){
   alert("Invalid or expired group link!");
   document.getElementById("groupName").textContent = "Unknown Group";
@@ -100,23 +98,11 @@ if(!currentGroup){
   document.getElementById("groupName").textContent = currentGroup.name;
   document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
 
-  // Auto-join: add user to members if not already in group
-  const memberNames = currentGroup.members.map(m=>m.name);
-  if(!memberNames.includes(currentUser)){
-    currentGroup.members.push({name: currentUser, accepted:true});
-    groups[groupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
-    alert(`You have joined "${currentGroup.name}"`);
-  }
-
-  // Redirect to chat page after 2 seconds
-  setTimeout(()=>{
-    window.location.href = `chat.html?group=${groupIndex}&user=${encodeURIComponent(currentUser)}`;
-  }, 2000);
-
-  // Display group link and QR code
+  // Set link
   const link = `${window.location.origin}/join.html?group=${groupIndex}`;
   document.getElementById("groupLink").value = link;
+
+  // Generate QR code
   new QRCode(document.getElementById("qrCode"), {
     text: link,
     width:200,
@@ -124,7 +110,7 @@ if(!currentGroup){
   });
 }
 
-// ===== COPY LINK =====
+// Copy link function
 document.getElementById("copyBtn").addEventListener("click", ()=>{
   const input = document.getElementById("groupLink");
   input.select();
