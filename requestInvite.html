@@ -6,13 +6,40 @@
 <title>Request / Invite</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body { font-family:'Segoe UI',Arial,sans-serif; background:#fff; padding:20px; }
+body { 
+    font-family:'Segoe UI',Arial,sans-serif; 
+    background:#000; 
+    color:#fff; 
+    padding:20px; 
+}
 h2 { text-align:center; }
-.item { padding:10px; border-bottom:1px solid #ccc; display:flex; justify-content:space-between; align-items:center; }
-.item button { margin-left:5px; padding:5px 10px; border:none; border-radius:5px; cursor:pointer; color:#fff; }
+.item { 
+    padding:10px; 
+    border-bottom:1px solid #333; 
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+}
+.item button { 
+    margin-left:5px; 
+    padding:5px 10px; 
+    border:none; 
+    border-radius:5px; 
+    cursor:pointer; 
+    color:#fff; 
+}
 .acceptBtn { background:#25D366; }
 .rejectBtn { background:#FF3B30; }
-.backBtn { margin-bottom:10px; cursor:pointer; color:#128C7E; font-size:16px; display:inline-flex; align-items:center; gap:5px; }
+.backBtn { 
+    margin-bottom:10px; 
+    cursor:pointer; 
+    color:#00bfa5; 
+    font-size:16px; 
+    display:inline-flex; 
+    align-items:center; 
+    gap:5px; 
+}
+p { color:#aaa; font-style:italic; }
 </style>
 </head>
 <body>
@@ -23,7 +50,7 @@ h2 { text-align:center; }
 
 <script>
 // ===== STATE =====
-let requests = JSON.parse(localStorage.getItem("groupRequests") || '["Charlie","David"]'); // Example
+let requests = JSON.parse(localStorage.getItem("groupRequests") || '["Charlie","David"]');
 let groupMembers = JSON.parse(localStorage.getItem("groupMembers") || '["John Doe","Alice","Bob"]');
 
 const listDiv = document.getElementById("requestList");
@@ -31,7 +58,7 @@ const listDiv = document.getElementById("requestList");
 function renderRequests(){
     listDiv.innerHTML = "";
     if(requests.length === 0){
-        listDiv.innerHTML = "<p style='color:#555;font-style:italic;'>No requests</p>";
+        listDiv.innerHTML = "<p>No requests</p>";
     } else {
         requests.forEach((r,index)=>{
             const div = document.createElement("div");
@@ -44,15 +71,16 @@ function renderRequests(){
             acceptBtn.className = "acceptBtn";
             acceptBtn.textContent = "Accept";
             acceptBtn.onclick = ()=>{
-                // Add to group
                 if(!groupMembers.includes(r)) groupMembers.push(r);
                 localStorage.setItem("groupMembers", JSON.stringify(groupMembers));
-
-                // Remove from requests
+                
                 requests.splice(index,1);
                 localStorage.setItem("groupRequests", JSON.stringify(requests));
                 renderRequests();
                 alert(r + " added to the group!");
+
+                // Optional: Go to chat automatically
+                // window.location.href = "group-chat.htm";
             };
 
             const rejectBtn = document.createElement("button");
@@ -76,9 +104,7 @@ function goBack(){
     window.history.back();
 }
 
-// Initial render
 renderRequests();
 </script>
-
 </body>
 </html>
