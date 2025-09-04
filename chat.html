@@ -458,17 +458,16 @@ input:checked + .slider:before {transform:translateX(26px);}
     </button>
   </div>
 </div>
-<!-- BLOCK CONFIRM MODAL -->
-<div id="blockModal" style="
-  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:1000;">
-  <div style="
-    background:#111;padding:20px;border-radius:10px;text-align:center;width:300px;">
-    <h2 style="color:#fff;">Confirm Block</h2>
-    <p style="color:#ccc;">Are you sure you want to block this user?</p>
+
+  <!-- BLOCK & REPORT CUSTOM MODAL -->
+<div id="blockReportModal" class="modal">
+  <div class="modal-content">
+    <h2 style="color:#fff;">Confirm Action</h2>
+    <p style="color:#fff;">Are you sure you want to proceed?</p>
     <div style="display:flex;gap:10px;margin-top:15px;">
       <button id="confirmBlock" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Block</button>
-      <button id="cancelBlock" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+      <button id="confirmReport" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Report</button>
+      <button id="cancelBlockReport" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
     </div>
   </div>
 </div>
@@ -556,47 +555,38 @@ document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=`audi
 document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 
-// ===== Block =====
-const blockModal = document.getElementById("blockModal");
-const toast = document.getElementById("toast");
-
-// Simulate a selected user (replace this with real data)
-const friendData = { name: "John Doe" };
-
-// Open Block Modal
+// OPEN CUSTOM MODAL
 document.querySelector(".blockBtn").onclick = () => {
-  blockModal.style.display = "flex";
+  document.getElementById("blockReportModal").style.display = "flex";
+};
+document.querySelector(".reportBtn").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "flex";
 };
 
-// Cancel Button
-document.getElementById("cancelBlock").onclick = () => {
-  blockModal.style.display = "none";
+// CANCEL BUTTON
+document.getElementById("cancelBlockReport").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "none";
 };
 
-// Show Custom Toast
-function showToast(message, color="#fff") {
-  toast.textContent = message;
-  toast.style.color = color;
-  toast.style.display = "block";
-  setTimeout(() => { toast.style.display = "none"; }, 2000);
-}
-
-// Confirm Block
+// CONFIRM BLOCK
 document.getElementById("confirmBlock").onclick = () => {
   let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
   let friends = JSON.parse(localStorage.getItem("friends") || "[]");
-
   if (!blocked.includes(friendData.name)) blocked.push(friendData.name);
   localStorage.setItem("blockedUsers", JSON.stringify(blocked));
-
   friends = friends.filter(f => f.name !== friendData.name);
   localStorage.setItem("friends", JSON.stringify(friends));
-
-  blockModal.style.display = "none";
-  showToast("User blocked", "red");
-
-  setTimeout(() => { window.location.href = "home.html"; }, 2000);
+  
+  document.getElementById("blockReportModal").style.display = "none";
+  setTimeout(() => { window.location.href = "home.html"; }, 200);
 };
+
+// CONFIRM REPORT
+document.getElementById("confirmReport").onclick = () => {
+  
+  document.getElementById("blockReportModal").style.display = "none";
+};
+
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
