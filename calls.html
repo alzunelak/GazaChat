@@ -9,9 +9,10 @@
   body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0 0 70px 0; /* bottom padding for nav */
+    padding: 0;
     background: #000;
     color: #fff;
+    padding-bottom: 70px; /* space for bottom nav */
   }
 
   /* Header */
@@ -28,20 +29,22 @@
     font-weight: bold;
     border-bottom: 2px solid #25d366;
   }
-
-  /* Dropdown wrapper */
-  .menu-wrapper { position: relative; }
+  .menu-btn {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+  }
 
   /* Dropdown Menu */
   .dropdown {
     display: none;
     position: absolute;
-    top: 100%; /* below icon */
-    right: 0;
+    top: 50px;
+    right: 20px;
     background: #111;
     border: 1px solid #333;
     border-radius: 8px;
-    z-index: 999;
+    z-index: 200;
     flex-direction: column;
     width: 180px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
@@ -56,9 +59,7 @@
     font-size: 16px;
     width: 100%;
   }
-  .dropdown button:hover {
-    background: #222;
-  }
+  .dropdown button:hover { background: #222; }
 
   /* Friends List */
   h2 {
@@ -66,6 +67,7 @@
     font-size: 1.5em;
   }
   #friendsList { padding: 0 15px; }
+
   .friend {
     display: flex;
     align-items: center;
@@ -90,6 +92,7 @@
   .accepted { color: #25d366; }
   .declined { color: red; }
   .missed { color: orange; }
+
   .friend-buttons button {
     margin: 0 5px;
     padding: 6px 10px;
@@ -133,12 +136,10 @@
 <!-- Header -->
 <div class="header">
   <div>Calls</div>
-  <div class="menu-wrapper">
-    <i class="fas fa-ellipsis-v menu-btn" id="menuBtn"></i>
-    <div class="dropdown" id="dropdownMenu">
-      <button onclick="clearCallHistory()">Clear Call History</button>
-      <button onclick="window.location.href='settings.html'">Settings</button>
-    </div>
+  <i class="fas fa-ellipsis-v menu-btn" id="menuBtn"></i>
+  <div class="dropdown" id="dropdownMenu">
+    <button onclick="clearCallHistory()">Clear Call History</button>
+    <button onclick="window.location.href='settings.html'">Settings</button>
   </div>
 </div>
 
@@ -153,19 +154,23 @@
 </div>
 
 <script>
-let friends = JSON.parse(localStorage.getItem("friends"));
-if (!friends) {
-  friends = [
-    {name:"Amat", img:"https://via.placeholder.com/50"},
-    {name:"Sophia", img:"https://via.placeholder.com/50"},
-    {name:"Zainab", img:"https://via.placeholder.com/50"},
-    {name:"Maya", img:"https://via.placeholder.com/50"},
-    {name:"Rukhsar", img:"https://via.placeholder.com/50"},
-    {name:"Nuzlah", img:"https://via.placeholder.com/50"}
-  ];
-  localStorage.setItem("friends", JSON.stringify(friends));
+// Initialize friends from localStorage or default
+let friends = JSON.parse(localStorage.getItem("friends")) || [
+  {name:"Amat", img:"https://via.placeholder.com/50"},
+  {name:"Sophia", img:"https://via.placeholder.com/50"},
+  {name:"Zainab", img:"https://via.placeholder.com/50"},
+  {name:"Maya", img:"https://via.placeholder.com/50"},
+  {name:"Rukhsar", img:"https://via.placeholder.com/50"},
+  {name:"Nuzlah", img:"https://via.placeholder.com/50"}
+];
+localStorage.setItem("friends", JSON.stringify(friends));
+
+// Optional: store call status
+if(!localStorage.getItem("callStatus")) {
+  localStorage.setItem("callStatus", JSON.stringify({}));
 }
 
+// Render friends dynamically
 function renderFriends(){
   const container = document.getElementById("friendsList");
   container.innerHTML = "";
@@ -187,15 +192,16 @@ function renderFriends(){
         <button class="video">Video</button>
       </div>`;
     div.querySelector(".audio").onclick = () => {
-      window.location.href = \`audio-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`;
+      window.location.href = `audio-call.html?friend=${encodeURIComponent(f.name)}&img=${encodeURIComponent(f.img)}`;
     };
     div.querySelector(".video").onclick = () => {
-      window.location.href = \`video-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`;
+      window.location.href = `video-call.html?friend=${encodeURIComponent(f.name)}&img=${encodeURIComponent(f.img)}`;
     };
     container.appendChild(div);
   });
 }
 
+// Clear call history
 function clearCallHistory() {
   localStorage.removeItem("callStatus");
   alert("Call history cleared!");
@@ -205,7 +211,6 @@ function clearCallHistory() {
 // Dropdown toggle
 const menuBtn = document.getElementById("menuBtn");
 const dropdownMenu = document.getElementById("dropdownMenu");
-
 menuBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
@@ -214,6 +219,7 @@ document.addEventListener("click", () => {
   dropdownMenu.style.display = "none";
 });
 
+// Initial render
 renderFriends();
 </script>
 </body>
