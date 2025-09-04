@@ -458,6 +458,18 @@ input:checked + .slider:before {transform:translateX(26px);}
     </button>
   </div>
 </div>
+<!-- BLOCK & REPORT CUSTOM MODAL -->
+<div id="blockReportModal" class="modal">
+  <div class="modal-content">
+    <h2 style="color:#fff;">Confirm Action</h2>
+    <p style="color:#fff;">Are you sure you want to proceed?</p>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="confirmBlock" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Block</button>
+      <button id="confirmReport" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Report</button>
+      <button id="cancelBlockReport" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ===== USER DATA & DOM =====
@@ -543,17 +555,38 @@ document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.ht
 document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 
 // ===== BLOCK & REPORT =====
-document.querySelector(".blockBtn").addEventListener("click", e=>{ e.preventDefault();
-  if(confirm("Block this user?")){
-    let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]");
-    let friends=JSON.parse(localStorage.getItem("friends")||"[]");
-    if(!blocked.includes(friendData.name)){ blocked.push(friendData.name); localStorage.setItem("blockedUsers",JSON.stringify(blocked));
-      friends=friends.filter(f=>f.name!==friendData.name); localStorage.setItem("friends",JSON.stringify(friends));
-      alert("User blocked."); setTimeout(()=>{ window.location.href="home.html"; },200);
-    }
-  }
-});
-document.querySelector(".reportBtn").onclick=()=>{ if(confirm("Report this user?")) alert("User reported."); };
+  // OPEN CUSTOM MODAL
+document.querySelector(".blockBtn").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "flex";
+};
+document.querySelector(".reportBtn").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "flex";
+};
+
+// CANCEL BUTTON
+document.getElementById("cancelBlockReport").onclick = () => {
+  document.getElementById("blockReportModal").style.display = "none";
+};
+
+// CONFIRM BLOCK
+document.getElementById("confirmBlock").onclick = () => {
+  let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+  let friends = JSON.parse(localStorage.getItem("friends") || "[]");
+  if (!blocked.includes(friendData.name)) blocked.push(friendData.name);
+  localStorage.setItem("blockedUsers", JSON.stringify(blocked));
+  friends = friends.filter(f => f.name !== friendData.name);
+  localStorage.setItem("friends", JSON.stringify(friends));
+  alert("User blocked.");
+  document.getElementById("blockReportModal").style.display = "none";
+  setTimeout(() => { window.location.href = "home.html"; }, 200);
+};
+
+// CONFIRM REPORT
+document.getElementById("confirmReport").onclick = () => {
+  alert("User reported.");
+  document.getElementById("blockReportModal").style.display = "none";
+};
+
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
