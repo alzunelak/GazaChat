@@ -377,7 +377,14 @@ input:checked + .slider:before {transform:translateX(26px);}
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
-<!-- block -->
+<!-- POPUPS -->
+<div id="linkPopup" class="popup">
+  <h3>Invite Link</h3>
+  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
+  <button onclick="copyLink()">Copy</button>
+  <button class="closeBtn" onclick="closePopup()">Close</button>
+</div>
+
 <div id="blockedPopup" class="popup">
   <h3>Blocked Users</h3>
   <div id="blockedList"></div>
@@ -826,10 +833,18 @@ function renderBlockedUsersPopup(){
 function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
 
 // ===== GROUP LINK =====
-document.getElementById("grouplinkInvite").onclick = () => {
-    window.location.href = "grouplink.html";
+document.getElementById("showGroupLink").onclick = ()=>{
+  const inviteLink = `${window.location.origin}/join.html?group=${currentGroupIndex}`;
+  document.getElementById("groupLinkInput").value = inviteLink;
+  document.getElementById("linkPopup").style.display="block";
 };
-
+function copyLink(){
+  const input = document.getElementById("groupLinkInput");
+  input.select(); input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+  alert("Group link copied!");
+}
+function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
 
 // ===== REQUEST/INVITE =====
 document.getElementById("showRequestInvite").onclick = () => {
