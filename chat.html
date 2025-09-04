@@ -126,26 +126,6 @@ color: #fff; /* white text */height:100vh;display:flex;flex-direction:column;}
   color: red; /* red */
 }
 
-/* POPUP CONTAINER STYLING */
-.popup, #attachPopup, #emojiPicker, .modal {
-  background: #000;              /* black background */
-  color: #fff;                   /* white text */
-  border: 1px solid #fff;        /* white border */
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5); /* green glow */
-  border-radius: 8px;
-}
-
-/* Popup items (menu items inside popup) */
-.popup div, .attachItem, #emojiPicker span, .modal-content {
-  color: #fff;                   /* white text inside */
-}
-
-/* Hover effect for popup items */
-.popup div:hover, .attachItem:hover, #emojiPicker span:hover {
-  background: #25d366;           /* green hover */
-  color: #000;                   /* black text on hover */
-}
-
 .backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
 .settingsItem {
   display: flex;
@@ -433,7 +413,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   
 <!-- Disappearing Messages button with status text -->
 <div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:pointer;">
-  <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:none; padding:0;">
+  <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:#000;color:#fff; padding:0;">
     <span>Disappearing Messages</span>
     <i class="fa-solid fa-clock"></i>
   </button>
