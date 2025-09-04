@@ -40,71 +40,92 @@ h2 { text-align:center; }
     gap:5px; 
 }
 p { color:#aaa; font-style:italic; }
-</style>
-</head>
-<body>
-
-<div class="backBtn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</div>
-<h2>Request / Invite</h2>
-<div id="requestList"></div>
-
 <script>
+// ===== DEFAULT DATA =====
+const defaultRequests = ["Charlie", "David"];
+const defaultMembers = ["John Doe", "Alice", "Bob"];
+
 // ===== STATE =====
-let requests = JSON.parse(localStorage.getItem("groupRequests") || '["Charlie","David"]');
-let groupMembers = JSON.parse(localStorage.getItem("groupMembers") || '["John Doe","Alice","Bob"]');
+let requests;
+let groupMembers;
 
-const listDiv = document.getElementById("requestList");
-
-function renderRequests(){
-    listDiv.innerHTML = "";
-    if(requests.length === 0){
-        listDiv.innerHTML = "<p>No requests</p>";
-    } else {
-        requests.forEach((r,index)=>{
-            const div = document.createElement("div");
-            div.className = "item";
-            
-            const nameSpan = document.createElement("span");
-            nameSpan.textContent = r;
-
-            const acceptBtn = document.createElement("button");
-            acceptBtn.className = "acceptBtn";
-            acceptBtn.textContent = "Accept";
-            acceptBtn.onclick = ()=>{
-                if(!groupMembers.includes(r)) groupMembers.push(r);
-                localStorage.setItem("groupMembers", JSON.stringify(groupMembers));
-                
-                requests.splice(index,1);
-                localStorage.setItem("groupRequests", JSON.stringify(requests));
-                renderRequests();
-                alert(r + " added to the group!");
-
-                // Optional: Go to chat automatically
-                // window.location.href = "group-chat.htm";
-            };
-
-            const rejectBtn = document.createElement("button");
-            rejectBtn.className = "rejectBtn";
-            rejectBtn.textContent = "Reject";
-            rejectBtn.onclick = ()=>{
-                requests.splice(index,1);
-                localStorage.setItem("groupRequests", JSON.stringify(requests));
-                renderRequests();
-            };
-
-            div.appendChild(nameSpan);
-            div.appendChild(acceptBtn);
-            div.appendChild(rejectBtn);
-            listDiv.appendChild(div);
-        });
+// ===== INIT FUNCTION =====
+function initData() {
+    try {
+        requests = JSON.parse(localStorage.getItem("groupRequests"));
+        if (!Array.isArray(requests) || requests.length === 0) requests = [...defaultRequests];
+    } catch {
+        requests = [...defaultRequests];
     }
+
+    try {
+        groupMembers = JSON.parse(localStorage.getItem("groupMembers"));
+        if (!Array.isArray(groupMembers)) groupMembers = [...defaultMembers];
+    } catch {
+        groupMembers = [...defaultMembers];
+    }
+
+    // Save back to localStorage if empty or invalid
+    localStorage.setItem("groupRequests", JSON.stringify(requests));
+    localStorage.setItem("groupMembers", JSON.stringify(groupMembers));
 }
 
-function goBack(){
+// ===== RENDER FUNCTION =====
+function renderRequests() {
+    const listDiv = document.getElementById("requestList");
+    listDiv.innerHTML = "";
+
+    if (requests.length === 0) {
+        listDiv.innerHTML = "<p>No requests</p>";
+        return;
+    }
+
+    requests.forEach((r, index) => {
+        const div = document.createElement("div");
+        div.className = "item";
+
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = r;
+
+        const acceptBtn = document.createElement("button");
+        acceptBtn.className = "acceptBtn";
+        acceptBtn.textContent = "Accept";
+        acceptBtn.onclick = () => {
+            if (!groupMembers.includes(r)) groupMembers.push(r);
+            requests.splice(index, 1);
+
+            localStorage.setItem("groupMembers", JSON.stringify(groupMembers));
+            localStorage.setItem("groupRequests", JSON.stringify(requests));
+            renderRequests();
+            alert(r + " added to the group!");
+        };
+
+        const rejectBtn = document.createElement("button");
+        rejectBtn.className = "rejectBtn";
+        rejectBtn.textContent = "Reject";
+        rejectBtn.onclick = () => {
+            requests.splice(index, 1);
+            localStorage.setItem("groupRequests", JSON.stringify(requests));
+            renderRequests();
+        };
+
+        div.appendChild(nameSpan);
+        div.appendChild(acceptBtn);
+        div.appendChild(rejectBtn);
+        listDiv.appendChild(div);
+    });
+}
+
+// ===== BACK BUTTON =====
+function goBack() {
     window.history.back();
 }
 
-renderRequests();
+// ===== INIT PAGE =====
+window.onload = function() {
+    initData();
+    renderRequests();
+};
 </script>
 </body>
 </html>
