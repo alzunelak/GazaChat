@@ -104,23 +104,26 @@ button#createGroupBtn {
   border-radius:50%;
 }
 
-/* Bottom bar */
 .bottomBar {
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  padding:10px 0;
-  background:#111;
-  flex-shrink:0;
-}
-.bottomBar button {
-  background:none;
-  border:none;
-  color:#25d366;
-  font-size:20px;
-  cursor:pointer;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  background: #000;
+  position: fixed; /* stay at bottom */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: #fff;
 }
 
+.bottomBar button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
   
 /* NEW GROUP POPUP */
 #newGroupPopup {
@@ -161,11 +164,12 @@ button#createGroupBtn {
 
 
 <!-- Bottom bar -->
-<div class="bottomBar">
-  <button onclick="alert('Chat')"><chat"></i></button>
-  <button onclick="alert('Groups')"><groups"></i></button>
-  <button onclick="alert('Calls')"><calls"></i></button>
+  <div class="bottomBar">
+  <button onclick="goToChat()">Chat</button>
+  <button onclick="goToGroups()">Groups</button>
+  <button onclick="goToCalls()">Calls</button>
 </div>
+
   
 <div id="newGroupPopup">
   <h3>New Group</h3>
@@ -239,6 +243,19 @@ document.addEventListener('click', (e) => {
     dropdown.style.display = 'none';
   }
 });
+
+  // bottom
+function goToChat() {
+  window.location.href = "chat.html";
+}
+
+function goToGroups() {
+  window.location.href = "groups.html"; // stays on current page
+}
+
+function goToCalls() {
+  window.location.href = "calls.html";
+}
 
 // Create new group
 function createGroup(){
