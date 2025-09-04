@@ -4,24 +4,107 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Two-Step Verification</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
-  h1 { font-size:2em; margin-bottom:20px; }
-  .back { margin-bottom:20px; cursor:pointer; color:#007bff; display:inline-block; }
-  .option { background:#fff; padding:15px 20px; border-radius:8px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-  button { padding:12px 25px; font-size:1em; border:none; border-radius:8px; background:#25d366; color:#fff; cursor:pointer; margin-top:15px; }
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background:#000; 
+    color:#fff; 
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover { color: #25d366; }
+
+  /* Main Content */
+  .content { padding: 20px; }
+
+  h1 { font-size: 1.8em; margin-bottom: 20px; }
+
+  /* Option box */
+  .option { 
+    background:#111; 
+    padding:15px 20px; 
+    border-radius:8px; 
+    margin-bottom:15px; 
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+    box-shadow:0 2px 5px rgba(37,211,102,0.2);
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding:10px 15px;
+    border-radius:8px;
+    border:1px solid #333;
+    background:#111;
+    color:#fff;
+    margin-top:8px;
+    margin-bottom:15px;
+  }
+
+  input[type="checkbox"] {
+    width:18px;
+    height:18px;
+    accent-color: #25d366;
+    cursor: pointer;
+  }
+
+  button { 
+    padding:12px 25px; 
+    font-size:1em; 
+    border:none; 
+    border-radius:8px; 
+    background:#25d366; 
+    color:#000; 
+    cursor:pointer; 
+    margin-top:15px;
+    font-weight:bold;
+    transition: 0.2s;
+  }
+  button:hover { background:#1ebe57; }
 </style>
 </head>
 <body>
 
-<div class="back" onclick="history.back()">⬅ Back</div>
-<h1>Two-Step Verification</h1>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Two-Step Verification</div>
+</div>
 
-<div class="option">Enable Two-Step Verification <input type="checkbox" id="twoStep"></div>
-<label for="email">Recovery Email (optional)</label>
-<input type="text" id="email" placeholder="Enter email">
+<div class="content">
+  <div class="option">
+    <span>Enable Two-Step Verification</span>
+    <input type="checkbox" id="twoStep">
+  </div>
 
-<button onclick="alert('Two-Step Verification updated!')">Save</button>
+  <label for="email">Recovery Email (optional)</label>
+  <input type="text" id="email" placeholder="Enter email">
+
+  <button onclick="alert('Two-Step Verification updated!')">Save</button>
+</div>
 
 </body>
 </html>
