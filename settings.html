@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Settings - ChatApp</title>
+<!-- Font Awesome for solid icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
   body {
     margin: 0;
@@ -36,7 +39,7 @@
     transition: color 0.2s;
   }
   .header .back-arrow:hover {
-    color: #25d366; /* Green on hover */
+    color: #25d366; /* Green hover */
   }
 
   /* Profile Section */
@@ -64,7 +67,7 @@
 
   /* Settings Sections */
   .section {
-    background: #000;
+    background: #111;
     border-radius: 8px;
     margin: 10px 15px;
     padding: 15px 20px;
@@ -82,15 +85,21 @@
     font-size: 1.2em;
     font-weight: bold;
     color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
- 
+  .arrow {
+    font-size: 1.2em;
+    color: #fff;
+  }
 </style>
 </head>
 <body>
 
 <!-- Header -->
 <div class="header">
-  <div class="back-arrow" onclick="window.history.back()">&#8592;</div>
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
   <div>Settings</div>
 </div>
 
@@ -102,56 +111,56 @@
 
 <!-- Settings Sections -->
 <div class="section" onclick="window.location.href='account.html'">
-  <div class="section-title">Account</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-user"></i> Account</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='chatsettings.html'">
-  <div class="section-title">Chat</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-comments"></i> Chat</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='privacy-settings.html'">
-  <div class="section-title">Privacy</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-lock"></i> Privacy</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='notifications.html'">
-  <div class="section-title">Notifications</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-bell"></i> Notifications</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='data-storage.html'">
-  <div class="section-title">Data & Storage</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-database"></i> Data & Storage</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='invite-friend.html'">
-  <div class="section-title">Invite Friend</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-user-plus"></i> Invite Friend</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='help.html'">
-  <div class="section-title">Help</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-circle-question"></i> Help</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='app-language.html'">
-  <div class="section-title">App Language</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-language"></i> App Language</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <div class="section" onclick="window.location.href='accessibility.html'">
-  <div class="section-title">Accessibility</div>
-  <div class="arrow">&#9654;</div>
+  <div class="section-title"><i class="fa-solid fa-universal-access"></i> Accessibility</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
 <script>
-// Load profile name and picture from localStorage
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
-  document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
-});
+  // Load profile name and picture from localStorage
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('profileName').innerText = localStorage.getItem('username') || 'User';
+    document.getElementById('profilePic').src = localStorage.getItem('profilePic') || 'default-profile.png';
+  });
 </script>
 
 </body>
