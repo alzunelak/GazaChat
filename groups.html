@@ -9,59 +9,67 @@
 body {
   font-family: Arial, sans-serif;
   margin:0;
-  padding:0;
+  padding:20px;
   background:#000;
   color:#fff;
-  display:flex;
-  flex-direction:column;
-  height:100vh;
+  position: relative;
+}
+h1 { margin-bottom: 10px; }
+
+/* Top-left back arrow */
+.backArrow {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #fff;
 }
 
-/* Top bar */
-.topBar {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 20px;
-  background:#111;
-  flex-shrink:0;
-  position:relative;
-}
-.topBar i {
-  font-size:24px;
-  cursor:pointer;
-  color:#25d366;
+/* Top-right three-dot */
+.topMoreBtn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #fff;
+  z-index: 200;
 }
 
-/* Top menu dropdown */
+/* Dropdown for top menu */
 .dropdownTop {
-  display:none;
-  position:absolute;
-  top:50px;
-  right:20px;
-  background:#000;
-  border:1px solid #25d366;
-  border-radius:8px;
-  flex-direction:column;
-  z-index:100;
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: #000;
+  border: 1px solid #25d366;
+  border-radius: 8px;
+  flex-direction: column;
+  z-index: 200;
 }
 .dropdownTop button {
-  background:#000;
-  color:#fff;
-  border:none;
-  padding:8px 12px;
-  cursor:pointer;
-  text-align:left;
-  border-bottom:1px solid #25d366;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid #25d366;
 }
 .dropdownTop button:last-child { border-bottom:none; }
 .dropdownTop button:hover { background:#25d366; color:#000; }
 
-/* Middle content (groups list) */
-.content {
-  flex:1;
-  overflow-y:auto;
-  padding:10px 20px;
+/* Create group button */
+button#createGroupBtn {
+  padding: 10px 15px;
+  background:#25d366;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-bottom:10px;
 }
 
 /* Group cards */
@@ -85,70 +93,62 @@ body {
 .group .info { flex:1; }
 .group .info h3 { margin:0; font-size:16px; }
 .group .info p { margin:0; font-size:12px; color:gray; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.red-dot { position:absolute; right:10px; top:15px; width:10px; height:10px; background:red; border-radius:50%; }
 
-/* Bottom bar */
-.bottomBar {
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  padding:10px 0;
-  background:#111;
-  flex-shrink:0;
-}
-.bottomBar button {
-  background:none;
-  border:none;
-  color:#25d366;
-  font-size:20px;
-  cursor:pointer;
+.red-dot {
+  position:absolute;
+  right:10px;
+  top:15px;
+  width:10px;
+  height:10px;
+  background:red;
+  border-radius:50%;
 }
 
 /* NEW GROUP POPUP */
 #newGroupPopup {
   display:none;
   position:absolute;
-  top:50%;
+  top:100px;
   left:50%;
-  transform:translate(-50%,-50%);
+  transform:translateX(-50%);
   background:black;
   color:#fff;
   padding:15px;
   border-radius:8px;
-  box-shadow:0 0 15px #25d366;
+  box-shadow: 0 0 15px #25d366;
   flex-direction:column;
-  z-index:200;
 }
-#newGroupPopup input { width:200px; margin-bottom:10px; padding:5px; }
+#newGroupPopup input {
+  width:200px;
+  margin-bottom:10px;
+  padding:5px;
+}
 #newGroupPopup button { padding:5px 10px; margin-right:5px; }
 </style>
 </head>
 <body>
 
-<!-- Top bar -->
-<div class="topBar">
-  <i class="fas fa-arrow-left" onclick="goBack()"></i>
-  <h2>My Groups</h2>
-  <i class="fas fa-ellipsis-v" onclick="toggleTopMenu()"></i>
-  <div id="topDropdown" class="dropdownTop">
-    <button onclick="topOption1()">Option 1</button>
-    <button onclick="topOption2()">Option 2</button>
-  </div>
-</div>
+  <!-- Top-left back arrow -->
+  <i class="fas fa-arrow-left backArrow" onclick="goBack()"></i>
 
-<!-- Middle content -->
-<div class="content" id="groupsList">
-  <button id="createGroupBtn">+ Create Group</button>
-</div>
+  <!-- Top-right three-dot menu -->
+  <i class="fas fa-ellipsis-v topMoreBtn" onclick="toggleTopMenu()"></i>
+  <div id="topDropdown" class="dropdownTop">
+    <button onclick="topOption1()">settings</button>
+  </div>
+
+<h1>My Groups</h1>
+<button id="createGroupBtn">+ Create Group</button>
+<div id="groupsList"></div>
+
 
 <!-- Bottom bar -->
 <div class="bottomBar">
-  <button onclick="alert('Chats')"><i class="fas fa-comment"></i></button>
-  <button onclick="alert('Groups')"><i class="fas fa-users"></i></button>
-  <button onclick="alert('Calls')"><i class="fas fa-phone"></i></button>
+  <button onclick="alert('Chat')"><chat"></i></button>
+  <button onclick="alert('Groups')"><groups"></i></button>
+  <button onclick="alert('Calls')"><calls"></i></button>
 </div>
-
-<!-- New group popup -->
+  
 <div id="newGroupPopup">
   <h3>New Group</h3>
   <input type="text" id="newGroupName" placeholder="Group Name"><br>
@@ -162,19 +162,20 @@ body {
 <script>
 const myName = "You";
 let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+
 const groupsListDiv = document.getElementById("groupsList");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
 
-// Show popup
 createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
 function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
 
 function renderGroups(){
   groups = JSON.parse(localStorage.getItem("groups") || "[]");
-  groupsListDiv.innerHTML = '<button id="createGroupBtn">+ Create Group</button>';
+  groupsListDiv.innerHTML = "";
 
   const myGroups = groups.filter(g => g.members.some(m=>m.name === myName));
+
   myGroups.sort((a,b)=>{
     const aTime = a.messages && a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
     const bTime = b.messages && b.messages.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
@@ -196,12 +197,13 @@ function renderGroups(){
     `;
     groupsListDiv.appendChild(div);
 
+    // Group click opens chat
     div.querySelector('.info').onclick = () => {
       g.unread = false;
       groups = groups.map(gr=>gr.name===g.name ? g : gr);
       localStorage.setItem("groups",JSON.stringify(groups));
       localStorage.setItem("currentGroupIndex", index);
-      alert("Open chat for "+g.name);
+      window.location = "group-chat.html";
     };
   });
 }
@@ -211,20 +213,24 @@ function toggleTopMenu() {
   const dropdown = document.getElementById("topDropdown");
   dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
 }
-function topOption1() { alert("Option 1 clicked"); }
-function topOption2() { alert("Option 2 clicked"); }
+
+// Top menu options
+ window.location = "settings.html";
+
+// Close top dropdown if clicking outside
 document.addEventListener('click', (e) => {
   const dropdown = document.getElementById("topDropdown");
-  const btn = document.querySelector('.topBar .fa-ellipsis-v');
+  const btn = document.querySelector('.topMoreBtn');
   if(!dropdown.contains(e.target) && !btn.contains(e.target)){
     dropdown.style.display = 'none';
   }
 });
 
-// Create group
+// Create new group
 function createGroup(){
   const name = document.getElementById("newGroupName").value.trim();
   if(!name){ alert("Enter a group name!"); return; }
+
   const fileInput = document.getElementById("newGroupPhoto");
   if(fileInput.files && fileInput.files[0]){
     const reader = new FileReader();
@@ -232,6 +238,7 @@ function createGroup(){
     reader.readAsDataURL(fileInput.files[0]);
   } else saveGroup(name,"group.png");
 }
+
 function saveGroup(name,img){
   const newGroup = { name, photo: img, admin: myName, members:[{name:myName,accepted:true}], invited:[], blocked:[], messages:[], unread:false };
   groups.push(newGroup);
@@ -241,6 +248,7 @@ function saveGroup(name,img){
   document.getElementById("newGroupName").value="";
   document.getElementById("newGroupPhoto").value="";
 }
+
 function goBack() { window.history.back(); }
 
 window.addEventListener('storage', renderGroups);
