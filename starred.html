@@ -4,25 +4,99 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Starred Messages</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-body { font-family: Arial, sans-serif; padding:20px; background:#f8f9fa; }
-.message { background:#fff; padding:10px; margin-bottom:10px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+body { 
+  font-family: Arial, sans-serif; 
+  margin:0; 
+  padding:0; 
+  background:#000; 
+  color:#fff; 
+}
+
+/* Header */
+.header {
+  position: relative;
+  height: 50px;
+  background: #111;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 20px;
+  font-weight: bold;
+  gap: 10px;
+}
+.header .back-arrow {
+  font-size: 22px;
+  cursor: pointer;
+  color: #fff;
+  transition: color 0.2s;
+}
+.header .back-arrow:hover { color: #25d366; }
+
+/* Content */
+.content {
+  padding: 20px;
+  text-align: center;
+}
+h1 { margin-top: 0; font-size: 1.8em; }
+.message {
+  background:#111;
+  padding:15px;
+  margin-bottom:10px;
+  border-radius:8px;
+  box-shadow:0 2px 5px rgba(37,211,102,0.2);
+  text-align:left;
+}
+.no-starred {
+  margin-top: 50px;
+  font-size: 1.2em;
+  color: #888;
+}
+.no-starred i {
+  font-size: 80px;
+  color: #25d366;
+  margin-bottom: 20px;
+  display:block;
+}
 </style>
 </head>
 <body>
-  <!-- Back Arrow -->
-<div class="back" onclick="history.back()">⬅ Back</div>
 
-<h1>Starred Messages</h1>
-<div id="starredContainer">No starred messages yet.</div>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Starred</div>
+</div>
+
+<!-- Content -->
+<div class="content" id="starredContainer">
+  <!-- Will be filled by JS -->
+</div>
 
 <script>
+// Get starred messages from localStorage
 const starred = JSON.parse(localStorage.getItem('starredMessages')||'[]');
 const container = document.getElementById('starredContainer');
-if(starred.length>0){
-  container.innerHTML='';
-  starred.forEach(m=>{ const div=document.createElement('div'); div.className='message'; div.textContent=m; container.appendChild(div); });
+
+if(starred.length > 0){
+  starred.forEach(m=>{
+    const div = document.createElement('div');
+    div.className='message';
+    div.textContent = m;
+    container.appendChild(div);
+  });
+} else {
+  container.innerHTML = `
+    <div class="no-starred">
+      <i class="fa-solid fa-star"></i>
+      Tap and hold on any message or channel to star it so you can easily find it later.
+    </div>
+  `;
 }
 </script>
+
 </body>
 </html>
