@@ -377,14 +377,6 @@ input:checked + .slider:before {transform:translateX(26px);}
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
-<!-- POPUPS -->
-<div id="linkPopup" class="popup">
-  <h3>Invite Link</h3>
-  <input type="text" id="groupLinkInput" readonly style="width:100%; padding:5px;">
-  <button onclick="copyLink()">Copy</button>
-  <button class="closeBtn" onclick="closePopup()">Close</button>
-</div>
-
 <div id="blockedPopup" class="popup">
   <h3>Blocked Users</h3>
   <div id="blockedList"></div>
@@ -805,93 +797,36 @@ function blockMember(name){
 }
 
 // ===== BLOCKED USERS POPUP =====
-const blockedPopup = document.getElementById("blockedPopup");
-const blockedListDiv = document.getElementById("blockedList");
-const showBlockedBtn = document.getElementById("showBlockedUsers");
-
-// Open popup
-showBlockedBtn.onclick = () => {
+document.getElementById("showBlockedUsers").onclick = ()=>{
   renderBlockedUsersPopup();
-  blockedPopup.style.display = "block";
+  document.getElementById("blockedPopup").style.display="block";
 };
-
-// Render blocked users
-function renderBlockedUsersPopup() {
-  blockedListDiv.innerHTML = "";
-
-  if (blockedMembers.length === 0) {
-    blockedListDiv.innerHTML = "<p style='color:#888; text-align:center; margin:20px 0;'>No blocked users</p>";
-    return;
+function renderBlockedUsersPopup(){
+  const listDiv=document.getElementById("blockedList");
+  listDiv.innerHTML="";
+  if(blockedMembers.length===0){
+    listDiv.innerHTML="<p style='background:#000;color:#fff;font-style:italic;'>No blocked users</p>";
+  } else {
+    blockedMembers.forEach((u,index)=>{
+      const div=document.createElement("div");
+      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
+      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
+      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
+      unblockBtn.className="unblockBtn";
+      unblockBtn.onclick=()=>{
+        blockedMembers.splice(index,1);
+        renderBlockedUsersPopup();
+        renderGroupMembers();
+      };
+      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
+    });
   }
-
-  blockedMembers.forEach((user, index) => {
-    const div = document.createElement("div");
-    div.className = "blocked";
-    div.style.display = "flex";
-    div.style.justifyContent = "space-between";
-    div.style.alignItems = "center";
-    div.style.padding = "10px 15px";
-    div.style.marginBottom = "8px";
-    div.style.background = "#111";
-    div.style.borderRadius = "8px";
-    div.style.boxShadow = "0 2px 5px rgba(37,211,102,0.2)";
-
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = user;
-    div.appendChild(nameSpan);
-
-    const unblockBtn = document.createElement("button");
-    unblockBtn.textContent = "Unblock";
-    unblockBtn.style.background = "#25D366";
-    unblockBtn.style.color = "#000";
-    unblockBtn.style.border = "none";
-    unblockBtn.style.borderRadius = "6px";
-    unblockBtn.style.padding = "5px 10px";
-    unblockBtn.style.cursor = "pointer";
-
-    unblockBtn.onclick = () => {
-      // Remove from blocked
-      blockedMembers.splice(index, 1);
-
-      // Add back to active members if not already
-      if (!currentGroupMembers.includes(user)) {
-        currentGroupMembers.push(user);
-      }
-
-      // Save to localStorage
-      currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
-      currentGroup.blocked = blockedMembers;
-      groups[currentGroupIndex] = currentGroup;
-      localStorage.setItem("groups", JSON.stringify(groups));
-
-      renderBlockedUsersPopup();
-      renderGroupMembers();
-    };
-
-    div.appendChild(unblockBtn);
-    blockedListDiv.appendChild(div);
-  });
 }
-
-// Close popup
-function closeBlockedPopup() {
-  blockedPopup.style.display = "none";
-}
-
+function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
 
 // ===== GROUP LINK =====
-document.getElementById("showGroupLink").onclick = ()=>{
-  const inviteLink = `${window.location.origin}/join.html?group=${currentGroupIndex}`;
-  document.getElementById("groupLinkInput").value = inviteLink;
-  document.getElementById("linkPopup").style.display="block";
-};
-function copyLink(){
-  const input = document.getElementById("groupLinkInput");
-  input.select(); input.setSelectionRange(0,99999);
-  navigator.clipboard.writeText(input.value);
-  alert("Group link copied!");
-}
-function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
+document.getElementById("showRequestInvite").onclick = () => {
+    window.location.href = "grouplink.html";
 
 // ===== REQUEST/INVITE =====
 document.getElementById("showRequestInvite").onclick = () => {
