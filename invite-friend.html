@@ -63,8 +63,7 @@
   }
   .btn:hover { background: #1aa34a; }
 
-  /* Popup */
-  .popup {
+.popup {
     display: none;
     position: fixed;
     top:50%;
@@ -72,11 +71,14 @@
     transform: translate(-50%, -50%);
     background:#111;
     color:#fff;
-    padding: 25px 35px;
+    padding: 20px 15px;
     border-radius:12px;
     box-shadow:0 0 20px rgba(37,211,102,0.4);
     text-align:center;
     z-index: 500;
+    width: 90%;           /* Make it responsive */
+    max-width: 300px;     /* Limit max width on larger screens */
+    word-wrap: break-word; /* Ensure text wraps properly */
   }
 
   .popup button {
@@ -92,6 +94,7 @@
   .popup button:hover {
     background:#1aa34a;
   }
+
 </style>
 </head>
 <body>
