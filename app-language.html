@@ -47,6 +47,7 @@
     color: #fff;
   }
 
+  /* Custom select styling */
   select {
     width: calc(100% - 40px);
     max-width: 300px;
@@ -58,11 +59,35 @@
     color: #fff;
     margin: 20px;
     outline: none;
+    -webkit-appearance: none;  /* Remove default arrow */
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
   }
 
   select option {
     background: #111;
     color: #fff;
+  }
+
+  /* Optional: add custom dropdown arrow */
+  .select-container {
+    position: relative;
+    display: inline-block;
+    width: calc(100% - 40px);
+    max-width: 300px;
+    margin: 20px;
+  }
+  .select-container::after {
+    content: "\f078"; /* FontAwesome down arrow */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #25d366;
   }
 </style>
 </head>
@@ -76,13 +101,15 @@
 
 <h1>Select Language</h1>
 
-<select>
-  <option value="ar">Arabic</option>
-  <option value="en">English</option>
-  <option value="hi">Hindi</option>
-  <option value="ur">Urdu</option>
-  <option value="sw">swahili</option>
-</select>
+<div class="select-container">
+  <select>
+    <option value="ar">Arabic</option>
+    <option value="en">English</option>
+    <option value="hi">Hindi</option>
+    <option value="ur">Urdu</option>
+    <option value="sw">Swahili</option>
+  </select>
+</div>
 
 </body>
 </html>
