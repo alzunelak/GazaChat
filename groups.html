@@ -5,20 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Groups</title>
 <!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <style>
-body {
-  margin:0; padding:0; background:#000; color:#fff; font-family: Arial, sans-serif;
-}
+body { margin:0; padding:0; background:#000; color:#fff; font-family: Arial, sans-serif; }
 
 /* Header */
 .header {
   display:flex; justify-content:space-between; align-items:center;
-  padding:15px 20px; background:#111; border-bottom:2px solid #111;
+  padding:15px 20px; background:#111; border-bottom:2px solid #25d366;
   position:fixed; top:0; width:100%; z-index:1000;
 }
 .header h1 { margin:0; font-size:20px; }
-.topMoreBtn { font-size:24px; color:#fff; cursor:pointer; }
+.topMoreBtn { font-size:24px; color:#fff; cursor:pointer; } /* white three-dot */
 
 /* Dropdown menu */
 .dropdownTop {
@@ -35,16 +33,10 @@ body {
 main { padding:90px 20px 80px; }
 
 /* Create group button */
-#createGroupBtn {
-  padding:10px 15px; background:#25d366; color:white; border:none; border-radius:8px;
-  cursor:pointer; margin-bottom:10px; display:block; width:100%; text-align:left;
-}
+#createGroupBtn { padding:10px 15px; background:#25d366; color:white; border:none; border-radius:8px; cursor:pointer; margin-bottom:10px; display:block; width:100%; text-align:left; }
 
 /* Group cards */
-.group {
-  display:flex; align-items:center; background:#111; padding:10px; margin:10px 0;
-  border-radius:8px; cursor:pointer; position:relative;
-}
+.group { display:flex; align-items:center; background:#111; padding:10px; margin:10px 0; border-radius:8px; cursor:pointer; position:relative; }
 .group img { width:50px; height:50px; border-radius:50%; margin-right:10px; object-fit:cover; }
 .group .info { flex:1; }
 .group .info h3 { margin:0; font-size:16px; }
@@ -52,17 +44,12 @@ main { padding:90px 20px 80px; }
 .red-dot { position:absolute; right:10px; top:15px; width:10px; height:10px; background:red; border-radius:50%; }
 
 /* Bottom bar */
-.bottomBarContainer {
-  position:fixed; bottom:0; left:0; width:100%; background:#111; border-top:2px solid #111; padding:10px 0; z-index:100;
-}
+.bottomBarContainer { position:fixed; bottom:0; left:0; width:100%; background:#111; border-top:2px solid #25d366; padding:10px 0; z-index:100; }
 .bottomBar { display:flex; justify-content:space-around; align-items:center; }
 .bottomBar button { background:none; border:none; color:#fff; font-size:16px; cursor:pointer; }
 
 /* New Group Popup */
-#newGroupPopup {
-  display:none; position:absolute; top:150px; left:50%; transform:translateX(-50%);
-  background:#000; color:#fff; padding:15px; border-radius:8px; box-shadow:0 0 15px #25d366; flex-direction:column;
-}
+#newGroupPopup { display:none; position:absolute; top:150px; left:50%; transform:translateX(-50%); background:#000; color:#fff; padding:15px; border-radius:8px; box-shadow:0 0 15px #25d366; flex-direction:column; }
 #newGroupPopup input { width:200px; margin-bottom:10px; padding:5px; }
 #newGroupPopup button { padding:5px 10px; margin-right:5px; }
 </style>
@@ -198,5 +185,6 @@ function saveGroup(name,img){
 window.addEventListener('storage', renderGroups);
 renderGroups();
 </script>
+
 </body>
 </html>
