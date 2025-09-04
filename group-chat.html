@@ -805,32 +805,79 @@ function blockMember(name){
 }
 
 // ===== BLOCKED USERS POPUP =====
-document.getElementById("showBlockedUsers").onclick = ()=>{
+const blockedPopup = document.getElementById("blockedPopup");
+const blockedListDiv = document.getElementById("blockedList");
+const showBlockedBtn = document.getElementById("showBlockedUsers");
+
+// Open popup
+showBlockedBtn.onclick = () => {
   renderBlockedUsersPopup();
-  document.getElementById("blockedPopup").style.display="block";
+  blockedPopup.style.display = "block";
 };
-function renderBlockedUsersPopup(){
-  const listDiv=document.getElementById("blockedList");
-  listDiv.innerHTML="";
-  if(blockedMembers.length===0){
-    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
-  } else {
-    blockedMembers.forEach((u,index)=>{
-      const div=document.createElement("div");
-      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
-      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
-      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
-      unblockBtn.className="unblockBtn";
-      unblockBtn.onclick=()=>{
-        blockedMembers.splice(index,1);
-        renderBlockedUsersPopup();
-        renderGroupMembers();
-      };
-      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
-    });
+
+// Render blocked users
+function renderBlockedUsersPopup() {
+  blockedListDiv.innerHTML = "";
+
+  if (blockedMembers.length === 0) {
+    blockedListDiv.innerHTML = "<p style='color:#888; text-align:center; margin:20px 0;'>No blocked users</p>";
+    return;
   }
+
+  blockedMembers.forEach((user, index) => {
+    const div = document.createElement("div");
+    div.className = "blocked";
+    div.style.display = "flex";
+    div.style.justifyContent = "space-between";
+    div.style.alignItems = "center";
+    div.style.padding = "10px 15px";
+    div.style.marginBottom = "8px";
+    div.style.background = "#111";
+    div.style.borderRadius = "8px";
+    div.style.boxShadow = "0 2px 5px rgba(37,211,102,0.2)";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = user;
+    div.appendChild(nameSpan);
+
+    const unblockBtn = document.createElement("button");
+    unblockBtn.textContent = "Unblock";
+    unblockBtn.style.background = "#25D366";
+    unblockBtn.style.color = "#000";
+    unblockBtn.style.border = "none";
+    unblockBtn.style.borderRadius = "6px";
+    unblockBtn.style.padding = "5px 10px";
+    unblockBtn.style.cursor = "pointer";
+
+    unblockBtn.onclick = () => {
+      // Remove from blocked
+      blockedMembers.splice(index, 1);
+
+      // Add back to active members if not already
+      if (!currentGroupMembers.includes(user)) {
+        currentGroupMembers.push(user);
+      }
+
+      // Save to localStorage
+      currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+      currentGroup.blocked = blockedMembers;
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+
+      renderBlockedUsersPopup();
+      renderGroupMembers();
+    };
+
+    div.appendChild(unblockBtn);
+    blockedListDiv.appendChild(div);
+  });
 }
-function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
+
+// Close popup
+function closeBlockedPopup() {
+  blockedPopup.style.display = "none";
+}
+
 
 // ===== GROUP LINK =====
 document.getElementById("showGroupLink").onclick = ()=>{
