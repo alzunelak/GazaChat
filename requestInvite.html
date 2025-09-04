@@ -12,7 +12,7 @@ body {
     color:#fff; 
     padding:20px; 
 }
-h2 { text-align:center; margin-top:20px; }
+h2 { text-align:center; }
 .item { 
     padding:10px; 
     border-bottom:1px solid #333; 
@@ -45,12 +45,8 @@ p { color:#aaa; font-style:italic; }
 <body>
 
 <div class="backBtn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</div>
-
-<h2>Requests / Invites</h2>
+<h2>Request / Invite</h2>
 <div id="requestList"></div>
-
-<h2>Group Members</h2>
-<div id="memberList"></div>
 
 <script>
 // ===== DEFAULT DATA =====
@@ -63,14 +59,26 @@ let groupMembers;
 
 // ===== INIT FUNCTION =====
 function initData() {
-    requests = JSON.parse(localStorage.getItem("groupRequests")) || [...defaultRequests];
-    groupMembers = JSON.parse(localStorage.getItem("groupMembers")) || [...defaultMembers];
+    try {
+        requests = JSON.parse(localStorage.getItem("groupRequests"));
+        if (!Array.isArray(requests) || requests.length === 0) requests = [...defaultRequests];
+    } catch {
+        requests = [...defaultRequests];
+    }
 
+    try {
+        groupMembers = JSON.parse(localStorage.getItem("groupMembers"));
+        if (!Array.isArray(groupMembers)) groupMembers = [...defaultMembers];
+    } catch {
+        groupMembers = [...defaultMembers];
+    }
+
+    // Save back to localStorage if empty or invalid
     localStorage.setItem("groupRequests", JSON.stringify(requests));
     localStorage.setItem("groupMembers", JSON.stringify(groupMembers));
 }
 
-// ===== RENDER REQUESTS =====
+// ===== RENDER FUNCTION =====
 function renderRequests() {
     const listDiv = document.getElementById("requestList");
     listDiv.innerHTML = "";
@@ -97,7 +105,6 @@ function renderRequests() {
             localStorage.setItem("groupMembers", JSON.stringify(groupMembers));
             localStorage.setItem("groupRequests", JSON.stringify(requests));
             renderRequests();
-            renderMembers(); // <-- show updated members
         };
 
         const rejectBtn = document.createElement("button");
@@ -116,24 +123,6 @@ function renderRequests() {
     });
 }
 
-// ===== RENDER MEMBERS =====
-function renderMembers() {
-    const memberDiv = document.getElementById("memberList");
-    memberDiv.innerHTML = "";
-
-    if (groupMembers.length === 0) {
-        memberDiv.innerHTML = "<p>No members yet</p>";
-        return;
-    }
-
-    groupMembers.forEach(member => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.textContent = member;
-        memberDiv.appendChild(div);
-    });
-}
-
 // ===== BACK BUTTON =====
 function goBack() {
     window.history.back();
@@ -143,7 +132,6 @@ function goBack() {
 window.onload = function() {
     initData();
     renderRequests();
-    renderMembers(); // <-- show members on page load
 };
 </script>
 </body>
