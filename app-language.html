@@ -47,48 +47,48 @@
     color: #fff;
   }
 
-  /* Styled select box */
-  select {
+  /* Select box container */
+  .select-container {
+    position: relative;
     width: calc(100% - 40px);
     max-width: 300px;
-    padding: 12px;
+    margin: 20px;
+  }
+
+  /* Styled select */
+  select {
+    width: 100%;
+    padding: 12px 40px 12px 12px; /* Add padding-right for arrow */
     font-size: 1em;
     border-radius: 8px;
     border: 1px solid #25d366;
     background: #111;  /* Black background */
     color: #fff;       /* White text */
-    margin: 20px;
     outline: none;
-    appearance: none; /* Remove default arrow for consistent styling */
+    appearance: none; /* Remove default arrow */
     -webkit-appearance: none;
     -moz-appearance: none;
-    position: relative;
   }
 
-  /* Options in the dropdown */
   select option {
-    background: #111; /* Black background */
-    color: #fff;      /* White text */
+    background: #111;
+    color: #fff;
   }
 
-  /* Optional: custom arrow using pseudo-element */
-  .select-container {
-    position: relative;
-    display: inline-block;
-    width: calc(100% - 40px);
-    margin: 20px;
-  }
+  /* Custom arrow inside select */
   .select-container::after {
     content: "\f078"; /* FontAwesome down arrow */
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
     position: absolute;
-    right: 15px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
     color: #25d366;
+    font-size: 16px;
   }
+
 </style>
 </head>
 <body>
