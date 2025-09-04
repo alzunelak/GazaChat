@@ -9,10 +9,9 @@
   body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 0 0 70px 0; /* bottom padding for nav */
     background: #000;
     color: #fff;
-    padding-bottom: 70px;
   }
 
   /* Header */
@@ -30,22 +29,19 @@
     border-bottom: 2px solid #25d366;
   }
 
-  .menu-btn {
-    font-size: 22px;
-    cursor: pointer;
-    color: #fff;
-  }
+  /* Dropdown wrapper */
+  .menu-wrapper { position: relative; }
 
   /* Dropdown Menu */
   .dropdown {
     display: none;
     position: absolute;
-    top: 50px;
-    right: 20px;
+    top: 100%; /* below icon */
+    right: 0;
     background: #111;
     border: 1px solid #333;
     border-radius: 8px;
-    z-index: 200;
+    z-index: 999;
     flex-direction: column;
     width: 180px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
@@ -69,11 +65,7 @@
     margin: 20px;
     font-size: 1.5em;
   }
-
-  #friendsList {
-    padding: 0 15px;
-  }
-
+  #friendsList { padding: 0 15px; }
   .friend {
     display: flex;
     align-items: center;
@@ -84,7 +76,6 @@
     border: 1px solid #333;
     box-shadow: 0 2px 5px rgba(37, 211, 102, 0.3);
   }
-
   .friend img {
     width: 50px;
     height: 50px;
@@ -93,24 +84,12 @@
     border: 2px solid #25d366;
     object-fit: cover;
   }
-
-  .friend-info {
-    flex: 1;
-  }
-
-  .friend-info strong {
-    font-size: 1.2em;
-  }
-
-  .status {
-    font-size: 14px;
-    margin-top: 5px;
-    color: #bbb;
-  }
+  .friend-info { flex: 1; }
+  .friend-info strong { font-size: 1.2em; }
+  .status { font-size: 14px; margin-top: 5px; color: #bbb; }
   .accepted { color: #25d366; }
   .declined { color: red; }
   .missed { color: orange; }
-
   .friend-buttons button {
     margin: 0 5px;
     padding: 6px 10px;
@@ -120,7 +99,6 @@
     font-weight: bold;
     transition: background 0.2s;
   }
-
   .audio { background: #25d366; color: white; }
   .audio:hover { background: #1da955; }
   .video { background: #34b7f1; color: white; }
@@ -155,10 +133,12 @@
 <!-- Header -->
 <div class="header">
   <div>Calls</div>
-  <i class="fas fa-ellipsis-v menu-btn" id="menuBtn"></i>
-  <div class="dropdown" id="dropdownMenu">
-    <button onclick="clearCallHistory()">Clear Call History</button>
-    <button onclick="window.location.href='settings.html'">Settings</button>
+  <div class="menu-wrapper">
+    <i class="fas fa-ellipsis-v menu-btn" id="menuBtn"></i>
+    <div class="dropdown" id="dropdownMenu">
+      <button onclick="clearCallHistory()">Clear Call History</button>
+      <button onclick="window.location.href='settings.html'">Settings</button>
+    </div>
   </div>
 </div>
 
