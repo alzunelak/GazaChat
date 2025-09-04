@@ -84,6 +84,28 @@
     transition: 0.2s;
   }
   button:hover { background:#1ebe57; }
+
+  /* Popup */
+  .popup {
+    display:none;
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    background:#111;
+    color:#fff;
+    padding: 25px 35px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(37,211,102,0.4);
+    text-align:center;
+    z-index: 500;
+  }
+
+  .popup button {
+    margin-top: 15px;
+    background:#25d366;
+    color:#000;
+  }
 </style>
 </head>
 <body>
@@ -96,15 +118,36 @@
 
 <div class="content">
   <div class="option">
-    <span>Enable Two-Step Verification</span>
+    <span><i class="fa-solid fa-lock"></i> Enable Two-Step Verification</span>
     <input type="checkbox" id="twoStep">
   </div>
 
   <label for="email">Recovery Email (optional)</label>
   <input type="text" id="email" placeholder="Enter email">
 
-  <button onclick="alert('Two-Step Verification updated!')">Save</button>
+  <button id="saveBtn">Save</button>
 </div>
+
+<!-- Popup -->
+<div class="popup" id="confirmationPopup">
+  ✅ Two-Step Verification updated successfully!
+  <br>
+  <button onclick="closePopup()">OK</button>
+</div>
+
+<script>
+  const saveBtn = document.getElementById('saveBtn');
+  const popup = document.getElementById('confirmationPopup');
+
+  saveBtn.addEventListener('click', () => {
+    // Here you can also save the settings if needed
+    popup.style.display = 'block';
+  });
+
+  function closePopup() {
+    popup.style.display = 'none';
+  }
+</script>
 
 </body>
 </html>
