@@ -4,72 +4,223 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Video Call</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-body{font-family:Arial;background:#e5ddd5;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
-#friendProfile{width:100px;height:100px;border-radius:50%;margin-bottom:20px;border:4px solid #34b7f1;}
-.ringing{animation:ring 1s infinite;}
-@keyframes ring{0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}}
-#videoBox{width:250px;height:180px;background:black;margin:20px;border-radius:10px;display:none;}
-#controls button{margin:10px;padding:10px 20px;border:none;border-radius:8px;color:white;font-size:16px;cursor:pointer;}
-.accept{background:#34b7f1;}
-.decline{background:red;}
-.hangup{background:#555;display:none;}
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Fullscreen Video */
+  #videoContainer {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #myVideo, #friendVideo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+  }
+
+  /* Top Bar */
+  .top-bar {
+    position: absolute;
+    top: 0;
+    left: 0; right: 0;
+    background: rgba(17,17,17,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    z-index: 10;
+  }
+  .top-bar h2 {
+    margin: 0;
+    font-size: 20px;
+    flex: 1;
+    text-align: center;
+  }
+  .top-bar button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  /* Timer */
+  #timer {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    color: #aaa;
+    z-index: 10;
+  }
+
+  /* Bottom Bar */
+  .bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    background: rgba(17,17,17,0.85);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 15px;
+    z-index: 10;
+  }
+  .bottom-bar button {
+    border: none;
+    background: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+  }
+  .end-call {
+    background: red;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 50%;
+    font-size: 18px;
+  }
+
+  /* Accept/Decline Buttons */
+  #controls {
+    position: absolute;
+    bottom: 120px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+  }
+  #controls button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+  }
+  .accept { background: #34b7f1; }
+  .decline { background: red; }
+  .hangup { background: #555; display: none; }
+
+  /* Ringing animation */
+  #friendProfile {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #34b7f1;
+    animation: ring 1s infinite;
+  }
+  @keyframes ring {
+    0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}
+  }
 </style>
 </head>
 <body>
-<img id="friendProfile">
-<h2 id="friendName"></h2>
-<p id="callStatus">Incoming Video Call...</p>
+
+<!-- Video Container -->
+<div id="videoContainer">
+  <video id="friendVideo" autoplay muted></video>
+  <video id="myVideo" autoplay muted style="display:none;"></video>
+  <img id="friendProfile">
+</div>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <button id="addParticipant"><i class="fas fa-user-plus"></i></button>
+  <h2 id="friendName">Friend Name</h2>
+  <button id="menuBtn"><i class="fas fa-ellipsis-v"></i></button>
+</div>
+
 <p id="timer">00:00</p>
-<div id="videoBox"></div>
+
+<!-- Controls -->
 <div id="controls">
   <button id="acceptBtn" class="accept">Accept</button>
   <button id="declineBtn" class="decline">Decline</button>
   <button id="hangupBtn" class="hangup">Hang Up</button>
 </div>
 
+<!-- Bottom Bar -->
+<div class="bottom-bar">
+  <button id="videoBtn"><i class="fas fa-video"></i></button>
+  <button id="speakerBtn"><i class="fas fa-volume-up"></i></button>
+  <button id="muteBtn"><i class="fas fa-microphone-slash"></i></button>
+  <button id="endCallBtn" class="end-call"><i class="fas fa-phone-slash"></i></button>
+</div>
+
 <script>
-const urlParams=new URLSearchParams(window.location.search);
-const friendName=urlParams.get("friend");
-const friendImg=urlParams.get("img");
-document.getElementById("friendName").innerText=friendName;
-document.getElementById("friendProfile").src=friendImg;
-document.getElementById("friendProfile").classList.add("ringing");
+const urlParams = new URLSearchParams(window.location.search);
+const friendName = urlParams.get("friend") || "Friend";
+const friendImg = urlParams.get("img") || "https://via.placeholder.com/120";
+document.getElementById("friendName").innerText = friendName;
+document.getElementById("friendProfile").src = friendImg;
 
-let timerInterval; let seconds=0;
+let timerInterval;
+let seconds = 0;
 
-function formatTime(sec){let m=Math.floor(sec/60);let s=sec%60;return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;}
-function startTimer(){timerInterval=setInterval(()=>{seconds++;document.getElementById("timer").innerText=formatTime(seconds);},1000);}
+function formatTime(sec){
+  const m = Math.floor(sec/60);
+  const s = sec % 60;
+  return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+}
+
+function startTimer(){
+  timerInterval = setInterval(()=>{
+    seconds++;
+    document.getElementById("timer").innerText = formatTime(seconds);
+  },1000);
+}
 
 function saveStatus(status){
-  const callStatus=JSON.parse(localStorage.getItem("callStatus")||"{}");
-  callStatus[friendName]={text:status.text,class:status.class};
+  const callStatus = JSON.parse(localStorage.getItem("callStatus")||"{}");
+  callStatus[friendName] = {text:status.text,class:status.class};
   localStorage.setItem("callStatus",JSON.stringify(callStatus));
 }
 
-document.getElementById("acceptBtn").onclick=()=>{
-  document.getElementById("callStatus").innerText="In Video Call with "+friendName;
+// Accept Call
+document.getElementById("acceptBtn").onclick = ()=>{
+  document.getElementById("callStatus")?.remove();
   document.getElementById("acceptBtn").style.display="none";
   document.getElementById("declineBtn").style.display="none";
   document.getElementById("hangupBtn").style.display="inline-block";
-  document.getElementById("friendProfile").classList.remove("ringing");
-  document.getElementById("videoBox").style.display="block";
+  document.getElementById("friendProfile").style.display="none";
+  document.getElementById("myVideo").style.display="block";
   saveStatus({text:"Video Call Accepted",class:"accepted"});
   startTimer();
 };
 
-document.getElementById("declineBtn").onclick=()=>{
+// Decline Call
+document.getElementById("declineBtn").onclick = ()=>{
   saveStatus({text:"Call Declined",class:"declined"});
   window.location.href="calls.html";
 };
 
-document.getElementById("hangupBtn").onclick=()=>{
+// Hangup
+document.getElementById("hangupBtn").onclick = ()=>{
   clearInterval(timerInterval);
   saveStatus({text:"Call Ended",class:"declined"});
   window.location.href="calls.html";
 };
 
-// Auto Missed if no answer in 25s
+// Auto Missed
 setTimeout(()=>{
   if(document.getElementById("acceptBtn").style.display!=="none"){
     saveStatus({text:"Missed Call",class:"missed"});
@@ -77,5 +228,6 @@ setTimeout(()=>{
   }
 },25000);
 </script>
+
 </body>
 </html>
