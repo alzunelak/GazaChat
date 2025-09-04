@@ -30,6 +30,15 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 .input-box{display:flex;flex:1;background:#000;color:#fff;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);border-radius:25px;padding:6px 10px;gap:6px;}
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
 .input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:fff;}
+#emojiPicker{position:absolute;bottom:60px;left:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
+#emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
+#emojiPicker span:hover{background:#000;border-radius:5px;}
+#attachPopup{display:none;position:absolute;bottom:60px;left:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
+#attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#000;border:1px solid #25d366;text-align:center;font-size:12px;user-select:none;}
+.attachItem:hover{background:#25d366;}
+.attachItem i{font-size:20px;color:#25d366;}
+.attachItem input{display:none;}
 #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
 .groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#000;color:#fff;margin-bottom:10px;border-radius:10px;position:relative;}
 .groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
@@ -54,7 +63,7 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 .actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .actionBox button{width:100%;padding:12px 15px;border:none;background:#000;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
 .actionBox i{color:red;font-size:18px;}
-.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:white;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
+.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:black;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
 .popup h3{margin-top:0;}
 .popup button.closeBtn{margin-top:10px;float:right;}
 .popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
