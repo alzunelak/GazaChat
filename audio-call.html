@@ -8,7 +8,7 @@
   body {
     font-family: Arial, sans-serif;
     margin: 0; padding: 0;
-    background: #e5ddd5;
+    background: #000;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -17,7 +17,7 @@
 
   /* Top Bar */
   .top-bar {
-    background: #075E54;
+    background: #000;
     color: white;
     display: flex;
     align-items: center;
@@ -57,7 +57,7 @@
   }
   .middle p {
     font-size: 18px;
-    color: #333;
+    color: #000;
   }
 
   /* Timer */
@@ -69,7 +69,8 @@
 
   /* Bottom Bar */
   .bottom-bar {
-    background: #fff;
+    background: #111;
+    color:#fff;
     padding: 10px;
     display: flex;
     justify-content: space-around;
@@ -146,13 +147,21 @@
 </style>
 </head>
 <body>
+<!-- Add Font Awesome in <head> if not already added -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <!-- Top Bar -->
 <div class="top-bar">
-  <button id="addParticipant">➕</button>
+  <button id="addParticipant" title="Add Participant">
+    <i class="fas fa-user-plus"></i>
+  </button>
+
   <h2 id="friendName">Friend Name</h2>
+
   <div class="menu">
-    <button id="menuBtn">⋮</button>
+    <button id="menuBtn" title="Menu">
+      <i class="fas fa-ellipsis-v"></i>
+    </button>
     <div class="dropdown" id="menuDropdown">
       <button id="menuAdd">Add Participants</button>
       <button>Settings</button>
@@ -167,12 +176,23 @@
   <p id="timer">Connecting...</p>
 </div>
 
+<!-- Add Font Awesome in <head> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <!-- Bottom Bar -->
 <div class="bottom-bar">
-  <button id="videoBtn">📹</button>
-  <button id="speakerBtn">🔊</button>
-  <button id="muteBtn">🎙️</button>
-  <button id="endCallBtn" class="end-call">🔴</button>
+  <button id="videoBtn" title="Video Call">
+    <i class="fas fa-video"></i>
+  </button>
+  <button id="speakerBtn" title="Speaker">
+    <i class="fas fa-volume-up"></i>
+  </button>
+  <button id="muteBtn" title="Mute Mic">
+    <i class="fas fa-microphone-slash"></i>
+  </button>
+  <button id="endCallBtn" class="end-call" title="End Call">
+    <i class="fas fa-phone-slash"></i>
+  </button>
 </div>
 
 <!-- Friends Popup -->
