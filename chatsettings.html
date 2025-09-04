@@ -4,167 +4,216 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat Settings</title>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; color: #333; }
-.back { margin-bottom: 20px; cursor: pointer; color: #000; display: inline-block; font-size: 1.2em; font-weight: bold; }
-h1 { font-size: 2em; margin-bottom: 20px; }
+  body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    background: #000; 
+    color: #fff; 
+  }
 
-.setting-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; cursor: pointer; }
-.setting-text { flex: 1; margin-right: 12px; }
-.setting-title { font-size: 14px; font-weight: 500; color: #000; }
-.setting-desc { font-size: 13px; color: #666; margin-top: 4px; }
-.section-divider { border-bottom: 1px solid #ccc; margin: 15px 0; }
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+    gap: 10px;
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover {
+    color: #25d366;
+  }
 
-.switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; top:0; left:0; right:0; bottom:0; background-color: #ccc; border-radius: 24px; transition:0.3s; }
-.slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background-color:white; border-radius:50%; transition:0.3s; }
-.switch input:checked + .slider { background-color: #4CAF50; }
-.switch input:checked + .slider:before { transform: translateX(26px); }
+  /* Setting Item */
+  .setting-item {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 15px 20px; 
+    background: #111;
+    margin: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    box-shadow: 0 2px 5px rgba(0,255,0,0.1);
+  }
+  .setting-item:hover { background: #222; }
 
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
-.modal-content { background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.modal-content h2 { color: #000; margin-bottom: 15px; font-weight: bold; font-size: 1.4em; }
-.close-btn { background: #4CAF50; color: #fff; border: none; padding: 10px 16px; margin-top: 15px; border-radius: 6px; cursor: pointer; float: right; }
-.close-btn:hover { background: #45a049; }
-.option-group label { display:block; margin:6px 0; font-size:14px; cursor:pointer; }
-.option-group .info-text { font-size: 13px; color:#555; margin:4px 0 10px 0; }
+  .setting-text { flex: 1; margin-right: 12px; }
+  .setting-title { font-size: 16px; font-weight: bold; color: #fff; }
+  .setting-desc { font-size: 14px; color: #bbb; margin-top: 4px; }
 
-input[type="radio"] { appearance:none; width:18px; height:18px; border:2px solid #ccc; border-radius:50%; margin-right:8px; position:relative; cursor:pointer; outline:none; }
-input[type="radio"]:checked { border-color:#4CAF50; background-color:#4CAF50; }
-input[type="radio"]:checked::after { content:''; position:absolute; top:4px; left:4px; width:6px; height:6px; background-color:white; border-radius:50%; }
+  .section-divider { border-bottom: 1px solid #333; margin: 15px 0; }
 
-.chat-preview { border: 1px solid #ccc; padding: 10px; border-radius: 10px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
-.chat-msg { padding: 6px 12px; border-radius: 15px; margin-bottom: 8px; display: inline-block; max-width: 70%; }
-.sent { background-color: #DCF8C6; align-self: flex-end; text-align: right; }
-.received { background-color: #fff; border:1px solid #ccc; align-self: flex-start; text-align: left; }
-.preview-container { display: flex; flex-direction: column; }
+  /* Toggle Switch */
+  .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; top:0; left:0; right:0; bottom:0; background:#444; border-radius:24px; transition:0.3s; }
+  .slider:before { content:""; position:absolute; height:18px; width:18px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:0.3s; }
+  .switch input:checked + .slider { background:#25d366; }
+  .switch input:checked + .slider:before { transform:translateX(26px); }
+
+  /* Modals */
+  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+  .modal-content { background: #111; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,255,0,0.2); }
+  .modal-content h2 { color: #fff; margin-bottom: 15px; font-weight: bold; font-size: 1.4em; }
+  .close-btn { background: #25d366; color: #fff; border: none; padding: 10px 16px; margin-top: 15px; border-radius: 6px; cursor: pointer; float: right; }
+  .close-btn:hover { background: #1da851; }
+
+  .option-group label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; color:#fff; }
+  .option-group .info-text { font-size: 13px; color: #aaa; margin: 4px 0 10px 0; }
+
+  input[type="radio"] { appearance:none; width:18px; height:18px; border:2px solid #555; border-radius:50%; margin-right:8px; position:relative; cursor:pointer; outline:none; }
+  input[type="radio"]:checked { border-color:#25d366; background-color:#25d366; }
+  input[type="radio"]:checked::after { content:''; position:absolute; top:4px; left:4px; width:6px; height:6px; background:#000; border-radius:50%; }
+
 </style>
 </head>
 <body id="mainBody">
 
-<div class="back" onclick="history.back()">⬅ Chats</div>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Chats</div>
+</div>
 
 <!-- Theme -->
 <div class="setting-item" onclick="openThemeModal()">
-    <div class="setting-text">
-        <div class="setting-title">Theme</div>
-        <div class="setting-desc" id="theme-desc">System Default</div>
-    </div>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-paint-brush"></i> Theme</div>
+    <div class="setting-desc" id="theme-desc">System Default</div>
+  </div>
 </div>
 
 <!-- Default Chat Theme -->
 <div class="setting-item" onclick="openChatThemeModal()">
-    <div class="setting-text">
-        <div class="setting-title">Default Chat Theme</div>
-        <div class="setting-desc" id="chat-theme-desc">System Default</div>
-    </div>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-comments"></i> Default Chat Theme</div>
+    <div class="setting-desc" id="chat-theme-desc">System Default</div>
+  </div>
 </div>
 
 <div class="section-divider"></div>
 
 <!-- Chat Settings -->
 <div class="setting-item">
-    <div class="setting-text">
-        <div class="setting-title">Send with Enter</div>
-        <div class="setting-desc">Enable to send message by pressing Enter</div>
-    </div>
-    <label class="switch"><input type="checkbox" id="sendEnter"><span class="slider"></span></label>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-keyboard"></i> Send with Enter</div>
+    <div class="setting-desc">Enable to send message by pressing Enter</div>
+  </div>
+  <label class="switch"><input type="checkbox" id="sendEnter"><span class="slider"></span></label>
 </div>
 
 <div class="setting-item">
-    <div class="setting-text">
-        <div class="setting-title">Link Previews</div>
-        <div class="setting-desc">Show previews when links are sent</div>
-    </div>
-    <label class="switch"><input type="checkbox" id="linkPreview"><span class="slider"></span></label>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-link"></i> Link Previews</div>
+    <div class="setting-desc">Show previews when links are sent</div>
+  </div>
+  <label class="switch"><input type="checkbox" id="linkPreview"><span class="slider"></span></label>
 </div>
 
 <div class="setting-item">
-    <div class="setting-text">
-        <div class="setting-title">Keep Muted Chats Archived</div>
-        <div class="setting-desc">Muted chats will remain in archive</div>
-    </div>
-    <label class="switch"><input type="checkbox" id="keepMuted"><span class="slider"></span></label>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-bell-slash"></i> Keep Muted Chats Archived</div>
+    <div class="setting-desc">Muted chats will remain in archive</div>
+  </div>
+  <label class="switch"><input type="checkbox" id="keepMuted"><span class="slider"></span></label>
 </div>
 
 <div class="section-divider"></div>
 
 <!-- Font Size -->
 <div class="setting-item" onclick="openFontModal()">
-    <div class="setting-text">
-        <div class="setting-title">Font Size</div>
-        <div class="setting-desc" id="font-desc">Medium</div>
-    </div>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-text-height"></i> Font Size</div>
+    <div class="setting-desc" id="font-desc">Medium</div>
+  </div>
 </div>
 
 <div class="setting-item">
-    <div class="setting-text">
-        <div class="setting-title">Voice Message Transcription</div>
-        <div class="setting-desc">Automatically transcribe voice messages</div>
-    </div>
-    <label class="switch"><input type="checkbox" id="voiceTrans"><span class="slider"></span></label>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-microphone"></i> Voice Message Transcription</div>
+    <div class="setting-desc">Automatically transcribe voice messages</div>
+  </div>
+  <label class="switch"><input type="checkbox" id="voiceTrans"><span class="slider"></span></label>
 </div>
 
 <div class="section-divider"></div>
 
 <!-- Chat Backup -->
 <div class="setting-item" onclick="openBackupModal()">
-    <div class="setting-text">
-        <div class="setting-title">Chat Backup</div>
-        <div class="setting-desc">Backup your chats to cloud</div>
-        <div class="info-text" id="backup-status">Backup is Off</div>
-    </div>
+  <div class="setting-text">
+    <div class="setting-title"><i class="fa-solid fa-cloud-arrow-up"></i> Chat Backup</div>
+    <div class="setting-desc">Backup your chats to cloud</div>
+    <div class="info-text" id="backup-status">Backup is Off</div>
+  </div>
 </div>
 
-<!-- Modals: Theme / Chat Theme / Font / Backup -->
+<!-- Modals -->
 <div id="themeModal" class="modal">
-    <div class="modal-content">
-        <h2>Choose Theme</h2>
-        <div class="option-group">
-            <label><input type="radio" name="theme" value="system"> System Default</label>
-            <label><input type="radio" name="theme" value="light"> Light</label>
-            <label><input type="radio" name="theme" value="dark"> Dark</label>
-        </div>
-        <button class="close-btn" onclick="closeThemeModal()">Done</button>
+  <div class="modal-content">
+    <h2>Choose Theme</h2>
+    <div class="option-group">
+      <label><input type="radio" name="theme" value="system"> System Default</label>
+      <label><input type="radio" name="theme" value="light"> Light</label>
+      <label><input type="radio" name="theme" value="dark"> Dark</label>
     </div>
+    <button class="close-btn" onclick="closeThemeModal()">Done</button>
+  </div>
 </div>
 
 <div id="chatThemeModal" class="modal">
-    <div class="modal-content">
-        <h2>Choose Chat Theme</h2>
-        <div class="option-group">
-            <label><input type="radio" name="chatTheme" value="system"> System Default</label>
-            <label><input type="radio" name="chatTheme" value="light"> Light</label>
-            <label><input type="radio" name="chatTheme" value="dark"> Dark</label>
-            <label><input type="radio" name="chatTheme" value="blue"> Blue</label>
-            <label><input type="radio" name="chatTheme" value="green"> Green</label>
-        </div>
-        <button class="close-btn" onclick="closeChatThemeModal()">Done</button>
+  <div class="modal-content">
+    <h2>Choose Chat Theme</h2>
+    <div class="option-group">
+      <label><input type="radio" name="chatTheme" value="system"> System Default</label>
+      <label><input type="radio" name="chatTheme" value="light"> Light</label>
+      <label><input type="radio" name="chatTheme" value="dark"> Dark</label>
+      <label><input type="radio" name="chatTheme" value="blue"> Blue</label>
+      <label><input type="radio" name="chatTheme" value="green"> Green</label>
     </div>
+    <button class="close-btn" onclick="closeChatThemeModal()">Done</button>
+  </div>
 </div>
 
 <div id="fontModal" class="modal">
-    <div class="modal-content">
-        <h2>Choose Font Size</h2>
-        <div class="option-group">
-            <label><input type="radio" name="font" value="small"> Small</label>
-            <label><input type="radio" name="font" value="medium"> Medium</label>
-            <label><input type="radio" name="font" value="large"> Large</label>
-        </div>
-        <button class="close-btn" onclick="closeFontModal()">Done</button>
+  <div class="modal-content">
+    <h2>Choose Font Size</h2>
+    <div class="option-group">
+      <label><input type="radio" name="font" value="small"> Small</label>
+      <label><input type="radio" name="font" value="medium"> Medium</label>
+      <label><input type="radio" name="font" value="large"> Large</label>
     </div>
+    <button class="close-btn" onclick="closeFontModal()">Done</button>
+  </div>
 </div>
 
 <div id="backupModal" class="modal">
-    <div class="modal-content">
-        <h2>Chat Backup</h2>
-        <div class="option-group">
-            <label><input type="radio" name="backup" value="on"> On</label>
-            <label><input type="radio" name="backup" value="off"> Off</label>
-        </div>
-        <button class="close-btn" onclick="closeBackupModal()">Done</button>
+  <div class="modal-content">
+    <h2>Chat Backup</h2>
+    <div class="option-group">
+      <label><input type="radio" name="backup" value="on"> On</label>
+      <label><input type="radio" name="backup" value="off"> Off</label>
     </div>
+    <button class="close-btn" onclick="closeBackupModal()">Done</button>
+  </div>
 </div>
 
 <script>
@@ -186,16 +235,16 @@ const linkPreview = document.getElementById('linkPreview');
 const keepMuted = document.getElementById('keepMuted');
 const voiceTrans = document.getElementById('voiceTrans');
 
-// Load saved settings
+// Load settings
 function loadSettings(){
-    if(localStorage.theme){ themeDesc.textContent = localStorage.theme; document.querySelector(`input[name="theme"][value="${localStorage.theme.toLowerCase()}"]`).checked=true; }
-    if(localStorage.chatTheme){ chatThemeDesc.textContent = localStorage.chatTheme; document.querySelector(`input[name="chatTheme"][value="${localStorage.chatTheme.toLowerCase()}"]`).checked=true; }
-    if(localStorage.fontSize){ fontDesc.textContent = localStorage.fontSize; document.querySelector(`input[name="font"][value="${localStorage.fontSize.toLowerCase()}"]`).checked=true; document.body.style.fontSize = localStorage.fontSize==='Small'?'12px':localStorage.fontSize==='Medium'?'16px':'20px'; }
-    if(localStorage.sendEnter) sendEnter.checked = JSON.parse(localStorage.sendEnter);
-    if(localStorage.linkPreview) linkPreview.checked = JSON.parse(localStorage.linkPreview);
-    if(localStorage.keepMuted) keepMuted.checked = JSON.parse(localStorage.keepMuted);
-    if(localStorage.voiceTrans) voiceTrans.checked = JSON.parse(localStorage.voiceTrans);
-    if(localStorage.backup) backupStatus.textContent = 'Backup is ' + (localStorage.backup==='on'?'On':'Off');
+  if(localStorage.theme){ themeDesc.textContent = localStorage.theme; document.querySelector(`input[name="theme"][value="${localStorage.theme.toLowerCase()}"]`).checked=true; }
+  if(localStorage.chatTheme){ chatThemeDesc.textContent = localStorage.chatTheme; document.querySelector(`input[name="chatTheme"][value="${localStorage.chatTheme.toLowerCase()}"]`).checked=true; }
+  if(localStorage.fontSize){ fontDesc.textContent = localStorage.fontSize; document.querySelector(`input[name="font"][value="${localStorage.fontSize.toLowerCase()}"]`).checked=true; document.body.style.fontSize = localStorage.fontSize==='Small'?'12px':localStorage.fontSize==='Medium'?'16px':'20px'; }
+  if(localStorage.sendEnter) sendEnter.checked = JSON.parse(localStorage.sendEnter);
+  if(localStorage.linkPreview) linkPreview.checked = JSON.parse(localStorage.linkPreview);
+  if(localStorage.keepMuted) keepMuted.checked = JSON.parse(localStorage.keepMuted);
+  if(localStorage.voiceTrans) voiceTrans.checked = JSON.parse(localStorage.voiceTrans);
+  if(localStorage.backup) backupStatus.textContent = 'Backup is ' + (localStorage.backup==='on'?'On':'Off');
 }
 loadSettings();
 
@@ -219,15 +268,15 @@ function closeFontModal(){ fontModal.style.display='none'; }
 function openBackupModal(){ backupModal.style.display='flex'; }
 function closeBackupModal(){ backupModal.style.display='none'; }
 
-// Capitalize helper
+// Helper
 function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 
 // Close modals clicking outside
 window.onclick = function(event){
-    if(event.target===themeModal) closeThemeModal();
-    if(event.target===chatThemeModal) closeChatThemeModal();
-    if(event.target===fontModal) closeFontModal();
-    if(event.target===backupModal) closeBackupModal();
+  if(event.target===themeModal) closeThemeModal();
+  if(event.target===chatThemeModal) closeChatThemeModal();
+  if(event.target===fontModal) closeFontModal();
+  if(event.target===backupModal) closeBackupModal();
 }
 </script>
 </body>
