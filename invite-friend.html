@@ -54,13 +54,44 @@
     padding: 12px 25px; 
     font-size: 1.2em; 
     background: #25d366; 
-    color: #fff; 
+    color: #000; 
     border: none; 
     border-radius: 8px; 
     cursor: pointer; 
     transition: background 0.2s;
+    font-weight: bold;
   }
   .btn:hover { background: #1aa34a; }
+
+  /* Popup */
+  .popup {
+    display: none;
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    background:#111;
+    color:#fff;
+    padding: 25px 35px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(37,211,102,0.4);
+    text-align:center;
+    z-index: 500;
+  }
+
+  .popup button {
+    margin-top: 15px;
+    padding:10px 20px;
+    background:#25d366;
+    color:#000;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+  }
+  .popup button:hover {
+    background:#1aa34a;
+  }
 </style>
 </head>
 <body>
@@ -74,7 +105,28 @@
 <h1>Invite a Friend</h1>
 <p>Share GazaChat with your friends and family!</p>
 
-<button class="btn" onclick="alert('Share link copied!')"><i class="fa-solid fa-share"></i> Share Link</button>
+<button class="btn" id="shareBtn"><i class="fa-solid fa-share"></i> Share Link</button>
+
+<!-- Popup -->
+<div class="popup" id="sharePopup">
+  share link copied to clipboard!
+  <br>
+  <button onclick="closePopup()">OK</button>
+</div>
+
+<script>
+  const shareBtn = document.getElementById('shareBtn');
+  const popup = document.getElementById('sharePopup');
+
+  shareBtn.addEventListener('click', () => {
+    // You can also copy link to clipboard here
+    popup.style.display = 'block';
+  });
+
+  function closePopup() {
+    popup.style.display = 'none';
+  }
+</script>
 
 </body>
 </html>
