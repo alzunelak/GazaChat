@@ -28,12 +28,11 @@
     align-items: center;
     justify-content: center;
   }
-  #myVideo, #friendVideo {
+  video {
     position: absolute;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 0;
   }
 
   /* Top Bar */
@@ -99,47 +98,13 @@
     border-radius: 50%;
     font-size: 18px;
   }
-
-  /* Accept/Decline Buttons */
-  #controls {
-    position: absolute;
-    bottom: 120px;
-    display: flex;
-    gap: 20px;
-    z-index: 10;
-  }
-  #controls button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 50px;
-    font-size: 16px;
-    cursor: pointer;
-    color: white;
-  }
-  .accept { background: #34b7f1; }
-  .decline { background: red; }
-  .hangup { background: #555; display: none; }
-
-  /* Ringing animation */
-  #friendProfile {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid #34b7f1;
-    animation: ring 1s infinite;
-  }
-  @keyframes ring {
-    0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}
-  }
 </style>
 </head>
 <body>
 
 <!-- Video Container -->
 <div id="videoContainer">
-  <video id="friendVideo" autoplay muted></video>
-  <video id="myVideo" autoplay muted style="display:none;"></video>
-  <img id="friendProfile">
+  <video id="myVideo" autoplay muted></video>
 </div>
 
 <!-- Top Bar -->
@@ -150,13 +115,6 @@
 </div>
 
 <p id="timer">00:00</p>
-
-<!-- Controls -->
-<div id="controls">
-  <button id="acceptBtn" class="accept">Accept</button>
-  <button id="declineBtn" class="decline">Decline</button>
-  <button id="hangupBtn" class="hangup">Hang Up</button>
-</div>
 
 <!-- Bottom Bar -->
 <div class="bottom-bar">
@@ -169,13 +127,12 @@
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const friendName = urlParams.get("friend") || "Friend";
-const friendImg = urlParams.get("img") || "https://via.placeholder.com/120";
 document.getElementById("friendName").innerText = friendName;
-document.getElementById("friendProfile").src = friendImg;
 
 let timerInterval;
 let seconds = 0;
 
+// Timer
 function formatTime(sec){
   const m = Math.floor(sec/60);
   const s = sec % 60;
@@ -188,45 +145,24 @@ function startTimer(){
     document.getElementById("timer").innerText = formatTime(seconds);
   },1000);
 }
+startTimer();
 
-function saveStatus(status){
-  const callStatus = JSON.parse(localStorage.getItem("callStatus")||"{}");
-  callStatus[friendName] = {text:status.text,class:status.class};
-  localStorage.setItem("callStatus",JSON.stringify(callStatus));
-}
+// Access Camera
+const myVideo = document.getElementById("myVideo");
+navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+.then(stream => {
+  myVideo.srcObject = stream;
+})
+.catch(err => {
+  console.error("Error accessing camera:", err);
+  alert("Cannot access camera.");
+});
 
-// Accept Call
-document.getElementById("acceptBtn").onclick = ()=>{
-  document.getElementById("callStatus")?.remove();
-  document.getElementById("acceptBtn").style.display="none";
-  document.getElementById("declineBtn").style.display="none";
-  document.getElementById("hangupBtn").style.display="inline-block";
-  document.getElementById("friendProfile").style.display="none";
-  document.getElementById("myVideo").style.display="block";
-  saveStatus({text:"Video Call Accepted",class:"accepted"});
-  startTimer();
-};
-
-// Decline Call
-document.getElementById("declineBtn").onclick = ()=>{
-  saveStatus({text:"Call Declined",class:"declined"});
-  window.location.href="calls.html";
-};
-
-// Hangup
-document.getElementById("hangupBtn").onclick = ()=>{
+// End Call
+document.getElementById("endCallBtn").onclick = () => {
   clearInterval(timerInterval);
-  saveStatus({text:"Call Ended",class:"declined"});
-  window.location.href="calls.html";
+  window.location.href = "calls.html";
 };
-
-// Auto Missed
-setTimeout(()=>{
-  if(document.getElementById("acceptBtn").style.display!=="none"){
-    saveStatus({text:"Missed Call",class:"missed"});
-    window.location.href="calls.html";
-  }
-},25000);
 </script>
 
 </body>
