@@ -1,106 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Language</title>
-<!-- Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-  body { 
-    font-family: Arial, sans-serif; 
-    margin:0; 
-    padding:0; 
-    background:#000; 
-    color:#fff; 
-  }
-
-  /* Header */
-  .header {
-    position: relative;
-    height: 50px;
-    background: #111;
-    color: #fff;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    font-size: 20px;
-    font-weight: bold;
-    border-bottom: 2px solid #111;
-    gap: 10px;
-  }
-  .header .back-arrow {
-    font-size: 22px;
-    cursor: pointer;
-    color: #fff;
-    transition: color 0.2s;
-  }
-  .header .back-arrow:hover {
-    color: #25d366; 
-  }
-
-  h1 {
-    font-size: 2em;
-    margin: 20px;
-    color: #fff;
-  }
-
-  /* Select box container */
-  .select-container {
-    position: relative;
-    width: calc(100% - 40px);
-    max-width: 300px;
-    margin: 20px;
-  }
-
-  /* Styled select */
-  select {
-    width: 100%;
-    padding: 12px 40px 12px 12px; /* Add padding-right for arrow */
-    font-size: 1em;
-    border-radius: 8px;
-    border: 1px solid #25d366;
-    background: #111;  /* Black background */
-    color: #fff;       /* White text */
-    outline: none;
-    appearance: none; /* Remove default arrow */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-
-  select option {
-    background: #111;
-    color: #fff;
-  }
-
-  /* Custom arrow inside select */
-  .select-container::after {
-    content: "\f078"; /* FontAwesome down arrow */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: #25d366;
-    font-size: 16px;
-  }
-
-</style>
-</head>
-<body>
-
-<!-- Header -->
-<div class="header">
-  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
-  <div>App Language</div>
-</div>
-
-<h1>Select Language</h1>
-
 <div class="select-container">
   <select>
     <option value="ar">Arabic</option>
@@ -111,5 +8,36 @@
   </select>
 </div>
 
-</body>
-</html>
+<style>
+.select-container {
+  position: relative;
+  width: 90%;
+  max-width: 400px; /* Adjust for large screens */
+  margin: 20px auto;
+}
+
+select {
+  width: 100%;
+  padding: 12px 40px 12px 12px; /* space for arrow */
+  font-size: 1em;
+  border-radius: 8px;
+  border: 1px solid #25d366;
+  background: #111;
+  color: #fff;
+  outline: none;
+  appearance: none;
+}
+
+.select-container::after {
+  content: "\f078"; /* FontAwesome down arrow */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  right: 12px;           /* dynamically adjust for all screens */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #25d366;
+  font-size: 16px;
+}
+</style>
