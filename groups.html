@@ -58,21 +58,21 @@ button#createGroupBtn {
   border-radius:50%;
 }
 
-/* Three-dot menu button */
+/* Three-dot menu button at top-right */
 .group .moreBtn {
-  position:absolute;
-  right:10px;
-  top:15px;
-  font-size:18px;
-  cursor:pointer;
-  color:#25d366;
+  position: absolute;
+  right: 10px;
+  top: 5px;  /* top of group box */
+  font-size: 18px;
+  cursor: pointer;
+  color: #25d366;
 }
 
 /* Dropdown menu */
 .group .dropdown {
   display:none;
   position:absolute;
-  top:35px;
+  top:25px;   /* slightly below the button */
   right:10px;
   background:#000;
   border:1px solid #25d366;
@@ -91,10 +91,18 @@ button#createGroupBtn {
   text-align:left;
   border-bottom:1px solid #25d366;
 }
-
 .group .dropdown button:last-child { border-bottom:none; }
-
 .group .dropdown button:hover { background:#25d366; color:#000; }
+
+/* Back arrow */
+.backArrow {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #25d366;
+}
 
 /* NEW GROUP POPUP */
 #newGroupPopup {
@@ -120,6 +128,7 @@ button#createGroupBtn {
 </head>
 <body>
 
+<i class="fas fa-arrow-left backArrow" onclick="goBack()"></i>
 <h1>My Groups</h1>
 <button id="createGroupBtn">+ Create Group</button>
 <div id="groupsList"></div>
@@ -238,6 +247,9 @@ function saveGroup(name,img){
   closeNewGroupPopup();
   document.getElementById("newGroupName").value="";
   document.getElementById("newGroupPhoto").value="";
+}
+function goBack() {
+  window.history.back();
 }
 
 window.addEventListener('storage', renderGroups);
