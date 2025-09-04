@@ -21,12 +21,23 @@
     color: #fff;
     padding: 10px 20px;
     display: flex;
-    align-items: right;
-    justify-content: right;
+    align-items: center;
+    justify-content: flex-start; /* Align left */
     font-size: 20px;
     font-weight: bold;
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid #25d366; /* Green border */
     box-shadow: 0 2px 5px rgba(0, 255, 0, 0.2);
+    gap: 10px; /* Space between arrow and text */
+  }
+
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover {
+    color: #25d366; /* Green on hover */
   }
 
   /* Profile Section */
@@ -34,7 +45,7 @@
     display: flex;
     align-items: center;
     padding: 20px;
-    background: #000;
+    background: #111;
     border-bottom: 1px solid #333;
   }
   .profile img {
@@ -83,7 +94,10 @@
 <body>
 
 <!-- Header -->
-<div class="header">Settings</div>
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()">&#8592;</div>
+  <div>Settings</div>
+</div>
 
 <!-- Profile at top -->
 <div class="profile">
