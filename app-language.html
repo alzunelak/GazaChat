@@ -29,7 +29,7 @@
     font-size: 20px;
     font-weight: bold;
     border-bottom: 2px solid #111;
-    gap: 10px; /* Space between arrow and text */
+    gap: 10px;
   }
   .header .back-arrow {
     font-size: 22px;
@@ -38,7 +38,7 @@
     transition: color 0.2s;
   }
   .header .back-arrow:hover {
-    color: #25d366; /* Green on hover */
+    color: #25d366; 
   }
 
   h1 {
@@ -47,7 +47,7 @@
     color: #fff;
   }
 
-  /* Custom select styling */
+  /* Styled select box */
   select {
     width: calc(100% - 40px);
     max-width: 300px;
@@ -55,27 +55,27 @@
     font-size: 1em;
     border-radius: 8px;
     border: 1px solid #25d366;
-    background: #111;
-    color: #fff;
+    background: #111;  /* Black background */
+    color: #fff;       /* White text */
     margin: 20px;
     outline: none;
-    -webkit-appearance: none;  /* Remove default arrow */
+    appearance: none; /* Remove default arrow for consistent styling */
+    -webkit-appearance: none;
     -moz-appearance: none;
-    appearance: none;
-    cursor: pointer;
+    position: relative;
   }
 
+  /* Options in the dropdown */
   select option {
-    background: #111;
-    color: #fff;
+    background: #111; /* Black background */
+    color: #fff;      /* White text */
   }
 
-  /* Optional: add custom dropdown arrow */
+  /* Optional: custom arrow using pseudo-element */
   .select-container {
     position: relative;
     display: inline-block;
     width: calc(100% - 40px);
-    max-width: 300px;
     margin: 20px;
   }
   .select-container::after {
