@@ -1,53 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blocked Users</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .blocked { border: 1px solid #ccc; padding: 10px; margin: 5px; }
-    button { margin-left: 10px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blocked Users</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #fff;
+  }
+
+  /* Header */
+  .header {
+    height: 50px;
+    background: #111;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover {
+    color: #25d366;
+  }
+
+  /* Blocked users list */
+  #blockedList {
+    margin: 20px;
+  }
+
+  .blocked {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #111;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(37, 211, 102, 0.2);
+    transition: background 0.2s;
+  }
+  .blocked:hover {
+    background: #222;
+  }
+
+  button {
+    background: #25d366;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  button:hover {
+    background: #1ebe57;
+  }
+
+  p.no-blocked {
+    color: #888;
+    text-align: center;
+    margin-top: 50px;
+    font-size: 18px;
+  }
+</style>
 </head>
 <body>
-  <h2>Blocked Users</h2>
-  <div id="blockedList"></div>
 
-  <script>
-    function renderBlocked() {
-      let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
-      const blockedList = document.getElementById("blockedList");
-      blockedList.innerHTML = "";
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Blocked Users</div>
+</div>
 
-      if (blockedUsers.length === 0) {
-        blockedList.innerHTML = "<p>No blocked users</p>";
-        return;
-      }
+<!-- Blocked Users List -->
+<div id="blockedList"></div>
 
-      blockedUsers.forEach((friend, index) => {
-        let div = document.createElement("div");
-        div.className = "blocked";
-        div.innerHTML = friend + " <button>Unblock</button>";
+<script>
+function renderBlocked() {
+  let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
+  const blockedList = document.getElementById("blockedList");
+  blockedList.innerHTML = "";
 
-        div.querySelector("button").addEventListener("click", () => {
-          blockedUsers.splice(index, 1);
-          localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
+  if (blockedUsers.length === 0) {
+    blockedList.innerHTML = "<p class='no-blocked'>No blocked users</p>";
+    return;
+  }
 
-          // Add back to friend list
-          let friends = JSON.parse(localStorage.getItem("friends") || "[]");
-          friends.push({ name: friend, profile: "" });
-          localStorage.setItem("friends", JSON.stringify(friends));
+  blockedUsers.forEach((friend, index) => {
+    let div = document.createElement("div");
+    div.className = "blocked";
+    div.innerHTML = `<span>${friend}</span> <button>Unblock</button>`;
 
-          renderBlocked();
-          alert(friend + " is unblocked and added back to your friend list.");
-        });
+    div.querySelector("button").addEventListener("click", () => {
+      blockedUsers.splice(index, 1);
+      localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
 
-        blockedList.appendChild(div);
-      });
-    }
+      // Add back to friend list
+      let friends = JSON.parse(localStorage.getItem("friends") || "[]");
+      friends.push({ name: friend, profile: "" });
+      localStorage.setItem("friends", JSON.stringify(friends));
 
-    renderBlocked();
-  </script>
+      renderBlocked();
+      alert(friend + " is unblocked and added back to your friend list.");
+    });
+
+    blockedList.appendChild(div);
+  });
+}
+
+renderBlocked();
+</script>
+
 </body>
 </html>
