@@ -833,18 +833,15 @@ function renderBlockedUsersPopup(){
 function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
 
 // ===== GROUP LINK =====
-document.getElementById("showGroupLink").onclick = ()=>{
-  const inviteLink = `${window.location.origin}/join.html?group=${currentGroupIndex}`;
-  document.getElementById("groupLinkInput").value = inviteLink;
-  document.getElementById("linkPopup").style.display="block";
+// Directly go to join page with group index
+document.getElementById("showGroupLink").onclick = () => {
+  window.location.href = `join.html?group=${currentGroupIndex}`;
 };
-function copyLink(){
-  const input = document.getElementById("groupLinkInput");
-  input.select(); input.setSelectionRange(0,99999);
-  navigator.clipboard.writeText(input.value);
-  alert("Group link copied!");
-}
-function closePopup(){ document.getElementById("linkPopup").style.display="none"; }
+
+// Remove popup-related code
+// function copyLink(){ ... }
+// function closePopup(){ ... }
+
 
 // ===== REQUEST/INVITE =====
 document.getElementById("showRequestInvite").onclick = () => {
