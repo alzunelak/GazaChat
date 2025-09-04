@@ -6,112 +6,44 @@
 <title>Video Call</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #000;
-    color: #fff;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Fullscreen Video */
-  #videoContainer {
-    flex: 1;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  video {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Top Bar */
-  .top-bar {
-    position: absolute;
-    top: 0;
-    left: 0; right: 0;
-    background: rgba(17,17,17,0.85);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    z-index: 10;
-  }
-  .top-bar h2 {
-    margin: 0;
-    font-size: 20px;
-    flex: 1;
-    text-align: center;
-  }
-  .top-bar button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 22px;
-    cursor: pointer;
-  }
-
-  /* Timer */
-  #timer {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 16px;
-    color: #aaa;
-    z-index: 10;
-  }
-
-  /* Bottom Bar */
-  .bottom-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0; right: 0;
-    background: rgba(17,17,17,0.85);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 15px;
-    z-index: 10;
-  }
-  .bottom-bar button {
-    border: none;
-    background: none;
-    font-size: 24px;
-    color: white;
-    cursor: pointer;
-  }
-  .end-call {
-    background: red;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 50%;
-    font-size: 18px;
-  }
+body{font-family:Arial;margin:0;background:#000;color:#fff;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+#videoContainer{flex:1;position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:black;}
+video{position:absolute;width:100%;height:100%;object-fit:cover;}
+.top-bar{position:absolute;top:0;left:0;right:0;background:rgba(17,17,17,0.85);display:flex;align-items:center;justify-content:space-between;padding:15px;z-index:10;}
+.top-bar h2{margin:0;font-size:20px;flex:1;text-align:center;}
+.top-bar button{background:none;border:none;color:white;font-size:22px;cursor:pointer;}
+#timer{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-size:16px;color:#aaa;z-index:10;}
+.bottom-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(17,17,17,0.85);display:flex;justify-content:space-around;align-items:center;padding:15px;z-index:10;}
+.bottom-bar button{border:none;background:none;font-size:24px;color:white;cursor:pointer;}
+.end-call{background:red;color:white;padding:12px 20px;border-radius:50%;font-size:18px;}
+/* Dropdown Menu */
+.dropdown{display:none;position:absolute;top:40px;right:0;background:#111;color:white;border-radius:6px;overflow:hidden;z-index:100;}
+.dropdown button{padding:10px 20px;width:100%;text-align:left;border:none;background:none;color:white;font-size:16px;cursor:pointer;}
+.dropdown button:hover{background:#222;}
+/* Friend Popup */
+#friendPopup{display:none;position:absolute;bottom:60px;left:0;right:0;background:#111;color:white;max-height:50%;overflow-y:auto;z-index:100;padding:15px;}
+.friend-item{display:flex;align-items:center;margin:8px 0;cursor:pointer;}
+.friend-item img{width:40px;height:40px;border-radius:50%;margin-right:10px;}
 </style>
 </head>
 <body>
 
-<!-- Video Container -->
+<!-- Video -->
 <div id="videoContainer">
   <video id="myVideo" autoplay muted></video>
 </div>
 
 <!-- Top Bar -->
 <div class="top-bar">
-  <button id="addParticipant"><i class="fas fa-user-plus"></i></button>
+  <button id="addParticipant" title="Add Participant"><i class="fas fa-user-plus"></i></button>
   <h2 id="friendName">Friend Name</h2>
-  <button id="menuBtn"><i class="fas fa-ellipsis-v"></i></button>
+  <div style="position:relative;">
+    <button id="menuBtn" title="Menu"><i class="fas fa-ellipsis-v"></i></button>
+    <div class="dropdown" id="menuDropdown">
+      <button id="menuAdd">Add Participants</button>
+      <button>Settings</button>
+    </div>
+  </div>
 </div>
 
 <p id="timer">00:00</p>
@@ -124,46 +56,62 @@
   <button id="endCallBtn" class="end-call"><i class="fas fa-phone-slash"></i></button>
 </div>
 
+<!-- Friends Popup -->
+<div id="friendPopup"></div>
+
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const friendName = urlParams.get("friend") || "Friend";
 document.getElementById("friendName").innerText = friendName;
 
-let timerInterval;
-let seconds = 0;
-
 // Timer
-function formatTime(sec){
-  const m = Math.floor(sec/60);
-  const s = sec % 60;
-  return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
-}
+let seconds = 0;
+function formatTime(sec){const m=Math.floor(sec/60);const s=sec%60;return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;}
+let timerInterval = setInterval(()=>{seconds++;document.getElementById("timer").innerText = formatTime(seconds);},1000);
 
-function startTimer(){
-  timerInterval = setInterval(()=>{
-    seconds++;
-    document.getElementById("timer").innerText = formatTime(seconds);
-  },1000);
-}
-startTimer();
-
-// Access Camera
+// Access camera
 const myVideo = document.getElementById("myVideo");
-navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-.then(stream => {
-  myVideo.srcObject = stream;
-})
-.catch(err => {
-  console.error("Error accessing camera:", err);
-  alert("Cannot access camera.");
-});
+navigator.mediaDevices.getUserMedia({video:true,audio:true})
+.then(stream => {myVideo.srcObject = stream;})
+.catch(err => {console.error(err); alert("Cannot access camera.");});
 
 // End Call
-document.getElementById("endCallBtn").onclick = () => {
-  clearInterval(timerInterval);
-  window.location.href = "calls.html";
-};
-</script>
+document.getElementById("endCallBtn").onclick = ()=>{clearInterval(timerInterval);window.location.href="calls.html";};
 
+// Dropdown menu toggle
+const menuBtn = document.getElementById("menuBtn");
+const menuDropdown = document.getElementById("menuDropdown");
+menuBtn.onclick = ()=>{menuDropdown.style.display = menuDropdown.style.display==="block"?"none":"block";}
+document.addEventListener("click", e=>{
+  if(!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)){menuDropdown.style.display="none";}
+});
+
+// Friends from localStorage
+const friends = JSON.parse(localStorage.getItem("friends") || JSON.stringify([
+  {name:"Amat", img:"https://via.placeholder.com/50"},
+  {name:"Sophia", img:"https://via.placeholder.com/50"},
+  {name:"Zainab", img:"https://via.placeholder.com/50"},
+  {name:"Maya", img:"https://via.placeholder.com/50"},
+  {name:"Rukhsar", img:"https://via.placeholder.com/50"},
+  {name:"Nuzlah", img:"https://via.placeholder.com/50"}
+]));
+
+const friendPopup = document.getElementById("friendPopup");
+function showFriendsPopup(){
+  friendPopup.innerHTML = "<h3>Select a Friend</h3>";
+  friends.forEach(f=>{
+    const div = document.createElement("div");
+    div.className="friend-item";
+    div.innerHTML=`<img src="${f.img}" alt=""><span>${f.name}</span>`;
+    div.onclick = ()=>{alert("Added "+f.name+" to call"); friendPopup.style.display="none";}
+    friendPopup.appendChild(div);
+  });
+  friendPopup.style.display="block";
+}
+
+// Add participant buttons
+document.getElementById("addParticipant").onclick = showFriendsPopup;
+document.getElementById("menuAdd").onclick = showFriendsPopup;
+</script>
 </body>
 </html>
