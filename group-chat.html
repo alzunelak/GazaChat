@@ -377,6 +377,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
 </div>
 
+<!-- block -->
 <div id="blockedPopup" class="popup">
   <h3>Blocked Users</h3>
   <div id="blockedList"></div>
@@ -805,7 +806,7 @@ function renderBlockedUsersPopup(){
   const listDiv=document.getElementById("blockedList");
   listDiv.innerHTML="";
   if(blockedMembers.length===0){
-    listDiv.innerHTML="<p style='background:#000;color:#fff;font-style:italic;'>No blocked users</p>";
+    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
   } else {
     blockedMembers.forEach((u,index)=>{
       const div=document.createElement("div");
@@ -825,8 +826,10 @@ function renderBlockedUsersPopup(){
 function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
 
 // ===== GROUP LINK =====
-document.getElementById("showRequestInvite").onclick = () => {
+document.getElementById("grouplinkInvite").onclick = () => {
     window.location.href = "grouplink.html";
+};
+
 
 // ===== REQUEST/INVITE =====
 document.getElementById("showRequestInvite").onclick = () => {
