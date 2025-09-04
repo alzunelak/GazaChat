@@ -6,171 +6,171 @@
 <title>Audio Call</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #000;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding-bottom: 80px; /* Space for fixed bottom bar */
-  }
+body {
+  font-family: Arial;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 80px; /* Space for bottom bar */
+}
 
-  /* Top Bar */
-  .top-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: #111;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    font-size: 18px;
-    z-index: 100;
-  }
-  .top-bar h2 {
-    margin: 0;
-    font-size: 20px;
-    flex: 1;
-    text-align: center;
-  }
-  .top-bar button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 22px;
-    cursor: pointer;
-  }
+/* Top Bar */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #111;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  font-size: 18px;
+  z-index: 100;
+}
+.top-bar h2 {
+  margin: 0;
+  font-size: 20px;
+  flex: 1;
+  text-align: center;
+}
+.top-bar button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
 
-  /* Middle Section */
-  .middle {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 60px; /* Space for top bar */
-    text-align: center;
-  }
-  .middle img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid #25d366;
-    margin-bottom: 10px;
-  }
+/* Middle */
+.middle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 60px;
+  text-align: center;
+}
+.middle img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #25d366;
+  margin-bottom: 10px;
+}
 
-  /* Timer */
-  #timer {
-    margin-top: 10px;
-    font-size: 16px;
-    color: #aaa;
-  }
+/* Timer */
+#timer {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #aaa;
+}
 
-  /* Bottom Bar */
-  .bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #111;
-    color: #fff;
-    padding: 10px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    border-top: 1px solid #333;
-    z-index: 100;
-  }
-  .bottom-bar button {
-    border: none;
-    background: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: white;
-  }
-  .end-call {
-    background: red;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 50%;
-    font-size: 18px;
-  }
+/* Bottom Bar */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #111;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #333;
+  z-index: 100;
+}
+.bottom-bar button {
+  border: none;
+  background: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+.end-call {
+  background: red;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50%;
+  font-size: 18px;
+}
 
-  /* Dropdown Menu */
-  .menu {
-    position: relative;
-    display: inline-block;
-  }
-  .dropdown {
-    display: none;
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background: #111;
-    color: white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    border-radius: 6px;
-    overflow: hidden;
-    z-index: 100;
-  }
-  .dropdown button {
-    padding: 10px 20px;
-    width: 100%;
-    text-align: left;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 16px;
-    color: white;
-  }
-  .dropdown button:hover {
-    background: #222;
-  }
+/* Dropdown Menu */
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 40px; right: 0;
+  background: #111;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 100;
+}
+.dropdown button {
+  padding: 10px 20px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+}
+.dropdown button:hover { background: #222; }
 
-  /* Add Participants Popup */
-  #friendPopup {
-    display: none;
-    position: fixed;
-    bottom: 60px; /* Above bottom bar */
-    left: 0; right: 0;
-    background: #111;
-    max-height: 50%;
-    overflow-y: auto;
-    z-index: 200;
-    padding: 15px;
-    color: white;
-  }
-  .friend-item {
-    display: flex;
-    align-items: center;
-    margin: 8px 0;
-    cursor: pointer;
-  }
-  .friend-item img {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
+/* Add Participants Popup */
+#friendPopup {
+  display: none;
+  position: fixed;
+  bottom: 60px; /* Above bottom bar */
+  left: 0; right: 0;
+  background: #111;
+  max-height: 50%;
+  overflow-y: auto;
+  z-index: 200;
+  padding: 15px;
+  color: white;
+}
+.friend-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  cursor: pointer;
+}
+.friend-item img {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Custom Notification */
+#customNotification {
+  display: none;
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  z-index: 200;
+  font-size: 16px;
+}
 </style>
 </head>
 <body>
 
 <!-- Top Bar -->
 <div class="top-bar">
-  <button id="addParticipant" title="Add Participant">
-    <i class="fas fa-user-plus"></i>
-  </button>
+  <button id="addParticipant" title="Add Participant"><i class="fas fa-user-plus"></i></button>
   <h2 id="friendName">Friend Name</h2>
   <div class="menu">
-    <button id="menuBtn" title="Menu">
-      <i class="fas fa-ellipsis-v"></i>
-    </button>
+    <button id="menuBtn" title="Menu"><i class="fas fa-ellipsis-v"></i></button>
     <div class="dropdown" id="menuDropdown">
       <button id="menuAdd">Add Participants</button>
       <button>Settings</button>
@@ -187,89 +187,93 @@
 
 <!-- Bottom Bar -->
 <div class="bottom-bar">
-  <button id="videoBtn" title="Video Call">
-    <i class="fas fa-video"></i>
-  </button>
-  <button id="speakerBtn" title="Speaker">
-    <i class="fas fa-volume-up"></i>
-  </button>
-  <button id="muteBtn" title="Mute Mic">
-    <i class="fas fa-microphone-slash"></i>
-  </button>
-  <button id="endCallBtn" class="end-call" title="End Call">
-    <i class="fas fa-phone-slash"></i>
-  </button>
+  <button id="videoBtn" title="Video Call"><i class="fas fa-video"></i></button>
+  <button id="speakerBtn" title="Speaker"><i class="fas fa-volume-up"></i></button>
+  <button id="muteBtn" title="Mute Mic"><i class="fas fa-microphone-slash"></i></button>
+  <button id="endCallBtn" class="end-call" title="End Call"><i class="fas fa-phone-slash"></i></button>
 </div>
 
 <!-- Friends Popup -->
 <div id="friendPopup"></div>
 
+<!-- Custom Notification -->
+<div id="customNotification"></div>
+
 <script>
-  // Get friend from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const friendName = urlParams.get("friend") || "Unknown Friend";
-  document.getElementById("friendName").innerText = friendName;
+// Friend Name from URL
+const urlParams = new URLSearchParams(window.location.search);
+const friendName = urlParams.get("friend") || "Unknown Friend";
+document.getElementById("friendName").innerText = friendName;
 
-  // Timer with 3s delay
-  let seconds = 0;
-  function formatTime(sec) {
-    let m = Math.floor(sec / 60), s = sec % 60;
-    return `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
+// Timer
+let seconds = 0;
+function formatTime(sec) {
+  let m = Math.floor(sec/60), s = sec%60;
+  return `${m<10?"0":""}${m}:${s<10?"0":""}${s}`;
+}
+setTimeout(()=>{
+  document.getElementById("timer").innerText = "00:00";
+  setInterval(()=>{
+    seconds++;
+    document.getElementById("timer").innerText = formatTime(seconds);
+  },1000);
+},3000);
+
+// Menu toggle
+const menuBtn = document.getElementById("menuBtn");
+const menuDropdown = document.getElementById("menuDropdown");
+menuBtn.onclick = ()=>{menuDropdown.style.display = menuDropdown.style.display==="block"?"none":"block";}
+document.addEventListener("click", e=>{
+  if(!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)){
+    menuDropdown.style.display = "none";
   }
-  setTimeout(() => {
-    document.getElementById("timer").innerText = "00:00";
-    setInterval(() => {
-      seconds++;
-      document.getElementById("timer").innerText = formatTime(seconds);
-    }, 1000);
-  }, 3000);
+});
 
-  // Menu toggle
-  const menuBtn = document.getElementById("menuBtn");
-  const menuDropdown = document.getElementById("menuDropdown");
-  menuBtn.addEventListener("click", () => {
-    menuDropdown.style.display = menuDropdown.style.display === "block" ? "none" : "block";
+// Friends from localStorage
+const friends = JSON.parse(localStorage.getItem("friends") || JSON.stringify([
+  {name:"Amat", img:"https://via.placeholder.com/50"},
+  {name:"Sophia", img:"https://via.placeholder.com/50"},
+  {name:"Zainab", img:"https://via.placeholder.com/50"},
+  {name:"Maya", img:"https://via.placeholder.com/50"},
+  {name:"Rukhsar", img:"https://via.placeholder.com/50"},
+  {name:"Nuzlah", img:"https://via.placeholder.com/50"}
+]));
+
+const friendPopup = document.getElementById("friendPopup");
+const customNotification = document.getElementById("customNotification");
+
+// Show friends popup
+function showFriendsPopup(){
+  friendPopup.innerHTML = "<h3>Select a Friend</h3>";
+  friends.forEach(f=>{
+    const div = document.createElement("div");
+    div.className = "friend-item";
+    div.innerHTML = `<img src="${f.img}" alt=""><span>${f.name}</span>`;
+    div.onclick = ()=>{
+      showNotification(`Added ${f.name} to call`);
+      friendPopup.style.display="none";
+    };
+    friendPopup.appendChild(div);
   });
-  document.addEventListener("click", (e) => {
-    if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
-      menuDropdown.style.display = "none";
-    }
-  });
+  friendPopup.style.display = "block";
+}
 
-  // Friends from localStorage
-  const friends = JSON.parse(localStorage.getItem("friends") || JSON.stringify([
-    {name:"Amat", img:"https://via.placeholder.com/50"},
-    {name:"Sophia", img:"https://via.placeholder.com/50"},
-    {name:"Zainab", img:"https://via.placeholder.com/50"},
-    {name:"Maya", img:"https://via.placeholder.com/50"},
-    {name:"Rukhsar", img:"https://via.placeholder.com/50"},
-    {name:"Nuzlah", img:"https://via.placeholder.com/50"}
-  ]));
+// Show custom notification
+function showNotification(message){
+  customNotification.innerText = message;
+  customNotification.style.display = "block";
+  setTimeout(()=>{customNotification.style.display = "none";},3000);
+}
 
-  const friendPopup = document.getElementById("friendPopup");
-  function showFriendsPopup() {
-    friendPopup.innerHTML = "<h3>Select a Friend</h3>";
-    friends.forEach(f => {
-      const div = document.createElement("div");
-      div.className = "friend-item";
-      div.innerHTML = `<img src="${f.img}" alt=""><span>${f.name}</span>`;
-      div.onclick = () => {
-        alert("Added " + f.name + " to call");
-        friendPopup.style.display = "none";
-      };
-      friendPopup.appendChild(div);
-    });
-    friendPopup.style.display = "block";
-  }
+// Add participant buttons
+document.getElementById("addParticipant").onclick = showFriendsPopup;
+document.getElementById("menuAdd").onclick = showFriendsPopup;
 
-  document.getElementById("addParticipant").onclick = showFriendsPopup;
-  document.getElementById("menuAdd").onclick = showFriendsPopup;
-
-  // End Call
-  document.getElementById("endCallBtn").onclick = () => {
-    alert("Call Ended");
-    window.location.href = "calls.html";
-  };
+// End call
+document.getElementById("endCallBtn").onclick = ()=>{
+  showNotification("Call Ended");
+  setTimeout(()=>{window.location.href="calls.html";},1500);
+};
 </script>
 
 </body>
