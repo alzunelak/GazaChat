@@ -20,8 +20,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  background: #111;                   /* Same as bottom bar */
-  border-bottom: 2px solid #25d366;  /* Green border */
+  background: #111;                   
+  border-bottom: 2px solid #25d366;  
   position: fixed;
   top: 0;
   width: 100%;
@@ -32,39 +32,41 @@ body {
   font-size: 20px;
   color: #fff;
 }
-.header .topMoreBtn {
+.topMoreBtn {
   font-size: 24px;
   cursor: pointer;
   color: #25d366;
+  position: relative;
+  z-index: 110;
 }
 
 /* Dropdown for top menu */
 .dropdownTop {
   display: none;
   position: absolute;
-  top: 55px;
+  top: 50px;
   right: 20px;
-  background: #000;
+  background: #111;
   border: 1px solid #25d366;
   border-radius: 8px;
   flex-direction: column;
-  z-index: 200;
+  z-index: 120;
 }
 .dropdownTop button {
-  background: #000;
+  background: #111;
   color: #fff;
   border: none;
   padding: 8px 12px;
   cursor: pointer;
   text-align: left;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #25d366;
 }
 .dropdownTop button:last-child { border-bottom:none; }
 .dropdownTop button:hover { background:#25d366; color:#000; }
 
 /* Main content */
 main {
-  padding: 90px 20px 80px; /* space for fixed header and bottom bar */
+  padding: 90px 20px 80px; 
 }
 
 /* Create group button */
@@ -122,6 +124,7 @@ button#createGroupBtn {
   background: #111;
   border-top: 2px solid #25d366;
   padding: 10px 0;
+  z-index: 100;
 }
 .bottomBar {
   display: flex;
@@ -163,7 +166,7 @@ button#createGroupBtn {
 <!-- Header -->
 <div class="header">
   <h1>My Groups</h1>
-  <i class="fas fa-ellipsis-v topMoreBtn" onclick="toggleTopMenu()"></i>
+  <i class="fas fa-ellipsis-v topMoreBtn" onclick="toggleTopMenu(event)"></i>
 </div>
 
 <!-- Top Dropdown -->
@@ -204,6 +207,7 @@ let groups = JSON.parse(localStorage.getItem("groups") || "[]");
 const groupsListDiv = document.getElementById("groupsList");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
+const topDropdown = document.getElementById("topDropdown");
 
 // Show create group popup
 createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
@@ -247,23 +251,17 @@ function renderGroups(){
 }
 
 // Toggle top menu
-function toggleTopMenu(){
-  const dropdown = document.getElementById("topDropdown");
-  dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+function toggleTopMenu(e){
+  e.stopPropagation(); // prevent click outside closing immediately
+  topDropdown.style.display = topDropdown.style.display === "flex" ? "none" : "flex";
 }
 
 // Go to settings
-function goToSettings(){
-  window.location.href = "settings.html";
-}
+function goToSettings(){ window.location.href = "settings.html"; }
 
-// Close top dropdown if clicking outside
-document.addEventListener('click', (e)=>{
-  const dropdown = document.getElementById("topDropdown");
-  const btn = document.querySelector('.topMoreBtn');
-  if(!dropdown.contains(e.target) && !btn.contains(e.target)){
-    dropdown.style.display = 'none';
-  }
+// Close dropdown if clicking outside
+document.addEventListener('click', ()=>{
+  topDropdown.style.display = 'none';
 });
 
 // Bottom navigation functions
