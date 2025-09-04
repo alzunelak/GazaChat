@@ -8,53 +8,76 @@
   body {
     font-family: Arial, sans-serif;
     margin:0;
-    padding:20px;
-    background:#f8f9fa;
-    color: #333;
+    padding:0;
+    background:#000;  /* black background */
+    color: #fff;      /* white text */
   }
-  .back {
-    margin-bottom:20px;
-    cursor:pointer;
-    color:#007bff;
-    display:inline-block;
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    gap: 10px;
+    border-bottom: 2px solid #111;
   }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover {
+    color: #25d366;
+  }
+
   h1 {
     font-size: 1.8em;
-    margin-bottom:10px;
+    margin:20px;
   }
   h2 {
     font-size: 1.2em;
-    margin: 15px 0 5px 0;
+    margin: 15px 20px 5px 20px;
   }
   p {
     font-size: 1em;
-    color:#555;
+    color:#ccc;
     line-height: 1.5;
-    margin-bottom: 15px;
+    margin: 10px 20px;
   }
   ul {
-    margin: 10px 0 20px 20px;
+    margin: 10px 0 20px 40px;
     padding:0;
-    color: #555;
+    color: #ccc;
   }
   ul li {
     margin-bottom: 8px;
   }
   .learn-more {
-    color: #007bff;
+    color: #25d366;
     text-decoration: underline;
     cursor: pointer;
-    margin-bottom: 20px;
+    margin: 0 20px 20px 20px;
     display:inline-block;
   }
+
+  /* Toggle Section */
   .toggle-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background:#fff;
+    background:#111;
     padding:15px 20px;
     border-radius:8px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    margin:10px 20px;
+    box-shadow:0 2px 5px rgba(37,211,102,0.1);
   }
   .toggle-section p {
     margin:0;
@@ -71,7 +94,7 @@
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
+    background-color: #555;
     transition: .4s;
     border-radius: 24px;
   }
@@ -94,12 +117,16 @@
 </head>
 <body>
 
-<div class="back" onclick="history.back()">⬅ Back</div>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="history.back()">&#8592;</div>
+  <div>Security Notifications</div>
+</div>
 
 <h1>Security Notifications</h1>
 
-<h2>O Your chats and calls are private</h2>
-<p>End-to-end encryption keeps your personal messages and calls between you and the people you choose. No one outside of the chat, not even WhatsApp, can read, listen to, or share them. This includes your:</p>
+<h2>🔒 Your chats and calls are private</h2>
+<p>End-to-end encryption keeps your personal messages and calls between you and the people you choose. No one outside of the chat can read, listen to, or share them. This includes your:</p>
 
 <ul>
   <li>Text and voice messages</li>
