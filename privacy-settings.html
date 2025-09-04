@@ -4,61 +4,82 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy</title>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
   body { 
     font-family: Arial, sans-serif; 
     margin: 0; 
-    padding: 20px; 
-    background: #f8f9fa; 
-    color: #333;
+    padding: 0; 
+    background: #000; 
+    color: #fff;
   }
-  h1 { font-size: 2em; margin-bottom: 20px; }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+    gap: 10px;
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover { color: #25d366; }
+
+  /* Section Titles */
   h2 { 
     font-size: 1.4em; 
-    margin-top: 25px; 
-    margin-bottom: 10px; 
-    cursor: pointer; 
-    color: #000; 
-    font-weight: bold;
-  }
-  a { text-decoration: none; color: inherit; }
-  .back { 
-    margin-bottom: 20px; 
-    cursor: pointer; 
-    color: #000; 
-    display: inline-block; 
-    font-size: 1.2em; 
+    margin: 20px 15px 10px; 
+    color: #fff; 
     font-weight: bold;
   }
 
-  /* Settings item */
+  /* Setting item */
   .setting-item {
     display: flex;
     justify-content: space-between;
     align-items: flex-start; 
-    padding: 12px 0; 
+    padding: 15px 20px; 
+    background: #111;
+    margin: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
   }
+  .setting-item:hover { background: #222; }
   .setting-text { flex: 1; margin-right: 12px; }
-  .setting-title { font-size: 16px; font-weight: 500; color: #000; }
-  .setting-desc { margin-top: 4px; font-size: 13px; color: #666; line-height: 1.4; }
+  .setting-title { font-size: 16px; font-weight: 500; color: #fff; }
+  .setting-desc { margin-top: 4px; font-size: 13px; color: #aaa; line-height: 1.4; }
 
   /* Toggle switch */
   .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
   .switch input { opacity: 0; width: 0; height: 0; }
   .slider {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc; border-radius: 24px; transition: 0.3s;
+    background-color: #555; border-radius: 24px; transition: 0.3s;
   }
   .slider:before {
     position: absolute; content: ""; height: 18px; width: 18px;
     left: 3px; bottom: 3px; background-color: white; border-radius: 50%;
     transition: 0.3s;
   }
-  .switch input:checked + .slider { background-color: #4CAF50; }
+  .switch input:checked + .slider { background-color: #25d366; }
   .switch input:checked + .slider:before { transform: translateX(26px); }
 
-  .section-divider { border-bottom: 1px solid #ccc; margin: 15px 0 0 0; }
-  p { font-size: 0.9em; color: #555; margin: 6px 0 0 0; }
+  .section-divider { border-bottom: 1px solid #333; margin: 15px 0 0; }
 
   /* Modal */
   .modal {
@@ -69,50 +90,34 @@
     top: 0; 
     width: 100%; 
     height: 100%; 
-    background-color: rgba(0,0,0,0.4); 
+    background-color: rgba(0,0,0,0.6); 
     justify-content: center; 
     align-items: center;
   }
   .modal-content {
-    background: #fff;
+    background: #111;
     padding: 20px;
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
-
-  /* Modal small title like Blocked Contacts */
-  .modal-title-small { 
-    font-size: 16px; 
-    font-weight: 500; 
-    color: #000; 
-    margin-bottom: 15px;
-  }
-
-  .option-group strong { color: #000; display: block; margin-bottom: 8px; }
-
-  .close-btn {
-    background: #4CAF50;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     color: #fff;
-    border: none;
-    padding: 10px 16px;
-    margin-top: 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    float: right;
   }
-  .close-btn:hover { background: #45a049; }
-  .option-group { margin: 15px 0; }
-  .option-group label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; }
-  .info-text { font-size: 13px; color: #555; margin: 4px 0 10px 26px; }
 
-  /* Green radio buttons */
+  /* Modal title */
+  .modal-content h2 { margin-bottom: 15px; font-size: 18px; color: #fff; }
+
+  /* Option group */
+  .option-group strong { color: #fff; display: block; margin-bottom: 8px; }
+  .option-group label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; }
+  .info-text { font-size: 13px; color: #aaa; margin: 4px 0 10px 26px; }
+
+  /* Radio buttons */
   input[type="radio"] {
     appearance: none;
     width: 18px;
     height: 18px;
-    border: 2px solid #ccc;
+    border: 2px solid #888;
     border-radius: 50%;
     margin-right: 8px;
     position: relative;
@@ -120,8 +125,8 @@
     outline: none;
   }
   input[type="radio"]:checked {
-    border-color: #4CAF50;
-    background-color: #4CAF50;
+    border-color: #25d366;
+    background-color: #25d366;
   }
   input[type="radio"]:checked::after {
     content: '';
@@ -133,17 +138,42 @@
     background-color: white;
     border-radius: 50%;
   }
+
+  /* Buttons */
+  .close-btn {
+    background: #25d366;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    margin-top: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    float: right;
+  }
+  .close-btn:hover { background: #1da851; }
+
+  /* Links */
+  a { color: #25d366; text-decoration: none; }
 </style>
 </head>
 <body>
 
-<div class="back" onclick="history.back()">⬅ Privacy</div>
-  
-<!-- Basic Links -->
-<a href="blockuser.html"><div class="setting-item">Blocked Contacts <span>&#9654;</span></div></a>
-<!-- Phone Number Privacy as small like Blocked Contacts -->
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Privacy</div>
+</div>
+
+<!-- Blocked Contacts -->
+<div class="setting-item" onclick="window.location.href='blockuser.html'">
+  <div class="setting-title">Blocked Contacts</div>
+  <i class="fa-solid fa-chevron-right"></i>
+</div>
+
+<!-- Phone Number Privacy -->
 <div class="setting-item" onclick="openModal()">
   <div class="setting-title">Phone Number Privacy</div>
+  <i class="fa-solid fa-chevron-right"></i>
 </div>
 
 <!-- Modal -->
@@ -176,7 +206,7 @@
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Read Receipts</div>
-    <div class="setting-desc">If read receipts are disabled you won't be able to see read receipts from others.</div>
+    <div class="setting-desc">If read receipts are disabled you won't see others' read receipts.</div>
   </div>
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
@@ -184,7 +214,7 @@
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Typing Indicator</div>
-    <div class="setting-desc">SIf typing indicators are disabled you won't be able to see typing indicators from others.</div>
+    <div class="setting-desc">If disabled you won't see typing indicators from others.</div>
   </div>
   <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
 </div>
@@ -209,7 +239,7 @@
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Screen Security</div>
-    <div class="setting-desc">Block sreenshots in the recents list and inside the app.</div>
+    <div class="setting-desc">Block screenshots in recents and inside the app.</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
@@ -217,19 +247,19 @@
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Incognito Keyboard</div>
-    <div class="setting-desc">Request keyboard to disable personalized learning..</div>
+    <div class="setting-desc">Request keyboard to disable personalized learning.</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
 
-<p>This setting is not guaranteed and your keyboard may ignore it</p>
+<p style="padding: 0 20px; color: #aaa;">This setting is not guaranteed and your keyboard may ignore it</p>
 
 <div class="section-divider"></div>
 <h2>Camera</h2>
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Allow Camera Effects</div>
-    <div class="setting-desc">Use effects in the camera and video calls. <a href="#">Learn more</a>.</div>
+    <div class="setting-desc">Use effects in camera and video calls. <a href="#">Learn more</a>.</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
@@ -239,15 +269,14 @@
 <div class="setting-item">
   <div class="setting-text">
     <div class="setting-title">Payment Lock</div>
-    <div class="setting-desc">Required Android screen lock or fingerprint to transfer funds.</div>
+    <div class="setting-desc">Require lock or fingerprint to transfer funds.</div>
   </div>
   <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
 
 <div class="section-divider"></div>
 <h2>Advanced</h2>
-<p>GazaChat messages and calls are always relay-called and sealed sender.</p>
-<div class="section-divider"></div>
+<p style="padding: 0 20px; color: #aaa;">GazaChat messages and calls are always relay-called and sealed sender.</p>
 
 <script>
   const modal = document.getElementById("phoneModal");
@@ -261,7 +290,7 @@
     el.addEventListener("change", function() {
       seeText.textContent = this.value === "everyone"
         ? "Your phone number will be visible to people and groups you message."
-        : "Your number will not be visible to anyone unless they have it saved in their contacts.";
+        : "Your number will not be visible to anyone unless they have it saved in contacts.";
     });
   });
 
