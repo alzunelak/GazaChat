@@ -10,9 +10,9 @@
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: #000; /* Black background */
-    color: #fff;      /* White text */
-    padding-bottom: 70px; /* Make space for bottom nav */
+    background: #000;
+    color: #fff;
+    padding-bottom: 70px;
   }
 
   /* Header */
@@ -29,14 +29,6 @@
     font-weight: bold;
     border-bottom: 2px solid #25d366;
   }
-
-  .back-arrow {
-    font-size: 22px;
-    cursor: pointer;
-    color: #fff;
-    transition: color 0.2s;
-  }
-  .back-arrow:hover { color: #25d366; }
 
   .menu-btn {
     font-size: 22px;
@@ -161,7 +153,6 @@
 
 <!-- Header -->
 <div class="header">
-  <div class="back-arrow" onclick="window.history.back()">&#8592;</div>
   <div>Calls</div>
   <i class="fas fa-ellipsis-v menu-btn" id="menuBtn"></i>
   <div class="dropdown" id="dropdownMenu">
@@ -181,37 +172,45 @@
 </div>
 
 <script>
-let friends = JSON.parse(localStorage.getItem("friends") || JSON.stringify([
-  {name:"Amat", img:"https://via.placeholder.com/50"},
-  {name:"Sophia", img:"https://via.placeholder.com/50"},
-  {name:"Zainab", img:"https://via.placeholder.com/50"},
-  {name:"Maya", img:"https://via.placeholder.com/50"},
-  {name:"Rukhsar", img:"https://via.placeholder.com/50"},
-  {name:"Nuzlah", img:"https://via.placeholder.com/50"}
-]));
+let friends = JSON.parse(localStorage.getItem("friends"));
+if (!friends) {
+  friends = [
+    {name:"Amat", img:"https://via.placeholder.com/50"},
+    {name:"Sophia", img:"https://via.placeholder.com/50"},
+    {name:"Zainab", img:"https://via.placeholder.com/50"},
+    {name:"Maya", img:"https://via.placeholder.com/50"},
+    {name:"Rukhsar", img:"https://via.placeholder.com/50"},
+    {name:"Nuzlah", img:"https://via.placeholder.com/50"}
+  ];
+  localStorage.setItem("friends", JSON.stringify(friends));
+}
 
 function renderFriends(){
-  const container=document.getElementById("friendsList");
-  container.innerHTML="";
-  const callStatus=JSON.parse(localStorage.getItem("callStatus")||"{}");
+  const container = document.getElementById("friendsList");
+  container.innerHTML = "";
+  const callStatus = JSON.parse(localStorage.getItem("callStatus") || "{}");
 
-  friends.forEach(f=>{
-    const div=document.createElement("div");
-    div.className="friend";
-    div.innerHTML=`
+  friends.forEach(f => {
+    const div = document.createElement("div");
+    div.className = "friend";
+    div.innerHTML = `
       <img src="${f.img}">
       <div class="friend-info">
         <strong>${f.name}</strong>
-        <div class="status ${callStatus[f.name]?.class||""}">
-          ${callStatus[f.name]?.text||"No recent call"}
+        <div class="status ${callStatus[f.name]?.class || ""}">
+          ${callStatus[f.name]?.text || "No recent call"}
         </div>
       </div>
       <div class="friend-buttons">
         <button class="audio">Audio</button>
         <button class="video">Video</button>
       </div>`;
-    div.querySelector(".audio").onclick=()=>{window.location.href=\`audio-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`};
-    div.querySelector(".video").onclick=()=>{window.location.href=\`video-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`};
+    div.querySelector(".audio").onclick = () => {
+      window.location.href = \`audio-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`;
+    };
+    div.querySelector(".video").onclick = () => {
+      window.location.href = \`video-call.html?friend=\${encodeURIComponent(f.name)}&img=\${encodeURIComponent(f.img)}\`;
+    };
     container.appendChild(div);
   });
 }
@@ -226,11 +225,11 @@ function clearCallHistory() {
 const menuBtn = document.getElementById("menuBtn");
 const dropdownMenu = document.getElementById("dropdownMenu");
 
-menuBtn.addEventListener("click", (e)=>{
+menuBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
 });
-document.addEventListener("click", ()=>{
+document.addEventListener("click", () => {
   dropdownMenu.style.display = "none";
 });
 
