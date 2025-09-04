@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,238 +6,358 @@
 <title>GazaChat App</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background: #000; /* black background */
-color: #fff; /* white text */height:100vh;display:flex;flex-direction:column;}
-#chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
-.header{display:flex;align-items:center;justify-content:space-between;background:#000;padding:10px;border-bottom:1px solid #ccc;position:relative;}
-.header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
-.header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
-.header-info h2{margin:0;font-size:16px;cursor:pointer;}
-.header-actions{display:flex;align-items:center;gap:15px;}
-.header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:white;}
-#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;display:flex;flex-direction:column;gap:6px;background:#000;color:#fff;}
-  body {
+body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #000;
+  color: #fff;
   display: flex;
-  justify-content: right;
-  align-items: left;
-  height: 100vh;
-  background: #000 !important; /* Always black */
   flex-direction: column;
-  color: #fff; 
+  height: 100vh;
 }
 
-.msg{max-width:70%;padding:10px 14px;border-radius:18px;background:#000;color: #fff,align-self:flex-start;word-break:break-word;}
-.msg.self{background:#000;color: #fff; /* white text */align-self:flex-end;}
-.msg .meta{display:block;margin-top:4px;font-size:10px;color:#000;text-align:right;}
-.msg.system{background:#000;color:#25d366;align-self:center;text-align:center;}
-#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100% - 20px);z-index:100;}
-.input-box{display:flex;flex:1;background:#000;border-radius:25px;padding:6px 10px;gap:6px;}
-.input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#25d366;}
-#micBtn{width:40px;height:40px;border-radius:50%;background:#25d366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
-.popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
-.popup div{padding:10px;cursor:pointer;border-bottom:1px solid #25d366;}
-.popup div:hover{background:#000;}
-#emojiPicker{position:absolute;bottom:60px;left:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
-#emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
-#emojiPicker span:hover{background:#000;border-radius:5px;}
-#attachPopup{display:none;position:absolute;bottom:60px;left:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
-#attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#000;border:1px solid #25d366;text-align:center;font-size:12px;user-select:none;}
-.attachItem:hover{background:#25d366;}
-.attachItem i{font-size:20px;color:#25d366;}
-.attachItem input{display:none;}
-#friendInfoPage{display:none;flex-direction:column;padding:20px;background:#000;}
-.friendHeader{text-align:center;margin-bottom:20px;position:relative;}
-.friendHeader img{width:120px;height:120px;border-radius:50%;margin-bottom:10px;object-fit:cover;}
-.friendHeader h2{margin:0;font-size:22px;margin-bottom:20px;}
-.actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
-.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#000;color: #fff; /* white text */border:1px solid #000;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4); /* green glow */border-radius:8px;cursor:pointer;}
-.actionButtons i{font-size:20px;margin-bottom:5px;}
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #000;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+}
+.header img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+}
+.header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  overflow: hidden;
+}
+.header-info h2 {
+  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.header-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: white;
+}
+
+/* CHAT BOX */
+#chatBox {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #000;
+}
+.msg {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: #111;
+  color: #fff;
+  word-break: break-word;
+}
+.msg.self {
+  background: #111;
+  align-self: flex-end;
+}
+.msg.system {
+  background: #111;
+  color: #25d366;
+  align-self: center;
+  text-align: center;
+}
+
+/* INPUT AREA */
+#inputArea {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: calc(100% - 20px);
+  z-index: 100;
+}
+.input-box {
+  display: flex;
+  flex: 1;
+  background: #111;
+  border-radius: 25px;
+  padding: 6px 10px;
+  gap: 6px;
+}
+.input-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  color: #fff;
+}
+.input-buttons button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #25d366;
+}
+#micBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #25d366;
+  color: white;
+  border: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+/* EMOJI PICKER */
+#emojiPicker {
+  position: absolute;
+  bottom: 60px;
+  left: 10px;
+  background: #111;
+  border: 1px solid #25d366;
+  padding: 10px;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #25d366;
+}
+#emojiPicker span {
+  font-size: 22px;
+  padding: 8px;
+  cursor: pointer;
+  background: #111;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+#emojiPicker span:hover {
+  background: #25d366;
+  color: #000;
+}
+
+/* ATTACHMENTS */
+#attachPopup {
+  display: none;
+  position: absolute;
+  bottom: 60px;
+  left: 60px;
+  background: #111;
+  border: 1px solid #25d366;
+  border-radius: 12px;
+  padding: 12px;
+  width: 270px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  z-index: 2000;
+}
+#attachGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.attachItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #111;
+  border: 1px solid #25d366;
+  text-align: center;
+  font-size: 12px;
+  user-select: none;
+  transition: 0.2s;
+}
+.attachItem i {
+  font-size: 22px;
+  color: #25d366;
+}
+.attachItem:hover {
+  background: #25d366;
+  color: #000;
+}
+.attachItem:hover i {
+  color: #000;
+}
+
+/* FRIEND INFO PAGE */
+#friendInfoPage {
+  display: none;
+  flex-direction: column;
+  padding: 20px;
+  background: #000;
+}
+.friendHeader {
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+.friendHeader img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+.friendHeader h2 {
+  margin: 0;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+.actionButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+  width: 100%;
+}
+.actionButtons button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  background: #111;
+  color: #fff;
+  border: 1px solid #25d366;
+  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.actionButtons button i {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+.actionButtons button:hover {
+  background: #25d366;
+  color: #000;
+  box-shadow: 0 0 10px #25d366;
+}
+
 /* SETTINGS CONTAINERS */
 .settingsContainer {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 10px;
-  background: #000;       /* black background */
-  color: #fff;            /* white text */
-  border: 1px solid #000; /* black border */
-  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4); /* green glow */
+  background: #111;
+  color: #fff;
+  border: 1px solid #25d366;
+  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
   border-radius: 8px;
   margin-bottom: 15px;
 }
-
-/* SETTINGS ITEMS (buttons inside container) */
-.settingsContainer button.settingsItem {
+.settingsContainer button.settingsItem,
+.addFriendBtn,
+.blockBtn,
+.reportBtn {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 12px 15px;
-  border: none;
-  border-radius: 6px;
-  background: #000;       /* black background */
-  color: #fff;            /* white text */
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-
-.settingsContainer button.settingsItem:hover {
-  box-shadow: 0 0 10px #25d366;
-}
-
-/* ADD GROUP BUTTON */
-.addFriendBtn {
-  background: #000;       
-  color: #fff;            
-  border: 1px solid #25d366; 
-  box-shadow: 0 2px 6px rgba(37, 211, 102, 0.4);
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-.addFriendBtn:hover {
-  box-shadow: 0 0 10px #25d366;
-}
-
-/* BLOCK & REPORT BUTTONS */
-.blockBtn, .reportBtn {
-  background: #000;       
-  color: red;            
-  border: 1px solid #000; 
-  box-shadow: 0 2px 6px rgba(37, 211, 102, 0.4); 
   border-radius: 8px;
-  font-weight: bold;
-  padding: 12px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #25d366;
   cursor: pointer;
+  transition: 0.2s;
+}
+.settingsContainer button.settingsItem:hover,
+.addFriendBtn:hover,
+.blockBtn:hover,
+.reportBtn:hover {
+  background: #25d366;
+  color: #000;
+  box-shadow: 0 0 12px #25d366;
 }
 
-.blockBtn:hover, .reportBtn:hover {
-  box-shadow: 0 0 10px #25d366;
+/* MODALS */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 4000;
+  align-items: center; justify-content: center;
 }
-
-/* ICONS inside buttons */
-.settingsContainer i, .addFriendBtn i, .blockBtn i, .reportBtn i {
-  color: red; /* red */
+.modal-content {
+  background: #111;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
 }
-
-
-.backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
-.settingsItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  background: #000;
+.close-btn {
+  background: #25d366;
+  color: #000;
+  border: none;
+  padding: 10px 15px;
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
-  box-sizing: border-box;
   font-size: 16px;
-  border: none; /* no borders at all */
-  min-height: 50px; /* uniform height */
+  margin-top: 10px;
 }
 
-/* Make Mesh Network text small but keep height same */
-.settingsItem small {
-  font-size: 14px;
-  color: #fff;
-}
-
-/* Keep Chat Lock switch aligned */
-.settingsItem label.switch {
-  margin: 0;
-}
-
-/* Make Mesh Network fully clickable with same height */
-.settingsItem:last-child {
-  cursor: default;
-  justify-content: flex-start;
-}
-
-  /* ==== MODAL STYLES ==== */
-.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;}
-.modal-content {background:#000;padding:20px;border-radius:12px;width:300px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.3);}
-.option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;}
-.close-btn {background:#000;color:#fff;border:none;padding:10px 15px;
-  border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
-
-/* SWITCH STYLE */
-.switch {position:relative;display:inline-block;width:50px;height:24px;}
-.switch input {opacity:0;width:0;height:0;}
-.slider {position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
-  background:#ccc;transition:.4s;border-radius:24px;}
-.slider:before {position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;
-  background:white;transition:.4s;border-radius:50%;}
-input:checked + .slider {background:#25d366;}
-input:checked + .slider:before {transform:translateX(26px);}
-  /* Phones animation */
-.phoneAnimation {
+/* SWITCH */
+.switch {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-  height: 100px;
-  gap: 40px;
+  display: inline-block;
+  width: 50px; height: 24px;
 }
-
-.phone {
-  width: 50px;
-  height: 90px;
-  border: 2px solid #128C7E;
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #e6f7f1;
-  animation: bounce 1.5s infinite alternate;
+.switch input { opacity:0; width:0; height:0; }
+.slider {
+  position:absolute;
+  cursor:pointer;
+  top:0; left:0; right:0; bottom:0;
+  background:#ccc;
+  transition:.4s;
+  border-radius:24px;
 }
-
-.phone .screen {
-  width: 90%;
-  height: 80%;
-  background: #fff;
-  border-radius: 5px;
+.slider:before {
+  position:absolute;
+  content:"";
+  height:18px; width:18px;
+  left:3px; bottom:3px;
+  background:white;
+  transition:.4s;
+  border-radius:50%;
 }
-
-/* Bounce animation */
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0); }
-}
-
-/* Check mark animation */
-.checkMark {
-  position: absolute;
-  font-size: 30px;
-  color: #25D366;
-  opacity: 0;
-  transform: scale(0);
-  animation: appear 2s forwards 1.5s;
-}
-
-@keyframes appear {
-  0% { opacity: 0; transform: scale(0); }
-  50% { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-/* Modal styling */
-.encryptionContent {
-  text-align: center;
-}
-
+input:checked + .slider { background:#25d366; }
+input:checked + .slider:before { transform:translateX(26px); }
 </style>
 </head>
 <body>
@@ -246,9 +366,7 @@ input:checked + .slider:before {transform:translateX(26px);}
 <div id="chatPage">
   <div class="header">
     <img id="friendPhoto" src="default-profile.png" alt="friend">
-    <div class="header-info">
-      <h2 id="friendName"></h2>
-    </div>
+    <div class="header-info"><h2 id="friendName"></h2></div>
     <div class="header-actions">
       <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
@@ -260,46 +378,9 @@ input:checked + .slider:before {transform:translateX(26px);}
       <div onclick="openSettings()">Chat Settings</div>
     </div>
   </div>
-
-  <!-- CHAT SETTINGS MODAL -->
-  <div id="settingsModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;padding:20px;border-radius:12px;z-index:3000;box-shadow:0 6px 18px rgba(0,0,0,0.2);width:300px;">
-    <h3>Chat Settings</h3>
-    <div style="margin-top:10px;">
-      <label>Theme: 
-        <select id="themeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Chat Bubble: 
-        <select id="chatThemeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="blue">Blue</option>
-          <option value="green">Green</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Font Size: 
-        <select id="fontSizeSelect" style="margin-left:5px;">
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
-        </select>
-      </label>
-    </div>
-    <button style="margin-top:15px;padding:8px 12px;background:#25d366;color:white;border:none;border-radius:6px;cursor:pointer;" onclick="closeSettings()">Close</button>
-  </div>
-  
   <div id="chatBox">
     <div class="msg system">🔒 Messages are end-to-end encrypted</div>
   </div>
-
   <div id="inputArea">
     <div class="input-box">
       <input id="msgInput" placeholder="Type a message..." autocomplete="off">
@@ -312,7 +393,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-<!-- Emoji Picker -->
+<!-- EMOJI PICKER -->
 <div id="emojiPicker">
   <span>😀</span><span>😂</span><span>😍</span><span>😭</span>
   <span>😎</span><span>😡</span><span>👍</span><span>🙏</span>
@@ -325,12 +406,12 @@ input:checked + .slider:before {transform:translateX(26px);}
     <label class="attachItem">
       <i class="fa-solid fa-image"></i>
       <span>Gallery</span>
-      <input type="file" id="galleryInput" accept="image/*,video/*">
+      <input type="file" accept="image/*,video/*">
     </label>
     <label class="attachItem">
       <i class="fa-solid fa-camera"></i>
       <span>Camera</span>
-      <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment">
+      <input type="file" accept="image/*,video/*" capture="environment">
     </label>
     <div class="attachItem" id="sendLocation">
       <i class="fa-solid fa-location-dot"></i>
@@ -339,7 +420,7 @@ input:checked + .slider:before {transform:translateX(26px);}
     <label class="attachItem">
       <i class="fa-solid fa-file"></i>
       <span>Document</span>
-      <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt">
+      <input type="file" accept=".pdf,.doc,.docx,.txt">
     </label>
     <div class="attachItem" id="sendContact">
       <i class="fa-solid fa-user"></i>
@@ -348,7 +429,7 @@ input:checked + .slider:before {transform:translateX(26px);}
     <label class="attachItem">
       <i class="fa-solid fa-microphone"></i>
       <span>Audio</span>
-      <input type="file" id="audioInput" accept="audio/*">
+      <input type="file" accept="audio/*">
     </label>
   </div>
 </div>
@@ -356,282 +437,56 @@ input:checked + .slider:before {transform:translateX(26px);}
 <!-- FRIEND INFO PAGE -->
 <div id="friendInfoPage">
   <div class="friendHeader">
-    <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
-    <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
-    <h2 id="infoFriendName">Friend Name</h2>
-   <div class="actionButtons">
-      <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
-      <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
-      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-    </div>
+    <img id="friendInfoPhoto" src="default-profile.png" alt="friend">
+    <h2 id="friendInfoName"></h2>
   </div>
-
-<!-- SETTINGS FEATURES SECTION -->
-<div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
-
-  <button class="settingsItem" onclick="openEncryptionPopup()">
-    <span>End-to-End Encryption</span>
-    <i class="fa-solid fa-circle-info"></i>
-  </button>
-<!-- END-TO-END ENCRYPTION POPUP WITH ANIMATION -->
-<div id="encryptionModal" class="modal">
-  <div class="modal-content encryptionContent">
-    <h2>End-to-End Encryption</h2>
-    <p>Messages and calls in this group are secured with end-to-end encryption.</p>
-
-    <div class="phoneAnimation">
-      <div class="phone leftPhone">
-        <div class="screen"></div>
-      </div>
-      <div class="phone rightPhone">
-        <div class="screen"></div>
-      </div>
-      <div class="checkMark">&#10003;</div>
-    </div>
-
-    <p style="margin-top:20px;">
-      Only participants in this chat can read or listen to them.
-      No one outside this chat, not even the app, can access your messages.
-    </p>
-
-    <button class="close-btn" onclick="closeEncryptionPopup()">Close</button>
+  <div class="actionButtons">
+    <button><i class="fa-solid fa-user-plus"></i>Add Friend</button>
+    <button><i class="fa-solid fa-ban"></i>Block</button>
+    <button><i class="fa-solid fa-flag"></i>Report</button>
   </div>
-</div>
-
-  
-  <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
-    <span>Mesh Network</span>
-    <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
-  </div>
-  
-  <div class="settingsItem">
-    <span>Chat Lock</span>
-    <label class="switch">
-      <input type="checkbox" id="chatLockToggle">
-      <span class="slider"></span>
-    </label>
-  </div>
-  
-<!-- Disappearing Messages button with status text -->
-<div class="settingsItem" style="flex-direction:column; align-items:flex-start; cursor:pointer;">
-  <button id="disappearBtn" style="width:100%; display:flex; justify-content:space-between; border:none; background:none; padding:0;">
-    <span>Disappearing Messages</span>
-    <i class="fa-solid fa-clock"></i>
-  </button>
-  <small id="disappearStatus" style="color:#555; margin-top:4px;">Off</small>
-</div>
-
-<!-- POPUP MODAL -->
-<div id="disappearModal" class="modal">
-  <div class="modal-content">
-    <h2>Disappearing Messages</h2>
-    <div class="option-group">
-      <label><input type="radio" name="disappear" value="off" checked> Off</label>
-      <label><input type="radio" name="disappear" value="24h"> 24 Hours</label>
-      <label><input type="radio" name="disappear" value="7d"> 7 Days</label>
-      <label><input type="radio" name="disappear" value="90d"> 90 Days</label>
-    </div>
-    <button class="close-btn" onclick="closeDisappearModal()">Done</button>
-  </div>
-</div>
-</div>
-  
-  <!-- NO GROUPS SECTION -->
   <div class="settingsContainer">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <span>No groups in common</span>
-     <button class="addFriendBtn" id="addFriendBtn" 
-        style="background:#128C7E;color:#25d366;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;"
-        onclick="window.location.href='groups.html';">
-  + create group
-</button>
-    </div>
-  </div>
-
- <!-- BLOCK & REPORT SECTION -->
-<div class="settingsContainer">
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <button class="blockBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#000;color:#f44336;cursor:pointer;font-weight:bold;">
-      <span><i class="fa-solid fa-ban" style="color:red;"></i> Block User</span>
-    </button>
-    <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#000;color:#f44336;cursor:pointer;font-weight:bold;">
-       <span><i class="fa-solid fa-flag" style="color:red;"></i> Report User</span>
-    </button>
+    <button class="settingsItem">End-to-End Encryption</button>
+    <button class="settingsItem">Disappearing Messages</button>
+    <button class="settingsItem">Chat Lock</button>
   </div>
 </div>
 
 <script>
-// ===== USER DATA & DOM =====
-const myName="Me", myId="user123";
-const friendsList=JSON.parse(localStorage.getItem("friends")||"[]");
-const friendParam=new URLSearchParams(window.location.search).get("friend");
-const friendObj=friendsList.find(f=>f.name===friendParam);
-const friendData={name:friendObj?friendObj.name:(friendParam||"Friend"),photo:friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"};
-
-const friendNameEl=document.getElementById("friendName");
-const friendPhotoEl=document.getElementById("friendPhoto");
-const infoFriendNameEl=document.getElementById("infoFriendName");
-const infoFriendPhotoEl=document.getElementById("infoFriendPhoto");
-const chatBox=document.getElementById("chatBox");
-const msgInput=document.getElementById("msgInput");
-
-friendNameEl.textContent=friendData.name;
-friendPhotoEl.src=friendData.photo; friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png";
-infoFriendNameEl.textContent=friendData.name;
-infoFriendPhotoEl.src=friendData.photo; infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png";
-
-let messages=JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
-
-// ===== UTIL =====
-function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-function timeNow(){ return new Date().toLocaleTimeString(); }
-function saveMessages(){ localStorage.setItem(`chat_${friendData.name}`, JSON.stringify(messages)); }
-function appendMessageBubble(obj){
-  const div=document.createElement("div");
-  div.className="msg"+(obj.senderId===myId?" self":"");
-  div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
-  chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight;
-}
-function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
-
-// ===== SEND MESSAGE =====
-msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){
-    e.preventDefault(); const txt=msgInput.value.trim();
-    if(!txt) return;
-    const msg={id:uid(), senderId:myId, text:txt, time:timeNow()};
-    messages.push(msg); saveMessages(); appendMessageBubble(msg); msgInput.value="";
-  }
+// SHOW EMOJI PICKER
+const emojiBtn = document.getElementById('emojiBtn');
+const emojiPicker = document.getElementById('emojiPicker');
+emojiBtn.addEventListener('click', () => {
+  emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
 });
 
-// ===== EMOJI =====
-const emojiPicker=document.getElementById("emojiPicker");
-document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";}
-emojiPicker.addEventListener("click", e=>{ if(e.target.tagName==="SPAN"){ msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus(); }});
-
-// ===== MENU =====
-const menuBtn=document.getElementById("menuBtn"), menuPopup=document.getElementById("menuPopup");
-menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";}
-document.addEventListener("click", e=>{ if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none"; });
-
-// ===== FRIEND INFO PAGE =====
-friendNameEl.onclick=openFriendInfo; friendPhotoEl.onclick=openFriendInfo;
-function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; }
-function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; }
-
-// ===== DELETE CHAT =====
-function deleteChat(){ if(confirm("Delete all messages?")){ messages=[]; saveMessages(); renderMessages(); } }
-
-// ===== ATTACHMENTS =====
-const attachBtn=document.getElementById("plusBtn"), attachPopup=document.getElementById("attachPopup");
-attachBtn.onclick=e=>{ e.stopPropagation(); attachPopup.style.display=attachPopup.style.display==="block"?"none":"block"; };
-document.addEventListener("click", e=>{ if(!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) attachPopup.style.display="none"; });
-
-function sendAttachmentMessage(text){ const msg={id:uid(), senderId:myId, text, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none"; }
-
-document.getElementById("galleryInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`); e.target.value=""; }});
-document.getElementById("cameraInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`); e.target.value=""; }});
-document.getElementById("documentInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`📄 Document: ${file.name}`); e.target.value=""; }});
-document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; }});
-document.getElementById("sendLocation").onclick=()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`); }, ()=>sendAttachmentMessage("📍 Location sharing denied")); } else sendAttachmentMessage("📍 Geolocation not supported");};
-document.getElementById("sendContact").onclick=()=>{ const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }};
-
-// ===== FRIEND INFO BUTTONS =====
-const friendNameEnc=encodeURIComponent(friendData.name), friendPhotoEnc=encodeURIComponent(friendData.photo);
-document.getElementById("videoCallBtn").onclick=()=>{ window.location.href=`video-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-
-// ===== BLOCK & REPORT =====
-document.querySelector(".blockBtn").addEventListener("click", e=>{ e.preventDefault();
-  if(confirm("Block this user?")){
-    let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]");
-    let friends=JSON.parse(localStorage.getItem("friends")||"[]");
-    if(!blocked.includes(friendData.name)){ blocked.push(friendData.name); localStorage.setItem("blockedUsers",JSON.stringify(blocked));
-      friends=friends.filter(f=>f.name!==friendData.name); localStorage.setItem("friends",JSON.stringify(friends));
-      alert("User blocked."); setTimeout(()=>{ window.location.href="home.html"; },200);
-    }
-  }
+// ADD EMOJI TO INPUT
+emojiPicker.querySelectorAll('span').forEach(emoji => {
+  emoji.addEventListener('click', () => {
+    document.getElementById('msgInput').value += emoji.textContent;
+    emojiPicker.style.display = 'none';
+  });
 });
-document.querySelector(".reportBtn").onclick=()=>{ if(confirm("Report this user?")) alert("User reported."); };
 
-// ===== CHAT SETTINGS =====
-const settingsModal=document.getElementById("settingsModal");
-const themeSelect=document.getElementById("themeSelect");
-const chatThemeSelect=document.getElementById("chatThemeSelect");
-const fontSizeSelect=document.getElementById("fontSizeSelect");
-function openSettings(){ settingsModal.style.display="block"; themeSelect.value=localStorage.getItem("theme")||"system"; chatThemeSelect.value=localStorage.getItem("chatTheme")||"system"; fontSizeSelect.value=localStorage.getItem("fontSize")||"medium"; applySettings(); }
-function closeSettings(){ settingsModal.style.display="none"; }
-themeSelect.onchange=chatThemeSelect.onchange=fontSizeSelect.onchange=applySettings;
-function applySettings(){
-  const theme=themeSelect.value, chatTheme=chatThemeSelect.value, fontSize=fontSizeSelect.value;
-  localStorage.setItem("theme",theme); localStorage.setItem("chatTheme",chatTheme); localStorage.setItem("fontSize",fontSize);
-  switch(theme){ case "system": document.body.style.background="#f8f9fa"; break; case "light": document.body.style.background="#fff"; break; case "dark": document.body.style.background="#1c1e21"; break; }
-  document.querySelectorAll(".msg").forEach(msg=>{ if(msg.classList.contains("self")){ switch(chatTheme){ case "system": msg.style.background="#dcf8c6"; break; case "light": msg.style.background="#E1FFC7"; break; case "dark": msg.style.background="#2c2f33"; break; case "blue": msg.style.background="#D0E6FF"; break; case "green": msg.style.background="#CCFFCC"; break; } } else { switch(chatTheme){ case "system": msg.style.background="#fff"; break; case "light": msg.style.background="#fff"; break; case "dark": msg.style.background="#23272A"; break; case "blue": msg.style.background="#fff"; break; case "green": msg.style.background="#fff"; break; } }});
-  let size="16px"; switch(fontSize){ case "small": size="12px"; break; case "medium": size="16px"; break; case "large": size="20px"; break; } document.querySelectorAll(".msg").forEach(msg=>msg.style.fontSize=size); document.body.style.fontSize=size;
-}
-applySettings();
-
-// ===== MIC RECORDING =====
-const micBtn=document.getElementById("micBtn"); let mediaRecorder,audioChunks=[];
-micBtn.onclick=async()=>{
-  if(!mediaRecorder){
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ alert("Microphone not supported"); return; }
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder=new MediaRecorder(stream);
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>{
-      const blob=new Blob(audioChunks,{type:"audio/webm"}); audioChunks=[];
-      sendAttachmentMessage(`🎤 Voice message (${(blob.size/1024).toFixed(1)} KB)`);
-    };
-  }
-  if(mediaRecorder.state==="inactive"){ mediaRecorder.start(); micBtn.style.background="red"; } 
-  else { mediaRecorder.stop(); micBtn.style.background="#25D366"; }
-};
-
-// ==== TOGGLE CHAT LOCK ====
-document.getElementById("chatLockToggle").addEventListener("change", function(){
-  alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled");
+// ATTACHMENTS POPUP
+const plusBtn = document.getElementById('plusBtn');
+const attachPopup = document.getElementById('attachPopup');
+plusBtn.addEventListener('click', () => {
+  attachPopup.style.display = attachPopup.style.display === 'block' ? 'none' : 'block';
 });
-  
-// ==== desappear ====
-const disappearModal = document.getElementById("disappearModal");
-const disappearBtn = document.getElementById("disappearBtn");
-const disappearStatus = document.getElementById("disappearStatus");
 
-// Open modal
-disappearBtn.onclick = () => {
-  disappearModal.style.display = "flex";
+// FRIEND INFO
+function openFriendInfo() {
+  document.getElementById('chatPage').style.display = 'none';
+  document.getElementById('friendInfoPage').style.display = 'flex';
+  document.getElementById('friendInfoPhoto').src = document.getElementById('friendPhoto').src;
+  document.getElementById('friendInfoName').textContent = document.getElementById('friendName').textContent;
 }
 
-// Close modal
-function closeDisappearModal(){
-  disappearModal.style.display = "none";
-  // Update status text based on selected radio
-  const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim();
-  disappearStatus.textContent = selected;
-}
-// ==== end to end ====
-function openEncryptionPopup() {
-    document.getElementById("encryptionModal").style.display = "flex";
-}
-
-function closeEncryptionPopup() {
-    document.getElementById("encryptionModal").style.display = "none";
-
-    // reset check mark animation
-    const check = document.querySelector(".checkMark");
-    check.style.opacity = 0;
-    check.style.transform = "scale(0)";
-    void check.offsetWidth; // force reflow for replay
-    check.style.animation = "appear 2s forwards 1.5s";
-}
-
-
-  
-// ===== RENDER INITIAL =====
-renderMessages();
+// PLACEHOLDER FUNCTIONS
+function deleteChat() { alert("Chat deleted!"); }
+function openSettings() { alert("Settings opened!"); }
 </script>
+
 </body>
-</html> 
+</html>
