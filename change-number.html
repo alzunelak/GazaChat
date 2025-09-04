@@ -6,97 +6,44 @@
 <title>Change Number</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body { 
-    font-family: Arial, sans-serif; 
-    margin:0; 
-    padding:0; 
-    background:#000; 
-    color:#fff; 
-  }
-
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#000; color:#fff; }
+  
   /* Header */
   .header {
-    position: relative;
-    height: 50px;
-    background: #111;
-    color: #fff;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    font-size: 20px;
-    font-weight: bold;
-    border-bottom: 2px solid #111;
-    gap: 10px;
+    display:flex; align-items:center; gap:10px; padding:10px 20px;
+    background:#111; font-size:20px; font-weight:bold;
   }
-  .header .back-arrow {
-    font-size: 22px;
-    cursor: pointer;
-    color: #fff;
-    transition: color 0.2s;
-  }
-  .header .back-arrow:hover { color: #25d366; }
+  .header .back-arrow { font-size:22px; cursor:pointer; color:#fff; transition:0.2s; }
+  .header .back-arrow:hover { color:#25d366; }
 
-  /* Main content */
-  .content {
-    padding: 20px;
-  }
-  h1 { margin-bottom: 20px; }
-
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #fff;
-  }
-
+  /* Content */
+  .content { padding:20px; }
+  label { display:block; margin-bottom:5px; font-weight:bold; color:#fff; }
   input {
-    display: block;
-    width: 100%;
-    max-width: 300px;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    background: #111;
-    color: #fff;
+    display:block; width:100%; max-width:300px; padding:10px; margin-bottom:15px;
+    border-radius:8px; border:1px solid #333; background:#111; color:#fff;
   }
-  input::placeholder { color: #888; }
-
+  input::placeholder { color:#888; }
   button {
-    padding: 12px 25px;
-    font-size: 1em;
-    border: none;
-    border-radius: 8px;
-    background: #25d366;
-    color: #000;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: bold;
+    padding:12px 25px; font-size:1em; border:none; border-radius:8px;
+    background:#25d366; color:#000; cursor:pointer; transition:0.2s;
   }
-  button:hover { background: #1ebe57; }
+  button:hover { background:#1aa34a; }
 
   /* Popup */
   .popup {
-    display: none;
-    position: fixed;
-    top:50%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    background:#111;
-    color:#fff;
-    padding: 25px 35px;
-    border-radius:12px;
-    box-shadow:0 0 20px rgba(37,211,102,0.4);
-    text-align:center;
-    z-index: 500;
+    display:none; position:fixed; top:50%; left:50%;
+    transform:translate(-50%, -50%);
+    background:#111; color:#fff; padding:20px; border-radius:12px;
+    box-shadow:0 0 20px rgba(37,211,102,0.4); text-align:center;
+    z-index:500; width:90%; max-width:300px; word-wrap:break-word;
   }
-
   .popup button {
-    margin-top: 15px;
-    background:#25d366;
-    color:#000;
+    margin-top:15px; padding:10px 20px; border:none; border-radius:8px;
+    background:#25d366; color:#000; font-weight:bold; cursor:pointer;
   }
+  .popup button:hover { background:#1aa34a; }
+
 </style>
 </head>
 <body>
@@ -107,7 +54,7 @@
   <div>Change Number</div>
 </div>
 
-<!-- Main content -->
+<!-- Content -->
 <div class="content">
   <label for="oldNumber">Old Phone Number</label>
   <input type="text" id="oldNumber" placeholder="Enter old number">
@@ -115,28 +62,28 @@
   <label for="newNumber">New Phone Number</label>
   <input type="text" id="newNumber" placeholder="Enter new number">
 
-  <button id="changeBtn">Change Number</button>
+  <button id="changeNumberBtn">Change Number</button>
 </div>
 
 <!-- Popup -->
-<div class="popup" id="confirmationPopup">
-  ✅ Phone number changed successfully!
-  <br>
-  <button onclick="closePopup()">OK</button>
-</div>
+<div class="popup" id="confirmPopup"></div>
 
 <script>
-  const changeBtn = document.getElementById('changeBtn');
-  const popup = document.getElementById('confirmationPopup');
+const changeBtn = document.getElementById('changeNumberBtn');
+const popup = document.getElementById('confirmPopup');
 
-  changeBtn.addEventListener('click', () => {
-    // Here you can also validate or save the numbers
-    popup.style.display = 'block';
-  });
+changeBtn.onclick = () => {
+  // Perform number change logic here if needed
+  showPopup('Number changed successfully!');
+}
 
-  function closePopup() {
-    popup.style.display = 'none';
-  }
+function showPopup(message){
+  popup.innerHTML = message + '<br><button onclick="closePopup()">OK</button>';
+  popup.style.display = 'block';
+}
+function closePopup(){
+  popup.style.display = 'none';
+}
 </script>
 
 </body>
