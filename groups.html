@@ -166,7 +166,7 @@ button#createGroupBtn {
 <!-- Header -->
 <div class="header">
   <h1>My Groups</h1>
-  <i class="fas fa-ellipsis-v topMoreBtn" onclick="toggleTopMenu(event)"></i>
+  <i class="fas fa-ellipsis-v topMoreBtn" id="menuBtn"></i>
 </div>
 
 <!-- Top Dropdown -->
@@ -208,6 +208,7 @@ const groupsListDiv = document.getElementById("groupsList");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
 const topDropdown = document.getElementById("topDropdown");
+const menuBtn = document.getElementById("menuBtn");
 
 // Show create group popup
 createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
@@ -251,16 +252,13 @@ function renderGroups(){
 }
 
 // Toggle top menu
-function toggleTopMenu(e){
-  e.stopPropagation(); // prevent click outside closing immediately
-  topDropdown.style.display = topDropdown.style.display === "flex" ? "none" : "flex";
-}
-
-// Go to settings
-function goToSettings(){ window.location.href = "settings.html"; }
+menuBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  topDropdown.style.display = topDropdown.style.display === "block" ? "none" : "block";
+});
 
 // Close dropdown if clicking outside
-document.addEventListener('click', ()=>{
+document.addEventListener('click', function(){
   topDropdown.style.display = 'none';
 });
 
