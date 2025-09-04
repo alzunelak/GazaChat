@@ -6,7 +6,6 @@
 <title>Groups</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-/* ================= Body ================= */
 body {
   font-family: Arial, sans-serif;
   margin:0;
@@ -15,7 +14,7 @@ body {
   color:#fff;
 }
 
-/* ================= Header ================= */
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -23,7 +22,7 @@ body {
   padding: 15px 20px;
   background: #111;                   /* Same as bottom bar */
   border-bottom: 2px solid #25d366;  /* Green border */
-  position: fixed;                    /* Stays on top */
+  position: fixed;
   top: 0;
   width: 100%;
   z-index: 100;
@@ -37,10 +36,9 @@ body {
   font-size: 24px;
   cursor: pointer;
   color: #25d366;
-  z-index: 200;
 }
 
-/* ================= Top Dropdown ================= */
+/* Dropdown for top menu */
 .dropdownTop {
   display: none;
   position: absolute;
@@ -64,7 +62,7 @@ body {
 .dropdownTop button:last-child { border-bottom:none; }
 .dropdownTop button:hover { background:#25d366; color:#000; }
 
-/* ================= Main Content ================= */
+/* Main content */
 main {
   padding: 90px 20px 80px; /* space for fixed header and bottom bar */
 }
@@ -115,14 +113,14 @@ button#createGroupBtn {
   border-radius:50%;
 }
 
-/* ================= Bottom Bar ================= */
+/* Bottom bar container */
 .bottomBarContainer {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   background: #111;
-  border-top: 2px solid #25d366; /* Green border */
+  border-top: 2px solid #25d366;
   padding: 10px 0;
 }
 .bottomBar {
@@ -138,7 +136,7 @@ button#createGroupBtn {
   cursor: pointer;
 }
 
-/* ================= New Group Popup ================= */
+/* New Group Popup */
 #newGroupPopup {
   display:none;
   position:absolute;
@@ -269,7 +267,7 @@ document.addEventListener('click', (e)=>{
 });
 
 // Bottom navigation functions
-function goToChat(){ window.location.href = "chat.html"; }
+function goToChat(){ window.location.href = "home.html"; }
 function goToGroups(){ window.location.href = "groups.html"; }
 function goToCalls(){ window.location.href = "calls.html"; }
 
