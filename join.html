@@ -87,8 +87,13 @@ localStorage.setItem('myName', currentUser);
 const params = new URLSearchParams(window.location.search);
 const groupIndex = params.get('group');
 
-// Fetch group data
+// Ask for user name
+let currentUser = localStorage.getItem('myName') || prompt("Enter your name:") || "Guest";
+localStorage.setItem('myName', currentUser);
+
+// Fetch groups from localStorage
 let groups = JSON.parse(localStorage.getItem('groups') || '[]');
+let myGroups = JSON.parse(localStorage.getItem('myGroups') || '[]');
 let currentGroup = groups[groupIndex];
 
 if(!currentGroup){
@@ -98,58 +103,31 @@ if(!currentGroup){
   document.getElementById("groupName").textContent = currentGroup.name;
   document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
 
-  // QR code link
   const link = `${window.location.origin}/join.html?group=${groupIndex}`;
+  document.getElementById("groupLink").value = link;
+
   new QRCode(document.getElementById("qrCode"), { text: link, width:200, height:200 });
 
-  // Automatically join user
+  // Add user to group locally
   if(!currentGroup.members) currentGroup.members = [];
-  const existing = currentGroup.members.find(m => m.name === currentUser);
-  if(!existing){
+  const exists = currentGroup.members.find(m => m.name === currentUser);
+  if(!exists){
     currentGroup.members.push({name: currentUser, accepted:true});
     groups[groupIndex] = currentGroup;
     localStorage.setItem('groups', JSON.stringify(groups));
 
-    // Add group to myGroups
-    let myGroups = JSON.parse(localStorage.getItem('myGroups') || '[]');
-    if(!myGroups.find(g => g.index == groupIndex)){
-      myGroups.push({index:groupIndex, name:currentGroup.name, photo:currentGroup.photo});
+    // Add group to myGroups so it appears on groups.html
+    const alreadyInMyGroups = myGroups.find(g => g.index == groupIndex);
+    if(!alreadyInMyGroups){
+      myGroups.push({index: groupIndex, name: currentGroup.name, photo: currentGroup.photo});
       localStorage.setItem('myGroups', JSON.stringify(myGroups));
     }
 
-    alert(`✅ You joined "${currentGroup.name}"`);
+    alert(`You have joined the group "${currentGroup.name}"!`);
   }
-
-  // Admin button visibility
-  const isAdmin = currentUser === currentGroup.admin;
-  document.getElementById('adminBtn').style.display = isAdmin ? 'flex' : 'none';
 }
 
-// Copy link
-document.getElementById("copyBtn").addEventListener("click", ()=>{
-  const temp = document.createElement("input");
-  document.body.appendChild(temp);
-  temp.value = `${window.location.origin}/join.html?group=${groupIndex}`;
-  temp.select();
-  document.execCommand("copy");
-  document.body.removeChild(temp);
-  alert("📋 Link copied!");
-});
 
-// Share link
-document.getElementById("shareBtn").addEventListener("click", ()=>{
-  const shareData = { title: "Join Group", text:`Join ${currentGroup.name}`, url:`${window.location.origin}/join.html?group=${groupIndex}` };
-  if(navigator.share){
-    navigator.share(shareData).catch(console.error);
-  } else {
-    alert("🔗 Share link: " + shareData.url);
-  }
-});
-
-// Admin actions
-document.getElementById("adminBtn").addEventListener("click", ()=>{
-  alert("⚙️ Admin panel opened!");
-});
 </script>
 
 </body>
