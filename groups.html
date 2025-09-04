@@ -10,11 +10,12 @@ body {
   font-family: Arial, sans-serif;
   margin:0;
   padding:20px;
-  background:#f5f5f5;
-  color:#000;
+  background:#000;
+  color:#fff;
 }
 h1 {
   margin-bottom: 10px;
+  text-align:center;
 }
 button#createGroupBtn {
   padding: 10px 15px;
@@ -24,6 +25,14 @@ button#createGroupBtn {
   border-radius:8px;
   cursor:pointer;
   margin-bottom:10px;
+}
+.backArrow {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #25d366; /* green color */
 }
 .group {
   display:flex;
@@ -74,10 +83,11 @@ button#createGroupBtn {
   top:50px;
   left:50%;
   transform:translateX(-50%);
-  background:white;
+  background:black;
+  color:#fff;
   padding:15px;
   border-radius:8px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 0 15px #25d366; /* glowing green shadow */
   flex-direction:column;
 }
 #newGroupPopup input {
@@ -93,6 +103,7 @@ button#createGroupBtn {
 </head>
 <body>
 
+<i class="fas fa-arrow-left backArrow" onclick="goBack()"></i>
 <h1>My Groups</h1>
 <button id="createGroupBtn">+ Create Group</button>
 
@@ -125,16 +136,19 @@ function closeNewGroupPopup() {
   newGroupPopup.style.display = "none";
 }
 
+// Go back function
+function goBack() {
+  window.history.back();
+}
+
 // Render groups
 function renderGroups(){
-  // Always fetch latest groups from localStorage to include updated photos
   groups = JSON.parse(localStorage.getItem("groups") || "[]");
 
   groupsListDiv.innerHTML = "";
 
   const myGroups = groups.filter(g => g.members.some(m=>m.name === myName));
 
-  // Sort by last message timestamp descending
   myGroups.sort((a,b)=>{
     const aTime = a.messages && a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
     const bTime = b.messages && b.messages.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
@@ -158,7 +172,7 @@ function renderGroups(){
     div.innerHTML = `
       <img src="${g.photo || 'group.png'}">
       <div class="info">
-        <h3>${g.name}</h3>
+        <h3>${g.name} <i class="fas fa-ellipsis-h" style="float:right; cursor:pointer;"></i></h3>
         <p title="${fullMsg}">${latestMsg}</p>
       </div>
       ${g.unread ? '<div class="red-dot"></div>' : ''}
@@ -203,10 +217,7 @@ function saveGroup(name,img){
   document.getElementById("newGroupPhoto").value="";
 }
 
-// Listen to localStorage changes (multi-tab or after edits)
 window.addEventListener('storage', renderGroups);
-
-// Initial render
 renderGroups();
 </script>
 </body>
