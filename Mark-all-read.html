@@ -4,18 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mark All Read</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-body { font-family: Arial, sans-serif; padding:20px; background:#f8f9fa; text-align:left; }
-button { padding:12px 20px; background:#25d366; color:white; border:none; border-radius:8px; cursor:pointer; }
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background:#000; 
+    color:#fff; 
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+    gap: 10px; /* Space between arrow and text */
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover { color: #25d366; }
+
+  /* Content */
+  .content {
+    padding: 20px;
+  }
+
+  h1 { margin-top: 0; font-size: 1.8em; }
+
+  p { margin-bottom: 20px; color:#ccc; }
+
+  button {
+    padding: 12px 20px;
+    background: #25d366;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  button:hover {
+    background: #1da851;
+  }
 </style>
 </head>
 <body>
-  <!-- Back Arrow -->
-<div class="back" onclick="history.back()">⬅ Back</div>
 
-<h1>Mark All Chats as Read</h1>
-<p>Click the button below to mark all chats as read.</p>
-<button onclick="markRead()">Mark All Read</button>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Mark All Read</div>
+</div>
+
+<!-- Content -->
+<div class="content">
+  <p>Click the button below to mark all chats as read.</p>
+  <button onclick="markRead()">Mark All Read</button>
+</div>
 
 <script>
 function markRead(){
@@ -23,5 +81,6 @@ function markRead(){
   // Optional: reset unread counters in localStorage
 }
 </script>
+
 </body>
 </html>
