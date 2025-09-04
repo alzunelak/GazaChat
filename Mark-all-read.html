@@ -56,28 +56,42 @@
   }
   button:hover { background: #1da851; }
 
-  /* Popup */
-  .popup {
-    display: none;
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: #111;
-    color: #fff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-    text-align: center;
-    z-index: 1000;
-  }
-  .popup h2 { margin-top:0; font-size:1.5em; }
-  .popup button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background: #25d366;
-    color: #000;
-    border-radius: 8px;
-  }
+  
+   /* Popup */
+.popup {
+  display: none;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #111;
+  color: #fff;
+  padding: 5vw 5vw;      /* Responsive padding */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  text-align: center;
+  z-index: 1000;
+  width: 90%;            /* almost full width on phone */
+  max-width: 400px;      /* max width on laptop */
+}
+
+.popup h2 { 
+  margin-top: 0; 
+  font-size: 5vw;        /* scales on phone */
+  max-font-size: 24px;   /* caps font size on laptop */
+}
+
+.popup p { 
+  font-size: 4vw; 
+  max-font-size: 18px; 
+}
+
+.popup button {
+  margin-top: 15px;
+  padding: 3vw 5vw;
+  font-size: 4vw;
+  max-font-size: 16px;
+}
+
 
   /* Overlay */
   .overlay {
