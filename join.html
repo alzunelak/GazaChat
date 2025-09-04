@@ -14,7 +14,7 @@ body {
   color:#fff;
   display:flex;
   flex-direction:column;
-  align-items:center;
+  align-items:left;
   justify-content:flex-start;
   padding:20px;
   min-height:100vh;
@@ -22,7 +22,7 @@ body {
 .groupHeader {
   display:flex;
   flex-direction:column;
-  align-items:center;
+  align-items:left;
   margin-bottom:20px;
 }
 .groupHeader img {
@@ -50,7 +50,7 @@ body {
   border-radius:8px;
   border:none;
   font-size:16px;
-  text-align:center;
+  text-align:left;
 }
 #copyBtn {
   padding:10px;
@@ -83,6 +83,10 @@ body {
 </div>
 
 <script>
+// Simulate current user
+let currentUser = localStorage.getItem('myName') || prompt("Enter your name:") || "Guest";
+localStorage.setItem('myName', currentUser);
+
 // Get group index from URL
 const params = new URLSearchParams(window.location.search);
 const groupIndex = params.get('group');
@@ -108,6 +112,18 @@ if(!currentGroup){
     width:200,
     height:200
   });
+
+  // ===== Automatically join user to the group =====
+  if(!currentGroup.members) currentGroup.members = [];
+  const existing = currentGroup.members.find(m => m.name === currentUser);
+  if(!existing){
+    currentGroup.members.push({name: currentUser, accepted:true});
+    groups[groupIndex] = currentGroup;
+    localStorage.setItem('groups', JSON.stringify(groups));
+    alert(`You have joined the group "${currentGroup.name}"!`);
+  } else {
+    console.log("Already a member");
+  }
 }
 
 // Copy link function
