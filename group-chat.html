@@ -33,12 +33,12 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 #emojiPicker{position:absolute;bottom:60px;left:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
 #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
 #emojiPicker span:hover{background:#000;border-radius:5px;}
-.menuItem{display:none;position:absolute;bottom:60px;left:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
-.menuItem{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.menuItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#000;border:1px solid #25d366;text-align:center;font-size:12px;user-select:none;}
-.menuItem:hover{background:#25d366;}
-.menuItem i{font-size:20px;color:#25d366;}
-.menuItem input{display:none;}
+#menuItem{display:none;position:absolute;bottom:60px;left:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
+#menuItem{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+#menuItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#000;border:1px solid #25d366;text-align:center;font-size:12px;user-select:none;}
+#menuItem:hover{background:#25d366;}
+#menuItem i{font-size:20px;color:#25d366;}
+#menuItem input{display:none;}
 #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
 .groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#000;color:#fff;margin-bottom:10px;border-radius:10px;position:relative;}
 .groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
