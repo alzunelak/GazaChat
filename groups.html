@@ -15,25 +15,33 @@ body {
   position: relative;
 }
 
-/* Header with "My Groups" and three-dot */
+/* ================= Header ================= */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-}
-.header h1 {
-  margin: 0;
-  font-size: 20px;
+  display: flex;                    /* Align items horizontally */
+  justify-content: space-between;   /* Space between title and three-dot */
+  align-items: center;              /* Vertically center items */
+  padding: 15px 20px;               /* Space inside the header */
+  background: #111;                 /* Dark background (same as bottom bar) */
+  border-bottom: 2px solid #25d366;/* Green bottom border like container */
+  position: fixed;                  /* Stays at the top when scrolling */
+  top: 0;                            /* Stick to top */
+  width: 100%;                       /* Full width */
+  z-index: 100;                      /* On top of other content */
 }
 
-/* Top-right three-dot */
-.topMoreBtn {
-  font-size: 24px;
-  cursor: pointer;
-  color: #25d366;
-  z-index: 200;
+.header h1 {
+  margin: 0;                         /* Remove default margin */
+  font-size: 20px;                   /* Title size */
+  color: #fff;                       /* White text */
 }
+
+.header .topMoreBtn {
+  font-size: 24px;                   /* Three-dot icon size */
+  cursor: pointer;                   /* Pointer on hover */
+  color: #25d366;                    /* Green icon color */
+  z-index: 200;                      /* On top of dropdown */
+}
+
 
 /* Dropdown for top menu */
 .dropdownTop {
@@ -246,7 +254,7 @@ function toggleTopMenu(){
 
 // Go to settings
 function goToSettings(){
-  window.location.href = "setting.html";
+  window.location.href = "settings.html";
 }
 
 // Close top dropdown if clicking outside
