@@ -4,156 +4,66 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Groups</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
 body {
-  font-family: Arial, sans-serif;
-  margin:0;
-  padding:0;
-  background:#000;
-  color:#fff;
+  margin:0; padding:0; background:#000; color:#fff; font-family: Arial, sans-serif;
 }
 
 /* Header */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background: #111;
-  border-bottom: 2px solid #25d366;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:15px 20px; background:#111; border-bottom:2px solid #25d366;
+  position:fixed; top:0; width:100%; z-index:1000;
 }
-.header h1 {
-  margin: 0;
-  font-size: 20px;
-}
-.topMoreBtn {
-  font-size: 24px;
-  cursor: pointer;
-  color: #25d366;
-}
+.header h1 { margin:0; font-size:20px; }
+.topMoreBtn { font-size:24px; color:#25d366; cursor:pointer; }
 
-/* Dropdown */
+/* Dropdown menu */
 .dropdownTop {
-  display: none;
-  position: absolute;
-  top: 55px;
-  right: 20px;
-  background: #111;
-  border: 1px solid #25d366;
-  border-radius: 8px;
-  flex-direction: column;
-  z-index: 1010;
+  display:none; position:absolute; top:55px; right:20px;
+  background:#111; border:1px solid #25d366; border-radius:8px; flex-direction:column; z-index:1010;
 }
 .dropdownTop button {
-  background: #111;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  text-align: left;
-  cursor: pointer;
-  border-bottom: 1px solid #25d366;
+  background:#111; color:#fff; border:none; padding:8px 12px; cursor:pointer; text-align:left; border-bottom:1px solid #25d366;
 }
 .dropdownTop button:last-child { border-bottom:none; }
 .dropdownTop button:hover { background:#25d366; color:#000; }
 
 /* Main content */
-main {
-  padding: 90px 20px 80px;
-}
+main { padding:90px 20px 80px; }
 
 /* Create group button */
 #createGroupBtn {
-  padding: 10px 15px;
-  background:#25d366;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  margin-bottom:10px;
-  width: 100%;
-  text-align: left;
+  padding:10px 15px; background:#25d366; color:white; border:none; border-radius:8px;
+  cursor:pointer; margin-bottom:10px; display:block; width:100%; text-align:left;
 }
 
 /* Group cards */
 .group {
-  display:flex;
-  align-items:center;
-  background:#111;
-  padding:10px;
-  margin:10px 0;
-  border-radius:8px;
-  cursor:pointer;
-  position:relative;
+  display:flex; align-items:center; background:#111; padding:10px; margin:10px 0;
+  border-radius:8px; cursor:pointer; position:relative;
 }
-.group img {
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  margin-right:10px;
-  object-fit:cover;
-}
+.group img { width:50px; height:50px; border-radius:50%; margin-right:10px; object-fit:cover; }
 .group .info { flex:1; }
 .group .info h3 { margin:0; font-size:16px; }
 .group .info p { margin:0; font-size:12px; color:gray; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-.red-dot {
-  position:absolute;
-  right:10px;
-  top:15px;
-  width:10px;
-  height:10px;
-  background:red;
-  border-radius:50%;
-}
+.red-dot { position:absolute; right:10px; top:15px; width:10px; height:10px; background:red; border-radius:50%; }
 
 /* Bottom bar */
 .bottomBarContainer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #111;
-  border-top: 2px solid #25d366;
-  padding: 10px 0;
-  z-index: 1000;
+  position:fixed; bottom:0; left:0; width:100%; background:#111; border-top:2px solid #25d366; padding:10px 0; z-index:100;
 }
-.bottomBar {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-.bottomBar button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-}
+.bottomBar { display:flex; justify-content:space-around; align-items:center; }
+.bottomBar button { background:none; border:none; color:#fff; font-size:16px; cursor:pointer; }
 
 /* New Group Popup */
 #newGroupPopup {
-  display:none;
-  position:absolute;
-  top:150px;
-  left:50%;
-  transform:translateX(-50%);
-  background:black;
-  color:#fff;
-  padding:15px;
-  border-radius:8px;
-  box-shadow: 0 0 15px #25d366;
-  flex-direction:column;
+  display:none; position:absolute; top:150px; left:50%; transform:translateX(-50%);
+  background:#000; color:#fff; padding:15px; border-radius:8px; box-shadow:0 0 15px #25d366; flex-direction:column;
 }
-#newGroupPopup input {
-  width:200px;
-  margin-bottom:10px;
-  padding:5px;
-}
+#newGroupPopup input { width:200px; margin-bottom:10px; padding:5px; }
 #newGroupPopup button { padding:5px 10px; margin-right:5px; }
 </style>
 </head>
@@ -165,7 +75,7 @@ main {
   <i class="fas fa-ellipsis-v topMoreBtn" id="menuBtn"></i>
 </div>
 
-<!-- Dropdown -->
+<!-- Top Dropdown -->
 <div id="topDropdown" class="dropdownTop">
   <button onclick="goToSettings()">Settings</button>
 </div>
@@ -203,19 +113,22 @@ let groups = JSON.parse(localStorage.getItem("groups") || "[]");
 const groupsListDiv = document.getElementById("groupsList");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const newGroupPopup = document.getElementById("newGroupPopup");
-const topDropdown = document.getElementById("topDropdown");
 const menuBtn = document.getElementById("menuBtn");
+const topDropdown = document.getElementById("topDropdown");
 
+// Show create group popup
 createGroupBtn.onclick = () => { newGroupPopup.style.display = "flex"; };
 function closeNewGroupPopup() { newGroupPopup.style.display = "none"; }
 
+// Render groups
 function renderGroups(){
   groups = JSON.parse(localStorage.getItem("groups") || "[]");
   groupsListDiv.innerHTML = "";
+
   const myGroups = groups.filter(g => g.members.some(m=>m.name === myName));
   myGroups.sort((a,b)=>{
-    const aTime = a.messages?.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
-    const bTime = b.messages?.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
+    const aTime = a.messages && a.messages.length ? new Date(a.messages[a.messages.length-1].time).getTime() : 0;
+    const bTime = b.messages && b.messages.length ? new Date(b.messages[b.messages.length-1].time).getTime() : 0;
     return bTime - aTime;
   });
 
@@ -226,11 +139,14 @@ function renderGroups(){
       <img src="${g.photo || 'group.png'}">
       <div class="info">
         <h3>${g.name}</h3>
-        <p>${g.messages?.length ? g.messages[g.messages.length-1].text.slice(0,20)+'...' : 'No messages yet'}</p>
+        <p title="${g.messages && g.messages.length ? g.messages[g.messages.length-1].text : 'No messages yet'}">
+          ${g.messages && g.messages.length ? (g.messages[g.messages.length-1].text.slice(0,20)+'...') : 'No messages yet'}
+        </p>
       </div>
       ${g.unread ? '<div class="red-dot"></div>' : ''}
     `;
     groupsListDiv.appendChild(div);
+
     div.querySelector('.info').onclick = () => {
       g.unread = false;
       groups = groups.map(gr=>gr.name===g.name ? g : gr);
@@ -248,20 +164,23 @@ menuBtn.addEventListener('click', e => {
 });
 document.addEventListener('click', () => { topDropdown.style.display = 'none'; });
 
-// Navigation functions
-function goToChat(){ window.location.href="home.html"; }
-function goToGroups(){ window.location.href="groups.html"; }
-function goToCalls(){ window.location.href="calls.html"; }
-function goToSettings(){ window.location.href="settings.html"; }
+// Go to Settings page
+function goToSettings(){ window.location.href = "settings.html"; }
+
+// Bottom navigation
+function goToChat(){ window.location.href = "home.html"; }
+function goToGroups(){ window.location.href = "groups.html"; }
+function goToCalls(){ window.location.href = "calls.html"; }
 
 // Create new group
 function createGroup(){
   const name = document.getElementById("newGroupName").value.trim();
   if(!name){ alert("Enter a group name!"); return; }
+
   const fileInput = document.getElementById("newGroupPhoto");
-  if(fileInput.files?.[0]){
+  if(fileInput.files && fileInput.files[0]){
     const reader = new FileReader();
-    reader.onload = e => saveGroup(name, e.target.result);
+    reader.onload = e => saveGroup(name,e.target.result);
     reader.readAsDataURL(fileInput.files[0]);
   } else saveGroup(name,"group.png");
 }
@@ -269,7 +188,7 @@ function createGroup(){
 function saveGroup(name,img){
   const newGroup = { name, photo: img, admin: myName, members:[{name:myName,accepted:true}], invited:[], blocked:[], messages:[], unread:false };
   groups.push(newGroup);
-  localStorage.setItem("groups", JSON.stringify(groups));
+  localStorage.setItem("groups",JSON.stringify(groups));
   renderGroups();
   closeNewGroupPopup();
   document.getElementById("newGroupName").value="";
