@@ -4,27 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Audio Call</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
   body {
     font-family: Arial, sans-serif;
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     background: #000;
+    color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 100vh;
+    min-height: 100vh;
+    padding-bottom: 80px; /* Space for fixed bottom bar */
   }
 
   /* Top Bar */
   .top-bar {
-    background: #000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #111;
     color: white;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 15px;
     font-size: 18px;
-    position: relative;
+    z-index: 100;
   }
   .top-bar h2 {
     margin: 0;
@@ -47,6 +54,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-top: 60px; /* Space for top bar */
+    text-align: center;
   }
   .middle img {
     width: 120px;
@@ -55,33 +64,35 @@
     border: 4px solid #25d366;
     margin-bottom: 10px;
   }
-  .middle p {
-    font-size: 18px;
-    color: #000;
-  }
 
   /* Timer */
   #timer {
     margin-top: 10px;
     font-size: 16px;
-    color: #555;
+    color: #aaa;
   }
 
   /* Bottom Bar */
   .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background: #111;
-    color:#fff;
+    color: #fff;
     padding: 10px;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #333;
+    z-index: 100;
   }
   .bottom-bar button {
     border: none;
     background: none;
     font-size: 24px;
     cursor: pointer;
+    color: white;
   }
   .end-call {
     background: red;
@@ -101,7 +112,8 @@
     position: absolute;
     top: 40px;
     right: 0;
-    background: white;
+    background: #111;
+    color: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     border-radius: 6px;
     overflow: hidden;
@@ -115,23 +127,24 @@
     background: none;
     cursor: pointer;
     font-size: 16px;
+    color: white;
   }
   .dropdown button:hover {
-    background: #f1f1f1;
+    background: #222;
   }
 
   /* Add Participants Popup */
   #friendPopup {
     display: none;
     position: fixed;
-    bottom: 0;
+    bottom: 60px; /* Above bottom bar */
     left: 0; right: 0;
-    background: white;
-    border-top: 2px solid #ccc;
+    background: #111;
     max-height: 50%;
     overflow-y: auto;
     z-index: 200;
     padding: 15px;
+    color: white;
   }
   .friend-item {
     display: flex;
@@ -147,17 +160,13 @@
 </style>
 </head>
 <body>
-<!-- Add Font Awesome in <head> if not already added -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <!-- Top Bar -->
 <div class="top-bar">
   <button id="addParticipant" title="Add Participant">
     <i class="fas fa-user-plus"></i>
   </button>
-
   <h2 id="friendName">Friend Name</h2>
-
   <div class="menu">
     <button id="menuBtn" title="Menu">
       <i class="fas fa-ellipsis-v"></i>
@@ -175,9 +184,6 @@
   <p>Audio Call in Progress...</p>
   <p id="timer">Connecting...</p>
 </div>
-
-<!-- Add Font Awesome in <head> -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <!-- Bottom Bar -->
 <div class="bottom-bar">
@@ -204,7 +210,7 @@
   const friendName = urlParams.get("friend") || "Unknown Friend";
   document.getElementById("friendName").innerText = friendName;
 
-  // Timer with delay
+  // Timer with 3s delay
   let seconds = 0;
   function formatTime(sec) {
     let m = Math.floor(sec / 60), s = sec % 60;
@@ -224,7 +230,6 @@
   menuBtn.addEventListener("click", () => {
     menuDropdown.style.display = menuDropdown.style.display === "block" ? "none" : "block";
   });
-
   document.addEventListener("click", (e) => {
     if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
       menuDropdown.style.display = "none";
