@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy - GazaChat</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -13,59 +15,74 @@
 
     body {
       font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
       line-height: 1.6;
-      background: #f9f9f9;
-      color: #333;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
 
+    /* Header */
     header {
-      background: #000;
+      background: #111;
       color: #fff;
-      padding: 15px;
-      text-align: center;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
       font-size: 1.2rem;
+      font-weight: bold;
       position: sticky;
       top: 0;
       z-index: 10;
+      border-bottom: 2px solid #111;
     }
 
-    .back-btn {
-      position: absolute;
-      left: 10px;
-      top: 12px;
-      background: #fff;
-      color: #000;
-      border: 1px solid #ccc;
-      padding: 5px 10px;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 0.9rem;
+    .back-arrow {
+      font-size: 22px;
+      cursor: pointer;
+      color: #fff;
+      margin-right: 15px;
+      transition: color 0.2s;
+    }
+    .back-arrow:hover {
+      color: #25d366;
     }
 
+    /* Main Content */
     main {
       flex: 1;
       padding: 20px;
       max-width: 900px;
       margin: auto;
-      background: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     h1, h2, h3 {
       margin: 20px 0 10px;
-      color: #000;
+      color: #fff;
     }
 
-    p {
+    p, li {
       margin-bottom: 15px;
       text-align: justify;
+      color: #ddd;
     }
 
+    ul {
+      padding-left: 20px;
+    }
+
+    a {
+      color: #25d366;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
     footer {
-      background: #222;
+      background: #111;
       color: #fff;
       padding: 20px 10px;
       margin-top: 20px;
@@ -86,7 +103,7 @@
     }
 
     footer a {
-      color: #ddd;
+      color: #bbb;
       text-decoration: none;
       display: block;
       margin-bottom: 5px;
@@ -112,19 +129,21 @@
       header {
         font-size: 1rem;
       }
-      .back-btn {
-        font-size: 0.8rem;
+      .back-arrow {
+        font-size: 18px;
       }
     }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header>
-    <a href="welcome.html" class="back-btn">⬅ </a>
+    <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
     GazaChat Terms & Privacy Policy
   </header>
 
+  <!-- Main Content -->
   <main>
     <h1>GazaChat Terms & Privacy Policy</h1>
     <p>GazaChat is designed to never collect or store any sensitive information. GazaChat messages and calls cannot be accessed by us or other third parties because they are always end-to-end encrypted, private, and secure. Our Terms of Service and Privacy Policy are available below.</p>
@@ -176,6 +195,7 @@
     <p><strong>Updated:</strong> September 24, 2025</p>
   </main>
 
+  <!-- Footer -->
   <footer>
     <div class="footer-container">
       <div>
@@ -198,7 +218,7 @@
         <a href="#">Bluesky</a>
         <a href="#">GitHub</a>
         <a href="#">Instagram</a>
-        <a href="#">LinkendIn</a>
+        <a href="#">LinkedIn</a>
         <a href="#">X</a>
       </div>
       <div>
