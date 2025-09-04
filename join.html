@@ -15,14 +15,16 @@ body {
   display:flex;
   flex-direction:column;
   align-items:center;
+  justify-content:flex-start;
   padding:20px;
   min-height:100vh;
 }
 .groupHeader {
   display:flex;
+  flex-direction:row;
   align-items:center;
-  gap:15px;
-  margin-bottom:10px;
+  margin-bottom:20px;
+  gap:10px;
 }
 .groupHeader img {
   width:80px;
@@ -31,16 +33,9 @@ body {
   object-fit:cover;
   border:2px solid #25D366;
 }
-.groupHeader .groupInfo {
-  display:flex;
-  flex-direction:column;
-}
 .groupHeader h2 {
-  margin:0;
   font-size:22px;
-}
-.groupHeader .emoji {
-  font-size:24px;
+  margin:0;
 }
 .container {
   width:100%;
@@ -50,90 +45,49 @@ body {
   gap:15px;
   align-items:center;
 }
-button, input {
+.button {
+  padding:10px;
+  width:100%;
+  max-width:300px;
   font-size:16px;
   border-radius:8px;
-}
-#groupLink {
-  padding:10px;
-  width:100%;
-  border:none;
-  text-align:center;
-  background:#222;
-  color:#fff;
-}
-#copyBtn {
-  padding:10px;
-  width:100%;
-  background:#25D366;
-  color:#000;
   border:none;
   cursor:pointer;
-}
-#qrPopup {
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.8);
-  justify-content:center;
+  display:flex;
   align-items:center;
+  justify-content:center;
+  gap:10px;
 }
-#qrPopupContent {
-  background:#000;
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
-  position:relative;
-}
-#qrPopupContent .close {
-  position:absolute;
-  top:5px;
-  right:10px;
-  font-size:20px;
-  cursor:pointer;
-}
+#copyBtn { background:#25D366; color:#000; }
+#shareBtn { background:#0084FF; color:#fff; }
+#adminBtn { background:#FFA500; color:#000; }
+#qrCode { margin-top:20px; }
 </style>
 </head>
 <body>
 
 <div class="groupHeader">
   <img id="groupPhoto" src="group.png" alt="Group Photo">
-  <div class="groupInfo">
-    <h2 id="groupName">Loading...</h2>
-    <div class="emoji">🎉</div>
-  </div>
+  <h2 id="groupName">Loading...</h2>
 </div>
 
 <div class="container">
-  <button id="showQR">Show QR Code</button>
-  <input type="text" id="groupLink" readonly>
-  <button id="copyBtn"><i class="fa-solid fa-copy"></i> Copy Link</button>
-</div>
-
-<!-- QR Popup -->
-<div id="qrPopup">
-  <div id="qrPopupContent">
-    <span class="close">&times;</span>
-    <div id="qrCode"></div>
-  </div>
+  <div id="qrCode"></div>
+  <button class="button" id="copyBtn">📋 Copy Link</button>
+  <button class="button" id="shareBtn">🔗 Share Link</button>
+  <button class="button" id="adminBtn">⚙️ Admin Panel</button>
 </div>
 
 <script>
-// Simulate current user & admin
+// Simulate current user
 let currentUser = localStorage.getItem('myName') || prompt("Enter your name:") || "Guest";
 localStorage.setItem('myName', currentUser);
-
-// Admin flag for demo (only admin sees QR and copy)
-let isAdmin = currentUser.toLowerCase() === "admin";
 
 // Get group index from URL
 const params = new URLSearchParams(window.location.search);
 const groupIndex = params.get('group');
 
-// Fetch group data from localStorage
+// Fetch group data
 let groups = JSON.parse(localStorage.getItem('groups') || '[]');
 let currentGroup = groups[groupIndex];
 
@@ -144,16 +98,11 @@ if(!currentGroup){
   document.getElementById("groupName").textContent = currentGroup.name;
   document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
 
+  // QR code link
   const link = `${window.location.origin}/join.html?group=${groupIndex}`;
-  document.getElementById("groupLink").value = link;
+  new QRCode(document.getElementById("qrCode"), { text: link, width:200, height:200 });
 
-  // Only show QR & copy link for admin
-  if(!isAdmin){
-    document.getElementById("showQR").style.display = "none";
-    document.getElementById("copyBtn").style.display = "none";
-  }
-
-  // Add user to group automatically
+  // Automatically join user
   if(!currentGroup.members) currentGroup.members = [];
   const existing = currentGroup.members.find(m => m.name === currentUser);
   if(!existing){
@@ -161,34 +110,47 @@ if(!currentGroup){
     groups[groupIndex] = currentGroup;
     localStorage.setItem('groups', JSON.stringify(groups));
 
-    // Also add to myGroups
+    // Add group to myGroups
     let myGroups = JSON.parse(localStorage.getItem('myGroups') || '[]');
-    myGroups.push(groupIndex);
-    localStorage.setItem('myGroups', JSON.stringify(myGroups));
+    if(!myGroups.find(g => g.index == groupIndex)){
+      myGroups.push({index:groupIndex, name:currentGroup.name, photo:currentGroup.photo});
+      localStorage.setItem('myGroups', JSON.stringify(myGroups));
+    }
 
-    alert(`You have joined "${currentGroup.name}"!`);
+    alert(`✅ You joined "${currentGroup.name}"`);
   }
+
+  // Admin button visibility
+  const isAdmin = currentUser === currentGroup.admin;
+  document.getElementById('adminBtn').style.display = isAdmin ? 'flex' : 'none';
 }
 
 // Copy link
 document.getElementById("copyBtn").addEventListener("click", ()=>{
-  const input = document.getElementById("groupLink");
-  input.select();
-  navigator.clipboard.writeText(input.value);
-  alert("Group link copied!");
+  const temp = document.createElement("input");
+  document.body.appendChild(temp);
+  temp.value = `${window.location.origin}/join.html?group=${groupIndex}`;
+  temp.select();
+  document.execCommand("copy");
+  document.body.removeChild(temp);
+  alert("📋 Link copied!");
 });
 
-// QR Popup
-const qrPopup = document.getElementById("qrPopup");
-const qrCodeDiv = document.getElementById("qrCode");
-document.getElementById("showQR").addEventListener("click", ()=>{
-  qrPopup.style.display = "flex";
-  qrCodeDiv.innerHTML = "";
-  new QRCode(qrCodeDiv, {text: document.getElementById("groupLink").value, width:200, height:200});
+// Share link
+document.getElementById("shareBtn").addEventListener("click", ()=>{
+  const shareData = { title: "Join Group", text:`Join ${currentGroup.name}`, url:`${window.location.origin}/join.html?group=${groupIndex}` };
+  if(navigator.share){
+    navigator.share(shareData).catch(console.error);
+  } else {
+    alert("🔗 Share link: " + shareData.url);
+  }
 });
-document.querySelector("#qrPopupContent .close").addEventListener("click", ()=>{
-  qrPopup.style.display = "none";
+
+// Admin actions
+document.getElementById("adminBtn").addEventListener("click", ()=>{
+  alert("⚙️ Admin panel opened!");
 });
 </script>
+
 </body>
 </html>
