@@ -39,9 +39,14 @@ body {
 /* Content */
 .content {
   padding: 20px;
-  text-align: center;
 }
-h1 { margin-top: 0; font-size: 1.8em; }
+h1 {
+  margin-top: 10px;
+  font-size: 1.8em;
+  text-align: left;
+}
+
+/* Starred Messages */
 .message {
   background:#111;
   padding:15px;
@@ -54,12 +59,19 @@ h1 { margin-top: 0; font-size: 1.8em; }
   margin-top: 50px;
   font-size: 1.2em;
   color: #888;
+  text-align:center;
 }
 .no-starred i {
   font-size: 80px;
   color: #25d366;
   margin-bottom: 20px;
   display:block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px){
+  .message { font-size: 14px; padding:12px; }
+  h1 { font-size: 1.5em; }
 }
 </style>
 </head>
@@ -73,19 +85,19 @@ h1 { margin-top: 0; font-size: 1.8em; }
 
 <!-- Content -->
 <div class="content" id="starredContainer">
-  <!-- Will be filled by JS -->
+  <!-- Messages will be inserted here -->
 </div>
 
 <script>
 // Get starred messages from localStorage
-const starred = JSON.parse(localStorage.getItem('starredMessages')||'[]');
+const starred = JSON.parse(localStorage.getItem('starredMessages') || '[]');
 const container = document.getElementById('starredContainer');
 
 if(starred.length > 0){
-  starred.forEach(m=>{
+  starred.forEach(msg => {
     const div = document.createElement('div');
-    div.className='message';
-    div.textContent = m;
+    div.className = 'message';
+    div.textContent = msg;
     container.appendChild(div);
   });
 } else {
