@@ -9,11 +9,10 @@
 body {
   font-family: Arial, sans-serif;
   margin:0;
-  padding:20px;
+  padding:0; /* removed top padding */
   background:#000;
   color:#fff;
 }
-h1 { margin-bottom: 10px; }
 
 /* Header */
 .header {
@@ -21,15 +20,20 @@ h1 { margin-bottom: 10px; }
   height: 50px;
   background:#111;
   color:#fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header h1 {
+  margin:0;
+  font-size:20px;
 }
 .topMoreBtn {
-  position: absolute;
-  right: 0;
-  top: 0;
   font-size: 24px;
   cursor: pointer;
-  background:#111;
   color:#fff;
+  background:#111;
   padding:5px;
   border-radius:4px;
   z-index: 200;
@@ -39,8 +43,8 @@ h1 { margin-bottom: 10px; }
 .dropdownTop {
   display: none;
   position: absolute;
-  top: 40px;
-  right: 0;
+  top: 50px;
+  right: 20px;
   background:#000;
   border:1px solid #25d366;
   border-radius:8px;
@@ -54,10 +58,10 @@ h1 { margin-bottom: 10px; }
   padding:8px 12px;
   cursor:pointer;
   text-align:left;
-  border-bottom:1px solid #25d366;
+  border-bottom:1px solid #fff;
 }
 .dropdownTop button:last-child { border-bottom:none; }
-.dropdownTop button:hover { background:#25d366; color:#000; }
+.dropdownTop button:hover { background:#fff; color:#000; }
 
 /* Create Group Button */
 #createGroupBtn {
@@ -67,7 +71,7 @@ h1 { margin-bottom: 10px; }
   border:none;
   border-radius:8px;
   cursor:pointer;
-  margin-bottom:10px;
+  margin:20px;
 }
 
 /* Group cards */
@@ -76,7 +80,7 @@ h1 { margin-bottom: 10px; }
   align-items:center;
   background:#111;
   padding:10px;
-  margin:10px 0;
+  margin:10px 20px;
   border-radius:8px;
   cursor:pointer;
   position:relative;
@@ -123,6 +127,7 @@ h1 { margin-bottom: 10px; }
 }
 #newGroupPopup input { width:200px; margin-bottom:10px; padding:5px; }
 #newGroupPopup button { padding:5px 10px; margin-right:5px; }
+
 </style>
 </head>
 <body>
@@ -209,8 +214,6 @@ menuBtn.addEventListener('click', e=>{
   e.stopPropagation();
   topDropdown.style.display = topDropdown.style.display==='block'?'none':'block';
 });
-
-// Close dropdown if click outside
 document.addEventListener('click', e=>{
   if(!topDropdown.contains(e.target) && !menuBtn.contains(e.target)){
     topDropdown.style.display='none';
