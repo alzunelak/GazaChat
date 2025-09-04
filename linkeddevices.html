@@ -4,37 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Linked Devices</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
-  h1 { font-size:2em; margin-bottom:20px; }
-  .device { background:#fff; padding:15px; border-radius:8px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background:#000; 
+    color:#fff; 
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover { color: #25d366; }
+
+  /* Content */
+  .content {
+    padding: 20px;
+  }
+  h1 { margin-top:0; font-size:1.8em; margin-bottom:10px; }
+  p { margin-bottom:20px; color:#aaa; }
+
+  /* Devices */
+  .device {
+    background:#111;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 5px rgba(37,211,102,0.2);
+    transition: background 0.2s;
+  }
+  .device:hover { background:#222; }
   .device-info { display:flex; flex-direction:column; }
-  .device-name { font-weight:bold; font-size:1em; }
-  .device-details { font-size:0.9em; color:#555; }
-  button { padding:8px 15px; background:#dc3545; color:white; border:none; border-radius:5px; cursor:pointer; }
-  .add-device { padding:12px 20px; background:#25d366; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:20px; width:100%; font-size:1em; }
+  .device-name { font-weight:bold; font-size:1em; color:#fff; }
+  .device-details { font-size:0.9em; color:#aaa; }
+  .device button {
+    padding:8px 15px;
+    background:#dc3545;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+  }
+  .device button:hover { background:#c82333; }
+
+  .add-device {
+    padding:12px 20px;
+    background:#25d366;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:20px;
+    width:100%;
+    font-size:1em;
+  }
+  .add-device:hover { background:#1ebe57; }
+
+  /* No devices message */
+  .no-devices { text-align:center; color:#888; margin-top:50px; }
 </style>
 </head>
 <body>
-<!-- Back Arrow -->
-<div class="back" onclick="history.back()">⬅ Back</div>
 
-<h1>Linked Devices</h1>
-<p>Manage devices linked to your ChatApp account. Log out of any device you no longer use.</p>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Linked Devices</div>
+</div>
 
-<div id="devicesContainer"></div>
-
-<button class="add-device" onclick="addDevice()">Link New Device</button>
+<!-- Content -->
+<div class="content">
+  <p>Manage devices linked to your ChatApp account. Log out of any device you no longer use.</p>
+  <div id="devicesContainer"></div>
+  <button class="add-device" onclick="addDevice()">Link New Device</button>
+</div>
 
 <script>
 let devices = JSON.parse(localStorage.getItem('linkedDevices')||'[]');
 
-// Render devices
 function renderDevices(){
   const container = document.getElementById('devicesContainer');
   container.innerHTML='';
   if(devices.length===0){
-    container.innerHTML='<p>No devices linked yet.</p>';
+    container.innerHTML='<div class="no-devices">No devices linked yet.</div>';
     return;
   }
   devices.forEach((device, index)=>{
@@ -51,7 +124,6 @@ function renderDevices(){
   });
 }
 
-// Remove device
 function removeDevice(index){
   if(confirm(`Log out from "${devices[index].name}"?`)){
     devices.splice(index,1);
@@ -60,7 +132,6 @@ function removeDevice(index){
   }
 }
 
-// Add new device (simulate)
 function addDevice(){
   const deviceName = prompt('Enter device name (e.g., "Laptop", "Tablet")');
   if(deviceName){
