@@ -4,34 +4,100 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Account Settings</title>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f8f9fa; }
-  h1 { font-size:2em; margin-bottom:20px; }
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background:#000; 
+    color:#fff; 
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    height: 50px;
+    background: #111;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+    gap: 10px; /* Space between arrow and text */
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover {
+    color: #25d366; /* Green hover */
+  }
+
+  /* Options */
   .option { 
-    background:#fff; 
+    background:#111; 
     padding:15px 20px; 
     border-radius:8px; 
-    margin-bottom:15px; 
+    margin:10px 15px; 
     cursor:pointer; 
     display:flex; 
     justify-content:space-between; 
     align-items:center; 
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
-    transition: 0.2s;
+    box-shadow:0 2px 5px rgba(0,255,0,0.1);
+    transition: background 0.2s;
   }
-  .option:hover { background:#e6f4ea; }
-  .back { margin-bottom:20px; cursor:pointer; color:#007bff; display:inline-block; }
+  .option:hover { background:#222; }
+
+  .option-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .arrow {
+    font-size: 1.2em;
+    color: #fff;
+  }
 </style>
 </head>
 <body>
 
-<div class="back" onclick="history.back()">⬅ Back</div>
-<h1>Account</h1>
+<!-- Header -->
+<div class="header">
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Account</div>
+</div>
 
-<div class="option" onclick="window.location.href='change-number.html'">Change Number <span>&#9654;</span></div>
-<div class="option" onclick="window.location.href='security-notification.html'">Security Notification <span>&#9654;</span></div>
-<div class="option" onclick="window.location.href='two-step-verification.html'">Two-Step Verification <span>&#9654;</span></div>
-<div class="option" onclick="window.location.href='delete-account.html'">Delete Account <span>&#9654;</span></div>
+<!-- Options -->
+<div class="option" onclick="window.location.href='change-number.html'">
+  <div class="option-title"><i class="fa-solid fa-phone"></i> Change Number</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
+
+<div class="option" onclick="window.location.href='security-notification.html'">
+  <div class="option-title"><i class="fa-solid fa-shield-halved"></i> Security Notification</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
+
+<div class="option" onclick="window.location.href='two-step-verification.html'">
+  <div class="option-title"><i class="fa-solid fa-lock"></i> Two-Step Verification</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
+
+<div class="option" onclick="window.location.href='delete-account.html'">
+  <div class="option-title"><i class="fa-solid fa-trash"></i> Delete Account</div>
+  <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
 
 </body>
 </html>
