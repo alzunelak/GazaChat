@@ -471,6 +471,12 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
+  <!-- Toast Notification -->
+<div id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:#000;color:#fff;padding:10px 20px;border-radius:8px;box-shadow:0 4px 8px rgba(37,211,102,0.4);
+  display:none;z-index:5000;font-weight:bold;">Message</div>
+
+
 <script>
 // ===== USER DATA & DOM =====
 const myName="Me", myId="user123";
@@ -554,21 +560,16 @@ document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=`audi
 document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 
-// ===== BLOCK & REPORT =====
-  // OPEN CUSTOM MODAL
-document.querySelector(".blockBtn").onclick = () => {
-  document.getElementById("blockReportModal").style.display = "flex";
-};
-document.querySelector(".reportBtn").onclick = () => {
-  document.getElementById("blockReportModal").style.display = "flex";
-};
+// Show custom toast
+function showToast(message, color="#fff") {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.color = color;
+  toast.style.display = "block";
+  setTimeout(() => { toast.style.display = "none"; }, 2000);
+}
 
-// CANCEL BUTTON
-document.getElementById("cancelBlockReport").onclick = () => {
-  document.getElementById("blockReportModal").style.display = "none";
-};
-
-// CONFIRM BLOCK
+// Update your confirm handlers
 document.getElementById("confirmBlock").onclick = () => {
   let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
   let friends = JSON.parse(localStorage.getItem("friends") || "[]");
@@ -576,17 +577,16 @@ document.getElementById("confirmBlock").onclick = () => {
   localStorage.setItem("blockedUsers", JSON.stringify(blocked));
   friends = friends.filter(f => f.name !== friendData.name);
   localStorage.setItem("friends", JSON.stringify(friends));
-  alert("User blocked.");
+
   document.getElementById("blockReportModal").style.display = "none";
-  setTimeout(() => { window.location.href = "home.html"; }, 200);
+  showToast("User blocked", "red"); // custom toast
+  setTimeout(() => { window.location.href = "home.html"; }, 2000);
 };
 
-// CONFIRM REPORT
 document.getElementById("confirmReport").onclick = () => {
-  alert("User reported.");
   document.getElementById("blockReportModal").style.display = "none";
+  showToast("User reported", "red"); // custom toast
 };
-
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
