@@ -481,6 +481,16 @@ input:checked + .slider:before {transform:translateX(26px);}
     </div>
   </div>
 </div>
+
+  <!-- REPORT ALERT MODAL -->
+<div id="reportAlertModal" class="modal">
+  <div class="modal-content">
+    <h2 style="color:#fff;">Report Sent</h2>
+    <p style="color:#fff;">Your report has been submitted successfully.</p>
+    <button id="closeReportAlert" class="close-btn">Close</button>
+  </div>
+</div>
+
 <script>
 // ===== USER DATA & DOM =====
 const myName="Me", myId="user123";
@@ -573,7 +583,7 @@ document.querySelector(".blockBtn").onclick = () => {
   const modal = document.getElementById("blockReportModal");
   modal.style.display = "flex";
   modal.dataset.type = "block"; // mark type
-  document.querySelector("#blockReportModal p").textContent = "Are you sure you want to block this user?";
+  document.querySelector("#blockModal p").textContent = "Are you sure you want to block this user?";
 };
 
 // Open REPORT modal
@@ -581,18 +591,18 @@ document.querySelector(".reportBtn").onclick = () => {
   const modal = document.getElementById("blockReportModal");
   modal.style.display = "flex";
   modal.dataset.type = "report"; // mark type
-  document.querySelector("#blockReportModal p").textContent =
+  document.querySelector("#ReportModal p").textContent =
     "The last 5 messages in this chat will be sent to report. This person won't know you reported.";
 };
 
 // CANCEL button for BLOCK/REPORT modal
-document.getElementById("cancelBlockReport").onclick = () => {
-  document.getElementById("blockReportModal").style.display = "none";
+document.getElementById("cancelBlock").onclick = () => {
+  document.getElementById("ReportModal").style.display = "none";
 };
 
 // CONFIRM block or report
 document.getElementById("confirmBlock").onclick = () => {
-  const modal = document.getElementById("blockReportModal");
+  const modal = document.getElementById("blockModal");
   const type = modal.dataset.type;
   modal.style.display = "none";
 
@@ -605,17 +615,16 @@ document.getElementById("confirmBlock").onclick = () => {
     localStorage.setItem("friends", JSON.stringify(friends));
     setTimeout(() => { window.location.href = "home.html"; }, 200);
   } else if (type === "report") {
-    const reportConfirmModal = document.getElementById("ReportModal");
-    reportConfirmModal.style.display = "flex";
-    setTimeout(() => { reportConfirmModal.style.display = "none"; alert("Report sent successfully!"); }, 1500);
+    // Show custom report alert modal
+    const reportAlert = document.getElementById("reportAlertModal");
+    reportAlert.style.display = "flex";
   }
 };
 
-// CONFIRM report inside ReportModal
-document.getElementById("confirmReport").onclick = () => {
-  document.getElementById("ReportModal").style.display = "none";
+// Close the report alert modal
+document.getElementById("closeReportAlert").onclick = () => {
+  document.getElementById("reportAlertModal").style.display = "none";
 };
-
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
