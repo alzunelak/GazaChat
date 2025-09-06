@@ -179,16 +179,8 @@
 </div>
 
 <script>
-function showAlert(message, title = "Alert", action = null) {
+function showAlert(message) {
   document.getElementById('alertMessage').textContent = message;
-  document.getElementById('alertTitle').textContent = title;
-
-  const alertBtn = document.getElementById('alertButton');
-  alertBtn.onclick = function() {
-    closeAlert();
-    if (action) action();
-  };
-
   document.getElementById('alertPopup').style.display = 'flex';
 }
 
@@ -209,6 +201,7 @@ function nextStep() {
 function showCodeInput() {
   document.getElementById('popup').style.display = 'none';
   document.getElementById('codePopup').style.display = 'flex';
+  document.getElementById('codeInput').focus();
 }
 
 function verifyCode() {
@@ -217,17 +210,28 @@ function verifyCode() {
     showAlert("Please enter the verification code.");
     return;
   }
-
-  // Show success using same alert
   document.getElementById('codePopup').style.display = 'none';
-  showAlert("Verification Successful!", "Success", () => {
-    goToProfile();
-  });
+  document.getElementById('successPopup').style.display = 'flex';
 }
 
 function goToProfile() {
   window.location.href = 'profile.html';
 }
+
+// New: Trigger alert as soon as user leaves code input empty
+document.getElementById('codeInput').addEventListener('blur', function() {
+  if (!this.value.trim()) {
+    showAlert("You must enter the verification code.");
+  }
+});
+
+// Also allow pressing Enter to verify
+document.getElementById('codeInput').addEventListener('keyup', function(event) {
+  if (event.key === 'Enter') {
+    verifyCode();
+  }
+});
+
 </script>
 
 </body>
