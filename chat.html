@@ -565,30 +565,37 @@ document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.ht
 document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 
 
+
 // ===== BLOCK & REPORT MODALS =====
 
 // Open BLOCK modal
 document.querySelector(".blockBtn").onclick = () => {
-  document.getElementById("blockReportModal").style.display = "flex";
-  document.getElementById("blockReportModal").dataset.type = "block"; // mark type
+  const modal = document.getElementById("blockReportModal");
+  modal.style.display = "flex";
+  modal.dataset.type = "block"; // mark type
+  document.querySelector("#blockReportModal p").textContent = "Are you sure you want to block this user?";
 };
 
 // Open REPORT modal
 document.querySelector(".reportBtn").onclick = () => {
-  document.getElementById("blockReportModal").style.display = "flex";
-  document.getElementById("blockReportModal").dataset.type = "report"; // mark type
+  const modal = document.getElementById("blockReportModal");
+  modal.style.display = "flex";
+  modal.dataset.type = "report"; // mark type
   document.querySelector("#blockReportModal p").textContent =
     "The last 5 messages in this chat will be sent to report. This person won't know you reported.";
 };
 
-// CANCEL button for both
+// CANCEL button for BLOCK/REPORT modal
 document.getElementById("cancelBlockReport").onclick = () => {
   document.getElementById("blockReportModal").style.display = "none";
 };
 
 // CONFIRM block or report
 document.getElementById("confirmBlock").onclick = () => {
-  const type = document.getElementById("blockReportModal").dataset.type;
+  const modal = document.getElementById("blockReportModal");
+  const type = modal.dataset.type;
+  modal.style.display = "none";
+
   if (type === "block") {
     let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
     let friends = JSON.parse(localStorage.getItem("friends") || "[]");
@@ -596,29 +603,16 @@ document.getElementById("confirmBlock").onclick = () => {
     localStorage.setItem("blockedUsers", JSON.stringify(blocked));
     friends = friends.filter(f => f.name !== friendData.name);
     localStorage.setItem("friends", JSON.stringify(friends));
-
-    document.getElementById("blockReportModal").style.display = "none";
     setTimeout(() => { window.location.href = "home.html"; }, 200);
   } else if (type === "report") {
-    // Simulate reporting animation or confirmation
-    document.getElementById("blockReportModal").style.display = "none";
     const reportConfirmModal = document.getElementById("ReportModal");
     reportConfirmModal.style.display = "flex";
-    setTimeout(() => {
-      reportConfirmModal.style.display = "none";
-      alert("Report sent successfully!"); // Optional feedback
-    }, 1500); // 1.5s animation duration
+    setTimeout(() => { reportConfirmModal.style.display = "none"; alert("Report sent successfully!"); }, 1500);
   }
 };
 
-// CONFIRM report inside ReportModal (optional double-confirm)
+// CONFIRM report inside ReportModal
 document.getElementById("confirmReport").onclick = () => {
-  document.getElementById("ReportModal").style.display = "none";
-  alert("Report submitted successfully!");
-};
-
-// CANCEL inside ReportModal
-document.getElementById("cancelBlockReport").onclick = () => {
   document.getElementById("ReportModal").style.display = "none";
 };
 
