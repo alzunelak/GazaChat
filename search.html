@@ -1,33 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Friend System</title>
-<style>
-body { font-family: Arial, sans-serif; text-align:center; padding:20px; background:#f5f5f5; }
-input, button { padding:10px; margin:5px; font-size:16px; }
-#result { margin-top:20px; font-size:16px; }
-.error { color:red; }
-.success { color:green; }
-.friend-request { margin:10px; padding:10px; border:1px solid #ccc; background:#fff; border-radius:5px; }
-.friend-list { display:flex; flex-wrap:wrap; justify-content:center; margin-top:20px; }
-.friend-card { margin:10px; padding:10px; border:1px solid #ccc; background:#fff; border-radius:5px; width:120px; text-align:center; }
-.friend-card img { width:60px; height:60px; border-radius:50%; display:block; margin:auto; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Friend</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #000; /* Black background */
+      color: #fff;      /* White text */
+      position: relative;
+    }
+    h2, h3 {
+      color: #fff;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+    }
+    input {
+      width: 60%;
+      background: #222;
+      color: #fff;
+    }
+    button {
+      background: #444;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #666;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    .error { color: red; }
+    .success { color: limegreen; }
+    .friend-request {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #444;
+      background: #111;
+      border-radius: 5px;
+    }
+    .friend-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .friend-card {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #444;
+      background: #111;
+      border-radius: 5px;
+      width: 120px;
+      text-align: center;
+      color: #fff;
+    }
+    .friend-card img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: block;
+      margin: auto;
+    }
+    /* Back arrow */
+    .back-arrow {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      font-size: 28px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .back-arrow:hover {
+      color: #ccc;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Search Friend</h2>
-<input type="text" id="friendName" placeholder="Enter friend name">
-<button id="searchBtn">Search</button>
-<div id="result"></div>
+  <!-- Back Arrow -->
+  <i class="fas fa-arrow-left back-arrow" onclick="window.history.back()"></i>
 
-<h3>Friend Requests</h3>
-<div id="requests"></div>
+  <h2>Search Friend</h2>
+  <input type="text" id="friendName" placeholder="Enter friend name">
+  <button id="searchBtn">Search</button>
+  <div id="result"></div>
 
-<h3>My Friends</h3>
-<div id="friends" class="friend-list"></div>
+  <h3>Friend Requests</h3>
+  <div id="requests"></div>
+
+  <h3>My Friends</h3>
+  <div id="friends" class="friend-list"></div>
 
 <script>
 const defaultProfile = "default-profile.png";
