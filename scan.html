@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,17 +40,28 @@
     .back-arrow:hover {
       color: #000;
     }
+    /* Spinner Arrow */
+    .spinner {
+      font-size: 40px;
+      color: #007bff;
+      animation: spin 1s linear infinite;
+      margin-top: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <i class="fas fa-arrow-left back-arrow" onclick="goBack()"></i>
   <h2>Scan Friend QR Code</h2>
   <div id="reader"></div>
-  <div id="message">Detecting...</div>
+  <div id="message"><i class="fas fa-sync-alt spinner"></i><br>Scanning...</div>
 
   <script>
     function goBack() {
-      window.history.back(); // Takes user back to previous page
+      window.history.back();
     }
 
     const messageDiv = document.getElementById('message');
