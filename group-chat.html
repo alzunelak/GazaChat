@@ -584,8 +584,74 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
     chatBox.parentElement.insertBefore(resetBtn, chatBox);
   }
 };
+  
+// popup
+    function renderGroupMembers(){
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
-    
+  if(activeMembers.length === 0){
+    const div = document.createElement("div");
+    div.textContent = "No active members"; 
+    div.style.fontStyle = "italic"; 
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+
+      // Create popup menu
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.style.position = "absolute";
+      popup.style.display = "none";
+      popup.style.background = "#000";
+      popup.style.color = "#fff";
+      popup.style.border = "1px solid #ccc";
+      popup.style.borderRadius = "6px";
+      popup.style.padding = "5px";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+
+      div.style.position = "relative";
+      div.appendChild(popup);
+
+      // Show popup on click
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        // Hide other popups
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+        popup.style.display = "block";
+      });
+
+      // Message action
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      // Block action
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        blockMember(name);
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
+  }
+
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+}
+
+// Hide popup when clicking outside
+document.addEventListener("click", () => {
+  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+});
+
 
 // ===== MENU BUTTON TOGGLE =====
 const menuBtn = document.getElementById("menuBtn");
