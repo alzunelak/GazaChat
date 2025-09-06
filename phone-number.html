@@ -61,7 +61,7 @@
     box-shadow: 0 0 10px #25d366;
   }
 
-  /* Buttons */
+  /* Button Styles */
   .btn {
     padding: 12px 30px;
     font-size: 1.1em;
@@ -86,16 +86,16 @@
     right: 20px;
   }
 
-  /* Popup base */
+  /* Popup Base Style */
   .popup {
     display: none;
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
   }
 
   .popup-content {
@@ -127,6 +127,7 @@
     outline: none;
     box-shadow: 0 0 10px #25d366;
   }
+
 </style>
 </head>
 <body>
@@ -149,7 +150,7 @@
 
 <button class="btn next-btn" onclick="nextStep()">Next</button>
 
-<!-- Alert Popup -->
+<!-- Custom Alert Popup -->
 <div class="popup" id="alertPopup">
   <div class="popup-content">
     <h2>Alert</h2>
@@ -167,7 +168,7 @@
   </div>
 </div>
 
-<!-- Code Popup -->
+<!-- Verification Code Popup -->
 <div class="popup" id="codePopup">
   <div class="popup-content">
     <h2>Enter Verification Code</h2>
@@ -187,26 +188,19 @@
 </div>
 
 <script>
-function showAlert(message, focusFieldId = null) {
+function showAlert(message) {
   document.getElementById('alertMessage').textContent = message;
   document.getElementById('alertPopup').style.display = 'flex';
-
-  // Refocus input after closing alert
-  document.getElementById('alertPopup').dataset.focusField = focusFieldId;
 }
 
 function closeAlert() {
   document.getElementById('alertPopup').style.display = 'none';
-  const focusFieldId = document.getElementById('alertPopup').dataset.focusField;
-  if (focusFieldId) {
-    document.getElementById(focusFieldId).focus();
-  }
 }
 
 function nextStep() {
   const number = document.getElementById('phoneNumber').value.trim();
   if (!number) {
-    showAlert("Please enter your phone number.", 'phoneNumber');
+    showAlert("Please enter your phone number.");
     return;
   }
   document.getElementById('popupNumber').textContent = number;
@@ -216,13 +210,12 @@ function nextStep() {
 function showCodeInput() {
   document.getElementById('popup').style.display = 'none';
   document.getElementById('codePopup').style.display = 'flex';
-  document.getElementById('codeInput').focus();
 }
 
 function verifyCode() {
   const code = document.getElementById('codeInput').value.trim();
   if (!code) {
-    showAlert("Please enter the verification code.", 'codeInput');
+    showAlert("Please enter the verification code.");
     return;
   }
   document.getElementById('codePopup').style.display = 'none';
@@ -232,20 +225,6 @@ function verifyCode() {
 function goToProfile() {
   window.location.href = 'profile.html';
 }
-
-// Trigger alert if leaving code empty
-document.getElementById('codeInput').addEventListener('blur', function() {
-  if (!this.value.trim()) {
-    showAlert("You must enter the verification code.", 'codeInput');
-  }
-});
-
-// Allow Enter to verify
-document.getElementById('codeInput').addEventListener('keyup', function(event) {
-  if (event.key === 'Enter') {
-    verifyCode();
-  }
-});
 </script>
 
 </body>
