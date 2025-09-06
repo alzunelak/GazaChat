@@ -3,173 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Search Friend</title>
+<title>Share Friend Link</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #000;
-    color: #fff;
-    padding: 20px;
-  }
-  .search-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .search-header i {
-    font-size: 28px;
-    color: #fff;
-    cursor: pointer;
-  }
-  .search-header i:hover {
-    color: #ccc;
-  }
-  input {
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: none;
-    width: 60%;
-    background: #222;
-    color: #fff;
-  }
-  button {
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: none;
-    background: #444;
-    color: #fff;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #666;
-  }
-  #result {
-    margin-top: 20px;
-    font-size: 16px;
-  }
-  .error { color: red; }
-  .success { color: limegreen; }
-  .friend-card {
-    margin: 10px auto;
-    padding: 10px;
-    border: 1px solid #444;
-    background: #111;
-    border-radius: 5px;
-    width: 200px;
-    text-align: center;
-  }
-  .friend-card img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: block;
-    margin: 0 auto 10px auto;
-  }
+body {
+  font-family: Arial;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+input, button {
+  padding: 10px;
+  margin: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+}
+button {
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover {
+  background: #666;
+}
+.link-box {
+  margin-top: 20px;
+  word-break: break-all;
+  background: #111;
+  padding: 10px;
+  border-radius: 5px;
+}
 </style>
 </head>
 <body>
 
-<div class="search-header">
-  <i class="fas fa-arrow-left" onclick="window.history.back()"></i>
-  <input type="text" id="friendName" placeholder="Enter friend name">
-  <button id="searchBtn">Search</button>
-</div>
+<h2>Share Your Friend Link</h2>
 
-<div id="result"></div>
+<button id="generateLink">Generate Link</button>
+
+<div id="linkContainer" class="link-box"></div>
 
 <script>
+const myName = "You"; // Your username
 const defaultProfile = "default-profile.png";
-const myName = "You"; // fixed logged-in user
 
-// Initialize users if empty
+// Initialize users in localStorage
 if(!localStorage.getItem('users')){
-  const initialUsers = [
-    { name: "Alice", profile: "alice.png" },
-    { name: "Bob", profile: "bob.png" },
-    { name: "Charlie", profile: "charlie.png" },
-    { name: myName, profile: defaultProfile }
-  ];
+  const initialUsers = [{ name: myName, profile: defaultProfile }];
   localStorage.setItem('users', JSON.stringify(initialUsers));
 }
 
-// Ensure logged-in user exists
-let users = JSON.parse(localStorage.getItem('users') || '[]');
-if(!users.some(u => u.name === myName)){
-  users.push({name: myName, profile: defaultProfile});
-  localStorage.setItem('users', JSON.stringify(users));
-}
-
-// Helpers
-function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
-function getFriends(){ return JSON.parse(localStorage.getItem('friends') || '[]'); }
-function addFriend(name){
-  let friends = getFriends();
-  if(!friends.some(f=>f.name.toLowerCase().trim() === name.toLowerCase().trim())){
-    const user = getUsers().find(u => u.name.toLowerCase().trim() === name.toLowerCase().trim());
-    const profile = user ? user.profile : defaultProfile;
-    friends.push({name: user.name, profile});
-    localStorage.setItem('friends', JSON.stringify(friends));
-    return true;
-  }
-  return false;
-}
-function isFriend(name){ return getFriends().some(f=>f.name.toLowerCase().trim() === name.toLowerCase().trim()); }
-
-// Search functionality
-document.getElementById('searchBtn').addEventListener('click', ()=>{
-  const nameInput = document.getElementById('friendName').value.trim();
-  const resultDiv = document.getElementById('result');
-
-  if(nameInput === ""){ 
-    resultDiv.className = "error"; 
-    resultDiv.innerText = "Enter a name"; 
-    return; 
-  }
-
-  const users = getUsers();
-  const foundUser = users.find(u => u.name.toLowerCase().trim() === nameInput.toLowerCase().trim());
-
-  if(foundUser){
-    if(foundUser.name.toLowerCase().trim() === myName.toLowerCase().trim()){
-      resultDiv.className = "error";
-      resultDiv.innerText = "You cannot add yourself";
-      return;
-    }
-    if(isFriend(foundUser.name)){
-      resultDiv.className = "success";
-      resultDiv.innerText = `You are already friends with ${foundUser.name}`;
-    } else {
-      resultDiv.className = "success";
-      resultDiv.innerHTML = `
-        <div class="friend-card">
-          <img src="${foundUser.profile}" alt="${foundUser.name}">
-          <b>${foundUser.name}</b>
-          <br>
-          <button onclick="sendRequest('${foundUser.name}')">Connect</button>
-        </div>
-      `;
-    }
-  } else {
-    resultDiv.className = "error";
-    resultDiv.innerText = "No user exists";
-  }
+// Generate link
+document.getElementById('generateLink').addEventListener('click', () => {
+  const user = { name: myName, profile: defaultProfile };
+  // Encode user info in URL
+  const link = `${window.location.origin}${window.location.pathname}?friend=${encodeURIComponent(JSON.stringify(user))}`;
+  document.getElementById('linkContainer').innerHTML = `<a href="${link}" style="color:limegreen;">${link}</a>`;
 });
 
-// Send friend request (stored in localStorage via friends list)
-function sendRequest(name){
-  const added = addFriend(name);
-  const resultDiv = document.getElementById('result');
-  if(added){
-    resultDiv.innerText = `You are now connected with ${name}`;
-  } else {
-    resultDiv.innerText = `Already connected with ${name}`;
+// Check if someone opened the link
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  if(params.has('friend')){
+    try {
+      const friend = JSON.parse(decodeURIComponent(params.get('friend')));
+      let friends = JSON.parse(localStorage.getItem('friends')||'[]');
+      if(!friends.some(f=>f.name===friend.name)){
+        friends.push(friend);
+        localStorage.setItem('friends', JSON.stringify(friends));
+        alert(`You are now connected with ${friend.name}!`);
+      } else {
+        alert(`You are already friends with ${friend.name}`);
+      }
+    } catch(e) {
+      console.error("Invalid friend data");
+    }
   }
-}
+});
 </script>
 </body>
 </html>
