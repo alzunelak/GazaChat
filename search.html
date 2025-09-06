@@ -17,17 +17,16 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* allow wrapping on small screens */
   }
   .header-container i {
     font-size: 28px;
     color: #fff;
     cursor: pointer;
   }
-  .header-container i:hover {
-    color: #ccc;
-  }
+  .header-container i:hover { color: #ccc; }
   #friendId {
-    flex: 1;
+    flex: 1 1 150px; /* responsive input */
     padding: 10px;
     font-size: 16px;
     border-radius: 5px;
@@ -36,6 +35,7 @@
     color: #fff;
   }
   #searchBtn {
+    flex: 0 0 auto;
     padding: 10px;
     font-size: 16px;
     border-radius: 5px;
@@ -45,10 +45,7 @@
     cursor: pointer;
   }
   #searchBtn:hover { background: #666; }
-  #result {
-    margin-top: 20px;
-    font-size: 16px;
-  }
+  #result { margin-top: 20px; font-size: 16px; }
   .error { color: red; }
   .success { color: limegreen; }
   .friend-card {
@@ -68,7 +65,7 @@
     margin: 0 auto 10px auto;
   }
   .share-link {
-    margin-top: 40px;
+    margin-top: 30px;
     text-align: center;
   }
   .share-link button {
@@ -88,6 +85,17 @@
     padding: 10px;
     border-radius: 5px;
     color: limegreen;
+  }
+  .friends-list {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  @media (max-width: 500px) {
+    .header-container input, .header-container button {
+      flex: 1 1 100%;
+    }
   }
 </style>
 </head>
@@ -109,6 +117,9 @@
   <div id="linkContainer" class="link-box"></div>
 </div>
 
+<!-- Display Friends -->
+<div class="friends-list" id="friendsList"></div>
+
 <script>
 const myName = "You"; // Current user
 const defaultProfile = "default-profile.png";
@@ -126,6 +137,7 @@ if(!users.some(u => u.name === myName)){
   localStorage.setItem('users', JSON.stringify(users));
 }
 
+// LocalStorage helpers
 function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
 function getFriends(){ return JSON.parse(localStorage.getItem('friends') || '[]'); }
 function addFriend(name){
@@ -135,11 +147,28 @@ function addFriend(name){
     const profile = user ? user.profile : defaultProfile;
     friends.push({name: user.name, profile});
     localStorage.setItem('friends', JSON.stringify(friends));
+    renderFriends();
     return true;
   }
   return false;
 }
 function isFriend(name){ return getFriends().some(f=>f.name.toLowerCase().trim() === name.toLowerCase().trim()); }
+
+// Render friends
+function renderFriends(){
+  const friendsDiv = document.getElementById('friendsList');
+  friendsDiv.innerHTML = '';
+  const friends = getFriends();
+  friends.forEach(f=>{
+    const div = document.createElement('div');
+    div.className = 'friend-card';
+    div.innerHTML = `
+      <img src="${f.profile}" alt="${f.name}">
+      <b>${f.name}</b>
+    `;
+    friendsDiv.appendChild(div);
+  });
+}
 
 // Search friend
 document.getElementById('searchBtn').addEventListener('click', ()=>{
@@ -172,8 +201,7 @@ document.getElementById('searchBtn').addEventListener('click', ()=>{
           <div class="friend-card">
             <img src="${foundUser.profile}" alt="${foundUser.name}">
             <b>${foundUser.name}</b>
-            <br>
-            <span>Connected!</span>
+            <br><span>Connected!</span>
           </div>
         `;
       }
@@ -197,16 +225,11 @@ window.addEventListener('load', () => {
   if(params.has('friend')){
     try {
       const friend = JSON.parse(decodeURIComponent(params.get('friend')));
-      let friends = getFriends();
-      if(!friends.some(f=>f.name===friend.name)){
-        friends.push(friend);
-        localStorage.setItem('friends', JSON.stringify(friends));
-        alert(`You are now connected with ${friend.name}!`);
-      } else {
-        alert(`You are already friends with ${friend.name}`);
-      }
+      addFriend(friend.name);
+      alert(`You are now connected with ${friend.name}!`);
     } catch(e) { console.error("Invalid friend data"); }
   }
+  renderFriends(); // always render friends on load
 });
 </script>
 </body>
