@@ -144,14 +144,14 @@
 
             messageDiv.innerHTML = `
               <span class="tick"><i class="fas fa-check"></i></span>
-              <div style="color:limegreen;">Scan Successful!</div>
-              <div style="margin-top:10px;">Now show your QR code to your friend so they can scan and connect with you.</div>
+              <div style="color:limegreen;">Successful</div>
+              <div style="margin-top:10px;"> Scan Successful Now show your QR code to your friend so they can scan and connect with you.</div>
             `;
           } else {
             throw new Error("Invalid QR");
           }
         } catch (e) {
-          messageDiv.style.color = "red";
+          messageDiv.style.color = "green";
           messageDiv.innerText = "Invalid QR code";
         }
       },
