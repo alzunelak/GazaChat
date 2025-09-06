@@ -12,9 +12,9 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #000; /* black background */
+    background: #000;
     flex-direction: column;
-    color: #fff; /* white text */
+    color: #fff;
   }
 
   .profile-pic {
@@ -22,9 +22,9 @@
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #25d366; /* green border */
+    border: 2px solid #25d366;
     margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5); /* subtle green shadow */
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
   }
 
   input[type=text], input[type=file] {
@@ -35,14 +35,14 @@
     border: none;
     font-size: 16px;
     text-align: center;
-    background: #222; /* dark inside */
-    color: #000; /* black text */
+    background: #222;
+    color: #000;
     box-shadow: 0 4px 8px rgba(37, 211, 102, 0.5);
     transition: all 0.3s ease;
   }
 
   input[type=text]::placeholder {
-    color: #888; /* placeholder gray */
+    color: #888;
   }
 
   input[type=text]:focus, input[type=file]:focus {
@@ -68,6 +68,51 @@
     box-shadow: 0 0 15px #25d366, 0 4px 8px rgba(37, 211, 102, 0.5);
     transform: translateY(-2px);
   }
+
+  /* Custom Alert Popup */
+  .popup {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.7);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+  }
+
+  .popup-content {
+    background: #111;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 300px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .popup-content h2 { margin-bottom: 10px; }
+  .popup-content p { margin-bottom: 20px; }
+
+  .btn-popup {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background: #25d366;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .btn-popup:hover {
+    background: #1da851;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: scale(0.9);}
+    to {opacity: 1; transform: scale(1);}
+  }
 </style>
 </head>
 <body>
@@ -77,6 +122,15 @@
 <input type="text" id="nameInput" placeholder="Enter your name"><br>
 <button onclick="saveProfile()">Get Started</button>
 
+<!-- Custom Alert Popup -->
+<div class="popup" id="alertPopup">
+  <div class="popup-content">
+    <h2>Alert</h2>
+    <p id="alertMessage"></p>
+    <button class="btn-popup" onclick="closeAlert()">OK</button>
+  </div>
+</div>
+
 <script>
 const photoInput = document.getElementById('photoInput');
 const profilePicPreview = document.getElementById('profilePicPreview');
@@ -84,22 +138,39 @@ const nameInput = document.getElementById('nameInput');
 
 // Preview uploaded image
 photoInput.addEventListener('change', () => {
-  if(photoInput.files.length>0){
+  if(photoInput.files.length > 0){
     const reader = new FileReader();
     reader.onload = e => profilePicPreview.src = e.target.result;
     reader.readAsDataURL(photoInput.files[0]);
   }
 });
 
+// Show custom alert
+function showAlert(message){
+  document.getElementById('alertMessage').textContent = message;
+  document.getElementById('alertPopup').style.display = 'flex';
+}
+
+// Close popup
+function closeAlert(){
+  document.getElementById('alertPopup').style.display = 'none';
+}
+
 // Save profile info
 function saveProfile(){
   const name = nameInput.value.trim();
-  if(!name){ alert("Enter your name"); return; }
+  if(!name){ 
+    showAlert("Enter your name"); 
+    return; 
+  }
+
   localStorage.setItem("username", name);
   localStorage.setItem("profilePic", profilePicPreview.src);
+
   if(!localStorage.getItem("userId")){
     localStorage.setItem("userId", name + "_" + Math.floor(Math.random()*100000));
   }
+
   window.location.href="home.html";
 }
 
