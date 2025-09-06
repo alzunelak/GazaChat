@@ -1,107 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search Friend</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-      background: #000; /* Black background */
-      color: #fff;      /* White text */
-      position: relative;
-    }
-    h2, h3 {
-      color: #fff;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: none;
-    }
-    input {
-      width: 60%;
-      background: #222;
-      color: #fff;
-    }
-    button {
-      background: #444;
-      color: #fff;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #666;
-    }
-    #result {
-      margin-top: 20px;
-      font-size: 16px;
-    }
-    .error { color: red; }
-    .success { color: limegreen; }
-    .friend-request {
-      margin: 10px;
-      padding: 10px;
-      border: 1px solid #444;
-      background: #111;
-      border-radius: 5px;
-    }
-    .friend-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .friend-card {
-      margin: 10px;
-      padding: 10px;
-      border: 1px solid #444;
-      background: #111;
-      border-radius: 5px;
-      width: 120px;
-      text-align: center;
-      color: #fff;
-    }
-    .friend-card img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: block;
-      margin: auto;
-    }
-    /* Back arrow */
-    .back-arrow {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      font-size: 28px;
-      color: #fff;
-      cursor: pointer;
-    }
-    .back-arrow:hover {
-      color: #ccc;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Friend</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
+    padding: 20px;
+  }
+  .search-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .search-header i {
+    font-size: 28px;
+    color: #fff;
+    cursor: pointer;
+  }
+  .search-header i:hover {
+    color: #ccc;
+  }
+  input {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    width: 60%;
+    background: #222;
+    color: #fff;
+  }
+  button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background: #444;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #666;
+  }
+  #result {
+    margin-top: 20px;
+    font-size: 16px;
+  }
+  .error { color: red; }
+  .success { color: limegreen; }
+  .friend-card {
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid #444;
+    background: #111;
+    border-radius: 5px;
+    width: 200px;
+    text-align: center;
+  }
+  .friend-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto 10px auto;
+  }
+</style>
 </head>
 <body>
 
-  <!-- Back Arrow -->
-  <i class="fas fa-arrow-left back-arrow" onclick="window.history.back()"></i>
-
-  <h2>Search Friend</h2>
+<div class="search-header">
+  <i class="fas fa-arrow-left" onclick="window.history.back()"></i>
   <input type="text" id="friendName" placeholder="Enter friend name">
   <button id="searchBtn">Search</button>
-  <div id="result"></div>
+</div>
 
-  <h3>Friend Requests</h3>
-  <div id="requests"></div>
-
-  <h3>My Friends</h3>
-  <div id="friends" class="friend-list"></div>
+<div id="result"></div>
 
 <script>
 const defaultProfile = "default-profile.png";
@@ -125,10 +104,7 @@ if(!users.some(u => u.name === myName)){
   localStorage.setItem('users', JSON.stringify(users));
 }
 
-// ---------- BROADCAST CHANNEL ----------
-const channel = new BroadcastChannel('chatapp');
-
-// ---------- HELPERS ----------
+// Helpers
 function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
 function getFriends(){ return JSON.parse(localStorage.getItem('friends') || '[]'); }
 function addFriend(name){
@@ -138,38 +114,13 @@ function addFriend(name){
     const profile = user ? user.profile : defaultProfile;
     friends.push({name: user.name, profile});
     localStorage.setItem('friends', JSON.stringify(friends));
-    renderFriends();
     return true;
   }
   return false;
 }
 function isFriend(name){ return getFriends().some(f=>f.name.toLowerCase().trim() === name.toLowerCase().trim()); }
 
-// ---------- FRIEND REQUESTS ----------
-channel.onmessage = (event) => {
-  if(event.data.type === 'friendRequest' && event.data.to === myName){
-    const requestsDiv = document.getElementById('requests');
-    const div = document.createElement('div');
-    div.className = 'friend-request';
-    div.innerHTML = `
-      Friend request from ${event.data.from} 
-      <button onclick="acceptRequest('${event.data.from}', this)">Accept</button>
-    `;
-    requestsDiv.appendChild(div);
-  }
-  if(event.data.type === 'friendAccepted' && event.data.to === myName){
-    addFriend(event.data.from);
-    alert(`${event.data.from} accepted your friend request!`);
-  }
-};
-
-function acceptRequest(name, btn){
-  addFriend(name);
-  channel.postMessage({type:'friendAccepted', from: myName, to: name});
-  btn.parentElement.innerHTML = `You are now friends with ${name}!`;
-}
-
-// ---------- SEARCH FRIEND ----------
+// Search functionality
 document.getElementById('searchBtn').addEventListener('click', ()=>{
   const nameInput = document.getElementById('friendName').value.trim();
   const resultDiv = document.getElementById('result');
@@ -195,9 +146,12 @@ document.getElementById('searchBtn').addEventListener('click', ()=>{
     } else {
       resultDiv.className = "success";
       resultDiv.innerHTML = `
-        <img src="${foundUser.profile}" alt="${foundUser.name}" width="40" height="40">
-        <b>${foundUser.name}</b> found! 
-        <button onclick="sendRequest('${foundUser.name}')">Connect</button>
+        <div class="friend-card">
+          <img src="${foundUser.profile}" alt="${foundUser.name}">
+          <b>${foundUser.name}</b>
+          <br>
+          <button onclick="sendRequest('${foundUser.name}')">Connect</button>
+        </div>
       `;
     }
   } else {
@@ -206,36 +160,16 @@ document.getElementById('searchBtn').addEventListener('click', ()=>{
   }
 });
 
-// ---------- SEND FRIEND REQUEST ----------
+// Send friend request (stored in localStorage via friends list)
 function sendRequest(name){
-  const users = getUsers();
-  const exists = users.some(u => u.name.toLowerCase().trim() === name.toLowerCase().trim());
-  if(!exists){
-    alert("User does not exist!");
-    return;
+  const added = addFriend(name);
+  const resultDiv = document.getElementById('result');
+  if(added){
+    resultDiv.innerText = `You are now connected with ${name}`;
+  } else {
+    resultDiv.innerText = `Already connected with ${name}`;
   }
-  channel.postMessage({type:'friendRequest', from: myName, to: name});
-  document.getElementById('result').innerText = `Friend request sent to ${name}`;
 }
-
-// ---------- DISPLAY FRIENDS ----------
-function renderFriends(){
-  const friendsDiv = document.getElementById('friends');
-  friendsDiv.innerHTML = '';
-  const friends = getFriends();
-  friends.forEach(f=>{
-    const div = document.createElement('div');
-    div.className = 'friend-card';
-    div.innerHTML = `
-      <img src="${f.profile}" alt="${f.name}">
-      <div>${f.name}</div>
-    `;
-    friendsDiv.appendChild(div);
-  });
-}
-
-// Render friends on page load
-renderFriends();
 </script>
 </body>
 </html>
