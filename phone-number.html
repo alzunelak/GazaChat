@@ -127,7 +127,6 @@
     outline: none;
     box-shadow: 0 0 10px #25d366;
   }
-
 </style>
 </head>
 <body>
@@ -150,12 +149,12 @@
 
 <button class="btn next-btn" onclick="nextStep()">Next</button>
 
-<!-- Custom Alert Popup -->
+<!-- Universal Alert Popup -->
 <div class="popup" id="alertPopup">
   <div class="popup-content">
-    <h2>Alert</h2>
+    <h2 id="alertTitle">Alert</h2>
     <p id="alertMessage"></p>
-    <button class="btn" onclick="closeAlert()">OK</button>
+    <button class="btn" id="alertButton" onclick="closeAlert()">OK</button>
   </div>
 </div>
 
@@ -179,17 +178,17 @@
   </div>
 </div>
 
-<!-- Success Popup -->
-<div class="popup" id="successPopup">
-  <div class="popup-content">
-    <h2>Verification Successful!</h2>
-    <button class="btn" onclick="goToProfile()">Continue</button>
-  </div>
-</div>
-
 <script>
-function showAlert(message) {
+function showAlert(message, title = "Alert", action = null) {
   document.getElementById('alertMessage').textContent = message;
+  document.getElementById('alertTitle').textContent = title;
+
+  const alertBtn = document.getElementById('alertButton');
+  alertBtn.onclick = function() {
+    closeAlert();
+    if (action) action();
+  };
+
   document.getElementById('alertPopup').style.display = 'flex';
 }
 
@@ -218,8 +217,12 @@ function verifyCode() {
     showAlert("Please enter the verification code.");
     return;
   }
+
+  // Show success using same alert
   document.getElementById('codePopup').style.display = 'none';
-  document.getElementById('successPopup').style.display = 'flex';
+  showAlert("Verification Successful!", "Success", () => {
+    goToProfile();
+  });
 }
 
 function goToProfile() {
