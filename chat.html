@@ -583,8 +583,6 @@ document.getElementById("videoCallBtn").onclick=()=>{ window.location.href=`vide
 document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-
-
 // ===== BLOCK & REPORT MODALS =====
 
 // Open BLOCK modal
@@ -625,20 +623,14 @@ document.getElementById("confirmBlock").onclick = () => {
     localStorage.setItem("friends", JSON.stringify(friends));
 
     // Show custom block alert
-    const blockAlert = document.getElementById("blockAlertModal");
-    blockAlert.style.display = "flex";
+    document.getElementById("blockAlertModal").style.display = "flex";
+
   } else if (type === "report") {
     // Show custom report alert
-    const reportAlert = document.getElementById("reportAlertModal");
-    reportAlert.style.display = "flex";
+    document.getElementById("reportAlertModal").style.display = "flex";
   }
 };
-  if (type === "report") {
-    // Show the report alert modal
-    const reportAlert = document.getElementById("reportAlertModal");
-    reportAlert.style.display = "flex";
-    return; // stop further execution
-  }
+
 // CLOSE ALERT MODALS
 document.getElementById("closeReportAlert").onclick = () => {
   document.getElementById("reportAlertModal").style.display = "none";
@@ -646,10 +638,9 @@ document.getElementById("closeReportAlert").onclick = () => {
 
 document.getElementById("closeBlockAlert").onclick = () => {
   document.getElementById("blockAlertModal").style.display = "none";
-  // Optionally redirect after block
+  // Redirect after block if needed
   window.location.href = "home.html";
 };
-
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
