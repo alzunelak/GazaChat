@@ -482,7 +482,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-  <!-- REPORT ALERT MODAL -->
+ <!-- REPORT ALERT MODAL -->
 <div id="reportAlertModal" class="modal">
   <div class="modal-content">
     <h2 style="color:#fff;">Report Sent</h2>
@@ -490,6 +490,16 @@ input:checked + .slider:before {transform:translateX(26px);}
     <button id="closeReportAlert" class="close-btn">Close</button>
   </div>
 </div>
+
+<!-- BLOCK ALERT MODAL -->
+<div id="blockAlertModal" class="modal">
+  <div class="modal-content">
+    <h2 style="color:#fff;">User Blocked</h2>
+    <p style="color:#fff;">This user has been blocked successfully.</p>
+    <button id="closeBlockAlert" class="close-btn">Close</button>
+  </div>
+</div>
+
 
 <script>
 // ===== USER DATA & DOM =====
@@ -575,7 +585,6 @@ document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.ht
 document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
 
 
-
 // ===== BLOCK & REPORT MODALS =====
 
 // Open BLOCK modal
@@ -583,7 +592,7 @@ document.querySelector(".blockBtn").onclick = () => {
   const modal = document.getElementById("blockReportModal");
   modal.style.display = "flex";
   modal.dataset.type = "block"; // mark type
-  document.querySelector("#blockModal p").textContent = "Are you sure you want to block this user?";
+  modal.querySelector("p").textContent = "Are you sure you want to block this user?";
 };
 
 // Open REPORT modal
@@ -591,40 +600,51 @@ document.querySelector(".reportBtn").onclick = () => {
   const modal = document.getElementById("blockReportModal");
   modal.style.display = "flex";
   modal.dataset.type = "report"; // mark type
-  document.querySelector("#ReportModal p").textContent =
-    "The last 5 messages in this chat will be sent to report. This person won't know you reported.";
+  modal.querySelector("p").textContent = "The last 5 messages in this chat will be sent to report. This person won't know you reported.";
 };
 
 // CANCEL button for BLOCK/REPORT modal
 document.getElementById("cancelBlock").onclick = () => {
-  document.getElementById("ReportModal").style.display = "none";
+  document.getElementById("blockReportModal").style.display = "none";
 };
 
 // CONFIRM block or report
 document.getElementById("confirmBlock").onclick = () => {
-  const modal = document.getElementById("blockModal");
+  const modal = document.getElementById("blockReportModal");
   const type = modal.dataset.type;
   modal.style.display = "none";
 
   if (type === "block") {
     let blocked = JSON.parse(localStorage.getItem("blockedUsers") || "[]");
     let friends = JSON.parse(localStorage.getItem("friends") || "[]");
+
     if (!blocked.includes(friendData.name)) blocked.push(friendData.name);
     localStorage.setItem("blockedUsers", JSON.stringify(blocked));
+
     friends = friends.filter(f => f.name !== friendData.name);
     localStorage.setItem("friends", JSON.stringify(friends));
-    setTimeout(() => { window.location.href = "home.html"; }, 200);
+
+    // Show custom block alert
+    const blockAlert = document.getElementById("blockAlertModal");
+    blockAlert.style.display = "flex";
   } else if (type === "report") {
-    // Show custom report alert modal
+    // Show custom report alert
     const reportAlert = document.getElementById("reportAlertModal");
     reportAlert.style.display = "flex";
   }
 };
 
-// Close the report alert modal
+// CLOSE ALERT MODALS
 document.getElementById("closeReportAlert").onclick = () => {
   document.getElementById("reportAlertModal").style.display = "none";
 };
+
+document.getElementById("closeBlockAlert").onclick = () => {
+  document.getElementById("blockAlertModal").style.display = "none";
+  // Optionally redirect after block
+  window.location.href = "home.html";
+};
+
 
 // ===== CHAT SETTINGS =====
 const settingsModal=document.getElementById("settingsModal");
