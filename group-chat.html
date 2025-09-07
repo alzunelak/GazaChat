@@ -273,28 +273,35 @@ input:checked + .slider:before {transform:translateX(26px);}
 
 /* Blocked users popup */
 #blockedPopup {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;              /* Text color */
-  background: #000;          /* Solid black background */
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  z-index: 1000;
-  width: 300px;
-  max-height: 400px;
-  overflow-y: auto;
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;              /* text color */
+    background: #111;          /* darker background for contrast */
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
 }
-
-/* Hover effect for the popup */
-#blockedPopup:hover {
-  background: #25D366;
-  color: #000;
+#blockedPopup button.unblockBtn {
+    background: #25D366;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 2px 5px;
+    cursor: pointer;
 }
-
+#blockedPopup .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #444;
+}
 
 
 </style>
