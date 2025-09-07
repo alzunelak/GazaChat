@@ -1074,6 +1074,59 @@ function reportGroup() {
   alert("Thanks for your report! Our team will review it.");
 }
 
+// ===== GROUP ACTIONS =====
+
+// Leave Group
+document.getElementById("confirmLeaveGroup").onclick = () => {
+    if(confirm("Are you sure you want to leave this group?")){
+        // Remove current user from members
+        currentGroupMembers = currentGroupMembers.filter(m => m !== currentUser);
+        currentGroup.members = currentGroup.members.filter(m => m.name !== currentUser);
+
+        // Save
+        currentGroup.blocked = blockedMembers;
+        groups[currentGroupIndex] = currentGroup;
+        localStorage.setItem("groups", JSON.stringify(groups));
+
+        alert("You have left the group.");
+        window.location.href = "groups.html"; // redirect to groups list
+    }
+    closeModal('leaveGroupModal');
+};
+
+// Block Group
+document.getElementById("confirmBlockGroup").onclick = () => {
+    if(confirm("Block this group? You won’t receive messages from it anymore.")){
+        currentGroup.blocked.push(currentUser); // mark current user as blocked for this group
+        groups[currentGroupIndex] = currentGroup;
+        localStorage.setItem("groups", JSON.stringify(groups));
+        alert("Group blocked.");
+        window.location.href = "groups.html";
+    }
+    closeModal('blockGroupModal');
+};
+
+// Report Group
+document.getElementById("confirmReportGroup").onclick = () => {
+    alert("Group reported. Thank you.");
+    closeModal('reportGroupModal');
+};
+
+// Delete Group
+document.getElementById("confirmDeleteGroup").onclick = () => {
+    if(confirm("This will permanently delete the group for you. Continue?")){
+        groups.splice(currentGroupIndex, 1); // remove group entirely
+        localStorage.setItem("groups", JSON.stringify(groups));
+        alert("Group deleted.");
+        window.location.href = "groups.html";
+    }
+    closeModal('deleteGroupModal');
+};
+
+// Close modal function
+function closeModal(modalId){
+    document.getElementById(modalId).style.display = "none";
+}
 
 
 // ===== INITIAL RENDER =====
