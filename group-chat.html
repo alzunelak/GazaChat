@@ -859,34 +859,41 @@ function renderMessages(){
 }
 
 // ===== GROUP MEMBERS =====
-function renderGroupMembers(){
-  const membersDiv=document.getElementById("groupMembersList");
-  membersDiv.innerHTML="";
-  const activeMembers=currentGroupMembers.filter(m=>!blockedMembers.includes(m));
-  if(activeMembers.length===0){
-    const div=document.createElement("div");
-    div.textContent="No active members"; div.style.fontStyle="italic"; div.style.color="#555";
-    membersDiv.appendChild(div);
-  } else {
-    activeMembers.forEach(name=>{
-      const div=document.createElement("div");
-      div.className="memberBox"; div.textContent=name;
-      btn.style.display = "none";
+function renderGroupMembers() {
+    const membersDiv = document.getElementById("groupMembersList");
+    membersDiv.innerHTML = "";
 
-      membersDiv.appendChild(div);
-    });
-  }
-  document.getElementById("memberCount").textContent=`${activeMembers.length} Member${activeMembers.length!==1?"s":""}`;
+    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
-  // Update in groups array
-  currentGroup.members = currentGroupMembers.map(n=>({name:n, accepted:true}));
-  currentGroup.blocked = blockedMembers;
-  groups[currentGroupIndex] = currentGroup;
-  localStorage.setItem("groups", JSON.stringify(groups));
+    if (activeMembers.length === 0) {
+        const div = document.createElement("div");
+        div.textContent = "No active members";
+        div.style.fontStyle = "italic";
+        div.style.color = "#555";
+        membersDiv.appendChild(div);
+    } else {
+        activeMembers.forEach(name => {
+            const div = document.createElement("div");
+            div.className = "memberBox";
+            div.textContent = name;
 
-  // Update chat header members
-  document.getElementById("members").textContent = activeMembers.join(", ");
+            // optional: popup menu for Message/Block can go here
+            membersDiv.appendChild(div);
+        });
+    }
+
+    // Update count and header
+    document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+    document.getElementById("members").textContent = activeMembers.join(", ");
+
+    // Save back to localStorage
+    currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+    currentGroup.blocked = blockedMembers;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
 }
+
+
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = ()=>{
