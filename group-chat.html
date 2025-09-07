@@ -871,12 +871,8 @@ function renderGroupMembers(){
     activeMembers.forEach(name=>{
       const div=document.createElement("div");
       div.className="memberBox"; div.textContent=name;
-      if(isAdmin && name!==currentUser){
-        const btn=document.createElement("button");
-        btn.textContent="Block"; btn.style.marginLeft="10px";
-        btn.onclick=()=>blockMember(name);
-        div.appendChild(btn);
-      }
+      btn.style.display = "none";
+
       membersDiv.appendChild(div);
     });
   }
