@@ -454,6 +454,18 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
+<!-- Report Reason Modal -->
+<div id="reportReasonModal" class="modal">
+  <div class="modal-content">
+    <h2>Report Group</h2>
+    <p>Please tell us why you are reporting this group:</p>
+    <textarea id="reportReasonInput" rows="4" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;"></textarea>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="submitReport" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Submit</button>
+      <button class="closeModal" data-target="reportReasonModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
 
 
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
@@ -1140,12 +1152,24 @@ function performAction(actionType) {
       resultMessage.textContent = "You have successfully left the group.";
       break;
 
+    function performAction(actionType) {
+  actionModal.style.display = "none"; // close first popup
+
+  switch(actionType) {
     case 'block':
       currentGroup.blocked.push(currentUser);
       groups[currentGroupIndex] = currentGroup;
       localStorage.setItem("groups", JSON.stringify(groups));
       resultTitle.textContent = "Group Blocked";
       resultMessage.textContent = "You won’t receive messages from this group anymore.";
+      resultModal.style.display = "flex";
+
+      // Disable chat input
+      const chatInput = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("sendBtn");
+      chatInput.disabled = true;
+      chatInput.placeholder = "You can't send messages to this group.";
+      sendBtn.disabled = true;
       break;
 
     case 'report':
@@ -1155,6 +1179,33 @@ function performAction(actionType) {
       resultTitle.textContent = "Group Reported";
       resultMessage.textContent = "Thanks! Our team will review your report.";
       break;
+
+      function performAction(actionType) {
+  actionModal.style.display = "none"; // close first popup
+
+  switch(actionType) {
+    case 'report':
+      // open report reason modal
+      document.getElementById("reportReasonInput").value = ""; // clear previous input
+      document.getElementById("reportReasonModal").style.display = "flex";
+
+      document.getElementById("submitReport").onclick = () => {
+        const reason = document.getElementById("reportReasonInput").value.trim();
+        if(!reason) {
+          alert("Please enter a reason.");
+          return;
+        }
+
+        // Store or send report
+        console.log("Reported group:", currentGroup, "Reason:", reason);
+
+        document.getElementById("reportReasonModal").style.display = "none";
+        resultTitle.textContent = "Group Reported";
+        resultMessage.textContent = "Thanks! Our team will review your report.";
+        resultModal.style.display = "flex";
+      };
+      return; // stop here to wait for user input
+  }
 
     case 'delete':
       groups.splice(currentGroupIndex, 1);
@@ -1174,7 +1225,19 @@ document.querySelectorAll(".closeModal").forEach(btn => {
     if(resultTitle.textContent === "Group Deleted") window.location.href = "groups.html";
   });
 });
+  
+// Optional: Enable chat again if user unblocks
+function unblockGroup() {
+  currentGroup.blocked = currentGroup.blocked.filter(u => u !== currentUser);
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
 
+  const chatInput = document.getElementById("chatInput");
+  const sendBtn = document.getElementById("sendBtn");
+  chatInput.disabled = false;
+  chatInput.placeholder = "Type a message...";
+  sendBtn.disabled = false;
+}
 
 // ===== INITIAL RENDER =====
 document.getElementById("groupName").textContent = currentGroup.name;
