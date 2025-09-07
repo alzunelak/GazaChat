@@ -622,6 +622,70 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
   }
 };
   
+// POPUP MENU
+ function renderGroupMembers(){
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+  if(activeMembers.length === 0){
+    const div = document.createElement("div");
+    div.textContent = "No active members";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+
+      // popup menu for Message / Block
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.style.position = "relative";
+      div.appendChild(popup);
+
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+        popup.style.display = "block";
+      });
+
+      // Message redirects
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      // Block action
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
+  }
+
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+}
+
+// Hide popups when clicking outside
+document.addEventListener("click", ()=>{
+  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+});
+
+
+
 // ===== MENU BUTTON TOGGLE =====
 const menuBtn = document.getElementById("menuBtn");
 const menuPopup = document.getElementById("menuPopup");
@@ -680,7 +744,7 @@ document.getElementById("attachLocation").onclick = () => { document.getElementB
 
 
  // ===== AUDIO RECORDING =====
-let mediaRecorder; 
+let mediaRecorder;
 let audioChunks = [];
 const micBtn = document.getElementById("micBtn");
 
@@ -794,12 +858,34 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-//POPUP MENU
+
+// ===== ADD MEMBER =====
+function addMember(realName) {
+  // Check if member already exists in the group
+  const exists = currentGroup.members.some(m => m.name === realName);
+  if (!exists) {
+    // Add to currentGroup.members with real name
+    currentGroup.members.push({ name: realName, accepted: true });
+    
+    // Optional: keep currentGroupMembers synced for other logic
+    currentGroupMembers.push(realName);
+
+    // Save to localStorage
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem('groups', JSON.stringify(groups));
+
+    // Re-render members
+    renderGroupMembers();
+  }
+}
+
+// ===== RENDER MEMBERS =====
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
 
-  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m.name));
+  // Filter out blocked members
+  const activeMembers = currentGroup.members.filter(m => !blockedMembers.includes(m.name));
 
   if (activeMembers.length === 0) {
     const div = document.createElement("div");
@@ -811,35 +897,7 @@ function renderGroupMembers() {
     activeMembers.forEach(member => {
       const div = document.createElement("div");
       div.className = "memberBox";
-      div.innerHTML = `
-        <img src="${member.pic || 'profile.png'}" style="width:30px;height:30px;border-radius:50%;margin-right:8px;">
-        ${member.realName || member.name}
-      `;
-      div.style.display = "flex";
-      div.style.alignItems = "center";
-
-      // popup menu
-    function renderGroupMembers() {
-  const membersDiv = document.getElementById("groupMembersList");
-  membersDiv.innerHTML = "";
-
-  const activeMembers = currentGroup.members.filter(
-    m => !blockedMembers.includes(m.name)
-  );
-
-  if (activeMembers.length === 0) {
-    const div = document.createElement("div");
-    div.textContent = "No active members";
-    div.style.fontStyle = "italic";
-    div.style.color = "#555";
-    membersDiv.appendChild(div);
-  } else {
-    activeMembers.forEach(member => {
-      const displayName = member.realName || member.name;
-
-      const div = document.createElement("div");
-      div.className = "memberBox";
-      div.textContent = displayName;
+      div.textContent = member.name; // Display real name
       div.style.position = "relative";
 
       // Popup menu
@@ -853,20 +911,20 @@ function renderGroupMembers() {
       div.appendChild(popup);
 
       // Show popup
-      div.addEventListener("click", (e) => {
+      div.addEventListener("click", e => {
         e.stopPropagation();
         document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
         popup.style.display = "block";
       });
 
-      // Message action: Open 1-on-1 chat with real name
+      // Message action
       popup.querySelector(".messageItem").addEventListener("click", () => {
-        window.location.href = `chat.html?user=${encodeURIComponent(member.name)}&realName=${encodeURIComponent(displayName)}`;
+        window.location.href = "chat.html?user=" + encodeURIComponent(member.name);
       });
 
       // Block action
       popup.querySelector(".blockItem").addEventListener("click", () => {
-        if (!blockedMembers.includes(member.name) && confirm(`Block ${displayName}?`)) {
+        if (!blockedMembers.includes(member.name) && confirm(`Block ${member.name}?`)) {
           blockedMembers.push(member.name);
           renderGroupMembers();
           renderBlockedUsersPopup();
@@ -878,33 +936,15 @@ function renderGroupMembers() {
     });
   }
 
-  // Update group member count
-  document.getElementById("memberCount").textContent = 
-    `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-  document.getElementById("members").textContent = 
-    activeMembers.map(m => m.realName || m.name).join(", ");
+  // Update count and header
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+  document.getElementById("members").textContent = activeMembers.map(m => m.name).join(", ");
 
-  // Save updates
-  currentGroup.blocked = blockedMembers;
+  // Save updated group
   groups[currentGroupIndex] = currentGroup;
   localStorage.setItem("groups", JSON.stringify(groups));
 }
 
-
-// ===== ADD MEMBER =====
-document.getElementById("addMemberBtn").onclick = ()=>{
-  localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
-  window.location.href = "addMembers.html";
-};
-function addMember(name){
-    if(!currentGroupMembers.includes(name)){
-        currentGroupMembers.push(name);
-        currentGroup.members.push({name:name, accepted:true});
-        groups[currentGroupIndex] = currentGroup;
-        localStorage.setItem('groups', JSON.stringify(groups));
-        renderGroupMembers();
-    }
-}
   
 // ===== NAVIGATION =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
