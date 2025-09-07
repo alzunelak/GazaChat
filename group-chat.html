@@ -31,6 +31,15 @@ body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#f
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
 .input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#fff;}
 #micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+#emojiPicker{position:absolute;bottom:60px;right:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
+#emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
+#emojiPicker span:hover{background:#000;border-radius:5px;}
+#attachPopup{display:none;position:absolute;bottom:60px;right:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
+#attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#000;border:1px solid #25d366;text-align:center;font-size:12px;user-select:none;}
+.attachItem:hover{background:#25d366;}
+.attachItem i{font-size:20px;color:#25d366;}
+.attachItem input{display:none;}
 .groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#000;color:#fff;margin-bottom:10px;border-radius:10px;position:relative;}
 .groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
 .groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
@@ -376,17 +385,67 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
+<!--Emoji Picker -->
+<div id="emojiPicker">
+  <!-- Faces & Expressions -->
+  <span>😀</span><span>😂</span><span>😍</span><span>😭</span>
+  <span>😎</span><span>😡</span><span>🤔</span><span>🥳</span>
+  <span>😇</span><span>🤯</span><span>😴</span><span>🤗</span>
 
+  <!-- Gestures & Hands -->
+  <span>👍</span><span>👎</span><span>👏</span><span>🙏</span>
+  <span>✌️</span><span>🤝</span><span>🤟</span><span>💪</span>
 
-<!-- ATTACHMENT MENU -->
-<div id="attachmentMenu" class="popupMenu" style="top:auto; bottom:60px; right:10px; display:none; width:200px;">
-  <div class="menuItem" id="attachGallery"><i class="fa-solid fa-image"></i> Gallery</div>
-  <div class="menuItem" id="attachCamera"><i class="fa-solid fa-camera"></i> Camera</div>
-  <div class="menuItem" id="attachDocument"><i class="fa-solid fa-file"></i> Document</div>
-  <div class="menuItem" id="attachAudio"><i class="fa-solid fa-microphone"></i> Audio</div>
-  <div class="menuItem" id="attachContact"><i class="fa-solid fa-address-book"></i> Contact</div>
-  <div class="menuItem" id="attachLocation"><i class="fa-solid fa-location-dot"></i> Location</div>
+  <!-- Objects & Nature -->
+  <span>🔥</span><span>🌟</span><span>✨</span><span>💡</span>
+  <span>🎶</span><span>🏆</span><span>📚</span><span>🎁</span>
+  <span>🎨</span><span>📱</span><span>💻</span><span>⌚</span>
+
+  <!-- Food & Drink -->
+  <span>🍕</span><span>🍔</span><span>🍟</span><span>🍩</span>
+  <span>🍎</span><span>🍌</span><span>🍫</span><span>☕</span>
+
+  <!-- Symbols & Hearts -->
+  <span>❤️</span><span>💔</span><span>💖</span><span>💯</span>
+  <span>✔️</span><span>❌</span><span>🎉</span><span>🎯</span>
+  <span>⚡</span><span>☀️</span><span>🌈</span><span>🌙</span>
 </div>
+
+
+<!-- ATTACHMENTS -->
+<div id="attachPopup">
+  <div id="attachGrid">
+    <label class="attachItem">
+      <i class="fa-solid fa-image"></i>
+      <span>Gallery</span>
+      <input type="file" id="galleryInput" accept="image/*,video/*">
+    </label>
+    <label class="attachItem">
+      <i class="fa-solid fa-camera"></i>
+      <span>Camera</span>
+      <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment">
+    </label>
+    <div class="attachItem" id="sendLocation">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>Location</span>
+    </div>
+    <label class="attachItem">
+      <i class="fa-solid fa-file"></i>
+      <span>Document</span>
+      <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt">
+    </label>
+    <div class="attachItem" id="sendContact">
+      <i class="fa-solid fa-user"></i>
+      <span>Contact</span>
+    </div>
+    <label class="attachItem">
+      <i class="fa-solid fa-microphone"></i>
+      <span>Audio</span>
+      <input type="file" id="audioInput" accept="audio/*">
+    </label>
+  </div>
+</div>
+
 
   
 <!-- GROUP INFO PAGE -->
@@ -832,102 +891,20 @@ document.getElementById("deleteChat").onclick = ()=>{
 
 
 
-const plusBtn = document.getElementById("plusBtn");
-const attachmentMenu = document.getElementById("attachmentMenu");
+// ===== ATTACHMENTS =====
+const attachBtn=document.getElementById("plusBtn"), attachPopup=document.getElementById("attachPopup");
+attachBtn.onclick=e=>{ e.stopPropagation(); attachPopup.style.display=attachPopup.style.display==="block"?"none":"block"; };
+document.addEventListener("click", e=>{ if(!attachBtn.contains(e.target) && !attachPopup.contains(e.target)) attachPopup.style.display="none"; });
 
-// Toggle attachment menu
-plusBtn.addEventListener("click", e=>{
-  e.stopPropagation();
-  attachmentMenu.style.display = (attachmentMenu.style.display==="block") ? "none" : "block";
-});
-document.addEventListener("click", ()=> attachmentMenu.style.display="none");
+function sendAttachmentMessage(text){ const msg={id:uid(), senderId:myId, text, time:timeNow()}; messages.push(msg); saveMessages(); appendMessageBubble(msg); attachPopup.style.display="none"; }
 
-// Trigger file/location inputs
-document.getElementById("attachGallery").onclick = () => { document.getElementById("galleryInput").click(); };
-document.getElementById("attachCamera").onclick = () => { document.getElementById("cameraInput").click(); };
-document.getElementById("attachDocument").onclick = () => { document.getElementById("documentInput").click(); };
-document.getElementById("attachAudio").onclick = () => { document.getElementById("audioInput").click(); };
-document.getElementById("attachContact").onclick = () => { document.getElementById("contactInput").click(); };
-document.getElementById("attachLocation").onclick = () => { document.getElementById("locationInput").click(); };
+document.getElementById("galleryInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎬":"📷"} Sent: ${file.name}`); e.target.value=""; }});
+document.getElementById("cameraInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`${file.type.startsWith("video")?"🎥":"📸"} Captured: ${file.name}`); e.target.value=""; }});
+document.getElementById("documentInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`📄 Document: ${file.name}`); e.target.value=""; }});
+document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; }});
+document.getElementById("sendLocation").onclick=()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`); }, ()=>sendAttachmentMessage("📍 Location sharing denied")); } else sendAttachmentMessage("📍 Geolocation not supported");};
+document.getElementById("sendContact").onclick=()=>{ const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }};
 
-
-
- // ===== AUDIO RECORDING =====
-let mediaRecorder;
-let audioChunks = [];
-const micBtn = document.getElementById("micBtn");
-
-micBtn.addEventListener("mousedown", startRecording);   // PC press
-micBtn.addEventListener("touchstart", startRecording);  // Mobile press
-micBtn.addEventListener("mouseup", stopRecording);      // PC release
-micBtn.addEventListener("touchend", stopRecording);     // Mobile release
-
-function startRecording() {
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      mediaRecorder = new MediaRecorder(stream);
-      audioChunks = [];
-      mediaRecorder.start();
-      mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-    })
-    .catch(err => {
-      console.error("Mic error:", err);
-      alert("Cannot access microphone. Check permissions or use HTTPS/localhost.");
-    });
-}
-
-
-function stopRecording() {
-  if (!mediaRecorder) return;
-
-  mediaRecorder.stop();
-  mediaRecorder.onstop = () => {
-    const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-    const audioUrl = URL.createObjectURL(audioBlob);
-
-    // create message with audio
-    const newMsg = {
-      id: uid(),
-      text: "",
-      audio: audioUrl,   // <-- store audio
-      self: true,
-      user: currentUser,
-      time: new Date().toLocaleString()
-    };
-    messages.push(newMsg);
-
-    // Save
-    currentGroup.messages = messages;
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
-
-    renderMessages();
-  };
-}
-function renderMessages() {
-  chatBox.innerHTML = "";
-  messages.forEach(m => {
-    if (blockedMembers.includes(m.user)) return;
-    const div = document.createElement("div");
-    div.className = "msg" + (m.user === currentUser ? " self" : "");
-
-    if (m.audio) {
-      div.innerHTML = `
-        <div class="content"><b>${m.user}:</b> 
-          <audio controls src="${m.audio}"></audio>
-        </div>
-        <div class="meta">${m.time}</div>`;
-    } else {
-      div.innerHTML = `
-        <div class="content"><b>${m.user}:</b> ${m.text}</div>
-        <div class="meta">${m.time}</div>`;
-    }
-    chatBox.appendChild(div);
-  });
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
 
 
   
