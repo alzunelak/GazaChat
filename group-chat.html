@@ -249,6 +249,28 @@ input:checked + .slider:before {transform:translateX(26px);}
   background: #25D366;
   color: #000;
 } 
+
+
+
+  .modal {
+  display: none;
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.7);
+  z-index: 999;
+}
+
+.modal-content {
+  background:#111;
+  color:#fff;
+  padding:20px;
+  border-radius:10px;
+  min-width:300px;
+  text-align:center;
+}
+
 </style>
 </head>
 <body>
@@ -404,15 +426,14 @@ input:checked + .slider:before {transform:translateX(26px);}
     <button id="showRequestInvite">Request / Invite</button>
   </div>
 
-
-  <div class="container actionBox">
+<div class="container actionBox">
   <button onclick="openActionModal('leave')"><i class="fa-solid fa-sign-out"></i> Leave Group</button>
   <button onclick="openActionModal('block')"><i class="fa-solid fa-ban"></i> Block Group</button>
   <button onclick="openActionModal('report')"><i class="fa-solid fa-flag"></i> Report Group</button>
   <button onclick="openActionModal('delete')"><i class="fa-solid fa-trash"></i> Delete Group</button>
 </div>
 
-<!-- Reusable Action Modal -->
+<!-- Step 1: Confirmation Modal -->
 <div id="actionModal" class="modal">
   <div class="modal-content">
     <h2 id="actionTitle">Action</h2>
@@ -421,6 +442,15 @@ input:checked + .slider:before {transform:translateX(26px);}
       <button id="confirmAction" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Confirm</button>
       <button class="closeModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- Step 2: Result / Success Modal -->
+<div id="resultModal" class="modal">
+  <div class="modal-content">
+    <h2 id="resultTitle">Success!</h2>
+    <p id="resultMessage">Action completed.</p>
+    <button class="closeModal" style="margin-top:15px;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">OK</button>
   </div>
 </div>
 
@@ -1053,13 +1083,15 @@ document.querySelectorAll(".closeModal").forEach(btn => {
 // Confirm actions
 
 const actionModal = document.getElementById("actionModal");
+const resultModal = document.getElementById("resultModal");
 const actionTitle = document.getElementById("actionTitle");
 const actionMessage = document.getElementById("actionMessage");
 const confirmAction = document.getElementById("confirmAction");
+const resultTitle = document.getElementById("resultTitle");
+const resultMessage = document.getElementById("resultMessage");
 
-// Open modal with specific action
+// Step 1: Open action modal
 function openActionModal(actionType) {
-  // Reset previous click handler
   confirmAction.onclick = null;
 
   switch(actionType) {
@@ -1067,68 +1099,81 @@ function openActionModal(actionType) {
       actionTitle.textContent = "Leave Group";
       actionMessage.textContent = "Are you sure you want to leave this group?";
       confirmAction.textContent = "Leave";
-      confirmAction.onclick = () => {
-        currentGroup.members = currentGroup.members.filter(m => m.name !== currentUser);
-        groups[currentGroupIndex] = currentGroup;
-        localStorage.setItem("groups", JSON.stringify(groups));
-        alert("You have left the group.");
-        closeModal();
-        window.location.href = "groups.html";
-      };
+      confirmAction.onclick = () => performAction('leave');
       break;
 
     case 'block':
       actionTitle.textContent = "Block Group";
       actionMessage.textContent = "Block this group? You won’t receive messages from it anymore.";
       confirmAction.textContent = "Block";
-      confirmAction.onclick = () => {
-        currentGroup.blocked.push(currentUser);
-        groups[currentGroupIndex] = currentGroup;
-        localStorage.setItem("groups", JSON.stringify(groups));
-        alert("Group blocked.");
-        closeModal();
-        window.location.href = "groups.html";
-      };
+      confirmAction.onclick = () => performAction('block');
       break;
 
     case 'report':
       actionTitle.textContent = "Report Group";
       actionMessage.textContent = "Report this group for abuse or spam?";
       confirmAction.textContent = "Report";
-      confirmAction.onclick = () => {
-        const reason = prompt("Why are you reporting this group?");
-        if (!reason) return;
-        console.log("Reported group:", currentGroup, "Reason:", reason);
-        alert("Thanks for your report! Our team will review it.");
-        closeModal();
-      };
+      confirmAction.onclick = () => performAction('report');
       break;
 
     case 'delete':
       actionTitle.textContent = "Delete Group";
-      actionMessage.textContent = "This will permanently delete the group for you. Continue?";
+      actionMessage.textContent = "This will permanently delete the group. Continue?";
       confirmAction.textContent = "Delete";
-      confirmAction.onclick = () => {
-        groups.splice(currentGroupIndex, 1);
-        localStorage.setItem("groups", JSON.stringify(groups));
-        alert("Group deleted.");
-        closeModal();
-        window.location.href = "groups.html";
-      };
+      confirmAction.onclick = () => performAction('delete');
       break;
   }
 
   actionModal.style.display = "flex";
 }
 
-// Close modal
-function closeModal() {
-  actionModal.style.display = "none";
+// Step 2: Perform action and show result
+function performAction(actionType) {
+  actionModal.style.display = "none"; // close first popup
+
+  switch(actionType) {
+    case 'leave':
+      currentGroup.members = currentGroup.members.filter(m => m.name !== currentUser);
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+      resultTitle.textContent = "Left Group";
+      resultMessage.textContent = "You have successfully left the group.";
+      break;
+
+    case 'block':
+      currentGroup.blocked.push(currentUser);
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+      resultTitle.textContent = "Group Blocked";
+      resultMessage.textContent = "You won’t receive messages from this group anymore.";
+      break;
+
+    case 'report':
+      const reason = prompt("Why are you reporting this group?");
+      if(!reason) return;
+      console.log("Reported group:", currentGroup, "Reason:", reason);
+      resultTitle.textContent = "Group Reported";
+      resultMessage.textContent = "Thanks! Our team will review your report.";
+      break;
+
+    case 'delete':
+      groups.splice(currentGroupIndex, 1);
+      localStorage.setItem("groups", JSON.stringify(groups));
+      resultTitle.textContent = "Group Deleted";
+      resultMessage.textContent = "The group has been deleted successfully.";
+      break;
+  }
+
+  resultModal.style.display = "flex";
 }
 
-// Close modal on cancel button
-document.querySelector("#actionModal .closeModal").onclick = closeModal;
-
+// Close modals
+document.querySelectorAll(".closeModal").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.closest(".modal").style.display = "none";
+    if(resultTitle.textContent === "Group Deleted") window.location.href = "groups.html";
+  });
+});
 
 
 // ===== INITIAL RENDER =====
