@@ -659,6 +659,30 @@ let messages = currentGroup.messages || [];
 
 const callContainer = document.getElementById("callContainer");
 
+  // Show first 3 members in header
+function updateHeaderMembers() {
+    const headerMembersDiv = document.getElementById("members");
+    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+    const firstFive = activeMembers.slice(0, 3); // get first 3
+    let text = firstFive.join(", ");
+    if (activeMembers.length > 3) text += `, +${activeMembers.length - 3} more`;
+    headerMembersDiv.textContent = text;
+}
+
+// Call this once at the start
+updateHeaderMembers();
+// Example after blocking a member
+popup.querySelector(".blockItem").addEventListener("click", () => {
+    if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
+        blockedMembers.push(name);
+        renderGroupMembers();
+        renderBlockedUsersPopup();
+        updateHeaderMembers(); // update header
+    }
+    popup.style.display = "none";
+});
+
+
 // ===== VIDEO CALL =====
 document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
   try {
