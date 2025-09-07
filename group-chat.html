@@ -1140,16 +1140,24 @@ function performAction(actionType) {
       resultMessage.textContent = "You have successfully left the group.";
       break;
 
-     case 'block': 
-      currentGroup.blocked.push(currentUser); groups[currentGroupIndex] = currentGroup; 
-      localStorage.setItem("groups", JSON.stringify(groups)); resultTitle.textContent = "Group Blocked"; 
-      resultMessage.textContent = "You won’t receive messages from this group anymore."; 
-      break;
+    case 'block':
+    currentGroup.blocked.push(currentUser);
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    resultTitle.textContent = "Group Blocked";
+    resultMessage.textContent = "You won’t receive messages from this group anymore.";
+    // Disable chat input
+    const chatInput = document.getElementById("chatInput");
+    if(chatInput){
+        chatInput.disabled = true;
+        chatInput.placeholder = "You can't send messages to this group.";
+    }
+    break;
+
 
     case 'report':
-      const reason = prompt("Why are you reporting this group?");
-      if(!reason) return;
-      console.log("Reported group:", currentGroup, "Reason:", reason);
+      groups.splice(currentGroupIndex, 1);
+      localStorage.setItem("groups", JSON.stringify(groups));
       resultTitle.textContent = "Group Reported";
       resultMessage.textContent = "Thanks! Our team will review your report.";
       break;
@@ -1169,7 +1177,7 @@ function performAction(actionType) {
 document.querySelectorAll(".closeModal").forEach(btn => {
   btn.addEventListener("click", () => {
     btn.closest(".modal").style.display = "none";
-    if(resultTitle.textContent === "Left Deleted") window.location.href = "groups.html";
+    if(resultTitle.textContent === "Left Group") window.location.href = "groups.html";
     if(resultTitle.textContent === "Group Deleted") window.location.href = "groups.html";
   });
 });
