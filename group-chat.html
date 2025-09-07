@@ -1037,25 +1037,43 @@ document.querySelectorAll(".closeModal").forEach(btn => {
 });
 
 // Confirm actions
-document.getElementById("confirmLeaveGroup").onclick = () => {
+
+function deleteGroup() {
+  if (!confirm("Are you sure you want to DELETE this group? This cannot be undone.")) return;
+
+  let groups = JSON.parse(localStorage.getItem("groups")) || [];
+  groups.splice(currentGroupIndex, 1); // remove current group
+  localStorage.setItem("groups", JSON.stringify(groups));
+
+  alert("Group deleted!");
+  window.location.href = "groups.html"; // back to group list
+}
+
+function leaveGroup() {
+  if (!confirm("Leave this group?")) return;
+
+  let groups = JSON.parse(localStorage.getItem("groups")) || [];
+  let group = groups[currentGroupIndex];
+
+  // Remove current user from members
+  group.members = group.members.filter(m => m.name !== myName);
+  groups[currentGroupIndex] = group;
+  localStorage.setItem("groups", JSON.stringify(groups));
+
   alert("You left the group.");
-  window.location.href = "groups.html";
-};
+  window.location.href = "groups.html"; // back to group list
+}
 
-document.getElementById("confirmBlockGroup").onclick = () => {
-  alert("Group blocked.");
-  document.getElementById("blockGroupModal").style.display = "none";
-};
+function reportGroup() {
+  const reason = prompt("Why are you reporting this group?");
+  if (!reason) return;
 
-document.getElementById("confirmReportGroup").onclick = () => {
-  alert("Group reported.");
-  document.getElementById("reportGroupModal").style.display = "none";
-};
+  // You could send this to a server or store locally
+  console.log("Reported group:", currentGroup, "Reason:", reason);
 
-document.getElementById("confirmDeleteGroup").onclick = () => {
-  alert("Group deleted.");
-  window.location.href = "groups.html";
-};
+  alert("Thanks for your report! Our team will review it.");
+}
+
 
 
 // ===== INITIAL RENDER =====
