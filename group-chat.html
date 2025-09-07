@@ -336,56 +336,6 @@ input:checked + .slider:before {transform:translateX(26px);}
 }
 
 
-  /* Dark themed Block confirmation popup */
-#blockConfirmPopup {
-  background: #000;       /* Black background */
-  color: #fff;            /* White text */
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #444;
-  text-align: center;
-  width: 320px;
-  max-width: 90%;
-  margin: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-}
-
-/* Title text */
-#blockConfirmPopup h2 {
-  color: #ff4d4d;         /* Red title text */
-}
-
-/* Confirm button */
-#blockConfirmPopup .confirm {
-  background: #ff4d4d;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  margin: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#blockConfirmPopup .confirm:hover {
-  background: #e60000;
-}
-
-/* Cancel button */
-#blockConfirmPopup .cancel {
-  background: #333;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  margin: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#blockConfirmPopup .cancel:hover {
-  background: #444;
-}
-
-
 </style>
 </head>
 <body>
@@ -545,14 +495,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-  <div id="blockConfirmPopup">
-  <h2>Block User</h2>
-  <p>Are you sure you want to block <strong id="blockUserName"></strong>?</p>
-  <div>
-    <button id="confirmBlock">Block</button>
-    <button id="cancelBlock">Cancel</button>
-  </div>
-</div>
+  
 
   <div class="container" id="groupLinks">
     <button id="showGroupLink">Group Link</button>
