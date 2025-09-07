@@ -859,33 +859,15 @@ function renderMessages(){
 }
 
 
-// ===== ADD MEMBER =====
-function addMember(realName) {
-  // Check if member already exists in the group
-  const exists = currentGroup.members.some(m => m.name === realName);
-  if (!exists) {
-    // Add to currentGroup.members with real name
-    currentGroup.members.push({ name: realName, accepted: true });
-    
-    // Optional: keep currentGroupMembers synced for other logic
-    currentGroupMembers.push(realName);
-
-    // Save to localStorage
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem('groups', JSON.stringify(groups));
-
-    // Re-render members
-    renderGroupMembers();
-  }
-}
-
-// ===== RENDER MEMBERS =====
+//POPUP MENU
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
 
-  // Filter out blocked members
-  const activeMembers = currentGroup.members.filter(m => !blockedMembers.includes(m.name));
+  // Get only active members (not blocked)
+  const activeMembers = currentGroup.members
+    .filter(m => !blockedMembers.includes(m.name))
+    .map(m => m.name); // extract real names
 
   if (activeMembers.length === 0) {
     const div = document.createElement("div");
@@ -894,10 +876,10 @@ function renderGroupMembers() {
     div.style.color = "#555";
     membersDiv.appendChild(div);
   } else {
-    activeMembers.forEach(member => {
+    activeMembers.forEach(name => {
       const div = document.createElement("div");
       div.className = "memberBox";
-      div.textContent = member.name; // Display real name
+      div.textContent = name;
       div.style.position = "relative";
 
       // Popup menu
@@ -910,8 +892,8 @@ function renderGroupMembers() {
       popup.style.display = "none";
       div.appendChild(popup);
 
-      // Show popup
-      div.addEventListener("click", e => {
+      // Show popup on member click
+      div.addEventListener("click", (e) => {
         e.stopPropagation();
         document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
         popup.style.display = "block";
@@ -919,13 +901,13 @@ function renderGroupMembers() {
 
       // Message action
       popup.querySelector(".messageItem").addEventListener("click", () => {
-        window.location.href = "chat.html?user=" + encodeURIComponent(member.name);
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
       });
 
       // Block action
       popup.querySelector(".blockItem").addEventListener("click", () => {
-        if (!blockedMembers.includes(member.name) && confirm(`Block ${member.name}?`)) {
-          blockedMembers.push(member.name);
+        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+          blockedMembers.push(name);
           renderGroupMembers();
           renderBlockedUsersPopup();
         }
@@ -938,13 +920,31 @@ function renderGroupMembers() {
 
   // Update count and header
   document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-  document.getElementById("members").textContent = activeMembers.map(m => m.name).join(", ");
+  document.getElementById("members").textContent = activeMembers.join(", ");
 
-  // Save updated group
+  // Save back to localStorage
+  currentGroup.members = currentGroup.members.map(m => ({ name: m.name, accepted: true }));
+  currentGroup.blocked = blockedMembers;
   groups[currentGroupIndex] = currentGroup;
   localStorage.setItem("groups", JSON.stringify(groups));
 }
 
+
+
+// ===== ADD MEMBER =====
+document.getElementById("addMemberBtn").onclick = ()=>{
+  localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
+  window.location.href = "addMembers.html";
+};
+function addMember(name){
+    if(!currentGroupMembers.includes(name)){
+        currentGroupMembers.push(name);
+        currentGroup.members.push({name:name, accepted:true});
+        groups[currentGroupIndex] = currentGroup;
+        localStorage.setItem('groups', JSON.stringify(groups));
+        renderGroupMembers();
+    }
+}
   
 // ===== NAVIGATION =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
