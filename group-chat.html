@@ -484,19 +484,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   <div class="menuItem" id="msgBtn"><i class="fa-solid fa-message"></i> Message</div>
   <div class="menuItem" id="blockBtn"><i class="fa-solid fa-ban"></i> Block</div>
 </div>
-
-  <!-- Block Confirmation Popup -->
-<div id="blockConfirmPopup">
-  <h2 id="blockTitle">Block User</h2>
-  <p id="blockMessage">Are you sure you want to block <strong id="blockUserName"></strong>?</p>
-  <div>
-    <button class="confirm" id="confirmBlock">Block</button>
-    <button class="cancel" id="cancelBlock">Cancel</button>
-  </div>
-</div>
-
   
-
   <div class="container" id="groupLinks">
     <button id="showGroupLink">Group Link</button>
     <button id="showBlockedUsers">Blocked Users</button>
@@ -761,6 +749,50 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
       div.className = "memberBox";
       div.textContent = name;
 
+      // popup menu for Message / Block
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.style.position = "relative";
+      div.appendChild(popup);
+
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+        popup.style.display = "block";
+      });
+
+      // Message redirects
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      // Block action
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
+  }
+
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+}
+
+// Hide popups when clicking outside
+document.addEventListener("click", ()=>{
+  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+});
+
 
 
 // ===== MENU BUTTON TOGGLE =====
@@ -897,41 +929,8 @@ function renderMessages() {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Block Confirmation Popup
+
   
-  // Function to open the block popup with a specific username
-function openBlockPopup(username) {
-  // Save username temporarily (optional)
-  localStorage.setItem("selectedUserToBlock", username);
-
-  // Set the username in the popup
-  document.getElementById("blockUserName").textContent = username;
-
-  // Show popup
-  document.getElementById("blockConfirmPopup").style.display = "block";
-}
-
-// Close popup
-document.getElementById("cancelBlock").addEventListener("click", () => {
-  document.getElementById("blockConfirmPopup").style.display = "none";
-});
-
-// Confirm block
-document.getElementById("confirmBlock").addEventListener("click", () => {
-  const username = localStorage.getItem("selectedUserToBlock");
-
-  if (username) {
-    let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
-    if (!blockedUsers.includes(username)) {
-      blockedUsers.push(username);
-      localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-      alert(`${username} has been blocked.`);
-    }
-  }
-
-  document.getElementById("blockConfirmPopup").style.display = "none";
-});
-
   
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
