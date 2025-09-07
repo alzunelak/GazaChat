@@ -1169,6 +1169,7 @@ function performAction(actionType) {
 document.querySelectorAll(".closeModal").forEach(btn => {
   btn.addEventListener("click", () => {
     btn.closest(".modal").style.display = "none";
+    if(resultTitle.textContent === "Left Deleted") window.location.href = "groups.html";
     if(resultTitle.textContent === "Group Deleted") window.location.href = "groups.html";
   });
 });
