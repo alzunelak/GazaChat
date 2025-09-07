@@ -421,7 +421,7 @@ input:checked + .slider:before {transform:translateX(26px);}
   <div id="blockedList"></div>
   <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
 </div>
-<!-- ===== GROUP ACTION MODALS ===== -->
+
 
 <!-- Leave Group -->
 <div id="leaveGroupModal" class="modal">
@@ -858,11 +858,16 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+
+  
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
 
-  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+  // Get only active members (not blocked)
+  const activeMembers = currentGroup.members
+    .filter(m => !blockedMembers.includes(m.name))
+    .map(m => m.name); // extract real names
 
   if (activeMembers.length === 0) {
     const div = document.createElement("div");
@@ -918,7 +923,7 @@ function renderGroupMembers() {
   document.getElementById("members").textContent = activeMembers.join(", ");
 
   // Save back to localStorage
-  currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+  currentGroup.members = currentGroup.members.map(m => ({ name: m.name, accepted: true }));
   currentGroup.blocked = blockedMembers;
   groups[currentGroupIndex] = currentGroup;
   localStorage.setItem("groups", JSON.stringify(groups));
