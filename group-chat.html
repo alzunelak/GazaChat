@@ -338,52 +338,29 @@ input:checked + .slider:before {transform:translateX(26px);}
 
   /* Dark themed Block confirmation popup */
 #blockConfirmPopup {
-  background: #000;       /* Black background */
-  color: #fff;            /* White text */
+  display: none; /* hidden by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #000;
+  color: #fff;
   padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #444;
+  border-radius: 8px;
+  border: 1px solid #555;
+  z-index: 2000;
+  width: 300px;
   text-align: center;
-  width: 320px;
-  max-width: 90%;
-  margin: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
-
-/* Title text */
-#blockConfirmPopup h2 {
-  color: #ff4d4d;         /* Red title text */
-}
-
-/* Confirm button */
-#blockConfirmPopup .confirm {
-  background: #ff4d4d;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  margin: 10px;
+#blockConfirmPopup button {
+  margin: 5px;
+  padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
-}
-
-#blockConfirmPopup .confirm:hover {
-  background: #e60000;
-}
-
-/* Cancel button */
-#blockConfirmPopup .cancel {
-  background: #333;
-  color: #fff;
   border: none;
-  padding: 10px 15px;
-  margin: 10px;
-  border-radius: 6px;
-  cursor: pointer;
 }
-
-#blockConfirmPopup .cancel:hover {
-  background: #444;
-}
+#confirmBlock { background: red; color: #fff; }
+#cancelBlock { background: #333; color: #fff; }
 
 
 </style>
@@ -535,17 +512,15 @@ input:checked + .slider:before {transform:translateX(26px);}
   <div class="menuItem" id="blockBtn"><i class="fa-solid fa-ban"></i> Block</div>
 </div>
 
-  <!-- Block Confirmation Popup -->
-<div id="blockConfirmPopup">
-  <h2 id="blockTitle">Block User</h2>
-  <p id="blockMessage">Are you sure you want to block <strong id="blockUserName"></strong>?</p>
+  <div id="blockConfirmPopup">
+  <h2>Block User</h2>
+  <p>Are you sure you want to block <strong id="blockUserName"></strong>?</p>
   <div>
-    <button class="confirm" id="confirmBlock">Block</button>
-    <button class="cancel" id="cancelBlock">Cancel</button>
+    <button id="confirmBlock">Block</button>
+    <button id="cancelBlock">Cancel</button>
   </div>
 </div>
 
-  
   <div class="container" id="groupLinks">
     <button id="showGroupLink">Group Link</button>
     <button id="showBlockedUsers">Blocked Users</button>
@@ -832,27 +807,35 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
         window.location.href = "chat.html?user=" + encodeURIComponent(name);
       });
 
-      // Block action
-      popup.querySelector(".blockItem").addEventListener("click", () => {
-        if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
-          blockedMembers.push(name);
-          renderGroupMembers();
-          renderBlockedUsersPopup();
-        }
-        popup.style.display = "none";
-      });
+     popup.querySelector(".blockItem").addEventListener("click", (e) => {
+  e.stopPropagation(); // prevent the outer div click from closing
+  document.getElementById("blockUserName").textContent = name;
+  document.getElementById("blockConfirmPopup").style.display = "block";
 
-      membersDiv.appendChild(div);
-    });
-  }
+  // Confirm button
+  const confirmBtn = document.getElementById("confirmBlock");
+  const cancelBtn = document.getElementById("cancelBlock");
 
-  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-}
+  // Remove previous listeners to avoid duplicates
+  confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+  cancelBtn.replaceWith(cancelBtn.cloneNode(true));
 
-// Hide popups when clicking outside
-document.addEventListener("click", ()=>{
-  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+  document.getElementById("confirmBlock").addEventListener("click", () => {
+    if(!blockedMembers.includes(name)){
+      blockedMembers.push(name);
+      renderGroupMembers();
+      renderBlockedUsersPopup();
+    }
+    document.getElementById("blockConfirmPopup").style.display = "none";
+  });
+
+  document.getElementById("cancelBlock").addEventListener("click", () => {
+    document.getElementById("blockConfirmPopup").style.display = "none";
+  });
+
+  popup.style.display = "none"; // hide the menu
 });
+
 
 
 
@@ -990,41 +973,8 @@ function renderMessages() {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Block Confirmation Popup
+
   
-  // Function to open the block popup with a specific username
-function openBlockPopup(username) {
-  // Save username temporarily (optional)
-  localStorage.setItem("selectedUserToBlock", username);
-
-  // Set the username in the popup
-  document.getElementById("blockUserName").textContent = username;
-
-  // Show popup
-  document.getElementById("blockConfirmPopup").style.display = "block";
-}
-
-// Close popup
-document.getElementById("cancelBlock").addEventListener("click", () => {
-  document.getElementById("blockConfirmPopup").style.display = "none";
-});
-
-// Confirm block
-document.getElementById("confirmBlock").addEventListener("click", () => {
-  const username = localStorage.getItem("selectedUserToBlock");
-
-  if (username) {
-    let blockedUsers = JSON.parse(localStorage.getItem("blockedUsers")) || [];
-    if (!blockedUsers.includes(username)) {
-      blockedUsers.push(username);
-      localStorage.setItem("blockedUsers", JSON.stringify(blockedUsers));
-      alert(`${username} has been blocked.`);
-    }
-  }
-
-  document.getElementById("blockConfirmPopup").style.display = "none";
-});
-
   
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
