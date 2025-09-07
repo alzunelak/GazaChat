@@ -1140,28 +1140,11 @@ function performAction(actionType) {
       resultMessage.textContent = "You have successfully left the group.";
       break;
 
-      document.getElementById("confirmBlockGroup").onclick = () => {
-    if(confirm("Block this group? You won’t receive messages from it anymore.")){
-        // Add user to blocked list
-        currentGroup.blocked.push(currentUser);
-        groups[currentGroupIndex] = currentGroup;
-        localStorage.setItem("groups", JSON.stringify(groups));
-
-        // Show result popup
-        const resultTitle = document.getElementById("resultTitle");
-        const resultMessage = document.getElementById("resultMessage");
-        resultTitle.textContent = "Group Blocked";
-        resultMessage.textContent = "You won’t receive messages from this group anymore.";
-
-        // Disable chat input
-        const chatInput = document.getElementById("chatInput");
-        chatInput.disabled = true;
-        chatInput.placeholder = "You can't send messages to this group.";
-
-        // Optionally close the block modal
-        closeModal('blockGroupModal');
-    }
-};
+     case 'block': 
+      currentGroup.blocked.push(currentUser); groups[currentGroupIndex] = currentGroup; 
+      localStorage.setItem("groups", JSON.stringify(groups)); resultTitle.textContent = "Group Blocked"; 
+      resultMessage.textContent = "You won’t receive messages from this group anymore."; 
+      break;
 
     case 'report':
       const reason = prompt("Why are you reporting this group?");
