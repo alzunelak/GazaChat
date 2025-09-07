@@ -623,12 +623,12 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
 };
   
 // POPUP MENU
-   function renderGroupMembers() {
+ function renderGroupMembers(){
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
   const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
-  if (activeMembers.length === 0) {
+  if(activeMembers.length === 0){
     const div = document.createElement("div");
     div.textContent = "No active members";
     div.style.fontStyle = "italic";
@@ -640,43 +640,31 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
       div.className = "memberBox";
       div.textContent = name;
 
-      // Create popup menu for actions
+      // popup menu for Message / Block
       const popup = document.createElement("div");
       popup.className = "popupMenu";
-      popup.style.position = "absolute";
-      popup.style.display = "none";
-      popup.style.background = "#000";
-      popup.style.color = "#fff";
-      popup.style.border = "1px solid #ccc";
-      popup.style.borderRadius = "6px";
-      popup.style.padding = "5px";
-      popup.style.top = "30px"; // position below member
-      popup.style.right = "0px";
-
-      // Add menu items
       popup.innerHTML = `
         <div class="menuItem messageItem">Message</div>
         <div class="menuItem blockItem">Block</div>
       `;
-
+      popup.style.display = "none";
       div.style.position = "relative";
       div.appendChild(popup);
 
-      // Show popup on click
       div.addEventListener("click", (e) => {
         e.stopPropagation();
-        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
         popup.style.display = "block";
       });
 
-      // Message action → redirect to chat.html
+      // Message redirects
       popup.querySelector(".messageItem").addEventListener("click", () => {
         window.location.href = "chat.html?user=" + encodeURIComponent(name);
       });
 
-      // Block action → add to blocked list
+      // Block action
       popup.querySelector(".blockItem").addEventListener("click", () => {
-        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+        if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
           blockedMembers.push(name);
           renderGroupMembers();
           renderBlockedUsersPopup();
@@ -692,8 +680,8 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
 }
 
 // Hide popups when clicking outside
-document.addEventListener("click", () => {
-  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+document.addEventListener("click", ()=>{
+  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
 });
 
 
