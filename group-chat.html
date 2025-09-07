@@ -404,12 +404,26 @@ input:checked + .slider:before {transform:translateX(26px);}
     <button id="showRequestInvite">Request / Invite</button>
   </div>
 
- <div class="container actionBox">
-  <button onclick="openModal('leaveGroupModal')"><i class="fa-solid fa-sign-out"></i> Leave Group</button>
-  <button onclick="openModal('blockGroupModal')"><i class="fa-solid fa-ban"></i> Block Group</button>
-  <button onclick="openModal('reportGroupModal')"><i class="fa-solid fa-flag"></i> Report Group</button>
-  <button onclick="openModal('deleteGroupModal')"><i class="fa-solid fa-trash"></i> Delete Group</button>
+
+  <div class="container actionBox">
+  <button onclick="openActionModal('leave')"><i class="fa-solid fa-sign-out"></i> Leave Group</button>
+  <button onclick="openActionModal('block')"><i class="fa-solid fa-ban"></i> Block Group</button>
+  <button onclick="openActionModal('report')"><i class="fa-solid fa-flag"></i> Report Group</button>
+  <button onclick="openActionModal('delete')"><i class="fa-solid fa-trash"></i> Delete Group</button>
 </div>
+
+<!-- Reusable Action Modal -->
+<div id="actionModal" class="modal">
+  <div class="modal-content">
+    <h2 id="actionTitle">Action</h2>
+    <p id="actionMessage">Are you sure?</p>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="confirmAction" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Confirm</button>
+      <button class="closeModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
 
 
   <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
@@ -1038,95 +1052,83 @@ document.querySelectorAll(".closeModal").forEach(btn => {
 
 // Confirm actions
 
-function deleteGroup() {
-  if (!confirm("Are you sure you want to DELETE this group? This cannot be undone.")) return;
+const actionModal = document.getElementById("actionModal");
+const actionTitle = document.getElementById("actionTitle");
+const actionMessage = document.getElementById("actionMessage");
+const confirmAction = document.getElementById("confirmAction");
 
-  let groups = JSON.parse(localStorage.getItem("groups")) || [];
-  groups.splice(currentGroupIndex, 1); // remove current group
-  localStorage.setItem("groups", JSON.stringify(groups));
+// Open modal with specific action
+function openActionModal(actionType) {
+  // Reset previous click handler
+  confirmAction.onclick = null;
 
-  alert("Group deleted!");
-  window.location.href = "groups.html"; // back to group list
-}
-
-function leaveGroup() {
-  if (!confirm("Leave this group?")) return;
-
-  let groups = JSON.parse(localStorage.getItem("groups")) || [];
-  let group = groups[currentGroupIndex];
-
-  // Remove current user from members
-  group.members = group.members.filter(m => m.name !== myName);
-  groups[currentGroupIndex] = group;
-  localStorage.setItem("groups", JSON.stringify(groups));
-
-  alert("You left the group.");
-  window.location.href = "groups.html"; // back to group list
-}
-
-function reportGroup() {
-  const reason = prompt("Why are you reporting this group?");
-  if (!reason) return;
-
-  // You could send this to a server or store locally
-  console.log("Reported group:", currentGroup, "Reason:", reason);
-
-  alert("Thanks for your report! Our team will review it.");
-}
-
-// ===== GROUP ACTIONS =====
-
-// Leave Group
-document.getElementById("confirmLeaveGroup").onclick = () => {
-    if(confirm("Are you sure you want to leave this group?")){
-        // Remove current user from members
-        currentGroupMembers = currentGroupMembers.filter(m => m !== currentUser);
+  switch(actionType) {
+    case 'leave':
+      actionTitle.textContent = "Leave Group";
+      actionMessage.textContent = "Are you sure you want to leave this group?";
+      confirmAction.textContent = "Leave";
+      confirmAction.onclick = () => {
         currentGroup.members = currentGroup.members.filter(m => m.name !== currentUser);
-
-        // Save
-        currentGroup.blocked = blockedMembers;
         groups[currentGroupIndex] = currentGroup;
         localStorage.setItem("groups", JSON.stringify(groups));
-
         alert("You have left the group.");
-        window.location.href = "groups.html"; // redirect to groups list
-    }
-    closeModal('leaveGroupModal');
-};
+        closeModal();
+        window.location.href = "groups.html";
+      };
+      break;
 
-// Block Group
-document.getElementById("confirmBlockGroup").onclick = () => {
-    if(confirm("Block this group? You won’t receive messages from it anymore.")){
-        currentGroup.blocked.push(currentUser); // mark current user as blocked for this group
+    case 'block':
+      actionTitle.textContent = "Block Group";
+      actionMessage.textContent = "Block this group? You won’t receive messages from it anymore.";
+      confirmAction.textContent = "Block";
+      confirmAction.onclick = () => {
+        currentGroup.blocked.push(currentUser);
         groups[currentGroupIndex] = currentGroup;
         localStorage.setItem("groups", JSON.stringify(groups));
         alert("Group blocked.");
+        closeModal();
         window.location.href = "groups.html";
-    }
-    closeModal('blockGroupModal');
-};
+      };
+      break;
 
-// Report Group
-document.getElementById("confirmReportGroup").onclick = () => {
-    alert("Group reported. Thank you.");
-    closeModal('reportGroupModal');
-};
+    case 'report':
+      actionTitle.textContent = "Report Group";
+      actionMessage.textContent = "Report this group for abuse or spam?";
+      confirmAction.textContent = "Report";
+      confirmAction.onclick = () => {
+        const reason = prompt("Why are you reporting this group?");
+        if (!reason) return;
+        console.log("Reported group:", currentGroup, "Reason:", reason);
+        alert("Thanks for your report! Our team will review it.");
+        closeModal();
+      };
+      break;
 
-// Delete Group
-document.getElementById("confirmDeleteGroup").onclick = () => {
-    if(confirm("This will permanently delete the group for you. Continue?")){
-        groups.splice(currentGroupIndex, 1); // remove group entirely
+    case 'delete':
+      actionTitle.textContent = "Delete Group";
+      actionMessage.textContent = "This will permanently delete the group for you. Continue?";
+      confirmAction.textContent = "Delete";
+      confirmAction.onclick = () => {
+        groups.splice(currentGroupIndex, 1);
         localStorage.setItem("groups", JSON.stringify(groups));
         alert("Group deleted.");
+        closeModal();
         window.location.href = "groups.html";
-    }
-    closeModal('deleteGroupModal');
-};
+      };
+      break;
+  }
 
-// Close modal function
-function closeModal(modalId){
-    document.getElementById(modalId).style.display = "none";
+  actionModal.style.display = "flex";
 }
+
+// Close modal
+function closeModal() {
+  actionModal.style.display = "none";
+}
+
+// Close modal on cancel button
+document.querySelector("#actionModal .closeModal").onclick = closeModal;
+
 
 
 // ===== INITIAL RENDER =====
