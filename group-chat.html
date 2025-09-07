@@ -858,16 +858,15 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-
 //POPUP MENU
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
 
-  // Get only active members (not blocked)
-  const activeMembers = currentGroup.members
-    .filter(m => !blockedMembers.includes(m.name))
-    .map(m => m.name); // extract real names
+  // Keep full member objects
+  const activeMembers = currentGroup.members.filter(
+    m => !blockedMembers.includes(m.name)
+  );
 
   if (activeMembers.length === 0) {
     const div = document.createElement("div");
@@ -876,10 +875,13 @@ function renderGroupMembers() {
     div.style.color = "#555";
     membersDiv.appendChild(div);
   } else {
-    activeMembers.forEach(name => {
+    activeMembers.forEach(member => {
+      // Show actual name or fallback
+      const displayName = member.realName || member.name;
+
       const div = document.createElement("div");
       div.className = "memberBox";
-      div.textContent = name;
+      div.textContent = displayName;
       div.style.position = "relative";
 
       // Popup menu
@@ -892,7 +894,7 @@ function renderGroupMembers() {
       popup.style.display = "none";
       div.appendChild(popup);
 
-      // Show popup on member click
+      // Show popup
       div.addEventListener("click", (e) => {
         e.stopPropagation();
         document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
@@ -901,13 +903,13 @@ function renderGroupMembers() {
 
       // Message action
       popup.querySelector(".messageItem").addEventListener("click", () => {
-        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+        window.location.href = "chat.html?user=" + encodeURIComponent(displayName);
       });
 
       // Block action
       popup.querySelector(".blockItem").addEventListener("click", () => {
-        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
-          blockedMembers.push(name);
+        if (!blockedMembers.includes(member.name) && confirm(`Block ${displayName}?`)) {
+          blockedMembers.push(member.name);
           renderGroupMembers();
           renderBlockedUsersPopup();
         }
@@ -919,11 +921,12 @@ function renderGroupMembers() {
   }
 
   // Update count and header
-  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-  document.getElementById("members").textContent = activeMembers.join(", ");
+  document.getElementById("memberCount").textContent = 
+    `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+  document.getElementById("members").textContent = 
+    activeMembers.map(m => m.realName || m.name).join(", ");
 
-  // Save back to localStorage
-  currentGroup.members = currentGroup.members.map(m => ({ name: m.name, accepted: true }));
+  // Save
   currentGroup.blocked = blockedMembers;
   groups[currentGroupIndex] = currentGroup;
   localStorage.setItem("groups", JSON.stringify(groups));
