@@ -858,39 +858,70 @@ function renderMessages(){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// ===== GROUP MEMBERS =====
 function renderGroupMembers() {
-    const membersDiv = document.getElementById("groupMembersList");
-    membersDiv.innerHTML = "";
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
 
-    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
-    if (activeMembers.length === 0) {
-        const div = document.createElement("div");
-        div.textContent = "No active members";
-        div.style.fontStyle = "italic";
-        div.style.color = "#555";
-        membersDiv.appendChild(div);
-    } else {
-        activeMembers.forEach(name => {
-            const div = document.createElement("div");
-            div.className = "memberBox";
-            div.textContent = name;
+  if (activeMembers.length === 0) {
+    const div = document.createElement("div");
+    div.textContent = "No active members";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+      div.style.position = "relative";
 
-            // optional: popup menu for Message/Block can go here
-            membersDiv.appendChild(div);
-        });
-    }
+      // Popup menu
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.appendChild(popup);
 
-    // Update count and header
-    document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-    document.getElementById("members").textContent = activeMembers.join(", ");
+      // Show popup on member click
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+        popup.style.display = "block";
+      });
 
-    // Save back to localStorage
-    currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
-    currentGroup.blocked = blockedMembers;
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
+      // Message action
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      // Block action
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
+  }
+
+  // Update count and header
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+  document.getElementById("members").textContent = activeMembers.join(", ");
+
+  // Save back to localStorage
+  currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+  currentGroup.blocked = blockedMembers;
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
 }
 
 
