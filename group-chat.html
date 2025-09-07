@@ -658,9 +658,10 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
       });
 
       // Message redirects
-      popup.querySelector(".messageItem").addEventListener("click", () => {
-        window.location.href = "chat.html?user=" + encodeURIComponent(name);
-      });
+     popup.querySelector(".messageItem").addEventListener("click", () => {
+  window.location.href = `chat.html?user=${encodeURIComponent(member.name)}&realName=${encodeURIComponent(member.realName || member.name)}`;
+});
+
 
       // Block action
       popup.querySelector(".blockItem").addEventListener("click", () => {
