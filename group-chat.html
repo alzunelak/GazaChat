@@ -888,6 +888,10 @@ document.getElementById("deleteChat").onclick = ()=>{
   menuPopup.style.display="none";
 };
 
+// ===== EMOJI =====
+const emojiPicker=document.getElementById("emojiPicker");
+document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";}
+emojiPicker.addEventListener("click", e=>{ if(e.target.tagName==="SPAN"){ msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus(); }});
 
 
 
