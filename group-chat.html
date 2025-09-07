@@ -761,50 +761,6 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
       div.className = "memberBox";
       div.textContent = name;
 
-      // popup menu for Message / Block
-      const popup = document.createElement("div");
-      popup.className = "popupMenu";
-      popup.innerHTML = `
-        <div class="menuItem messageItem">Message</div>
-        <div class="menuItem blockItem">Block</div>
-      `;
-      popup.style.display = "none";
-      div.style.position = "relative";
-      div.appendChild(popup);
-
-      div.addEventListener("click", (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
-        popup.style.display = "block";
-      });
-
-      // Message redirects
-      popup.querySelector(".messageItem").addEventListener("click", () => {
-        window.location.href = "chat.html?user=" + encodeURIComponent(name);
-      });
-
-      // Block action
-      popup.querySelector(".blockItem").addEventListener("click", () => {
-        if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
-          blockedMembers.push(name);
-          renderGroupMembers();
-          renderBlockedUsersPopup();
-        }
-        popup.style.display = "none";
-      });
-
-      membersDiv.appendChild(div);
-    });
-  }
-
-  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-}
-
-// Hide popups when clicking outside
-document.addEventListener("click", ()=>{
-  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
-});
-
 
 
 // ===== MENU BUTTON TOGGLE =====
