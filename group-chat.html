@@ -621,71 +621,7 @@ document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
     chatBox.parentElement.insertBefore(resetBtn, chatBox);
   }
 };
-  
-// POPUP MENU
- function renderGroupMembers(){
-  const membersDiv = document.getElementById("groupMembersList");
-  membersDiv.innerHTML = "";
-  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
-
-  if(activeMembers.length === 0){
-    const div = document.createElement("div");
-    div.textContent = "No active members";
-    div.style.fontStyle = "italic";
-    div.style.color = "#555";
-    membersDiv.appendChild(div);
-  } else {
-    activeMembers.forEach(name => {
-      const div = document.createElement("div");
-      div.className = "memberBox";
-      div.textContent = name;
-
-      // popup menu for Message / Block
-      const popup = document.createElement("div");
-      popup.className = "popupMenu";
-      popup.innerHTML = `
-        <div class="menuItem messageItem">Message</div>
-        <div class="menuItem blockItem">Block</div>
-      `;
-      popup.style.display = "none";
-      div.style.position = "relative";
-      div.appendChild(popup);
-
-      div.addEventListener("click", (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
-        popup.style.display = "block";
-      });
-
-      // Message redirects
-     popup.querySelector(".messageItem").addEventListener("click", () => {
-  window.location.href = `chat.html?user=${encodeURIComponent(member.name)}&realName=${encodeURIComponent(member.realName || member.name)}`;
-});
-
-
-      // Block action
-      popup.querySelector(".blockItem").addEventListener("click", () => {
-        if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
-          blockedMembers.push(name);
-          renderGroupMembers();
-          renderBlockedUsersPopup();
-        }
-        popup.style.display = "none";
-      });
-
-      membersDiv.appendChild(div);
-    });
-  }
-
-  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-}
-
-// Hide popups when clicking outside
-document.addEventListener("click", ()=>{
-  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
-});
-
-
+ 
 
 // ===== MENU BUTTON TOGGLE =====
 const menuBtn = document.getElementById("menuBtn");
@@ -864,10 +800,7 @@ function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
 
-  // Keep full member objects
-  const activeMembers = currentGroup.members.filter(
-    m => !blockedMembers.includes(m.name)
-  );
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m.name));
 
   if (activeMembers.length === 0) {
     const div = document.createElement("div");
@@ -877,15 +810,16 @@ function renderGroupMembers() {
     membersDiv.appendChild(div);
   } else {
     activeMembers.forEach(member => {
-      // Show actual name or fallback
-      const displayName = member.realName || member.name;
-
       const div = document.createElement("div");
       div.className = "memberBox";
-      div.textContent = displayName;
-      div.style.position = "relative";
+      div.innerHTML = `
+        <img src="${member.pic || 'profile.png'}" style="width:30px;height:30px;border-radius:50%;margin-right:8px;">
+        ${member.realName || member.name}
+      `;
+      div.style.display = "flex";
+      div.style.alignItems = "center";
 
-      // Popup menu
+      // popup menu
       const popup = document.createElement("div");
       popup.className = "popupMenu";
       popup.innerHTML = `
@@ -895,21 +829,20 @@ function renderGroupMembers() {
       popup.style.display = "none";
       div.appendChild(popup);
 
-      // Show popup
       div.addEventListener("click", (e) => {
         e.stopPropagation();
         document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
         popup.style.display = "block";
       });
 
-      // Message action
+      // Message redirect
       popup.querySelector(".messageItem").addEventListener("click", () => {
-        window.location.href = "chat.html?user=" + encodeURIComponent(displayName);
+        window.location.href = `chat.html?user=${encodeURIComponent(member.name)}&realName=${encodeURIComponent(member.realName || member.name)}&pic=${encodeURIComponent(member.pic || 'profile.png')}`;
       });
 
       // Block action
       popup.querySelector(".blockItem").addEventListener("click", () => {
-        if (!blockedMembers.includes(member.name) && confirm(`Block ${displayName}?`)) {
+        if (!blockedMembers.includes(member.name) && confirm(`Block ${member.realName || member.name}?`)) {
           blockedMembers.push(member.name);
           renderGroupMembers();
           renderBlockedUsersPopup();
@@ -921,16 +854,7 @@ function renderGroupMembers() {
     });
   }
 
-  // Update count and header
-  document.getElementById("memberCount").textContent = 
-    `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-  document.getElementById("members").textContent = 
-    activeMembers.map(m => m.realName || m.name).join(", ");
-
-  // Save
-  currentGroup.blocked = blockedMembers;
-  groups[currentGroupIndex] = currentGroup;
-  localStorage.setItem("groups", JSON.stringify(groups));
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
 }
 
 
