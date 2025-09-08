@@ -19,7 +19,7 @@
     background: #111;
     padding: 15px;
     display: flex;
-    align-items: left;
+    align-items: center;
     font-size: 18px;
     font-weight: bold;
   }
@@ -28,45 +28,48 @@
     cursor: pointer;
   }
 
-  /* Group Info */
+  /* Group Info Row */
   .group-info {
-    text-align: left;
+    display: flex;
+    align-items: center;
     padding: 20px;
+    gap: 15px;
   }
   .group-info img {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    margin-bottom: 10px;
   }
   .group-info h2 {
-    margin: 5px 0;
+    margin: 0;
+    font-size: 20px;
   }
 
-  /* Link Box */
+  /* Link Section */
   .link-box {
     background: #111;
-    margin: 20px auto;
+    margin: 10px 20px;
     padding: 15px;
     border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    word-wrap: break-word;
+    text-align: left;
     box-shadow: 0 0 5px rgba(255,255,255,0.1);
+  }
+  .link-title {
+    color: #aaa;
+    margin-bottom: 5px;
+    font-size: 14px;
   }
   .link-text {
     color: #25d366;
     font-weight: bold;
+    word-break: break-all;
   }
 
   /* Buttons */
   .btn {
-    width: 90%;
-    max-width: 400px;
+    width: calc(100% - 40px);
+    margin: 10px 20px;
     padding: 12px;
-    margin: 10px auto;
-    display: block;
     background: #111;
     color: #25d366;
     border: 1px solid #25d366;
@@ -127,8 +130,9 @@
   <h2>My Awesome Group</h2>
 </div>
 
-<!-- Link Box -->
+<!-- Link Section -->
 <div class="link-box">
+  <div class="link-title">Group Invite Link</div>
   <div class="link-text" id="groupLink">https://gazachat.com/invite/abc123</div>
 </div>
 
@@ -175,7 +179,7 @@ async function shareLink() {
   }
 }
 
-// Reset link (generate new random code)
+// Reset link (new random code)
 function resetLink() {
   const randomCode = Math.random().toString(36).substring(2, 10);
   groupLink = `https://gazachat.com/invite/${randomCode}`;
