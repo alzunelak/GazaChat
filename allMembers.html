@@ -167,7 +167,7 @@
   searchInput.addEventListener("input", (e) => {
     renderAllMembers(e.target.value);
   });
-
+  renderAllMembers();
 
   popup.querySelector(".blockItem").addEventListener("click", () => {
   // Create overlay
@@ -218,8 +218,6 @@
   popup.style.display = "none"; // hide original popup
 });
 
-
-  renderAllMembers();
 </script>
 
 </body>
