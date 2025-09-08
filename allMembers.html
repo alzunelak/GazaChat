@@ -5,41 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>All Members</title>
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-  #groupMembersList { display: flex; flex-wrap: wrap; gap: 10px; }
-  .memberBox { 
-    padding: 10px 15px; 
-    background: #fff; 
-    border: 1px solid #ccc; 
-    border-radius: 5px; 
-    position: relative; 
-    cursor: pointer; 
-    min-width: 120px;
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
   }
-  .popupMenu { 
-    position: absolute; 
-    top: 30px; 
-    right: 0; 
-    background: #eee; 
-    border: 1px solid #ccc; 
-    border-radius: 5px; 
-    display: none; 
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #000;
+    padding: 10px 15px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid #333;
+  }
+  .header .backBtn {
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .header .title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .header .searchInput {
+    flex: 1;
+    margin-left: 15px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    background: #222;
+    color: #fff;
+  }
+  .header .searchInput::placeholder {
+    color: #aaa;
+  }
+
+  /* Members list */
+  #groupMembersList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+  }
+  .memberBox {
+    background: #111;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .popupMenu {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 5px;
+    display: none;
     z-index: 10;
   }
-  .menuItem { 
-    padding: 5px 10px; 
-    cursor: pointer; 
+  .menuItem {
+    padding: 8px 12px;
+    cursor: pointer;
   }
-  .menuItem:hover { background: #128C7E; color: #fff; }
+  .menuItem:hover {
+    background: #128C7E;
+  }
 </style>
 </head>
 <body>
 
-<h2>All Members</h2>
-<div id="memberCount"></div>
+<div class="header">
+  <span class="backBtn">&#8592;</span>
+  <span class="title">All Members</span>
+  <input type="text" class="searchInput" placeholder="Search members...">
+</div>
+
 <div id="groupMembersList"></div>
 
 <script>
+  // Back button
+  document.querySelector(".backBtn").addEventListener("click", () => {
+    window.history.back();
+  });
+
   // Fetch from localStorage
   let groups = JSON.parse(localStorage.getItem("groups")) || [];
   let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex")) || 0;
@@ -48,60 +103,60 @@
   let currentGroupMembers = currentGroup.members.map(m => m.name);
   let blockedMembers = currentGroup.blocked || [];
 
-  function renderAllMembers() {
+  function renderAllMembers(filter = "") {
     const membersDiv = document.getElementById("groupMembersList");
     membersDiv.innerHTML = "";
 
-    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+    const activeMembers = currentGroupMembers.filter(m => 
+      !blockedMembers.includes(m) && m.toLowerCase().includes(filter.toLowerCase())
+    );
 
-    if (activeMembers.length === 0) {
+    if(activeMembers.length === 0) {
       const div = document.createElement("div");
       div.textContent = "No active members";
       div.style.fontStyle = "italic";
-      div.style.color = "#555";
+      div.style.color = "#aaa";
       membersDiv.appendChild(div);
-    } else {
-      activeMembers.forEach(name => {
-        const div = document.createElement("div");
-        div.className = "memberBox";
-        div.textContent = name;
-
-        // Popup menu
-        const popup = document.createElement("div");
-        popup.className = "popupMenu";
-        popup.innerHTML = `
-          <div class="menuItem messageItem">Message</div>
-          <div class="menuItem blockItem">Block</div>
-        `;
-        div.appendChild(popup);
-
-        div.addEventListener("click", (e) => {
-          e.stopPropagation();
-          document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
-          popup.style.display = "block";
-        });
-
-        popup.querySelector(".messageItem").addEventListener("click", () => {
-          window.location.href = "chat.html?user=" + encodeURIComponent(name);
-        });
-
-        popup.querySelector(".blockItem").addEventListener("click", () => {
-          if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
-            blockedMembers.push(name);
-            currentGroup.blocked = blockedMembers;
-            groups[currentGroupIndex] = currentGroup;
-            localStorage.setItem("groups", JSON.stringify(groups));
-            renderAllMembers();
-          }
-          popup.style.display = "none";
-        });
-
-        membersDiv.appendChild(div);
-      });
+      return;
     }
 
-    // Update count
-    document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+    activeMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+
+      // Popup menu
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      div.appendChild(popup);
+
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+        popup.style.display = "block";
+      });
+
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+          blockedMembers.push(name);
+          currentGroup.blocked = blockedMembers;
+          groups[currentGroupIndex] = currentGroup;
+          localStorage.setItem("groups", JSON.stringify(groups));
+          renderAllMembers(document.querySelector(".searchInput").value);
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
   }
 
   // Close all popups when clicking outside
@@ -109,7 +164,12 @@
     document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
   });
 
-  // Initial render
+  // Search functionality
+  const searchInput = document.querySelector(".searchInput");
+  searchInput.addEventListener("input", (e) => {
+    renderAllMembers(e.target.value);
+  });
+
   renderAllMembers();
 </script>
 
