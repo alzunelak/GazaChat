@@ -1,61 +1,79 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GazaChat App</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>GazaChat Group</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100vh;display:flex;flex-direction:column;}
-#chatPage,#friendInfoPage{display:flex;flex-direction:column;flex:1;}
-.header{display:flex;align-items:center;justify-content:space-between;background:#128C7E;padding:10px;border-bottom:1px solid #ccc;position:relative;}
+body { margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#000;color:#fff;height:100vh;display:flex;flex-direction:column; }
+#chatPage,#groupInfoPage{display:flex;flex-direction:column;flex:1;}
+.header{display:flex;align-items:center;justify-content:space-between;background:#000;color:white;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);padding:10px;}
 .header img{width:50px;height:50px;border-radius:50%;cursor:pointer;object-fit:cover;}
 .header-info{flex:1;display:flex;flex-direction:column;margin-left:10px;overflow:hidden;}
 .header-info h2{margin:0;font-size:16px;cursor:pointer;}
-.header-actions{display:flex;align-items:center;gap:15px;}
-.header-actions button{background:none;border:none;cursor:pointer;font-size:20px;color:white;}
-#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;display:flex;flex-direction:column;gap:6px;}
-.msg{max-width:70%;padding:10px 14px;border-radius:18px;background:#f1f1f1;align-self:flex-start;word-break:break-word;}
-.msg.self{background:#dcf8c6;align-self:flex-end;}
-.msg .meta{display:block;margin-top:4px;font-size:10px;color:#999;text-align:right;}
-.msg.system{background:#e1f0ff;color:#333;align-self:center;text-align:center;}
-#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100% - 20px);z-index:100;}
-.input-box{display:flex;flex:1;background:#f1f1f1;border-radius:25px;padding:6px 10px;gap:6px;}
+.header-info #members{font-size:12px;color:#fff;}
+.header button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #fff;
+  margin-left: 10px; /* spacing between buttons */
+}
+
+#chatBox{flex:1;overflow-y:auto;padding:10px;margin-bottom:100px;}
+.msg{max-width:70%;padding:10px 14px;margin:5px 0;border-radius:18px;background:#000;align-self:flex-start;position:relative;word-break:break-word;}
+.msg.self{background:#000;align-self:flex-end;}
+.msg .meta{font-size:10px;color:#000;text-align:right;}
+#inputArea{display:flex;align-items:center;position:fixed;bottom:10px;left:10px;width:calc(100%-20px);z-index:100;}
+.input-box{display:flex;flex:1;background:#000;color:#fff;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);border-radius:25px;padding:6px 10px;gap:6px;}
 .input-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;}
-.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#128C7E;}
-#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:6px;}
-.popup{display:none;position:absolute;top:50px;right:10px;background:#fff;border:1px solid #ccc;border-radius:8px;z-index:1000;width:150px;}
-.popup div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
-.popup div:hover{background:#f1f1f1;}
-#emojiPicker{position:absolute;bottom:60px;left:10px;background:#fff;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
+.input-buttons button{background:transparent;border:none;font-size:20px;cursor:pointer;color:#fff;}
+#micBtn{width:40px;height:40px;border-radius:50%;background:#25D366;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+#emojiPicker{position:absolute;bottom:60px;right:10px;background:#000;box-shadow: 0 0 5px #25d366;border:1px solid #ccc;padding:10px;display:none;max-height:200px;overflow-y:auto;border-radius:8px;}
 #emojiPicker span{font-size:20px;padding:5px;cursor:pointer;}
-#emojiPicker span:hover{background:#eee;border-radius:5px;}
-#attachPopup{display:none;position:absolute;bottom:60px;left:60px;background:#fff;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
+#emojiPicker span:hover{background:#000;border-radius:5px;}
+#attachPopup{display:none;position:absolute;bottom:60px;right:60px;background:#000;border:1px solid #ccc;border-radius:12px;padding:12px;width:270px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:2000;}
 #attachGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#f8f8f8;border:1px solid #eee;text-align:center;font-size:12px;user-select:none;}
-.attachItem:hover{background:#f1f1f1;}
-.attachItem i{font-size:20px;color:#075E54;}
+.attachItem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;cursor:pointer;background:#000;border:1px solid #25d366;text-align:center;font-size:12px;user-select:none;}
+.attachItem:hover{background:#25d366;}
+.attachItem i{font-size:20px;color:#25d366;}
 .attachItem input{display:none;}
-#friendInfoPage{display:none;flex-direction:column;padding:20px;background:#f5f5f5;}
-.friendHeader{text-align:center;margin-bottom:20px;position:relative;}
-.friendHeader img{width:120px;height:120px;border-radius:50%;margin-bottom:10px;object-fit:cover;}
-.friendHeader h2{margin:0;font-size:22px;margin-bottom:20px;}
+.groupHeader{display:flex;flex-direction:column;align-items:center;padding:15px;background:#000;color:#fff;margin-bottom:10px;border-radius:10px;position:relative;}
+.groupHeader img{width:80px;height:80px;border-radius:50%;cursor:pointer;margin-bottom:10px;object-fit:cover;}
+.groupHeader h2{margin:0;font-size:18px;font-weight:500;cursor:text;}
+.backArrow{position:absolute;left:10px;top:20px;font-size:20px;cursor:pointer;color:#fff;}
 .actionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;width:100%;}
-.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#fff;border:1px solid #eee;border-radius:8px;cursor:pointer;}
+.actionButtons button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;background:#000;color:#fff;border:1px solid #eee;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);border-radius:8px;cursor:pointer;}
 .actionButtons i{font-size:20px;margin-bottom:5px;}
-.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#fff;border-radius:8px;margin-bottom:15px;}
-.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#000;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
-.settingsContainer button:hover{background:#f1f1f1;}
-.settingsContainer i{color:black;font-size:18px;}
+.container{background:#000;color:#fff;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);padding:10px;margin:10px;border-radius:10px;}
+.settingsContainer{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;background:#000;color:#fff;border-radius:8px;}
+.settingsContainer button{width:100%;padding:12px 15px;border:none;background:#000;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:16px;cursor:pointer;border-radius:6px;transition:background 0.2s;}
+.settingsContainer button:hover{background:#25d366;}
+.settingsContainer i{color:white;font-size:18px;}
 .settingsContainer input[type="checkbox"]{transform:scale(1.2);cursor:pointer;}
-.backArrow{cursor:pointer;font-size:22px;position:absolute;left:0;top:0;}
+#groupMembersList{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+.memberBox{padding:5px 10px;background:#000;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.membersHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+#memberCount{font-weight:500;font-size:16px;}
+#addMemberBtn{width:30px;height:30px;border-radius:50%;background:#25d366;color:black;box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);font-size:20px;border:none;cursor:pointer;}
+#groupLinks{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+#groupLinks button{width:100%;padding:10px;border:none;border-radius:5px;background:#000;color:#fff;cursor:pointer;text-align:left;}
+.actionBox{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+.actionBox button{width:100%;padding:12px 15px;border:none;background:#000;display:flex;align-items:center;gap:30px;color:red;font-size:16px;cursor:pointer;}
+.actionBox i{color:red;font-size:18px;}
+.popup {display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:black;padding:15px;border:1px solid #ccc;border-radius:8px;z-index:1000;width:300px;max-height:400px;overflow-y:auto;}
+.popup h3{margin-top:0;}
+.popup button.closeBtn{margin-top:10px;float:right;}
+.popup div.item{padding:5px;cursor:pointer;border-bottom:1px solid #eee;}
+.popup button.unblockBtn{background:#000;color:#white;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;}
 .settingsItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-  background: #fff;
+  background: #000;
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
@@ -82,24 +100,7 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#fff;height:100
   justify-content: flex-start;
 }
 
-  /* ==== MODAL STYLES ==== */
-.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;}
-.modal-content {background:#fff;padding:20px;border-radius:12px;width:300px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.3);}
-.option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;}
-.close-btn {background:#128C7E;color:#fff;border:none;padding:10px 15px;
-  border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
 
-/* SWITCH STYLE */
-.switch {position:relative;display:inline-block;width:50px;height:24px;}
-.switch input {opacity:0;width:0;height:0;}
-.slider {position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
-  background:#ccc;transition:.4s;border-radius:24px;}
-.slider:before {position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;
-  background:white;transition:.4s;border-radius:50%;}
-input:checked + .slider {background:#128C7E;}
-input:checked + .slider:before {transform:translateX(26px);}
   /* Phones animation */
 .phoneAnimation {
   position: relative;
@@ -128,7 +129,8 @@ input:checked + .slider:before {transform:translateX(26px);}
 .phone .screen {
   width: 90%;
   height: 80%;
-  background: #fff;
+  background: #000;
+  color:#fff;
   border-radius: 5px;
 }
 
@@ -155,10 +157,193 @@ input:checked + .slider:before {transform:translateX(26px);}
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Modal styling */
-.encryptionContent {
-  text-align: center;
+/* ==== MODAL STYLES ==== */ 
+  .modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%; background:rgba(0,0,0,0.4);z-index:4000;align-items:center;justify-content:center;} 
+  .modal-content {background:#000;color:#fff;padding:20px;border-radius:12px;width:300px; box-shadow:0 6px 18px rgba(0,0,0,0.3);} 
+  .option-group {display:flex;flex-direction:column;gap:8px;margin:15px 0;} 
+  .close-btn {color:#fff;border:none;padding:10px 15px; border-radius:8px;cursor:pointer;width:100%;font-size:16px;}
+
+/* SWITCH STYLE */
+.switch {position:relative;display:inline-block;width:50px;height:24px;}
+.switch input {opacity:0;width:0;height:0;}
+.slider {position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+  background:#ccc;transition:.4s;border-radius:24px;}
+.slider:before {position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;
+  background:white;transition:.4s;border-radius:50%;}
+input:checked + .slider {background:#128C7E;}
+input:checked + .slider:before {transform:translateX(26px);}
+
+    
+  /* Popup menu for 3-dot options */
+.popupMenu {
+  display:none;
+  position:absolute;
+  right:10px;
+  top:60px;
+  background:#000;
+  color:#fff;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.2);
+  z-index:2000;
+  width:160px;
 }
+.popupMenu .menuItem {
+  padding:10px;
+  cursor:pointer;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.popupMenu .menuItem:hover {
+  background:#f1f1f1;
+}
+
+
+
+@media (min-width: 1024px) {
+    /* Make input box taller */
+    #inputArea {
+        bottom:20px;
+    }
+
+#inputArea {
+  display:flex;
+  align-items:center;
+  position:fixed;
+  bottom:10px;
+  left:10px;
+  width: calc(100% - 20px); /* fix syntax */
+  z-index:1000;              /* ensure on top */
+}
+
+#chatBox {
+  flex:1;
+  overflow-y:auto;
+  padding:10px;
+  margin-bottom:120px; /* ensure enough space */
+}
+
+}
+.memberList {
+  padding: 20px;
+}
+.memberBox {
+  background: #222;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
+.popupMenu {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 40px;
+  background: #000;
+  border: 1px solid #444;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 100;
+}
+.popupMenu .menuItem {
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #fff;
+}
+.popupMenu .menuItem:hover {
+  background: #25D366;
+  color: #000;
+} 
+
+
+
+  .modal {
+  display: none;
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.7);
+  z-index: 999;
+}
+
+.modal-content {
+  background:#111;
+  color:#fff;
+  padding:20px;
+  border-radius:10px;
+  min-width:300px;
+  text-align:center;
+}
+
+/* Member popup menu - dark theme */
+.memberBox .popupMenu {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 40px;
+  background: #000;      /* black background */
+  border: 1px solid #444;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 100;
+  color: #fff;           /* white text */
+}
+
+/* Menu items inside popup */
+.memberBox .popupMenu .menuItem {
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #fff;           /* white text */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Hover effect */
+.memberBox .popupMenu .menuItem:hover {
+  background: #25D366;   /* green hover */
+  color: #000;           /* text black on hover */
+}
+
+  
+/* Blocked users popup */
+#blockedPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;              /* text color */
+    background: #111;          /* darker background for contrast */
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+#blockedPopup button.unblockBtn {
+    background: #25D366;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+#blockedPopup .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #444;
+}
+   
 
 </style>
 </head>
@@ -167,64 +352,30 @@ input:checked + .slider:before {transform:translateX(26px);}
 <!-- CHAT PAGE -->
 <div id="chatPage">
   <div class="header">
-    <img id="friendPhoto" src="default-profile.png" alt="friend">
+    <img id="groupPhoto" src="profile.png">
     <div class="header-info">
-      <h2 id="friendName"></h2>
+      <h2 id="groupName">My Group</h2>
+      <div id="members"></div>
     </div>
     <div class="header-actions">
       <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
     </div>
-    <div class="popup" id="menuPopup">
-      <div onclick="openFriendInfo()">View Info</div>
-      <div onclick="alert('Muted!')">Mute</div>
-      <div onclick="deleteChat()">Delete Chat</div>
-      <div onclick="openSettings()">Chat Settings</div>
-    </div>
   </div>
 
-  <!-- CHAT SETTINGS MODAL -->
-  <div id="settingsModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;z-index:3000;box-shadow:0 6px 18px rgba(0,0,0,0.2);width:300px;">
-    <h3>Chat Settings</h3>
-    <div style="margin-top:10px;">
-      <label>Theme: 
-        <select id="themeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Chat Bubble: 
-        <select id="chatThemeSelect" style="margin-left:5px;">
-          <option value="system">System</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="blue">Blue</option>
-          <option value="green">Green</option>
-        </select>
-      </label>
-    </div>
-    <div style="margin-top:10px;">
-      <label>Font Size: 
-        <select id="fontSizeSelect" style="margin-left:5px;">
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
-        </select>
-      </label>
-    </div>
-    <button style="margin-top:15px;padding:8px 12px;background:#128C7E;color:white;border:none;border-radius:6px;cursor:pointer;" onclick="closeSettings()">Close</button>
-  </div>
+
   
-  <div id="chatBox">
-    <div class="msg system">🔒 Messages are end-to-end encrypted</div>
-  </div>
+<div id="menuPopup" class="popupMenu">
+  <div class="menuItem" id="viewInfo"><i class="fa-solid fa-circle-info"></i> View Info</div>
+  <div class="menuItem" id="muteChat"><i class="fa-solid fa-bell-slash"></i> Mute</div>
+  <div class="menuItem" id="deleteChat"><i class="fa-solid fa-trash"></i> Delete Chat</div>
+</div>
 
+  
+  <div id="chatBox"></div>
   <div id="inputArea">
     <div class="input-box">
-      <input id="msgInput" placeholder="Type a message..." autocomplete="off">
+      <input id="msgInput" placeholder="Type a message...">
       <div class="input-buttons">
         <button id="emojiBtn"><i class="fa-solid fa-face-smile"></i></button>
         <button id="plusBtn"><i class="fa-solid fa-paperclip"></i></button>
@@ -234,12 +385,32 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-<!-- Emoji Picker -->
+<!--Emoji Picker -->
 <div id="emojiPicker">
+  <!-- Faces & Expressions -->
   <span>😀</span><span>😂</span><span>😍</span><span>😭</span>
-  <span>😎</span><span>😡</span><span>👍</span><span>🙏</span>
-  <span>🔥</span><span>🎉</span><span>❤️</span>
+  <span>😎</span><span>😡</span><span>🤔</span><span>🥳</span>
+  <span>😇</span><span>🤯</span><span>😴</span><span>🤗</span>
+
+  <!-- Gestures & Hands -->
+  <span>👍</span><span>👎</span><span>👏</span><span>🙏</span>
+  <span>✌️</span><span>🤝</span><span>🤟</span><span>💪</span>
+
+  <!-- Objects & Nature -->
+  <span>🔥</span><span>🌟</span><span>✨</span><span>💡</span>
+  <span>🎶</span><span>🏆</span><span>📚</span><span>🎁</span>
+  <span>🎨</span><span>📱</span><span>💻</span><span>⌚</span>
+
+  <!-- Food & Drink -->
+  <span>🍕</span><span>🍔</span><span>🍟</span><span>🍩</span>
+  <span>🍎</span><span>🍌</span><span>🍫</span><span>☕</span>
+
+  <!-- Symbols & Hearts -->
+  <span>❤️</span><span>💔</span><span>💖</span><span>💯</span>
+  <span>✔️</span><span>❌</span><span>🎉</span><span>🎯</span>
+  <span>⚡</span><span>☀️</span><span>🌈</span><span>🌙</span>
 </div>
+
 
 <!-- ATTACHMENTS -->
 <div id="attachPopup">
@@ -275,26 +446,27 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-<!-- FRIEND INFO PAGE -->
-<div id="friendInfoPage">
-  <div class="friendHeader">
+
+  
+<!-- GROUP INFO PAGE -->
+<div id="groupInfoPage" style="display:none;">
+  <div class="groupHeader">
     <i class="fa-solid fa-arrow-left backArrow" onclick="backToChat()"></i>
-    <img id="infoFriendPhoto" src="default-profile.png" alt="friend">
-    <h2 id="infoFriendName">Friend Name</h2>
-   <div class="actionButtons">
-      <button id="videoCallBtn"><i class="fa-solid fa-video"></i><span>Video Call</span></button>
-      <button id="audioCallBtn"><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
-      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+    <img id="infoGroupPhoto" src="profile.png">
+    <h2 id="infoGroupName" contenteditable="true">My Group</h2>
+    <div class="actionButtons">
+      <button><i class="fa-solid fa-video"></i><span>Video Call</span></button>
+      <button><i class="fa-solid fa-phone"></i><span>Audio Call</span></button>
+      <button><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
     </div>
   </div>
-
-<!-- SETTINGS FEATURES SECTION -->
+  <!-- SETTINGS FEATURES SECTION -->
 <div class="settingsContainer" style="margin-top:20px; gap:10px; display:flex; flex-direction:column;">
+<button class="settingsItem" onclick="openEncryptionPopup()">
+  <span>End-to-End Encryption</span>
+  <i class="fa-solid fa-circle-info"></i>
+</button>
 
-  <button class="settingsItem" onclick="openEncryptionPopup()">
-    <span>End-to-End Encryption</span>
-    <i class="fa-solid fa-circle-info"></i>
-  </button>
 <!-- END-TO-END ENCRYPTION POPUP WITH ANIMATION -->
 <div id="encryptionModal" class="modal">
   <div class="modal-content encryptionContent">
@@ -320,7 +492,6 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 
-  
   <div class="settingsItem" style="flex-direction:column; align-items:flex-start;">
     <span>Mesh Network</span>
     <small>Peer-to-peer sync and nearby chat sharing enabled automatically.</small>
@@ -357,92 +528,288 @@ input:checked + .slider:before {transform:translateX(26px);}
   </div>
 </div>
 </div>
+ 
+<div class="container">
+  <div class="membersHeader">
+    <span id="memberCount">0 Members</span>
+    <button id="addMemberBtn">+</button>
+  </div>
+  <div id="groupMembersList"></div>
+
+  <!-- View All button below the list -->
+  <div class="viewAllContainer">
+    <button id="viewAllMembersBtn">View All</button>
+    <button id="showBlockedUsers">Blocked Users</button>
+  </div>
+</div>
+
+
+    <!-- Popup Menu -->
+<div id="popupMenu" class="popupMenu">
+  <div class="menuItem" id="msgBtn"><i class="fa-solid fa-message"></i> Message</div>
+  <div class="menuItem" id="blockBtn"><i class="fa-solid fa-ban"></i> Block</div>
+</div>
   
-  <!-- NO GROUPS SECTION -->
-  <div class="settingsContainer">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <span>No groups in common</span>
-     <button class="addFriendBtn" id="addFriendBtn" 
-        style="background:#128C7E;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;"
-        onclick="window.location.href='groups.html';">
-  + create group
-</button>
-    </div>
+  <div class="container" id="groupLinks">
+    <button id="showGroupLink">Group Link</button>
+    <button id="showRequestInvite">Request / Invite</button>
   </div>
 
- <!-- BLOCK & REPORT SECTION -->
-<div class="settingsContainer">
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <button class="blockBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#f44336;cursor:pointer;font-weight:bold;">
-      <span><i class="fa-solid fa-ban" style="color:red;"></i> Block User</span>
-    </button>
-    <button class="reportBtn" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;background:#fff;color:#ff5722;cursor:pointer;font-weight:bold;">
-       <span><i class="fa-solid fa-flag" style="color:red;"></i> Report User</span>
-    </button>
+<div class="container actionBox">
+  <button onclick="openActionModal('leave')"><i class="fa-solid fa-sign-out"></i> Leave Group</button>
+  <button onclick="openActionModal('block')"><i class="fa-solid fa-ban"></i> Block Group</button>
+  <button onclick="openActionModal('report')"><i class="fa-solid fa-flag"></i> Report Group</button>
+  <button onclick="openActionModal('delete')"><i class="fa-solid fa-trash"></i> Delete Group</button>
+</div>
+
+<!-- Step 1: Confirmation Modal -->
+<div id="actionModal" class="modal">
+  <div class="modal-content">
+    <h2 id="actionTitle">Action</h2>
+    <p id="actionMessage">Are you sure?</p>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="confirmAction" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Confirm</button>
+      <button class="closeModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: Result / Success Modal -->
+<div id="resultModal" class="modal">
+  <div class="modal-content">
+    <h2 id="resultTitle">Success!</h2>
+    <p id="resultMessage">Action completed.</p>
+    <button class="closeModal" style="margin-top:15px;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">OK</button>
+  </div>
+</div>
+
+
+
+  <input type="file" id="groupPhotoFile" accept="image/*" style="display:none;">
+</div>
+
+<!-- Block MODAL -->
+<div id="blockedPopup" class="popup">
+  <h3>Blocked Users</h3>
+  <div id="blockedList"></div>
+  <button class="closeBtn" onclick="closeBlockedPopup()">Close</button>
+</div>
+<!-- ===== GROUP ACTION MODALS ===== -->
+
+<!-- Leave Group -->
+<div id="leaveGroupModal" class="modal">
+  <div class="modal-content">
+    <h2>Leave Group</h2>
+    <p>Are you sure you want to leave this group?</p>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="confirmLeaveGroup" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Leave</button>
+      <button class="closeModal" data-target="leaveGroupModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Block Group -->
+<div id="blockGroupModal" class="modal">
+  <div class="modal-content">
+    <h2>Block Group</h2>
+    <p>Block this group? You won’t receive messages from it anymore.</p>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="confirmBlockGroup" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Block</button>
+      <button class="closeModal" data-target="blockGroupModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report Group -->
+<div id="reportGroupModal" class="modal">
+  <div class="modal-content">
+    <h2>Report Group</h2>
+    <p>Report this group for abuse or spam?</p>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="confirmReportGroup" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Report</button>
+      <button class="closeModal" data-target="reportGroupModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Group -->
+<div id="deleteGroupModal" class="modal">
+  <div class="modal-content">
+    <h2>Delete Group</h2>
+    <p>This will permanently delete the group for you. Continue?</p>
+    <div style="display:flex;gap:10px;margin-top:15px;">
+      <button id="confirmDeleteGroup" style="flex:1;background:#000;color:red;border:1px solid red;border-radius:8px;padding:10px;cursor:pointer;">Delete</button>
+      <button class="closeModal" data-target="deleteGroupModal" style="flex:1;background:#000;color:#fff;border:1px solid #fff;border-radius:8px;padding:10px;cursor:pointer;">Cancel</button>
+    </div>
   </div>
 </div>
 
 <script>
-// ===== USER DATA & DOM =====
-const myName="Me", myId="user123";
-const friendsList=JSON.parse(localStorage.getItem("friends")||"[]");
-const friendParam=new URLSearchParams(window.location.search).get("friend");
-const friendObj=friendsList.find(f=>f.name===friendParam);
-const friendData={name:friendObj?friendObj.name:(friendParam||"Friend"),photo:friendObj&&friendObj.photo?friendObj.photo:"default-profile.png"};
+// ===== STATE =====
+let myName = "You"; // current user
+let groups = JSON.parse(localStorage.getItem("groups") || "[]");
+let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex") || "-1");
+let currentGroup = groups[currentGroupIndex];
 
-const friendNameEl=document.getElementById("friendName");
-const friendPhotoEl=document.getElementById("friendPhoto");
-const infoFriendNameEl=document.getElementById("infoFriendName");
-const infoFriendPhotoEl=document.getElementById("infoFriendPhoto");
-const chatBox=document.getElementById("chatBox");
-const msgInput=document.getElementById("msgInput");
-
-friendNameEl.textContent=friendData.name;
-friendPhotoEl.src=friendData.photo; friendPhotoEl.onerror=()=>friendPhotoEl.src="default-profile.png";
-infoFriendNameEl.textContent=friendData.name;
-infoFriendPhotoEl.src=friendData.photo; infoFriendPhotoEl.onerror=()=>infoFriendPhotoEl.src="default-profile.png";
-
-let messages=JSON.parse(localStorage.getItem(`chat_${friendData.name}`)||"[]");
-
-// ===== UTIL =====
-function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
-function timeNow(){ return new Date().toLocaleTimeString(); }
-function saveMessages(){ localStorage.setItem(`chat_${friendData.name}`, JSON.stringify(messages)); }
-function appendMessageBubble(obj){
-  const div=document.createElement("div");
-  div.className="msg"+(obj.senderId===myId?" self":"");
-  div.innerHTML=`<div>${obj.text}</div><span class="meta">${obj.time}</span>`;
-  chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight;
+if(!currentGroup){
+  alert("No group selected. Redirecting...");
+  window.location.href = "groups.html";
 }
-function renderMessages(){ chatBox.innerHTML=""; messages.forEach(appendMessageBubble); }
 
-// ===== SEND MESSAGE =====
-msgInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){
-    e.preventDefault(); const txt=msgInput.value.trim();
-    if(!txt) return;
-    const msg={id:uid(), senderId:myId, text:txt, time:timeNow()};
-    messages.push(msg); saveMessages(); appendMessageBubble(msg); msgInput.value="";
+let currentUser = myName;
+let isAdmin = (currentGroup.admin === myName);
+let currentGroupMembers = currentGroup.members.map(m=>m.name);
+let blockedMembers = currentGroup.blocked || [];
+let messages = currentGroup.messages || [];
+
+const callContainer = document.getElementById("callContainer");
+
+
+// ===== VIDEO CALL =====
+
+    
+   
+
+// ===== SEARCH MESSAGES =====
+document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
+  const keyword = prompt("Enter keyword to search in messages:");
+  if (!keyword) return;
+
+  chatBox.innerHTML = "";
+  messages.forEach(m => {
+    if (blockedMembers.includes(m.user)) return;
+    if (m.text.toLowerCase().includes(keyword.toLowerCase())) {
+      const div = document.createElement("div");
+      div.className = "msg" + (m.user === currentUser ? " self" : "");
+      div.innerHTML = `<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
+      chatBox.appendChild(div);
+    }
+  });
+
+  // Add reset button
+  if (!document.getElementById("resetSearchBtn")) {
+    const resetBtn = document.createElement("button");
+    resetBtn.textContent = "Reset Search";
+    resetBtn.id = "resetSearchBtn";
+    resetBtn.style.margin = "10px";
+    resetBtn.style.padding = "5px 10px";
+    resetBtn.style.background = "#128C7E";
+    resetBtn.style.color = "#fff";
+    resetBtn.style.border = "none";
+    resetBtn.style.borderRadius = "5px";
+    resetBtn.style.cursor = "pointer";
+    resetBtn.onclick = () => {
+      renderMessages();
+      resetBtn.remove();
+    };
+    chatBox.parentElement.insertBefore(resetBtn, chatBox);
   }
+};
+  
+// POPUP MENU
+ function renderGroupMembers(){
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+  if(activeMembers.length === 0){
+    const div = document.createElement("div");
+    div.textContent = "No active members";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+
+      // popup menu for Message / Block
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.style.position = "relative";
+      div.appendChild(popup);
+
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+        popup.style.display = "block";
+      });
+
+      // Message redirects
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      // Block action
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
+  }
+
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+}
+
+// Hide popups when clicking outside
+document.addEventListener("click", ()=>{
+  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
 });
+
+
+
+// ===== MENU BUTTON TOGGLE =====
+const menuBtn = document.getElementById("menuBtn");
+const menuPopup = document.getElementById("menuPopup");
+
+menuBtn.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  menuPopup.style.display = (menuPopup.style.display==="block") ? "none" : "block";
+});
+
+// Close menu when clicking outside
+document.addEventListener("click", ()=> menuPopup.style.display="none");
+
+// ===== MENU ITEM ACTIONS =====
+document.getElementById("viewInfo").onclick = ()=>{
+  openGroupInfo();
+  menuPopup.style.display="none";
+};
+
+document.getElementById("muteChat").onclick = ()=>{
+  alert("Chat muted.");
+  menuPopup.style.display="none";
+};
+
+document.getElementById("deleteChat").onclick = ()=>{
+  if(confirm("Delete all messages?")){
+    messages = [];
+    currentGroup.messages = [];
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    renderMessages();
+  }
+  menuPopup.style.display="none";
+};
 
 // ===== EMOJI =====
 const emojiPicker=document.getElementById("emojiPicker");
 document.getElementById("emojiBtn").onclick=()=>{emojiPicker.style.display=emojiPicker.style.display==="block"?"none":"block";}
 emojiPicker.addEventListener("click", e=>{ if(e.target.tagName==="SPAN"){ msgInput.value+=e.target.textContent; emojiPicker.style.display="none"; msgInput.focus(); }});
 
-// ===== MENU =====
-const menuBtn=document.getElementById("menuBtn"), menuPopup=document.getElementById("menuPopup");
-menuBtn.onclick=()=>{menuPopup.style.display=menuPopup.style.display==="block"?"none":"block";}
-document.addEventListener("click", e=>{ if(!menuBtn.contains(e.target) && !menuPopup.contains(e.target)) menuPopup.style.display="none"; });
 
-// ===== FRIEND INFO PAGE =====
-friendNameEl.onclick=openFriendInfo; friendPhotoEl.onclick=openFriendInfo;
-function openFriendInfo(){ document.getElementById("chatPage").style.display="none"; document.getElementById("friendInfoPage").style.display="flex"; }
-function backToChat(){ document.getElementById("friendInfoPage").style.display="none"; document.getElementById("chatPage").style.display="flex"; }
-
-// ===== DELETE CHAT =====
-function deleteChat(){ if(confirm("Delete all messages?")){ messages=[]; saveMessages(); renderMessages(); } }
 
 // ===== ATTACHMENTS =====
 const attachBtn=document.getElementById("plusBtn"), attachPopup=document.getElementById("attachPopup");
@@ -457,67 +824,443 @@ document.getElementById("documentInput").addEventListener("change", e=>{ const f
 document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; }});
 document.getElementById("sendLocation").onclick=()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`); }, ()=>sendAttachmentMessage("📍 Location sharing denied")); } else sendAttachmentMessage("📍 Geolocation not supported");};
 document.getElementById("sendContact").onclick=()=>{ const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }};
+  
+// ===== CHAT =====
+const chatBox = document.getElementById("chatBox");
+const msgInput = document.getElementById("msgInput");
 
-// ===== FRIEND INFO BUTTONS =====
-const friendNameEnc=encodeURIComponent(friendData.name), friendPhotoEnc=encodeURIComponent(friendData.photo);
-document.getElementById("videoCallBtn").onclick=()=>{ window.location.href=`video-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("audioCallBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("searchBtn").onclick=()=>{ window.location.href=`chat.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
-document.getElementById("callBtn").onclick=()=>{ window.location.href=`audio-call.html?friend=${friendNameEnc}&img=${friendPhotoEnc}`; };
+function uid(){ return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
 
-// ===== BLOCK & REPORT =====
-document.querySelector(".blockBtn").addEventListener("click", e=>{ e.preventDefault();
-  if(confirm("Block this user?")){
-    let blocked=JSON.parse(localStorage.getItem("blockedUsers")||"[]");
-    let friends=JSON.parse(localStorage.getItem("friends")||"[]");
-    if(!blocked.includes(friendData.name)){ blocked.push(friendData.name); localStorage.setItem("blockedUsers",JSON.stringify(blocked));
-      friends=friends.filter(f=>f.name!==friendData.name); localStorage.setItem("friends",JSON.stringify(friends));
-      alert("User blocked."); setTimeout(()=>{ window.location.href="home.html"; },200);
-    }
+msgInput.addEventListener("keydown", e => {
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const txt=msgInput.value.trim();
+    if(!txt) return;
+    const newMsg = {id:uid(), text:txt, self:true, user:currentUser, time:new Date().toLocaleString()};
+    messages.push(newMsg);
+    msgInput.value="";
+    renderMessages();
+
+    // Save message to group
+    currentGroup.messages = messages;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
   }
 });
-document.querySelector(".reportBtn").onclick=()=>{ if(confirm("Report this user?")) alert("User reported."); };
 
-// ===== CHAT SETTINGS =====
-const settingsModal=document.getElementById("settingsModal");
-const themeSelect=document.getElementById("themeSelect");
-const chatThemeSelect=document.getElementById("chatThemeSelect");
-const fontSizeSelect=document.getElementById("fontSizeSelect");
-function openSettings(){ settingsModal.style.display="block"; themeSelect.value=localStorage.getItem("theme")||"system"; chatThemeSelect.value=localStorage.getItem("chatTheme")||"system"; fontSizeSelect.value=localStorage.getItem("fontSize")||"medium"; applySettings(); }
-function closeSettings(){ settingsModal.style.display="none"; }
-themeSelect.onchange=chatThemeSelect.onchange=fontSizeSelect.onchange=applySettings;
-function applySettings(){
-  const theme=themeSelect.value, chatTheme=chatThemeSelect.value, fontSize=fontSizeSelect.value;
-  localStorage.setItem("theme",theme); localStorage.setItem("chatTheme",chatTheme); localStorage.setItem("fontSize",fontSize);
-  switch(theme){ case "system": document.body.style.background="#f8f9fa"; break; case "light": document.body.style.background="#fff"; break; case "dark": document.body.style.background="#1c1e21"; break; }
-  document.querySelectorAll(".msg").forEach(msg=>{ if(msg.classList.contains("self")){ switch(chatTheme){ case "system": msg.style.background="#dcf8c6"; break; case "light": msg.style.background="#E1FFC7"; break; case "dark": msg.style.background="#2c2f33"; break; case "blue": msg.style.background="#D0E6FF"; break; case "green": msg.style.background="#CCFFCC"; break; } } else { switch(chatTheme){ case "system": msg.style.background="#fff"; break; case "light": msg.style.background="#fff"; break; case "dark": msg.style.background="#23272A"; break; case "blue": msg.style.background="#fff"; break; case "green": msg.style.background="#fff"; break; } }});
-  let size="16px"; switch(fontSize){ case "small": size="12px"; break; case "medium": size="16px"; break; case "large": size="20px"; break; } document.querySelectorAll(".msg").forEach(msg=>msg.style.fontSize=size); document.body.style.fontSize=size;
+function renderMessages(){
+  chatBox.innerHTML="";
+  messages.forEach(m=>{
+    if(blockedMembers.includes(m.user)) return;
+    const div=document.createElement("div");
+    div.className="msg"+(m.user===currentUser?" self":"");
+    div.innerHTML=`<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
+    chatBox.appendChild(div);
+  });
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
-applySettings();
 
-// ===== MIC RECORDING =====
-const micBtn=document.getElementById("micBtn"); let mediaRecorder,audioChunks=[];
-micBtn.onclick=async()=>{
-  if(!mediaRecorder){
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ alert("Microphone not supported"); return; }
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder=new MediaRecorder(stream);
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>{
-      const blob=new Blob(audioChunks,{type:"audio/webm"}); audioChunks=[];
-      sendAttachmentMessage(`🎤 Voice message (${(blob.size/1024).toFixed(1)} KB)`);
-    };
+function renderGroupMembers() {
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+  if (activeMembers.length === 0) {
+    const div = document.createElement("div");
+    div.textContent = "No active members";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+      div.style.position = "relative";
+
+      // Popup menu
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.appendChild(popup);
+
+      // Show popup on member click
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+        popup.style.display = "block";
+      });
+
+      // Message action
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      // Block action
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
   }
-  if(mediaRecorder.state==="inactive"){ mediaRecorder.start(); micBtn.style.background="red"; } 
-  else { mediaRecorder.stop(); micBtn.style.background="#25D366"; }
+
+  // Update count and header
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+  document.getElementById("members").textContent = activeMembers.join(", ");
+
+  // Save back to localStorage
+  currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+  currentGroup.blocked = blockedMembers;
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+
+const defaultLimit = 3; // Show first 3 members
+const viewAllBtn = document.getElementById("viewAllMembersBtn");
+
+function renderGroupMembers() {
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+  if (activeMembers.length === 0) {
+    const div = document.createElement("div");
+    div.textContent = "No active members";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    // Show only first 3 members
+    const membersToShow = activeMembers.slice(0, defaultLimit);
+
+    membersToShow.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+      div.style.position = "relative";
+
+      // Popup menu
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.appendChild(popup);
+
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+        popup.style.display = "block";
+      });
+
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
+  }
+
+  // Update member count
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+  document.getElementById("members").textContent = activeMembers.join(", ");
+
+  // Show View All button only if more than 3 members
+  viewAllBtn.style.display = activeMembers.length > defaultLimit ? "inline-block" : "none";
+
+  // Save to localStorage
+  currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+  currentGroup.blocked = blockedMembers;
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
+}
+
+// Redirect to all members page
+viewAllBtn.addEventListener("click", () => {
+  window.location.href = "allMembers.html"; // <-- page to show all members
+});
+
+
+
+  
+
+
+
+// ===== ADD MEMBER =====
+document.getElementById("addMemberBtn").onclick = ()=>{
+  localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
+  window.location.href = "addMembers.html";
+};
+function addMember(name){
+    if(!currentGroupMembers.includes(name)){
+        currentGroupMembers.push(name);
+        currentGroup.members.push({name:name, accepted:true});
+        groups[currentGroupIndex] = currentGroup;
+        localStorage.setItem('groups', JSON.stringify(groups));
+        renderGroupMembers();
+    }
+}
+  
+// ===== NAVIGATION =====
+document.getElementById("groupName").onclick = ()=>openGroupInfo();
+function openGroupInfo(){
+  document.getElementById("chatPage").style.display="none";
+  document.getElementById("groupInfoPage").style.display="block";
+  renderGroupMembers();
+}
+function backToChat(){
+  document.getElementById("groupInfoPage").style.display="none";
+  document.getElementById("chatPage").style.display="flex";
+}
+
+// ===== GROUP PHOTO =====
+document.getElementById("infoGroupPhoto").onclick=()=>{ document.getElementById("groupPhotoFile").click(); };
+document.getElementById("groupPhotoFile").addEventListener("change",e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const url=reader.result;
+      document.getElementById("infoGroupPhoto").src=url;
+      document.getElementById("groupPhoto").src=url;
+      currentGroup.photo = url;
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ===== BLOCK MEMBER =====
+function blockMember(name){
+  if(confirm(`Block ${name}?`)){
+    blockedMembers.push(name);
+    renderGroupMembers();
+  }
+}
+
+// ===== BLOCKED USERS POPUP =====
+document.getElementById("showBlockedUsers").onclick = ()=>{
+  renderBlockedUsersPopup();
+  document.getElementById("blockedPopup").style.display="block";
+};
+function renderBlockedUsersPopup(){
+  const listDiv=document.getElementById("blockedList");
+  listDiv.innerHTML="";
+  if(blockedMembers.length===0){
+    listDiv.innerHTML="<p style='color:#555;font-style:italic;'>No blocked users</p>";
+  } else {
+    blockedMembers.forEach((u,index)=>{
+      const div=document.createElement("div");
+      div.className="item"; div.style.display="flex"; div.style.justifyContent="space-between"; div.style.alignItems="center";
+      const nameSpan=document.createElement("span"); nameSpan.textContent=u;
+      const unblockBtn=document.createElement("button"); unblockBtn.textContent="Unblock";
+      unblockBtn.className="unblockBtn";
+      unblockBtn.onclick=()=>{
+        blockedMembers.splice(index,1);
+        renderBlockedUsersPopup();
+        renderGroupMembers();
+      };
+      div.appendChild(nameSpan); div.appendChild(unblockBtn); listDiv.appendChild(div);
+    });
+  }
+}
+function closeBlockedPopup(){ document.getElementById("blockedPopup").style.display="none"; }
+
+// ===== GROUP LINK =====
+// Directly go to join page with group index
+document.getElementById("showGroupLink").onclick = () => {
+  window.location.href = `join.html?group=${currentGroupIndex}`;
 };
 
-// ==== TOGGLE CHAT LOCK ====
-document.getElementById("chatLockToggle").addEventListener("change", function(){
-  alert(this.checked ? "Chat Lock Enabled" : "Chat Lock Disabled");
+// Remove popup-related code
+// function copyLink(){ ... }
+// function closePopup(){ ... }
+
+
+// ===== REQUEST/INVITE =====
+document.getElementById("showRequestInvite").onclick = () => {
+    window.location.href = "requestInvite.html";
+};
+
+
+  // ===== MODAL HANDLING =====
+function openModal(id) {
+  document.getElementById(id).style.display = "flex";
+}
+
+document.querySelectorAll(".closeModal").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.getElementById(btn.dataset.target).style.display = "none";
+  });
 });
-  
-// ==== desappear ====
+
+// Confirm actions
+
+const actionModal = document.getElementById("actionModal");
+const resultModal = document.getElementById("resultModal");
+const actionTitle = document.getElementById("actionTitle");
+const actionMessage = document.getElementById("actionMessage");
+const confirmAction = document.getElementById("confirmAction");
+const resultTitle = document.getElementById("resultTitle");
+const resultMessage = document.getElementById("resultMessage");
+
+// Step 1: Open action modal
+function openActionModal(actionType) {
+  confirmAction.onclick = null;
+
+  switch(actionType) {
+    case 'leave':
+      actionTitle.textContent = "Leave Group";
+      actionMessage.textContent = "Are you sure you want to leave this group?";
+      confirmAction.textContent = "Leave";
+      confirmAction.onclick = () => performAction('leave');
+      break;
+
+    case 'block':
+      actionTitle.textContent = "Block Group";
+      actionMessage.textContent = "Block this group? You won’t receive messages from it anymore.";
+      confirmAction.textContent = "Block";
+      confirmAction.onclick = () => performAction('block');
+      break;
+
+    case 'report':
+      actionTitle.textContent = "Report Group";
+      actionMessage.textContent = "Report this group for abuse or spam?";
+      confirmAction.textContent = "Report";
+      confirmAction.onclick = () => performAction('report');
+      break;
+
+    case 'delete':
+      actionTitle.textContent = "Delete Group";
+      actionMessage.textContent = "This will permanently delete the group. Continue?";
+      confirmAction.textContent = "Delete";
+      confirmAction.onclick = () => performAction('delete');
+      break;
+  }
+
+  actionModal.style.display = "flex";
+}
+
+// Step 2: Perform action and show result
+function performAction(actionType) {
+  actionModal.style.display = "none"; // close first popup
+
+  switch(actionType) {
+    case 'leave':
+      currentGroup.members = currentGroup.members.filter(m => m.name !== currentUser);
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+      resultTitle.textContent = "Left Group";
+      resultMessage.textContent = "You have successfully left the group.";
+      break;
+
+    case 'block':
+    currentGroup.blocked.push(currentUser);
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    resultTitle.textContent = "Group Blocked";
+    resultMessage.textContent = "You won’t receive messages from this group anymore.";
+    // Disable chat input
+    const chatInput = document.getElementById("chatInput");
+    if(chatInput){
+        chatInput.disabled = true;
+        chatInput.placeholder = "You can't send messages to this group.";
+    }
+    break;
+
+
+    case 'report':
+      groups.splice(currentGroupIndex, 1);
+      localStorage.setItem("groups", JSON.stringify(groups));
+      resultTitle.textContent = "Group Reported";
+      resultMessage.textContent = "Thanks! Our team will review your report.";
+      break;
+
+    case 'delete':
+      groups.splice(currentGroupIndex, 1);
+      localStorage.setItem("groups", JSON.stringify(groups));
+      resultTitle.textContent = "Group Deleted";
+      resultMessage.textContent = "The group has been deleted successfully.";
+      break;
+  }
+
+  resultModal.style.display = "flex";
+}
+
+// Close modals
+document.querySelectorAll(".closeModal").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.closest(".modal").style.display = "none";
+    if(resultTitle.textContent === "Left Group") window.location.href = "groups.html";
+    if(resultTitle.textContent === "Group Deleted") window.location.href = "groups.html";
+  });
+});
+
+
+// ===== INITIAL RENDER =====
+document.getElementById("groupName").textContent = currentGroup.name;
+document.getElementById("infoGroupName").textContent = currentGroup.name;
+document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
+document.getElementById("infoGroupPhoto").src = currentGroup.photo || "group.png";
+
+renderMessages();
+renderGroupMembers();
+
+// ===== EDIT GROUP NAME =====
+document.getElementById("infoGroupName").addEventListener("blur",()=>{
+  const newName=document.getElementById("infoGroupName").textContent.trim();
+  if(newName){
+    currentGroup.name=newName;
+    groups[currentGroupIndex]=currentGroup;
+    localStorage.setItem("groups",JSON.stringify(groups));
+    document.getElementById("groupName").textContent=newName;
+  }
+});
+
+    // ==== desappear ====
 const disappearModal = document.getElementById("disappearModal");
 const disappearBtn = document.getElementById("disappearBtn");
 const disappearStatus = document.getElementById("disappearStatus");
@@ -534,8 +1277,9 @@ function closeDisappearModal(){
   const selected = document.querySelector('input[name="disappear"]:checked').nextSibling.textContent.trim();
   disappearStatus.textContent = selected;
 }
+
 // ==== end to end ====
-function openEncryptionPopup() {
+  function openEncryptionPopup() {
     document.getElementById("encryptionModal").style.display = "flex";
 }
 
@@ -550,10 +1294,6 @@ function closeEncryptionPopup() {
     check.style.animation = "appear 2s forwards 1.5s";
 }
 
-
-  
-// ===== RENDER INITIAL =====
-renderMessages();
 </script>
 </body>
-</html> 
+</html>
