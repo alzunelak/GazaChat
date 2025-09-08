@@ -948,7 +948,7 @@ function renderMessages(){
   });
   chatBox.scrollTop = chatBox.scrollHeight;
 }
- // LIMIT
+ 
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
@@ -968,6 +968,7 @@ function renderGroupMembers() {
       div.textContent = name;
       div.style.position = "relative";
 
+      // LIMIT
       function updateHeaderMembers() {
   const headerMembersDiv = document.getElementById("members");
   const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
