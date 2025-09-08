@@ -968,7 +968,8 @@ function renderGroupMembers() {
       div.textContent = name;
       div.style.position = "relative";
 
-      function updateHeaderMembers() {
+     // This is a separate function
+function updateHeaderMembers() {
   const headerMembersDiv = document.getElementById("members");
   const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
@@ -983,10 +984,9 @@ function renderGroupMembers() {
   headerMembersDiv.textContent = text;
 }
 
-// Call this whenever you render members
+// Call these when loading the page or refreshing members
 renderGroupMembers();
 updateHeaderMembers();
-
 
     
 
