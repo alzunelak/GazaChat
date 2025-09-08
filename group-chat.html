@@ -969,22 +969,31 @@ function renderGroupMembers() {
       div.style.position = "relative";
 
       // LIMIT
-      function updateHeaderMembers() {
+     function updateHeaderMembers() {
   const headerMembersDiv = document.getElementById("members");
-  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
-  
-  // Limit to 3 names
-  const firstFive = activeMembers.slice(0, 3).map(name => 
-    name.length > 3 ? name.slice(0, 3) + "…" : name // trim to 3 chars
-  );
+  if (!headerMembersDiv) return;
 
-  let text = firstthree.join(", ");
-  if (activeMembers.length > 3) {
+  // Get members that are not blocked
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+  // Slice first 3 members and trim names
+  const firstFive = activeMembers.slice(0, 3).map(name => {
+    return name.length > 3 ? name.slice(0, 3) + "…" : name;
+  });
+
+  // Build text
+  let text = firstThree.join(", ");
+  if (activeMembers.length > 5) {
     text += `, +${activeMembers.length - 3} more`;
   }
-  
+
+  // Put in header
   headerMembersDiv.textContent = text;
 }
+
+// Call this when page loads or after members update
+updateHeaderMembers();
+
 
 
       // Popup menu
