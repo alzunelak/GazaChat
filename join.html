@@ -3,151 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join Group</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<title>Group Invite Link</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <style>
-body {
-  margin:0;
-  font-family:'Segoe UI',Arial,sans-serif;
-  background:#000;
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:20px;
-  min-height:100vh;
-}
-.groupHeader {
-  display:flex;
-  align-items:center;
-  margin-bottom:20px;
-  gap:10px;
-}
-.groupHeader img {
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid #25D366;
-}
-.groupHeader h2 {
-  font-size:22px;
-  margin:0;
-}
-.container {
-  width:100%;
-  max-width:400px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-  align-items:center;
-}
-#qrCode {
-  margin-top:10px;
-}
-.actions {
-  display:flex;
-  justify-content:space-between;
-  width:100%;
-  max-width:400px;
-  margin-top:15px;
-}
-.actions button {
-  flex:1;
-  margin:0 5px;
-  padding:10px;
-  background:#111;
-  border:none;
-  border-radius:8px;
-  color:#fff;
-  cursor:pointer;
-  font-size:16px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:5px;
-}
-.actions button:hover { background:#25D366; color:#000; }
-.actions i { font-size:20px; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
+  }
+
+  /* Header */
+  .header {
+    background: #111;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .header i {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  /* Group Info Row */
+  .group-info {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    gap: 15px;
+  }
+  .group-info img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+  }
+  .group-info h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  /* Link Section */
+  .link-box {
+    background: #111;
+    margin: 10px 20px;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 0 5px rgba(255,255,255,0.1);
+  }
+  .link-title {
+    color: #aaa;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  .link-text {
+    color: #25d366;
+    font-weight: bold;
+    word-break: break-all;
+  }
+
+  /* Buttons */
+  .btn {
+    width: calc(100% - 40px);
+    margin: 10px 20px;
+    padding: 12px;
+    background: #111;
+    color: #25d366;
+    border: 1px solid #25d366;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: background 0.2s;
+  }
+  .btn:hover {
+    background: #25d366;
+    color: #000;
+  }
+
+  /* QR Popup */
+  .qr-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .qr-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: #000;
+  }
+  .qr-box canvas {
+    margin-bottom: 15px;
+  }
+  .close-btn {
+    padding: 8px 15px;
+    background: #25d366;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 
-<div class="groupHeader">
-  <img id="groupPhoto" src="group.png" alt="Group Photo">
-  <h2 id="groupName">Loading...</h2>
+<!-- Header -->
+<div class="header">
+  <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
+  Invite Link
 </div>
 
-<div class="container">
-  <div id="qrCode"></div>
-  <div class="actions">
-    <button id="copyBtn"><i class="fa-solid fa-copy"></i>Copy</button>
-    <button id="shareBtn"><i class="fa-solid fa-share"></i>Share</button>
-    <button id="adminBtn"><i class="fa-solid fa-user-shield"></i>Admin</button>
+<!-- Group Info -->
+<div class="group-info">
+  <img src="https://via.placeholder.com/80" alt="Group Photo">
+  <h2>My Awesome Group</h2>
+</div>
+
+<!-- Link Section -->
+<div class="link-box">
+  <div class="link-title">Group Invite Link</div>
+  <div class="link-text" id="groupLink">https://gazachat.com/invite/abc123</div>
+</div>
+
+<!-- Buttons -->
+<div class="btn" onclick="sendSMS()">Send link via SMS</div>
+<div class="btn" onclick="copyLink()">Copy link</div>
+<div class="btn" onclick="shareLink()">Share link</div>
+<div class="btn" onclick="resetLink()">Reset link</div>
+<div class="btn" onclick="showQRCode()">QR code</div>
+
+<!-- QR Popup -->
+<div class="qr-overlay" id="qrOverlay">
+  <div class="qr-box">
+    <canvas id="qrCode"></canvas>
+    <button class="close-btn" onclick="closeQR()">Close</button>
   </div>
 </div>
 
 <script>
-// User name
-let currentUser = localStorage.getItem('myName') || prompt("Enter your name:") || "Guest";
-localStorage.setItem('myName', currentUser);
+const linkElement = document.getElementById('groupLink');
+let groupLink = linkElement.innerText;
 
-// Get group index from URL
-const params = new URLSearchParams(window.location.search);
-const groupIndex = params.get('group');
+// Send via SMS
+function sendSMS() {
+  window.location.href = `sms:?body=Join our group: ${groupLink}`;
+}
 
-// Fetch groups
-let groups = JSON.parse(localStorage.getItem('groups') || '[]');
-let currentGroup = groups[groupIndex];
-
-if(!currentGroup){
-  alert("Invalid or expired group link!");
-  document.getElementById("groupName").textContent = "Unknown Group";
-} else {
-  document.getElementById("groupName").textContent = currentGroup.name;
-  document.getElementById("groupPhoto").src = currentGroup.photo || "group.png";
-
-  const link = `${window.location.origin}/join.html?group=${groupIndex}`;
-  
-  // Generate QR code
-  new QRCode(document.getElementById("qrCode"), {
-    text: link,
-    width:200,
-    height:200
-  });
-
-  // Add user to group if not already
-  if(!currentGroup.members) currentGroup.members = [];
-  if(!currentGroup.members.some(m => m.name === currentUser)){
-    currentGroup.members.push({name:currentUser, accepted:true});
-    groups[groupIndex] = currentGroup;
-    localStorage.setItem('groups', JSON.stringify(groups));
-    alert(`You have joined the group "${currentGroup.name}"!`);
+// Copy link
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText(groupLink);
+    alert('Link copied to clipboard!');
+  } catch {
+    alert('Failed to copy link.');
   }
 }
 
-// Button actions
-document.getElementById("copyBtn").addEventListener("click", ()=>{
-  navigator.clipboard.writeText(`${window.location.origin}/join.html?group=${groupIndex}`);
-  alert("Group link copied!");
-});
-
-document.getElementById("shareBtn").addEventListener("click", ()=>{
-  if(navigator.share){
-    navigator.share({ title: currentGroup.name, url: `${window.location.origin}/join.html?group=${groupIndex}` });
+// Share link
+async function shareLink() {
+  if (navigator.share) {
+    await navigator.share({ title: 'Group Invite', text: 'Join our group!', url: groupLink });
   } else {
-    alert("Share not supported, copy the link instead.");
+    alert('Sharing not supported.');
   }
-});
+}
 
-document.getElementById("adminBtn").addEventListener("click", ()=>{
-  if(currentGroup.admin === currentUser){
-    alert("You are the admin of this group!");
-  } else {
-    alert("Only admin can access this.");
-  }
-});
+// Reset link (new random code)
+function resetLink() {
+  const randomCode = Math.random().toString(36).substring(2, 10);
+  groupLink = `https://gazachat.com/invite/${randomCode}`;
+  linkElement.innerText = groupLink;
+  alert('Link has been reset!');
+}
+
+// Show QR
+function showQRCode() {
+  new QRious({
+    element: document.getElementById('qrCode'),
+    value: groupLink,
+    size: 200
+  });
+  document.getElementById('qrOverlay').style.display = 'flex';
+}
+
+// Close QR
+function closeQR() {
+  document.getElementById('qrOverlay').style.display = 'none';
+}
 </script>
 
 </body>
