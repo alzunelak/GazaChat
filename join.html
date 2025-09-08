@@ -16,80 +16,76 @@
 
   /* Header */
   .header {
-    position: relative;
-    height: 50px;
-    background: #111;
-    color: #fff;
-    padding: 10px 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding: 12px 16px;
+    background: #111;
     font-size: 20px;
     font-weight: bold;
-    border-bottom: 2px solid #111;
+    border-bottom: 1px solid #222;
   }
   .header .back-arrow {
     font-size: 22px;
     cursor: pointer;
-    color: #fff;
-    transition: color 0.2s;
+    margin-right: 10px;
   }
-  .header .back-arrow:hover { color: #25d366; }
 
-  /* Group Info Section */
+  /* Group Info */
   .group-container {
     display: flex;
     align-items: center;
     gap: 15px;
     padding: 20px;
+    flex-wrap: wrap;
   }
-
   .group-photo {
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #25d366;
+    border: 2px solid #333;
   }
-
   .group-details {
     flex: 1;
+    min-width: 200px;
   }
-
   .group-name {
-    font-size: 1.6em;
+    font-size: 1.5em;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
-
   .group-link {
-    font-size: 1em;
+    font-size: 0.95em;
     background: #222;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 8px;
+    border-radius: 6px;
     color: #25d366;
     word-wrap: break-word;
-    width: fit-content;
-    max-width: 90%;
   }
 
-  /* Buttons */
-  .action-btn {
-    display: block;
-    width: 90%;
-    max-width: 350px;
-    margin: 10px auto;
-    padding: 12px;
-    background: #25d366;
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    font-weight: bold;
+  /* Buttons as list items */
+  .action-list {
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .action-list li {
+    display: flex;
+    align-items: center;
+    background: #111;
+    padding: 15px;
+    border-bottom: 1px solid #222;
     cursor: pointer;
     transition: background 0.2s;
   }
-  .action-btn:hover { background: #1aa34a; }
+  .action-list li:hover {
+    background: #1c1c1c;
+  }
+  .action-list i {
+    margin-right: 15px;
+    font-size: 20px;
+    color: #25d366;
+  }
 
   /* QR Popup */
   .overlay {
@@ -101,29 +97,43 @@
     justify-content: center;
     z-index: 9999;
   }
-
   .qr-popup {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
     text-align: center;
     color: #000;
+    max-width: 300px;
+    width: 90%;
   }
-
   .qr-popup img {
     width: 200px;
     height: 200px;
     margin-bottom: 10px;
   }
-
   .close-btn {
     padding: 10px 20px;
-    background: #25d366;
-    color: #000;
+    background: #111;
+    color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .group-container {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+    .group-photo {
+      width: 70px;
+      height: 70px;
+    }
+    .group-name {
+      font-size: 1.2em;
+    }
   }
 </style>
 </head>
@@ -139,38 +149,69 @@
 
 <!-- Group Info -->
 <div class="group-container">
-  <img src="https://via.placeholder.com/100" alt="Group Photo" class="group-photo">
+  <img src="https://via.placeholder.com/90" alt="Group Photo" class="group-photo">
   <div class="group-details">
-    <div class="group-name">My WhatsApp Group</div>
-    <div class="group-link">https://chat.gazachat.com/invite/abc123</div>
+    <div class="group-name" id="groupName">My WhatsApp Group</div>
+    <div class="group-link" id="groupLink">https://chat.gazachat.com/invite/abc123</div>
   </div>
 </div>
 
-<!-- Buttons -->
-<button class="action-btn">Send link via SMS</button>
-<button class="action-btn" onclick="copyLink()">Copy link</button>
-<button class="action-btn">Share link</button>
-<button class="action-btn">Reset link</button>
-<button class="action-btn" onclick="showQR()">QR Code</button>
+<!-- Action Buttons as List -->
+<ul class="action-list">
+  <li onclick="sendSMS()"><i class="fa-solid fa-sms"></i>Send link via SMS</li>
+  <li onclick="copyLink()"><i class="fa-solid fa-copy"></i>Copy link</li>
+  <li onclick="shareLink()"><i class="fa-solid fa-share-nodes"></i>Share link</li>
+  <li onclick="resetLink()"><i class="fa-solid fa-rotate"></i>Reset link</li>
+  <li onclick="showQR()"><i class="fa-solid fa-qrcode"></i>QR Code</li>
+</ul>
 
 <!-- QR Popup -->
 <div class="overlay" id="qrOverlay">
   <div class="qr-popup">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://chat.gazachat.com/invite/abc123" alt="QR Code">
+    <img id="qrImage" src="" alt="QR Code">
     <br>
     <button class="close-btn" onclick="hideQR()">Close</button>
   </div>
 </div>
 
 <script>
+  const groupLinkElement = document.getElementById('groupLink');
+
+  function sendSMS() {
+    const link = groupLinkElement.innerText;
+    window.location.href = `sms:?body=Join my group: ${link}`;
+  }
+
   function copyLink() {
-    const link = document.querySelector('.group-link').innerText;
+    const link = groupLinkElement.innerText;
     navigator.clipboard.writeText(link).then(() => {
       alert('Link copied to clipboard!');
     });
   }
 
+  function shareLink() {
+    const link = groupLinkElement.innerText;
+    if (navigator.share) {
+      navigator.share({
+        title: 'Group Invite Link',
+        text: 'Join my group:',
+        url: link
+      });
+    } else {
+      alert('Sharing not supported on this device.');
+    }
+  }
+
+  function resetLink() {
+    const newLink = `https://chat.gazachat.com/invite/${Math.random().toString(36).substring(7)}`;
+    groupLinkElement.innerText = newLink;
+    alert('Link has been reset!');
+  }
+
   function showQR() {
+    const link = groupLinkElement.innerText;
+    const qrImage = document.getElementById('qrImage');
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(link)}`;
     document.getElementById('qrOverlay').style.display = 'flex';
   }
 
