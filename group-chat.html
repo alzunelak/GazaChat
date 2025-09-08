@@ -356,7 +356,6 @@ input:checked + .slider:before {transform:translateX(26px);}
     <div class="header-info">
       <h2 id="groupName">My Group</h2>
       <div id="members"></div>
-      <div id="groupMembersList"></div> <!-- Member list -->
     </div>
   </div>
     
@@ -970,42 +969,6 @@ function renderGroupMembers() {
       div.className = "memberBox";
       div.textContent = name;
       div.style.position = "relative";
-
-      
-
-     // LIMIT
-function updateHeaderMembers() {
-  const headerMembersDiv = document.getElementById("members");
-  if (!headerMembersDiv) {
-    console.error("Element with ID 'members' not found.");
-    return;
-  }
-
-  const activeMembers = (currentGroupMembers || []).filter(
-    m => !blockedMembers.includes(m)
-  );
-
-  // Truncate each name to 10 characters
-  const truncated = activeMembers.map(name =>
-    name.length > 10 ? name.substring(0, 10) + "…" : name
-  );
-
-  // Show only first 3 names
-  const firstThree = truncated.slice(0, 3);
-  let text = firstThree.join(", ");
-
-  // Add +X more if there are more members
-  if (activeMembers.length > 3) {
-    text += `, +${activeMembers.length - 3} more`;
-  }
-
-  headerMembersDiv.textContent = text || "No members";
-}
-
-// Call after members load
-updateHeaderMembers();
-
-    
 
       // Popup menu
       const popup = document.createElement("div");
