@@ -972,14 +972,14 @@ function renderGroupMembers() {
   const headerMembersDiv = document.getElementById("members");
   const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
   
-  // Limit to 5 names
-  const firstFive = activeMembers.slice(0, 5).map(name => 
-    name.length > 10 ? name.slice(0, 10) + "…" : name // trim to 10 chars
+  // Limit to 3 names
+  const firstFive = activeMembers.slice(0, 3).map(name => 
+    name.length > 3 ? name.slice(0, 3) + "…" : name // trim to 3 chars
   );
 
-  let text = firstFive.join(", ");
-  if (activeMembers.length > 5) {
-    text += `, +${activeMembers.length - 5} more`;
+  let text = firstthree.join(", ");
+  if (activeMembers.length > 3) {
+    text += `, +${activeMembers.length - 3} more`;
   }
   
   headerMembersDiv.textContent = text;
