@@ -948,7 +948,7 @@ function renderMessages(){
   });
   chatBox.scrollTop = chatBox.scrollHeight;
 }
-
+ // LIMIT
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
@@ -967,6 +967,24 @@ function renderGroupMembers() {
       div.className = "memberBox";
       div.textContent = name;
       div.style.position = "relative";
+
+      function updateHeaderMembers() {
+  const headerMembersDiv = document.getElementById("members");
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+  
+  // Limit to 5 names
+  const firstFive = activeMembers.slice(0, 5).map(name => 
+    name.length > 10 ? name.slice(0, 10) + "…" : name // trim to 10 chars
+  );
+
+  let text = firstFive.join(", ");
+  if (activeMembers.length > 5) {
+    text += `, +${activeMembers.length - 5} more`;
+  }
+  
+  headerMembersDiv.textContent = text;
+}
+
 
       // Popup menu
       const popup = document.createElement("div");
