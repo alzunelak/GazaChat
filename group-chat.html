@@ -884,6 +884,7 @@ function renderGroupMembers() {
 
 
 
+      //
 function renderMembers() {
   const membersDiv = document.getElementById("membersDiv");
   membersDiv.innerHTML = "";
@@ -892,10 +893,10 @@ function renderMembers() {
   const currentGroupMembers = currentGroup.members.map(m => m.name);
   const blockedMembers = currentGroup.blocked || [];
 
-  currentGroupMembers.forEach(name => {
+  currentGroupMembers.forEach(memberName => {
     const div = document.createElement("div");
     div.className = "memberBox";
-    div.textContent = name;
+    div.textContent = memberName;
 
     // Popup menu
     const popup = document.createElement("div");
@@ -915,20 +916,25 @@ function renderMembers() {
     });
 
     // Message action
-    popup.querySelector(".messageItem").addEventListener("click", () => {
+    popup.querySelector(".messageItem").addEventListener("click", (e) => {
+      e.stopPropagation(); // prevent closing the popup
+      // Fetch chats from localStorage
       const chats = JSON.parse(localStorage.getItem("chats")) || {};
-      const userChats = chats[name] || []; // Fetch messages for this user
+      const userChats = chats[memberName] || []; // get messages for this user
 
-      // Example: Save user chat temporarily to localStorage and redirect
-      localStorage.setItem("currentChatUser", name);
+      // Store current chat in localStorage for chat.html
+      localStorage.setItem("currentChatUser", memberName);
       localStorage.setItem("currentChatMessages", JSON.stringify(userChats));
 
+      // Redirect to chat page
       window.location.href = "chat.html";
       popup.style.display = "none";
     });
 
     // Block action
-    popup.querySelector(".blockItem").addEventListener("click", () => {
+    popup.querySelector(".blockItem").addEventListener("click", (e) => {
+      e.stopPropagation(); // prevent closing popup
+
       const overlay = document.createElement("div");
       overlay.style.position = "fixed";
       overlay.style.top = 0;
@@ -949,7 +955,7 @@ function renderMembers() {
       modal.style.minWidth = "250px";
       modal.style.textAlign = "center";
       modal.innerHTML = `
-        <p>Do you want to block <b>${name}</b>?</p>
+        <p>Do you want to block <b>${memberName}</b>?</p>
         <button id="confirmBlock" style="margin-right:10px;padding:5px 10px;background:#128C7E;border:none;border-radius:5px;color:#fff;cursor:pointer;">Yes</button>
         <button id="cancelBlock" style="padding:5px 10px;background:#555;border:none;border-radius:5px;color:#fff;cursor:pointer;">No</button>
       `;
@@ -958,12 +964,12 @@ function renderMembers() {
       document.body.appendChild(overlay);
 
       document.getElementById("confirmBlock").onclick = () => {
-        if (!blockedMembers.includes(name)) {
-          blockedMembers.push(name);
+        if (!blockedMembers.includes(memberName)) {
+          blockedMembers.push(memberName);
           currentGroup.blocked = blockedMembers;
           groups[currentGroupIndex] = currentGroup;
           localStorage.setItem("groups", JSON.stringify(groups));
-          renderMembers(); // Re-render to update the list
+          renderMembers(); // re-render members
         }
         overlay.remove();
       };
@@ -992,7 +998,6 @@ function renderMembers() {
   groups[currentGroupIndex] = currentGroup;
   localStorage.setItem("groups", JSON.stringify(groups));
 }
-
 
 
 
