@@ -3,204 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Invite Link</title>
+<title>Invite a Friend</title>
+<!-- Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #000;
-    color: #fff;
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background:#000; 
+    color:#fff; 
+    text-align:center; 
   }
 
   /* Header */
   .header {
+    position: relative;
+    height: 50px;
     background: #111;
-    padding: 15px;
+    color: #fff;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  .header i {
-    margin-right: 10px;
-    cursor: pointer;
-  }
-
-  /* Group Info Row */
-  .group-info {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    gap: 15px;
-  }
-  .group-info img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-  }
-  .group-info h2 {
-    margin: 0;
+    justify-content: flex-start;
     font-size: 20px;
-  }
-
-  /* Link Section */
-  .link-box {
-    background: #111;
-    margin: 10px 20px;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: left;
-    box-shadow: 0 0 5px rgba(255,255,255,0.1);
-  }
-  .link-title {
-    color: #aaa;
-    margin-bottom: 5px;
-    font-size: 14px;
-  }
-  .link-text {
-    color: #25d366;
     font-weight: bold;
-    word-break: break-all;
+    gap: 10px;
+    border-bottom: 2px solid #111;
   }
-
-  /* Buttons */
-  .btn {
-    width: calc(100% - 40px);
-    margin: 10px 20px;
-    padding: 12px;
-    background: #111;
-    color: #25d366;
-    border: 1px solid #25d366;
-    border-radius: 8px;
-    text-align: center;
+  .header .back-arrow {
+    font-size: 22px;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 1em;
-    transition: background 0.2s;
+    color: #fff;
+    transition: color 0.2s;
   }
-  .btn:hover {
-    background: #25d366;
-    color: #000;
+  .header .back-arrow:hover { color: #25d366; }
+
+  h1 {
+    font-size: 2em;
+    margin: 30px 0 20px;
   }
 
-  /* QR Popup */
-  .qr-overlay {
+  p {
+    font-size: 1.1em;
+    color: #ccc;
+    margin-bottom: 30px;
+  }
+
+  .btn { 
+    padding: 12px 25px; 
+    font-size: 1.2em; 
+    background: #25d366; 
+    color: #000; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: background 0.2s;
+    font-weight: bold;
+  }
+  .btn:hover { background: #1aa34a; }
+
+.popup {
     display: none;
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    background:#111;
+    color:#fff;
+    padding: 20px 15px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(37,211,102,0.4);
+    text-align:center;
+    z-index: 500;
+    width: 90%;           /* Make it responsive */
+    max-width: 300px;     /* Limit max width on larger screens */
+    word-wrap: break-word; /* Ensure text wraps properly */
   }
-  .qr-box {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    color: #000;
+
+  .popup button {
+    margin-top: 15px;
+    padding:10px 20px;
+    background:#25d366;
+    color:#000;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
   }
-  .qr-box canvas {
-    margin-bottom: 15px;
+  .popup button:hover {
+    background:#1aa34a;
   }
-  .close-btn {
-    padding: 8px 15px;
-    background: #25d366;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+
 </style>
 </head>
 <body>
 
 <!-- Header -->
 <div class="header">
-  <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
-  Invite Link
+  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+  <div>Invite a Friend</div>
 </div>
 
-<!-- Group Info -->
-<div class="group-info">
-  <img src="https://via.placeholder.com/80" alt="Group Photo">
-  <h2>My Awesome Group</h2>
-</div>
+<h1>Invite a Friend</h1>
+<p>Share GazaChat with your friends and family!</p>
 
-<!-- Link Section -->
-<div class="link-box">
-  <div class="link-title">Group Invite Link</div>
-  <div class="link-text" id="groupLink">https://gazachat.com/invite/abc123</div>
-</div>
+<button class="btn" id="shareBtn"><i class="fa-solid fa-share"></i> Share Link</button>
 
-<!-- Buttons -->
-<div class="btn" onclick="sendSMS()">Send link via SMS</div>
-<div class="btn" onclick="copyLink()">Copy link</div>
-<div class="btn" onclick="shareLink()">Share link</div>
-<div class="btn" onclick="resetLink()">Reset link</div>
-<div class="btn" onclick="showQRCode()">QR code</div>
-
-<!-- QR Popup -->
-<div class="qr-overlay" id="qrOverlay">
-  <div class="qr-box">
-    <canvas id="qrCode"></canvas>
-    <button class="close-btn" onclick="closeQR()">Close</button>
-  </div>
+<!-- Popup -->
+<div class="popup" id="sharePopup">
+  share link copied to clipboard!
+  <br>
+  <button onclick="closePopup()">OK</button>
 </div>
 
 <script>
-const linkElement = document.getElementById('groupLink');
-let groupLink = linkElement.innerText;
+  const shareBtn = document.getElementById('shareBtn');
+  const popup = document.getElementById('sharePopup');
 
-// Send via SMS
-function sendSMS() {
-  window.location.href = `sms:?body=Join our group: ${groupLink}`;
-}
-
-// Copy link
-async function copyLink() {
-  try {
-    await navigator.clipboard.writeText(groupLink);
-    alert('Link copied to clipboard!');
-  } catch {
-    alert('Failed to copy link.');
-  }
-}
-
-// Share link
-async function shareLink() {
-  if (navigator.share) {
-    await navigator.share({ title: 'Group Invite', text: 'Join our group!', url: groupLink });
-  } else {
-    alert('Sharing not supported.');
-  }
-}
-
-// Reset link (new random code)
-function resetLink() {
-  const randomCode = Math.random().toString(36).substring(2, 10);
-  groupLink = `https://gazachat.com/invite/${randomCode}`;
-  linkElement.innerText = groupLink;
-  alert('Link has been reset!');
-}
-
-// Show QR
-function showQRCode() {
-  new QRious({
-    element: document.getElementById('qrCode'),
-    value: groupLink,
-    size: 200
+  shareBtn.addEventListener('click', () => {
+    // You can also copy link to clipboard here
+    popup.style.display = 'block';
   });
-  document.getElementById('qrOverlay').style.display = 'flex';
-}
 
-// Close QR
-function closeQR() {
-  document.getElementById('qrOverlay').style.display = 'none';
-}
+  function closePopup() {
+    popup.style.display = 'none';
+  }
 </script>
 
 </body>
