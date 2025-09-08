@@ -62,39 +62,6 @@
     font-weight: bold;
   }
   .btn:hover { background: #1aa34a; }
-
-.popup {
-    display: none;
-    position: fixed;
-    top:50%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    background:#111;
-    color:#fff;
-    padding: 20px 15px;
-    border-radius:12px;
-    box-shadow:0 0 20px rgba(37,211,102,0.4);
-    text-align:center;
-    z-index: 500;
-    width: 90%;           /* Make it responsive */
-    max-width: 300px;     /* Limit max width on larger screens */
-    word-wrap: break-word; /* Ensure text wraps properly */
-  }
-
-  .popup button {
-    margin-top: 15px;
-    padding:10px 20px;
-    background:#25d366;
-    color:#000;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-  }
-  .popup button:hover {
-    background:#1aa34a;
-  }
-
 </style>
 </head>
 <body>
@@ -110,25 +77,18 @@
 
 <button class="btn" id="shareBtn"><i class="fa-solid fa-share"></i> Share Link</button>
 
-<!-- Popup -->
-<div class="popup" id="sharePopup">
-  share link copied to clipboard!
-  <br>
-  <button onclick="closePopup()">OK</button>
-</div>
-
 <script>
   const shareBtn = document.getElementById('shareBtn');
-  const popup = document.getElementById('sharePopup');
 
-  shareBtn.addEventListener('click', () => {
-    // You can also copy link to clipboard here
-    popup.style.display = 'block';
+  shareBtn.addEventListener('click', async () => {
+    const link = window.location.href; // Current page link
+    try {
+      await navigator.clipboard.writeText(link);
+      alert('Share link copied to clipboard!');
+    } catch (err) {
+      alert('Could not copy link: ' + err);
+    }
   });
-
-  function closePopup() {
-    popup.style.display = 'none';
-  }
 </script>
 
 </body>
