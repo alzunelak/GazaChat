@@ -971,37 +971,6 @@ function renderGroupMembers() {
       
 
      // LIMIT
-function renderGroupMembers() {
-  const membersDiv = document.getElementById("groupMembersList");
-  if (!membersDiv) {
-    console.error("Element with ID 'groupMembersList' not found.");
-    return;
-  }
-
-  membersDiv.innerHTML = "";
-
-  // Make sure currentGroupMembers exists
-  const activeMembers = (currentGroupMembers || []).filter(
-    m => !blockedMembers.includes(m)
-  );
-
-  if (activeMembers.length === 0) {
-    const div = document.createElement("div");
-    div.textContent = "No active members";
-    div.style.fontStyle = "italic";
-    div.style.color = "#555";
-    membersDiv.appendChild(div);
-  } else {
-    activeMembers.forEach(name => {
-      const div = document.createElement("div");
-      div.className = "memberBox";
-      div.textContent = name;
-      div.style.position = "relative";
-      membersDiv.appendChild(div);
-    });
-  }
-}
-
 function updateHeaderMembers() {
   const headerMembersDiv = document.getElementById("members");
   if (!headerMembersDiv) {
@@ -1013,9 +982,16 @@ function updateHeaderMembers() {
     m => !blockedMembers.includes(m)
   );
 
-  const firstThree = activeMembers.slice(0, 3); // Only first 3
+  // Truncate each name to 10 characters
+  const truncated = activeMembers.map(name =>
+    name.length > 10 ? name.substring(0, 10) + "…" : name
+  );
+
+  // Show only first 3 names
+  const firstThree = truncated.slice(0, 3);
   let text = firstThree.join(", ");
 
+  // Add +X more if there are more members
   if (activeMembers.length > 3) {
     text += `, +${activeMembers.length - 3} more`;
   }
@@ -1023,8 +999,7 @@ function updateHeaderMembers() {
   headerMembersDiv.textContent = text || "No members";
 }
 
-// Call these after data is loaded
-renderGroupMembers();
+// Call after members load
 updateHeaderMembers();
 
     
