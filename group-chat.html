@@ -966,48 +966,6 @@ function renderGroupMembers() {
       div.textContent = name;
       div.style.position = "relative";
 
-
-
-
-
-
-//limitation
-
-      function renderMemberHeader() {
-    const membersDiv = document.getElementById("members");
-    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
-
-    membersDiv.innerHTML = "";
-
-    if (activeMembers.length === 0) {
-        membersDiv.textContent = "No members";
-        return;
-    }
-
-    // Show first 5 names
-    const firstFive = activeMembers.slice(0, 5);
-    membersDiv.textContent = firstFive.join(", ");
-
-    // If more than 5 members, add "View All"
-    if (activeMembers.length > 5) {
-        const viewAll = document.createElement("span");
-        viewAll.textContent = ` +${activeMembers.length - 5} more`;
-        viewAll.style.color = "#25D366";
-        viewAll.style.cursor = "pointer";
-        viewAll.style.marginLeft = "5px";
-        membersDiv.appendChild(viewAll);
-
-        viewAll.addEventListener("click", () => {
-            // Open full members list (toggle group info page)
-            openGroupInfo();
-        });
-    }
-}
-
-// Call this function when loading the chat page
-renderMemberHeader();
-
-
       // Popup menu
       const popup = document.createElement("div");
       popup.className = "popupMenu";
