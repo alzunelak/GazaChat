@@ -968,15 +968,14 @@ function renderGroupMembers() {
       div.textContent = name;
       div.style.position = "relative";
 
-      // LIMIT
       function updateHeaderMembers() {
   const headerMembersDiv = document.getElementById("members");
   const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
-  // Get only first 3 names
+  // Show only first 3 members
   const firstThree = activeMembers.slice(0, 3);
-
   let text = firstThree.join(", ");
+
   if (activeMembers.length > 3) {
     text += `, +${activeMembers.length - 3} more`;
   }
@@ -984,8 +983,12 @@ function renderGroupMembers() {
   headerMembersDiv.textContent = text;
 }
 
-    
+// Call this whenever you render members
+renderGroupMembers();
+updateHeaderMembers();
 
+
+    
 
       // Popup menu
       const popup = document.createElement("div");
