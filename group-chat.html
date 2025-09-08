@@ -943,17 +943,15 @@ function renderGroupMembers() {
 
 
 
+//
 
-
-
-// ===== GROUP MEMBERS =====
+const defaultLimit = 3; // Show first 3 members
 const viewAllBtn = document.getElementById("viewAllMembersBtn");
 
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
 
-  // Only active members (not blocked)
   const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
   if (activeMembers.length === 0) {
@@ -963,7 +961,10 @@ function renderGroupMembers() {
     div.style.color = "#555";
     membersDiv.appendChild(div);
   } else {
-    activeMembers.forEach(name => {
+    // Show only first 3 members
+    const membersToShow = activeMembers.slice(0, defaultLimit);
+
+    membersToShow.forEach(name => {
       const div = document.createElement("div");
       div.className = "memberBox";
       div.textContent = name;
@@ -1006,8 +1007,8 @@ function renderGroupMembers() {
   document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
   document.getElementById("members").textContent = activeMembers.join(", ");
 
-  // Show/hide View All button
-  viewAllBtn.style.display = activeMembers.length > 3 ? "inline-block" : "none";
+  // Show View All button only if more than 3 members
+  viewAllBtn.style.display = activeMembers.length > defaultLimit ? "inline-block" : "none";
 
   // Save to localStorage
   currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
@@ -1016,10 +1017,11 @@ function renderGroupMembers() {
   localStorage.setItem("groups", JSON.stringify(groups));
 }
 
-// Redirect to another page when "View All" is clicked
+// Redirect to all members page
 viewAllBtn.addEventListener("click", () => {
-  window.location.href = "allMembers.html"; // <-- change this to your target page
+  window.location.href = "allMembers.html"; // <-- page to show all members
 });
+
 
 
   
