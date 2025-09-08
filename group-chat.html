@@ -950,9 +950,10 @@ function renderGroupMembers() {
 
 
 
-  // ===== GROUP MEMBERS WITH VIEW ALL =====
+// ===== GROUP MEMBERS WITH VIEW ALL =====
 let showingAll = false; // Track if all members are shown
 const defaultLimit = 3; // Number of members to show initially
+const viewAllBtn = document.getElementById("viewAllMembersBtn");
 
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
@@ -1008,42 +1009,32 @@ function renderGroupMembers() {
 
       membersDiv.appendChild(div);
     });
-
-    // Add "View All / Show Less" button if needed
-    let viewAllBtn = document.getElementById("viewAllMembersBtn");
-    if (!viewAllBtn) {
-      viewAllBtn = document.createElement("button");
-      viewAllBtn.id = "viewAllMembersBtn";
-      viewAllBtn.style.marginTop = "10px";
-      viewAllBtn.style.padding = "5px 10px";
-      viewAllBtn.style.background = "#128C7E";
-      viewAllBtn.style.color = "#fff";
-      viewAllBtn.style.border = "none";
-      viewAllBtn.style.borderRadius = "5px";
-      viewAllBtn.style.cursor = "pointer";
-      membersDiv.parentElement.appendChild(viewAllBtn);
-
-      viewAllBtn.addEventListener("click", () => {
-        showingAll = !showingAll;
-        renderGroupMembers();
-        viewAllBtn.textContent = showingAll ? "Show Less" : "View All";
-      });
-    }
-
-    viewAllBtn.style.display = activeMembers.length > defaultLimit ? "inline-block" : "none";
-    viewAllBtn.textContent = showingAll ? "Show Less" : "View All";
   }
 
-  // Update count and header
+  // Update member count
   document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
   document.getElementById("members").textContent = activeMembers.join(", ");
 
-  // Save back to localStorage
+  // Show/hide View All button
+  viewAllBtn.style.display = activeMembers.length > defaultLimit ? "inline-block" : "none";
+  viewAllBtn.textContent = showingAll ? "Show Less" : "View All";
+
+  // Save to localStorage
   currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
   currentGroup.blocked = blockedMembers;
   groups[currentGroupIndex] = currentGroup;
   localStorage.setItem("groups", JSON.stringify(groups));
 }
+
+// Attach click event to the existing button once
+viewAllBtn.addEventListener("click", () => {
+  showingAll = !showingAll;
+  renderGroupMembers();
+});
+
+
+
+  
 
 
 
