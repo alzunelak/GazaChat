@@ -1031,33 +1031,30 @@ function addMember(name){
         renderGroupMembers();
     }
 }
+// ===== VIEW ALL MEMBERS =====
+document.getElementById("viewAllMembersBtn").onclick = () => {
+    // Save current members to localStorage for the next page
+    localStorage.setItem("currentGroupMembers", JSON.stringify(currentGroupMembers));
 
+    // Redirect to the "allMembers.html" page
+    window.location.href = "allMembers.html";
+};
+function renderGroupMembers() {
+    const listContainer = document.getElementById("groupMembersList");
+    listContainer.innerHTML = "";
 
+    // Show up to first 5 members as a preview
+    const previewMembers = currentGroupMembers.slice(0, 5);
 
-  
+    previewMembers.forEach(name => {
+        const memberDiv = document.createElement("div");
+        memberDiv.textContent = name;
+        listContainer.appendChild(memberDiv);
+    });
 
-  // Example array of members
-let currentGroupMembers = ["Alice", "Bob", "Charlie"]; 
-
-// Display the member count
-document.getElementById("memberCount").textContent = `${currentGroupMembers.length} Members`;
-
-// Display some members in the main list
-const groupMembersList = document.getElementById("groupMembersList");
-currentGroupMembers.slice(0, 3).forEach(name => { // Show first 3 members
-  const div = document.createElement("div");
-  div.textContent = name;
-  groupMembersList.appendChild(div);
-});
-
-// View All button functionality
-document.getElementById("viewAllMembersBtn").addEventListener("click", () => {
-  // Save members to localStorage for the next page
-  localStorage.setItem("allMembersList", JSON.stringify(currentGroupMembers));
-  
-  // Navigate to the all members page
-  window.location.href = "allMembers.html";
-});
+    // Update member count
+    document.getElementById("memberCount").textContent = `${currentGroupMembers.length} Members`;
+}
 
   
 // ===== NAVIGATION =====
