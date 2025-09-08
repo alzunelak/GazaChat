@@ -168,6 +168,57 @@
     renderAllMembers(e.target.value);
   });
 
+
+  popup.querySelector(".blockItem").addEventListener("click", () => {
+  // Create overlay
+  const overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.top = 0;
+  overlay.style.left = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.7)"; // dark background
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.zIndex = 9999;
+
+  // Create modal box
+  const modal = document.createElement("div");
+  modal.style.background = "#fff"; // white popup
+  modal.style.color = "#000";      // text color
+  modal.style.padding = "20px";
+  modal.style.borderRadius = "10px";
+  modal.style.minWidth = "250px";
+  modal.style.textAlign = "center";
+  modal.innerHTML = `
+    <p>Do you want to block <b>${name}</b>?</p>
+    <button id="confirmBlock" style="margin-right:10px;padding:5px 10px;background:#128C7E;border:none;border-radius:5px;color:#fff;cursor:pointer;">Yes</button>
+    <button id="cancelBlock" style="padding:5px 10px;background:#555;border:none;border-radius:5px;color:#fff;cursor:pointer;">No</button>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  // Confirm block
+  document.getElementById("confirmBlock").onclick = () => {
+    blockedMembers.push(name);
+    currentGroup.blocked = blockedMembers;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    renderAllMembers(document.querySelector(".searchInput").value);
+    overlay.remove();
+  };
+
+  // Cancel block
+  document.getElementById("cancelBlock").onclick = () => {
+    overlay.remove();
+  };
+
+  popup.style.display = "none"; // hide original popup
+});
+
+
   renderAllMembers();
 </script>
 
