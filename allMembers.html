@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>All Members</title>
+<!-- Font Awesome for back arrow -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   body {
     margin: 0;
@@ -16,30 +18,27 @@
   .header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: #000;
     padding: 10px 15px;
+    background: #000;
     position: sticky;
     top: 0;
     z-index: 100;
     border-bottom: 1px solid #333;
   }
   .header .backBtn {
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
-  }
-  .header .title {
-    font-size: 18px;
-    font-weight: bold;
+    color: #fff;
   }
   .header .searchInput {
     flex: 1;
     margin-left: 15px;
-    padding: 5px 10px;
+    padding: 8px 12px;
     border-radius: 5px;
     border: none;
     background: #222;
     color: #fff;
+    font-size: 16px;
   }
   .header .searchInput::placeholder {
     color: #aaa;
@@ -62,7 +61,7 @@
 
   .popupMenu {
     position: absolute;
-    top: 40px;
+    top: 45px;
     right: 10px;
     background: #222;
     border: 1px solid #333;
@@ -82,8 +81,7 @@
 <body>
 
 <div class="header">
-  <span class="backBtn">&#8592;</span>
-  <span class="title">All Members</span>
+  <i class="fas fa-arrow-left backBtn"></i>
   <input type="text" class="searchInput" placeholder="Search members...">
 </div>
 
@@ -95,7 +93,7 @@
     window.history.back();
   });
 
-  // Fetch from localStorage
+  // Fetch group data from localStorage
   let groups = JSON.parse(localStorage.getItem("groups")) || [];
   let currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex")) || 0;
   let currentGroup = groups[currentGroupIndex] || { members: [], blocked: [] };
@@ -107,7 +105,7 @@
     const membersDiv = document.getElementById("groupMembersList");
     membersDiv.innerHTML = "";
 
-    const activeMembers = currentGroupMembers.filter(m => 
+    const activeMembers = currentGroupMembers.filter(m =>
       !blockedMembers.includes(m) && m.toLowerCase().includes(filter.toLowerCase())
     );
 
@@ -152,7 +150,7 @@
           localStorage.setItem("groups", JSON.stringify(groups));
           renderAllMembers(document.querySelector(".searchInput").value);
         }
-        popup.style.display = "none";
+        popup.style.display="none";
       });
 
       membersDiv.appendChild(div);
@@ -164,7 +162,7 @@
     document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
   });
 
-  // Search functionality
+  // Search input filter
   const searchInput = document.querySelector(".searchInput");
   searchInput.addEventListener("input", (e) => {
     renderAllMembers(e.target.value);
