@@ -885,112 +885,79 @@ function renderGroupMembers() {
 
 
       //
-function renderMembers() {
-  const membersDiv = document.getElementById("membersDiv");
-  membersDiv.innerHTML = "";
+// On page load
+renderMessages();
+renderGroupMembers();
 
-  const currentGroup = groups[currentGroupIndex];
-  const currentGroupMembers = currentGroup.members.map(m => m.name);
-  const blockedMembers = currentGroup.blocked || [];
+// Ensure you have correct element IDs
+function renderGroupMembers() {
+    const membersDiv = document.getElementById("groupMembersList");
+    membersDiv.innerHTML = "";
 
-  currentGroupMembers.forEach(memberName => {
-    const div = document.createElement("div");
-    div.className = "memberBox";
-    div.textContent = memberName;
+    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
 
-    // Popup menu
-    const popup = document.createElement("div");
-    popup.className = "popupMenu";
-    popup.innerHTML = `
-      <div class="menuItem messageItem">Message</div>
-      <div class="menuItem blockItem">Block</div>
-    `;
-    popup.style.display = "none";
-    div.appendChild(popup);
+    if (activeMembers.length === 0) {
+        const div = document.createElement("div");
+        div.textContent = "No active members";
+        div.style.fontStyle = "italic";
+        div.style.color = "#555";
+        membersDiv.appendChild(div);
+    } else {
+        activeMembers.forEach(name => {
+            const div = document.createElement("div");
+            div.className = "memberBox";
+            div.textContent = name;
+            div.style.position = "relative";
 
-    // Show popup
-    div.addEventListener("click", (e) => {
-      e.stopPropagation();
-      document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
-      popup.style.display = "block";
+            // Popup menu
+            const popup = document.createElement("div");
+            popup.className = "popupMenu";
+            popup.innerHTML = `
+                <div class="menuItem messageItem">Message</div>
+                <div class="menuItem blockItem">Block</div>
+            `;
+            popup.style.display = "none";
+            div.appendChild(popup);
+
+            div.addEventListener("click", (e) => {
+                e.stopPropagation();
+                document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+                popup.style.display = "block";
+            });
+
+            // Message action
+            popup.querySelector(".messageItem").addEventListener("click", () => {
+                alert(`Message ${name}`); // replace with your chat redirect
+                popup.style.display = "none";
+            });
+
+            // Block action
+            popup.querySelector(".blockItem").addEventListener("click", () => {
+                if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+                    blockedMembers.push(name);
+                    renderGroupMembers();
+                }
+                popup.style.display = "none";
+            });
+
+            membersDiv.appendChild(div);
+        });
+    }
+
+    document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+}
+
+// Also make sure messages render
+function renderMessages() {
+    chatBox.innerHTML = "";
+    messages.forEach(m => {
+        if (blockedMembers.includes(m.user)) return;
+        const div = document.createElement("div");
+        div.className = "msg" + (m.user === currentUser ? " self" : "");
+        div.innerHTML = `<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
+        chatBox.appendChild(div);
     });
-
-    // Message action
-    popup.querySelector(".messageItem").addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      // Fetch chats from localStorage
-      const chats = JSON.parse(localStorage.getItem("chats")) || {};
-      const userChats = chats[memberName] || [];
-
-      // Save current chat for chat.html
-      localStorage.setItem("currentChatUser", memberName);
-      localStorage.setItem("currentChatMessages", JSON.stringify(userChats));
-
-      // Redirect
-      window.location.href = "chat.html";
-    });
-
-    // Block action
-    popup.querySelector(".blockItem").addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      // Create overlay
-      const overlay = document.createElement("div");
-      overlay.style.cssText = `
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999;
-      `;
-      
-      const modal = document.createElement("div");
-      modal.style.cssText = `
-        background: #fff; color: #000; padding: 20px; border-radius: 10px;
-        min-width: 250px; text-align: center;
-      `;
-      modal.innerHTML = `
-        <p>Do you want to block <b>${memberName}</b>?</p>
-        <button class="confirmBlock" style="margin-right:10px;padding:5px 10px;background:#128C7E;border:none;border-radius:5px;color:#fff;cursor:pointer;">Yes</button>
-        <button class="cancelBlock" style="padding:5px 10px;background:#555;border:none;border-radius:5px;color:#fff;cursor:pointer;">No</button>
-      `;
-
-      overlay.appendChild(modal);
-      document.body.appendChild(overlay);
-
-      // Use class selectors to avoid ID conflicts
-      modal.querySelector(".confirmBlock").onclick = () => {
-        if (!blockedMembers.includes(memberName)) {
-          blockedMembers.push(memberName);
-          currentGroup.blocked = blockedMembers;
-          groups[currentGroupIndex] = currentGroup;
-          localStorage.setItem("groups", JSON.stringify(groups));
-          renderMembers();
-        }
-        overlay.remove();
-      };
-
-      modal.querySelector(".cancelBlock").onclick = () => overlay.remove();
-
-      popup.style.display = "none";
-    });
-
-    membersDiv.appendChild(div);
-  });
-
-  // Close popups when clicking outside
-  document.addEventListener("click", () => {
-    document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
-  });
-
-  // Update member count
-  const activeMembers = currentGroupMembers.filter(n => !blockedMembers.includes(n));
-  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-  document.getElementById("members").textContent = activeMembers.join(", ");
-
-  // Save back to localStorage
-  currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
-  currentGroup.blocked = blockedMembers;
-  groups[currentGroupIndex] = currentGroup;
-  localStorage.setItem("groups", JSON.stringify(groups));
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 
