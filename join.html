@@ -3,57 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Group Invite</title>
+<title>Group Invite Link</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
   body {
+    margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
-    margin:0;
-    padding:0;
-    background:#000;
-    color:#fff;
+    background: #000;
+    color: #fff;
   }
 
   /* Header */
   .header {
     display: flex;
     align-items: center;
-    padding: 10px 20px;
+    padding: 12px 16px;
+    background: #111;
     font-size: 20px;
     font-weight: bold;
-    border-bottom: 2px solid #111;
-    background: #111;
+    border-bottom: 1px solid #222;
   }
-
   .header .back-arrow {
     font-size: 22px;
     cursor: pointer;
     margin-right: 10px;
-    color: #fff;
   }
 
   /* Group Info */
   .group-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    text-align: center;
-  }
-
-  .group-info {
-    display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 15px;
+    padding: 20px;
+    flex-wrap: wrap;
   }
 
-  .group-photo {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #25d366;
+  .group-details {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .group-name {
@@ -61,175 +52,169 @@
     font-weight: bold;
   }
 
+  .group-photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #333;
+  }
+
   .group-link {
+    font-size: 0.95em;
     background: #111;
-    color: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    word-break: break-word;
-    max-width: 90%;
+    padding: 8px;
+    border-radius: 6px;
+    color: #25d366;
+    word-wrap: break-word;
   }
 
-  /* Buttons */
-  .btn-container {
+  /* Buttons as list items */
+  .action-list {
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .action-list li {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    width: 90%;
-    max-width: 400px;
-    margin: 0 auto 30px;
-  }
-
-  .btn-container button {
-    width: 100%;
-    padding: 12px 15px;
-    font-size: 1em;
+    align-items: center;
     background: #111;
-    color: #fff;
-    border: 1px solid #25d366;
-    border-radius: 8px;
+    padding: 15px;
+    border-bottom: 1px solid #222;
     cursor: pointer;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: bold;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s;
+  }
+  .action-list li:hover {
+    background: #1c1c1c;
+  }
+  .action-list i {
+    margin-right: 15px;
+    font-size: 20px;
+    color: #25d366;
   }
 
-  .btn-container button:hover {
-    background: #25d366;
-    color: #000;
-  }
-
-  /* Popups */
+  /* Popup */
   .overlay {
-    display: none;
     position: fixed;
-    top:0; left:0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
-    justify-content: center;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
     align-items: center;
-    z-index: 500;
+    justify-content: center;
+    z-index: 9999;
   }
-
   .popup-box {
     background: #111;
     color: #fff;
     padding: 20px;
     border-radius: 12px;
     text-align: center;
-    max-width: 280px;
+    max-width: 300px;
     width: 90%;
   }
-
+  .popup-box img {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 10px;
+  }
   .popup-box button {
-    margin-top: 15px;
-    padding:10px 20px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#25d366;
-    color:#000;
-    font-weight:bold;
+    padding: 10px 20px;
+    background: #25d366;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
   }
-
   .popup-box button:hover {
-    background:#1aa34a;
+    background: #1aa34a;
   }
 
-  /* QR Image */
-  #qrCodeImage {
-    width: 150px;
-    height: 150px;
-  }
-
-  @media screen and (max-width: 600px) {
-    .group-info {
+  /* Responsive */
+  @media (max-width: 600px) {
+    .group-container {
       flex-direction: column;
+      align-items: center;
     }
-    .btn-container button {
-      font-size: 0.95em;
+    .group-photo {
+      width: 70px;
+      height: 70px;
+    }
+    .group-name {
+      font-size: 1.2em;
+      text-align: center;
+    }
+    .group-details {
+      align-items: center;
+      text-align: center;
     }
   }
-
 </style>
 </head>
 <body>
 
 <!-- Header -->
 <div class="header">
-  <div class="back-arrow" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></div>
-  Invite a Friend
+  <div class="back-arrow" onclick="window.history.back()">
+    <i class="fa-solid fa-arrow-left"></i>
+  </div>
+  <div>Group Invite Link</div>
 </div>
 
+<!-- Group Info -->
 <div class="group-container">
-  <!-- Group Name + Photo -->
-  <div class="group-info">
-    <div>
-      <div class="group-name" id="groupName">My Group</div>
-    </div>
-    <img src="" alt="Group Photo" class="group-photo" id="groupPhoto">
+  <div class="group-details">
+    <div class="group-name" id="groupName">Loading...</div>
+    <div class="group-link" id="groupLink">Loading...</div>
   </div>
-
-  <!-- Group Link -->
-  <div class="group-link" id="groupLink">https://chat.gazachat.com/invite/123abc</div>
-
-  <!-- Buttons -->
-  <div class="btn-container">
-    <button onclick="sendSMS()"><i class="fa-solid fa-message"></i> Send via SMS</button>
-    <button onclick="copyLink()"><i class="fa-solid fa-copy"></i> Copy Link</button>
-    <button onclick="shareLink()"><i class="fa-solid fa-share"></i> Share Link</button>
-    <button onclick="resetLink()"><i class="fa-solid fa-rotate"></i> Reset Link</button>
-    <button onclick="showQRCode()"><i class="fa-solid fa-qrcode"></i> QR Code</button>
-  </div>
+  <img src="" alt="Group Photo" class="group-photo" id="groupPhoto">
 </div>
 
-<!-- Popup Overlay -->
+<!-- Action Buttons -->
+<ul class="action-list">
+  <li onclick="sendSMS()"><i class="fa-solid fa-sms"></i>Send link via SMS</li>
+  <li onclick="copyLink()"><i class="fa-solid fa-copy"></i>Copy link</li>
+  <li onclick="shareLink()"><i class="fa-solid fa-share-nodes"></i>Share link</li>
+  <li onclick="resetLink()"><i class="fa-solid fa-rotate"></i>Reset link</li>
+  <li onclick="showQR()"><i class="fa-solid fa-qrcode"></i>QR Code</li>
+</ul>
+
+<!-- Popup -->
 <div class="overlay" id="popupOverlay">
-  <div class="popup-box" id="popupContent">
+  <div class="popup-box" id="popupBox">
     <span id="popupMessage">Message</span>
-    <br>
-    <img src="" alt="QR Code" id="qrCodeImage" style="display:none; margin-top:10px;">
+    <img id="qrImage" src="" alt="QR Code" style="display:none;">
     <br>
     <button onclick="closePopup()">OK</button>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
   // Load group data from localStorage
-  const groupNameElement = document.getElementById('groupName');
-  const groupPhotoElement = document.getElementById('groupPhoto');
-  const groupLinkElement = document.getElementById('groupLink');
-
-  let groups = JSON.parse(localStorage.getItem("groups")) || [];
-  let currentGroupIndex = 0; // default first group
-  let currentGroup = groups[currentGroupIndex] || {
-    name: "My Group",
-    photo: "",
-    inviteLink: "https://chat.gazachat.com/invite/123abc"
+  const groups = JSON.parse(localStorage.getItem("groups")) || [];
+  const currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex")) || 0;
+  const currentGroup = groups[currentGroupIndex] || {
+    name: "Default Group",
+    photo: "https://via.placeholder.com/90",
+    inviteLink: "https://chat.gazachat.com/invite/default"
   };
 
-  function loadGroup() {
-    groupNameElement.innerText = currentGroup.name;
-    groupPhotoElement.src = currentGroup.photo || "https://via.placeholder.com/70";
-    groupLinkElement.innerText = currentGroup.inviteLink;
-  }
+  const groupNameEl = document.getElementById('groupName');
+  const groupPhotoEl = document.getElementById('groupPhoto');
+  const groupLinkEl = document.getElementById('groupLink');
 
-  loadGroup();
+  groupNameEl.innerText = currentGroup.name;
+  groupPhotoEl.src = currentGroup.photo;
+  groupLinkEl.innerText = currentGroup.inviteLink;
 
-  // Overlay Popup Functions
+  // Popup functions
   const overlay = document.getElementById('popupOverlay');
   const popupMessage = document.getElementById('popupMessage');
-  const qrImage = document.getElementById('qrCodeImage');
+  const qrImage = document.getElementById('qrImage');
 
   function showPopup(message) {
     qrImage.style.display = 'none';
-    popupMessage.style.display = 'block';
+    popupMessage.style.display = 'inline';
     popupMessage.innerText = message;
     overlay.style.display = 'flex';
   }
@@ -238,46 +223,43 @@
     overlay.style.display = 'none';
   }
 
-  // Buttons Functions
+  // Buttons functions
+  function sendSMS() {
+    window.location.href = `sms:?body=Join my group: ${currentGroup.inviteLink}`;
+  }
+
   function copyLink() {
     navigator.clipboard.writeText(currentGroup.inviteLink)
       .then(() => showPopup("Link copied to clipboard!"));
-  }
-
-  function resetLink() {
-    const newLink = `https://chat.gazachat.com/invite/${Math.random().toString(36).substring(7)}`;
-    currentGroup.inviteLink = newLink;
-    groupLinkElement.innerText = newLink;
-    groups[currentGroupIndex] = currentGroup;
-    localStorage.setItem("groups", JSON.stringify(groups));
-    showPopup("Link has been reset!");
   }
 
   function shareLink() {
     if (navigator.share) {
       navigator.share({
         title: currentGroup.name,
+        text: 'Join my group:',
         url: currentGroup.inviteLink
-      }).catch(console.error);
+      }).catch(() => showPopup("Sharing not supported on this device!"));
     } else {
       showPopup("Sharing not supported on this device!");
     }
   }
 
-  function sendSMS() {
-    const smsLink = `sms:?body=Join my group: ${currentGroup.inviteLink}`;
-    window.location.href = smsLink;
+  function resetLink() {
+    const newLink = `https://chat.gazachat.com/invite/${Math.random().toString(36).substring(7)}`;
+    currentGroup.inviteLink = newLink;
+    groupLinkEl.innerText = newLink;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
+    showPopup("Link has been reset!");
   }
 
-  function showQRCode() {
-    qrImage.style.display = 'block';
+  function showQR() {
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentGroup.inviteLink)}`;
     popupMessage.style.display = 'none';
-    QRCode.toDataURL(currentGroup.inviteLink)
-      .then(url => qrImage.src = url)
-      .catch(err => console.error(err));
+    qrImage.style.display = 'block';
     overlay.style.display = 'flex';
   }
-
 </script>
 
 </body>
