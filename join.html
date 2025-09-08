@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Group Invite Link</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <style>
   body {
     margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
     background: #000;
     color: #fff;
@@ -16,102 +16,113 @@
 
   /* Header */
   .header {
+    position: relative;
+    height: 50px;
     background: #111;
-    padding: 15px;
+    color: #fff;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  .header i {
-    margin-right: 10px;
-    cursor: pointer;
-  }
-
-  /* Group Info Row */
-  .group-info {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    gap: 15px;
-  }
-  .group-info img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-  }
-  .group-info h2 {
-    margin: 0;
+    gap: 10px;
     font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #111;
+  }
+  .header .back-arrow {
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+  }
+  .header .back-arrow:hover { color: #25d366; }
+
+  /* Group Info Section */
+  .group-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
   }
 
-  /* Link Section */
-  .link-box {
-    background: #111;
-    margin: 10px 20px;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: left;
-    box-shadow: 0 0 5px rgba(255,255,255,0.1);
+  .group-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #25d366;
   }
-  .link-title {
-    color: #aaa;
-    margin-bottom: 5px;
-    font-size: 14px;
+
+  .group-details {
+    flex: 1;
   }
-  .link-text {
-    color: #25d366;
+
+  .group-name {
+    font-size: 1.6em;
     font-weight: bold;
-    word-break: break-all;
+    margin-bottom: 10px;
+  }
+
+  .group-link {
+    font-size: 1em;
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+    color: #25d366;
+    word-wrap: break-word;
+    width: fit-content;
+    max-width: 90%;
   }
 
   /* Buttons */
-  .btn {
-    width: calc(100% - 40px);
-    margin: 10px 20px;
+  .action-btn {
+    display: block;
+    width: 90%;
+    max-width: 350px;
+    margin: 10px auto;
     padding: 12px;
-    background: #111;
-    color: #25d366;
-    border: 1px solid #25d366;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1em;
-    transition: background 0.2s;
-  }
-  .btn:hover {
-    background: #25d366;
-    color: #000;
-  }
-
-  /* QR Popup */
-  .qr-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  .qr-box {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    color: #000;
-  }
-  .qr-box canvas {
-    margin-bottom: 15px;
-  }
-  .close-btn {
-    padding: 8px 15px;
     background: #25d366;
     color: #000;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .action-btn:hover { background: #1aa34a; }
+
+  /* QR Popup */
+  .overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .qr-popup {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    color: #000;
+  }
+
+  .qr-popup img {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 10px;
+  }
+
+  .close-btn {
+    padding: 10px 20px;
+    background: #25d366;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
     cursor: pointer;
   }
 </style>
@@ -120,87 +131,52 @@
 
 <!-- Header -->
 <div class="header">
-  <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
-  Invite Link
+  <div class="back-arrow" onclick="window.history.back()">
+    <i class="fa-solid fa-arrow-left"></i>
+  </div>
+  <div>Group Invite Link</div>
 </div>
 
 <!-- Group Info -->
-<div class="group-info">
-  <img src="https://via.placeholder.com/80" alt="Group Photo">
-  <h2>My Awesome Group</h2>
-</div>
-
-<!-- Link Section -->
-<div class="link-box">
-  <div class="link-title">Group Invite Link</div>
-  <div class="link-text" id="groupLink">https://gazachat.com/invite/abc123</div>
+<div class="group-container">
+  <img src="https://via.placeholder.com/100" alt="Group Photo" class="group-photo">
+  <div class="group-details">
+    <div class="group-name">My WhatsApp Group</div>
+    <div class="group-link">https://chat.gazachat.com/invite/abc123</div>
+  </div>
 </div>
 
 <!-- Buttons -->
-<div class="btn" onclick="sendSMS()">Send link via SMS</div>
-<div class="btn" onclick="copyLink()">Copy link</div>
-<div class="btn" onclick="shareLink()">Share link</div>
-<div class="btn" onclick="resetLink()">Reset link</div>
-<div class="btn" onclick="showQRCode()">QR code</div>
+<button class="action-btn">Send link via SMS</button>
+<button class="action-btn" onclick="copyLink()">Copy link</button>
+<button class="action-btn">Share link</button>
+<button class="action-btn">Reset link</button>
+<button class="action-btn" onclick="showQR()">QR Code</button>
 
 <!-- QR Popup -->
-<div class="qr-overlay" id="qrOverlay">
-  <div class="qr-box">
-    <canvas id="qrCode"></canvas>
-    <button class="close-btn" onclick="closeQR()">Close</button>
+<div class="overlay" id="qrOverlay">
+  <div class="qr-popup">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://chat.gazachat.com/invite/abc123" alt="QR Code">
+    <br>
+    <button class="close-btn" onclick="hideQR()">Close</button>
   </div>
 </div>
 
 <script>
-const linkElement = document.getElementById('groupLink');
-let groupLink = linkElement.innerText;
-
-// Send via SMS
-function sendSMS() {
-  window.location.href = `sms:?body=Join our group: ${groupLink}`;
-}
-
-// Copy link
-async function copyLink() {
-  try {
-    await navigator.clipboard.writeText(groupLink);
-    alert('Link copied to clipboard!');
-  } catch {
-    alert('Failed to copy link.');
+  function copyLink() {
+    const link = document.querySelector('.group-link').innerText;
+    navigator.clipboard.writeText(link).then(() => {
+      alert('Link copied to clipboard!');
+    });
   }
-}
 
-// Share link
-async function shareLink() {
-  if (navigator.share) {
-    await navigator.share({ title: 'Group Invite', text: 'Join our group!', url: groupLink });
-  } else {
-    alert('Sharing not supported.');
+  function showQR() {
+    document.getElementById('qrOverlay').style.display = 'flex';
   }
-}
 
-// Reset link (new random code)
-function resetLink() {
-  const randomCode = Math.random().toString(36).substring(2, 10);
-  groupLink = `https://gazachat.com/invite/${randomCode}`;
-  linkElement.innerText = groupLink;
-  alert('Link has been reset!');
-}
-
-// Show QR
-function showQRCode() {
-  new QRious({
-    element: document.getElementById('qrCode'),
-    value: groupLink,
-    size: 200
-  });
-  document.getElementById('qrOverlay').style.display = 'flex';
-}
-
-// Close QR
-function closeQR() {
-  document.getElementById('qrOverlay').style.display = 'none';
-}
+  function hideQR() {
+    document.getElementById('qrOverlay').style.display = 'none';
+  }
 </script>
 
 </body>
