@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+i want at the  members name to show 5 name the rest to write view all (depending on the number of member) then all member to come like whatsapp group <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -911,6 +911,10 @@ document.getElementById("documentInput").addEventListener("change", e=>{ const f
 document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; }});
 document.getElementById("sendLocation").onclick=()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`); }, ()=>sendAttachmentMessage("📍 Location sharing denied")); } else sendAttachmentMessage("📍 Geolocation not supported");};
 document.getElementById("sendContact").onclick=()=>{ const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }};
+
+
+
+  
   
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
@@ -965,6 +969,90 @@ function renderGroupMembers() {
       div.className = "memberBox";
       div.textContent = name;
       div.style.position = "relative";
+
+
+      function updateHeaderMembers() {
+    const headerDiv = document.getElementById("members");
+    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+    
+    if (activeMembers.length === 0) {
+        headerDiv.textContent = "No members";
+        return;
+    }
+
+    // Take first 5 names
+    const firstFive = activeMembers.slice(0, 5);
+    let text = firstFive.join(", ");
+
+    // If more than 5, add "and X more"
+    if (activeMembers.length > 5) {
+        const remaining = activeMembers.length - 5;
+        text += ` and ${remaining} more`;
+    }
+
+    headerDiv.textContent = text;
+}
+
+// Call this whenever members list changes
+renderGroupMembers = function() {
+    const membersDiv = document.getElementById("groupMembersList");
+    membersDiv.innerHTML = "";
+    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+    if(activeMembers.length === 0){
+        const div = document.createElement("div");
+        div.textContent = "No active members";
+        div.style.fontStyle = "italic";
+        div.style.color = "#555";
+        membersDiv.appendChild(div);
+    } else {
+        activeMembers.forEach(name => {
+            const div = document.createElement("div");
+            div.className = "memberBox";
+            div.textContent = name;
+
+            // popup menu for Message / Block
+            const popup = document.createElement("div");
+            popup.className = "popupMenu";
+            popup.innerHTML = `
+                <div class="menuItem messageItem">Message</div>
+                <div class="menuItem blockItem">Block</div>
+            `;
+            popup.style.display = "none";
+            div.style.position = "relative";
+            div.appendChild(popup);
+
+            div.addEventListener("click", (e) => {
+                e.stopPropagation();
+                document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display="none");
+                popup.style.display = "block";
+            });
+
+            // Message redirects
+            popup.querySelector(".messageItem").addEventListener("click", () => {
+                window.location.href = "chat.html?user=" + encodeURIComponent(name);
+            });
+
+            // Block action
+            popup.querySelector(".blockItem").addEventListener("click", () => {
+                if(!blockedMembers.includes(name) && confirm(`Block ${name}?`)){
+                    blockedMembers.push(name);
+                    renderGroupMembers();
+                    renderBlockedUsersPopup();
+                }
+                popup.style.display = "none";
+            });
+
+            membersDiv.appendChild(div);
+        });
+    }
+
+    document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+
+    // Update the header
+    updateHeaderMembers();
+}
+
 
       // Popup menu
       const popup = document.createElement("div");
