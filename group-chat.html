@@ -879,96 +879,110 @@ function renderGroupMembers() {
       div.textContent = name;
       div.style.position = "relative";
 
-      // Popup menu
-      const popup = document.createElement("div");
-      popup.className = "popupMenu";
-      popup.innerHTML = `
-        <div class="menuItem messageItem">Message</div>
-        <div class="menuItem blockItem">Block</div>
-      `;
+
+
+
+
+
+function renderMembers() {
+  const membersDiv = document.getElementById("membersDiv");
+  membersDiv.innerHTML = "";
+
+  const currentGroup = groups[currentGroupIndex];
+  const currentGroupMembers = currentGroup.members.map(m => m.name);
+  const blockedMembers = currentGroup.blocked || [];
+
+  currentGroupMembers.forEach(name => {
+    const div = document.createElement("div");
+    div.className = "memberBox";
+    div.textContent = name;
+
+    // Popup menu
+    const popup = document.createElement("div");
+    popup.className = "popupMenu";
+    popup.innerHTML = `
+      <div class="menuItem messageItem">Message</div>
+      <div class="menuItem blockItem">Block</div>
+    `;
+    popup.style.display = "none";
+    div.appendChild(popup);
+
+    // Show popup on member click
+    div.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+      popup.style.display = "block";
+    });
+
+    // Message action
+    popup.querySelector(".messageItem").addEventListener("click", () => {
+      const chats = JSON.parse(localStorage.getItem("chats")) || {};
+      const userChats = chats[name] || []; // Fetch messages for this user
+
+      // Example: Save user chat temporarily to localStorage and redirect
+      localStorage.setItem("currentChatUser", name);
+      localStorage.setItem("currentChatMessages", JSON.stringify(userChats));
+
+      window.location.href = "chat.html";
       popup.style.display = "none";
-      div.appendChild(popup);
+    });
 
-      // Show popup on member click
-      div.addEventListener("click", (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
-        popup.style.display = "block";
-      });
+    // Block action
+    popup.querySelector(".blockItem").addEventListener("click", () => {
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.background = "rgba(0,0,0,0.7)";
+      overlay.style.display = "flex";
+      overlay.style.alignItems = "center";
+      overlay.style.justifyContent = "center";
+      overlay.style.zIndex = 9999;
 
-      // Message action
-      popup.querySelector(".messageItem").addEventListener("click", () => {
-        window.location.href = "chat.html?user=" + encodeURIComponent(name);
-      });
+      const modal = document.createElement("div");
+      modal.style.background = "#fff";
+      modal.style.color = "#000";
+      modal.style.padding = "20px";
+      modal.style.borderRadius = "10px";
+      modal.style.minWidth = "250px";
+      modal.style.textAlign = "center";
+      modal.innerHTML = `
+        <p>Do you want to block <b>${name}</b>?</p>
+        <button id="confirmBlock" style="margin-right:10px;padding:5px 10px;background:#128C7E;border:none;border-radius:5px;color:#fff;cursor:pointer;">Yes</button>
+        <button id="cancelBlock" style="padding:5px 10px;background:#555;border:none;border-radius:5px;color:#fff;cursor:pointer;">No</button>
+      `;
 
-     // Block action
-popup.querySelector(".blockItem").addEventListener("click", () => {
-  // Overlay modal
-  const overlay = document.createElement("div");
-  overlay.style.position = "fixed";
-  overlay.style.top = 0;
-  overlay.style.left = 0;
-  overlay.style.width = "100%";
-  overlay.style.height = "100%";
-  overlay.style.background = "rgba(0,0,0,0.7)";
-  overlay.style.display = "flex";
-  overlay.style.alignItems = "center";
-  overlay.style.justifyContent = "center";
-  overlay.style.zIndex = 9999;
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
 
-  const modal = document.createElement("div");
-  modal.style.background = "#fff";
-  modal.style.color = "#000";
-  modal.style.padding = "20px";
-  modal.style.borderRadius = "10px";
-  modal.style.minWidth = "250px";
-  modal.style.textAlign = "center";
-  modal.innerHTML = `
-    <p>Do you want to block <b>${name}</b>?</p>
-    <button id="confirmBlock" style="margin-right:10px;padding:5px 10px;background:#128C7E;border:none;border-radius:5px;color:#fff;cursor:pointer;">Yes</button>
-    <button id="cancelBlock" style="padding:5px 10px;background:#555;border:none;border-radius:5px;color:#fff;cursor:pointer;">No</button>
-  `;
+      document.getElementById("confirmBlock").onclick = () => {
+        if (!blockedMembers.includes(name)) {
+          blockedMembers.push(name);
+          currentGroup.blocked = blockedMembers;
+          groups[currentGroupIndex] = currentGroup;
+          localStorage.setItem("groups", JSON.stringify(groups));
+          renderMembers(); // Re-render to update the list
+        }
+        overlay.remove();
+      };
 
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+      document.getElementById("cancelBlock").onclick = () => overlay.remove();
 
-  document.getElementById("confirmBlock").onclick = () => {
-    if (!blockedMembers.includes(name)) {
-      blockedMembers.push(name);
-      currentGroup.blocked = blockedMembers;
-      groups[currentGroupIndex] = currentGroup;
-      localStorage.setItem("groups", JSON.stringify(groups));
-      renderAllMembers(document.querySelector(".searchInput").value);
-    }
-    overlay.remove();
-  };
+      popup.style.display = "none";
+    });
 
-  document.getElementById("cancelBlock").onclick = () => overlay.remove();
+    membersDiv.appendChild(div);
+  });
 
-  popup.style.display = "none";
-});
-
-// Append member div
-membersDiv.appendChild(div);
-
-// Close all popups when clicking outside
-document.addEventListener("click", () => {
-  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
-});
-
-
-
-
-
-
-
-
-
-
-
-  
+  // Close all popups when clicking outside
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+  });
 
   // Update count and header
+  const activeMembers = currentGroupMembers.filter(n => !blockedMembers.includes(n));
   document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
   document.getElementById("members").textContent = activeMembers.join(", ");
 
@@ -979,6 +993,20 @@ document.addEventListener("click", () => {
   localStorage.setItem("groups", JSON.stringify(groups));
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
 //
 const defaultLimit = 3; // Show first 3 members
 const viewAllBtn = document.getElementById("viewAllMembersBtn");
