@@ -149,14 +149,14 @@
 
 <!-- Group Info -->
 <div class="group-container">
-  <img src="https://via.placeholder.com/90" alt="Group Photo" class="group-photo">
+  <img src="" alt="Group Photo" class="group-photo" id="groupPhoto">
   <div class="group-details">
-    <div class="group-name" id="groupName">My WhatsApp Group</div>
-    <div class="group-link" id="groupLink">https://chat.gazachat.com/invite/abc123</div>
+    <div class="group-name" id="groupName">Loading...</div>
+    <div class="group-link" id="groupLink">Loading...</div>
   </div>
 </div>
 
-<!-- Action Buttons as List -->
+<!-- Action Buttons -->
 <ul class="action-list">
   <li onclick="sendSMS()"><i class="fa-solid fa-sms"></i>Send link via SMS</li>
   <li onclick="copyLink()"><i class="fa-solid fa-copy"></i>Copy link</li>
@@ -175,7 +175,20 @@
 </div>
 
 <script>
-  const groupLinkElement = document.getElementById('groupLink');
+  // Get group data from localStorage
+  const groups = JSON.parse(localStorage.getItem("groups")) || [];
+  const currentGroupIndex = parseInt(localStorage.getItem("currentGroupIndex")) || 0;
+  const currentGroup = groups[currentGroupIndex] || {
+    name: "Default Group",
+    photo: "https://via.placeholder.com/90",
+    inviteLink: "https://chat.gazachat.com/invite/default"
+  };
+
+  // Set elements
+  document.getElementById("groupName").innerText = currentGroup.name;
+  document.getElementById("groupPhoto").src = currentGroup.photo;
+  const groupLinkElement = document.getElementById("groupLink");
+  groupLinkElement.innerText = currentGroup.inviteLink;
 
   function sendSMS() {
     const link = groupLinkElement.innerText;
@@ -205,6 +218,9 @@
   function resetLink() {
     const newLink = `https://chat.gazachat.com/invite/${Math.random().toString(36).substring(7)}`;
     groupLinkElement.innerText = newLink;
+    currentGroup.inviteLink = newLink;
+    groups[currentGroupIndex] = currentGroup;
+    localStorage.setItem("groups", JSON.stringify(groups));
     alert('Link has been reset!');
   }
 
