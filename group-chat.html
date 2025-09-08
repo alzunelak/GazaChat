@@ -879,85 +879,51 @@ function renderGroupMembers() {
       div.textContent = name;
       div.style.position = "relative";
 
+      // Popup menu
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.appendChild(popup);
 
+      // Show popup on member click
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+        popup.style.display = "block";
+      });
 
+      // Message action
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
 
+      // Block action
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
 
-
-      //
-// On page load
-renderMessages();
-renderGroupMembers();
-
-// Ensure you have correct element IDs
-function renderGroupMembers() {
-    const membersDiv = document.getElementById("groupMembersList");
-    membersDiv.innerHTML = "";
-
-    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
-
-    if (activeMembers.length === 0) {
-        const div = document.createElement("div");
-        div.textContent = "No active members";
-        div.style.fontStyle = "italic";
-        div.style.color = "#555";
-        membersDiv.appendChild(div);
-    } else {
-        activeMembers.forEach(name => {
-            const div = document.createElement("div");
-            div.className = "memberBox";
-            div.textContent = name;
-            div.style.position = "relative";
-
-            // Popup menu
-            const popup = document.createElement("div");
-            popup.className = "popupMenu";
-            popup.innerHTML = `
-                <div class="menuItem messageItem">Message</div>
-                <div class="menuItem blockItem">Block</div>
-            `;
-            popup.style.display = "none";
-            div.appendChild(popup);
-
-            div.addEventListener("click", (e) => {
-                e.stopPropagation();
-                document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
-                popup.style.display = "block";
-            });
-
-            // Message action
-            popup.querySelector(".messageItem").addEventListener("click", () => {
-                alert(`Message ${name}`); // replace with your chat redirect
-                popup.style.display = "none";
-            });
-
-            // Block action
-            popup.querySelector(".blockItem").addEventListener("click", () => {
-                if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
-                    blockedMembers.push(name);
-                    renderGroupMembers();
-                }
-                popup.style.display = "none";
-            });
-
-            membersDiv.appendChild(div);
-        });
-    }
-
-    document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
-}
-
-// Also make sure messages render
-function renderMessages() {
-    chatBox.innerHTML = "";
-    messages.forEach(m => {
-        if (blockedMembers.includes(m.user)) return;
-        const div = document.createElement("div");
-        div.className = "msg" + (m.user === currentUser ? " self" : "");
-        div.innerHTML = `<div class="content"><b>${m.user}:</b> ${m.text}</div><div class="meta">${m.time}</div>`;
-        chatBox.appendChild(div);
+      membersDiv.appendChild(div);
     });
-    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Update count and header
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+  document.getElementById("members").textContent = activeMembers.join(", ");
+
+  // Save back to localStorage
+  currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+  currentGroup.blocked = blockedMembers;
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
 }
 
 
@@ -971,8 +937,14 @@ function renderMessages() {
 
 
 
-      
+
+
+
+
+
+
 //
+
 const defaultLimit = 3; // Show first 3 members
 const viewAllBtn = document.getElementById("viewAllMembersBtn");
 
@@ -1049,6 +1021,12 @@ function renderGroupMembers() {
 viewAllBtn.addEventListener("click", () => {
   window.location.href = "allMembers.html"; // <-- page to show all members
 });
+
+
+
+  
+
+
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = ()=>{
