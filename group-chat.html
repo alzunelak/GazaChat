@@ -901,19 +901,72 @@ function renderGroupMembers() {
         window.location.href = "chat.html?user=" + encodeURIComponent(name);
       });
 
-      // Block action
-      popup.querySelector(".blockItem").addEventListener("click", () => {
-        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
-          blockedMembers.push(name);
-          renderGroupMembers();
-          renderBlockedUsersPopup();
-        }
-        popup.style.display = "none";
-      });
+     // Block action
+popup.querySelector(".blockItem").addEventListener("click", () => {
+  // Overlay modal
+  const overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.top = 0;
+  overlay.style.left = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.7)";
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.zIndex = 9999;
 
-      membersDiv.appendChild(div);
-    });
-  }
+  const modal = document.createElement("div");
+  modal.style.background = "#fff";
+  modal.style.color = "#000";
+  modal.style.padding = "20px";
+  modal.style.borderRadius = "10px";
+  modal.style.minWidth = "250px";
+  modal.style.textAlign = "center";
+  modal.innerHTML = `
+    <p>Do you want to block <b>${name}</b>?</p>
+    <button id="confirmBlock" style="margin-right:10px;padding:5px 10px;background:#128C7E;border:none;border-radius:5px;color:#fff;cursor:pointer;">Yes</button>
+    <button id="cancelBlock" style="padding:5px 10px;background:#555;border:none;border-radius:5px;color:#fff;cursor:pointer;">No</button>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  document.getElementById("confirmBlock").onclick = () => {
+    if (!blockedMembers.includes(name)) {
+      blockedMembers.push(name);
+      currentGroup.blocked = blockedMembers;
+      groups[currentGroupIndex] = currentGroup;
+      localStorage.setItem("groups", JSON.stringify(groups));
+      renderAllMembers(document.querySelector(".searchInput").value);
+    }
+    overlay.remove();
+  };
+
+  document.getElementById("cancelBlock").onclick = () => overlay.remove();
+
+  popup.style.display = "none";
+});
+
+// Append member div
+membersDiv.appendChild(div);
+
+// Close all popups when clicking outside
+document.addEventListener("click", () => {
+  document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+});
+
+
+
+
+
+
+
+
+
+
+
+  
 
   // Update count and header
   document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
@@ -926,25 +979,7 @@ function renderGroupMembers() {
   localStorage.setItem("groups", JSON.stringify(groups));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //
-
 const defaultLimit = 3; // Show first 3 members
 const viewAllBtn = document.getElementById("viewAllMembersBtn");
 
@@ -1021,12 +1056,6 @@ function renderGroupMembers() {
 viewAllBtn.addEventListener("click", () => {
   window.location.href = "allMembers.html"; // <-- page to show all members
 });
-
-
-
-  
-
-
 
 // ===== ADD MEMBER =====
 document.getElementById("addMemberBtn").onclick = ()=>{
