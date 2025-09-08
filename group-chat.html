@@ -911,10 +911,6 @@ document.getElementById("documentInput").addEventListener("change", e=>{ const f
 document.getElementById("audioInput").addEventListener("change", e=>{ const file=e.target.files[0]; if(file){ sendAttachmentMessage(`🎵 Audio: ${file.name}`); e.target.value=""; }});
 document.getElementById("sendLocation").onclick=()=>{ if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(pos=>{ const lat=pos.coords.latitude.toFixed(5), lng=pos.coords.longitude.toFixed(5); sendAttachmentMessage(`📍 Location: ${lat},${lng} (https://maps.google.com/?q=${lat},${lng})`); }, ()=>sendAttachmentMessage("📍 Location sharing denied")); } else sendAttachmentMessage("📍 Geolocation not supported");};
 document.getElementById("sendContact").onclick=()=>{ const name=prompt("Contact name:"); if(name){ const phone=prompt("Phone number:"); if(phone){ sendAttachmentMessage(`👤 Contact: ${name} — ${phone}`); } }};
-
-
-
-  
   
 // ===== CHAT =====
 const chatBox = document.getElementById("chatBox");
@@ -969,6 +965,48 @@ function renderGroupMembers() {
       div.className = "memberBox";
       div.textContent = name;
       div.style.position = "relative";
+
+
+
+
+
+
+//limitation
+
+      function renderMemberHeader() {
+    const membersDiv = document.getElementById("members");
+    const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+    membersDiv.innerHTML = "";
+
+    if (activeMembers.length === 0) {
+        membersDiv.textContent = "No members";
+        return;
+    }
+
+    // Show first 5 names
+    const firstFive = activeMembers.slice(0, 5);
+    membersDiv.textContent = firstFive.join(", ");
+
+    // If more than 5 members, add "View All"
+    if (activeMembers.length > 5) {
+        const viewAll = document.createElement("span");
+        viewAll.textContent = ` +${activeMembers.length - 5} more`;
+        viewAll.style.color = "#25D366";
+        viewAll.style.cursor = "pointer";
+        viewAll.style.marginLeft = "5px";
+        membersDiv.appendChild(viewAll);
+
+        viewAll.addEventListener("click", () => {
+            // Open full members list (toggle group info page)
+            openGroupInfo();
+        });
+    }
+}
+
+// Call this function when loading the chat page
+renderMemberHeader();
+
 
       // Popup menu
       const popup = document.createElement("div");
