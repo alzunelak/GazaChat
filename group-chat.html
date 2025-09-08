@@ -529,16 +529,17 @@ input:checked + .slider:before {transform:translateX(26px);}
 </div>
 </div>
  
-
- <div class="container">
+<div class="container">
   <div class="membersHeader">
     <span id="memberCount">0 Members</span>
     <button id="addMemberBtn">+</button>
-    <button id="viewAllMembersBtn" style="margin-left:10px; padding:5px 10px; background:#25D366; color:#000; border:none; border-radius:5px; cursor:pointer;">
-      View All
-    </button>
   </div>
   <div id="groupMembersList"></div>
+
+  <!-- View All button below the list -->
+  <div class="viewAllContainer">
+    <button id="viewAllMembersBtn">View All</button>
+  </div>
 </div>
 
 
