@@ -666,99 +666,9 @@ const callContainer = document.getElementById("callContainer");
 
 
 // ===== VIDEO CALL =====
-document.querySelector(".actionButtons button:nth-child(1)").onclick = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
-    // Create video container
-    const container = document.createElement("div");
-    container.style.position = "relative";
-    container.style.border = "2px solid #128C7E";
-    container.style.borderRadius = "10px";
-    container.style.marginTop = "10px";
-    container.style.width = "100%";
-    container.style.maxHeight = "400px";
-    container.style.background = "#000";
-
-    // Video element
-    const videoEl = document.createElement("video");
-    videoEl.srcObject = stream;
-    videoEl.autoplay = true;
-    videoEl.style.width = "100%";
-    videoEl.style.height = "300px";
-    container.appendChild(videoEl);
-
-    // Close button
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "End Call";
-    closeBtn.style.position = "absolute";
-    closeBtn.style.top = "5px";
-    closeBtn.style.right = "5px";
-    closeBtn.style.padding = "5px 10px";
-    closeBtn.style.background = "#25D366";
-    closeBtn.style.color = "#fff";
-    closeBtn.style.border = "none";
-    closeBtn.style.borderRadius = "5px";
-    closeBtn.style.cursor = "pointer";
-    closeBtn.onclick = () => {
-      stream.getTracks().forEach(track => track.stop());
-      container.remove();
-    };
-    container.appendChild(closeBtn);
-
-    document.getElementById("groupInfoPage").appendChild(container);
-
-  } catch (err) {
-    alert("Cannot access camera/microphone. Check permissions.");
-    console.error(err);
-  }
-};
-
-// ===== AUDIO CALL =====
-document.querySelector(".actionButtons button:nth-child(2)").onclick = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    // Create audio container
-    const container = document.createElement("div");
-    container.style.position = "relative";
-    container.style.border = "2px solid #128C7E";
-    container.style.borderRadius = "10px";
-    container.style.marginTop = "10px";
-    container.style.padding = "10px";
-    container.style.background = "#f1f1f1";
-
-    // Audio element
-    const audioEl = document.createElement("audio");
-    audioEl.srcObject = stream;
-    audioEl.autoplay = true;
-    container.appendChild(audioEl);
-
-    // Close button
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "End Call";
-    closeBtn.style.position = "absolute";
-    closeBtn.style.top = "5px";
-    closeBtn.style.right = "5px";
-    closeBtn.style.padding = "5px 10px";
-    closeBtn.style.background = "#25D366";
-    closeBtn.style.color = "#fff";
-    closeBtn.style.border = "none";
-    closeBtn.style.borderRadius = "5px";
-    closeBtn.style.cursor = "pointer";
-    closeBtn.onclick = () => {
-      stream.getTracks().forEach(track => track.stop());
-      container.remove();
-    };
-    container.appendChild(closeBtn);
-
-    document.getElementById("groupInfoPage").appendChild(container);
-
-  } catch (err) {
-    alert("Cannot access microphone. Check permissions.");
-    console.error(err);
-  }
-};
+    
+   
 
 // ===== SEARCH MESSAGES =====
 document.querySelector(".actionButtons button:nth-child(3)").onclick = () => {
@@ -1003,6 +913,125 @@ function renderGroupMembers() {
 
       membersDiv.appendChild(div);
     });
+  }
+
+  // Update count and header
+  document.getElementById("memberCount").textContent = `${activeMembers.length} Member${activeMembers.length !== 1 ? "s" : ""}`;
+  document.getElementById("members").textContent = activeMembers.join(", ");
+
+  // Save back to localStorage
+  currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
+  currentGroup.blocked = blockedMembers;
+  groups[currentGroupIndex] = currentGroup;
+  localStorage.setItem("groups", JSON.stringify(groups));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // ===== GROUP MEMBERS WITH VIEW ALL =====
+let showingAll = false; // Track if all members are shown
+const defaultLimit = 3; // Number of members to show initially
+
+function renderGroupMembers() {
+  const membersDiv = document.getElementById("groupMembersList");
+  membersDiv.innerHTML = "";
+
+  // Only active members (not blocked)
+  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+
+  if (activeMembers.length === 0) {
+    const div = document.createElement("div");
+    div.textContent = "No active members";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    // Decide how many members to display
+    const membersToShow = showingAll ? activeMembers : activeMembers.slice(0, defaultLimit);
+
+    membersToShow.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+      div.style.position = "relative";
+
+      // Popup menu
+      const popup = document.createElement("div");
+      popup.className = "popupMenu";
+      popup.innerHTML = `
+        <div class="menuItem messageItem">Message</div>
+        <div class="menuItem blockItem">Block</div>
+      `;
+      popup.style.display = "none";
+      div.appendChild(popup);
+
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".memberBox .popupMenu").forEach(p => p.style.display = "none");
+        popup.style.display = "block";
+      });
+
+      popup.querySelector(".messageItem").addEventListener("click", () => {
+        window.location.href = "chat.html?user=" + encodeURIComponent(name);
+      });
+
+      popup.querySelector(".blockItem").addEventListener("click", () => {
+        if (!blockedMembers.includes(name) && confirm(`Block ${name}?`)) {
+          blockedMembers.push(name);
+          renderGroupMembers();
+          renderBlockedUsersPopup();
+        }
+        popup.style.display = "none";
+      });
+
+      membersDiv.appendChild(div);
+    });
+
+    // Add "View All / Show Less" button if needed
+    let viewAllBtn = document.getElementById("viewAllMembersBtn");
+    if (!viewAllBtn) {
+      viewAllBtn = document.createElement("button");
+      viewAllBtn.id = "viewAllMembersBtn";
+      viewAllBtn.style.marginTop = "10px";
+      viewAllBtn.style.padding = "5px 10px";
+      viewAllBtn.style.background = "#128C7E";
+      viewAllBtn.style.color = "#fff";
+      viewAllBtn.style.border = "none";
+      viewAllBtn.style.borderRadius = "5px";
+      viewAllBtn.style.cursor = "pointer";
+      membersDiv.parentElement.appendChild(viewAllBtn);
+
+      viewAllBtn.addEventListener("click", () => {
+        showingAll = !showingAll;
+        renderGroupMembers();
+        viewAllBtn.textContent = showingAll ? "Show Less" : "View All";
+      });
+    }
+
+    viewAllBtn.style.display = activeMembers.length > defaultLimit ? "inline-block" : "none";
+    viewAllBtn.textContent = showingAll ? "Show Less" : "View All";
   }
 
   // Update count and header
