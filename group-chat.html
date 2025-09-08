@@ -343,24 +343,7 @@ input:checked + .slider:before {transform:translateX(26px);}
     padding: 5px 0;
     border-bottom: 1px solid #444;
 }
-
-#groupMembersList {
-    border: 1px solid #ccc;   /* visible border for the container */
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    max-height: 200px;        /* optional: scroll if many members */
-    overflow-y: auto;
-}
-
-#groupMembersList div {
-    padding: 5px 10px;
-    margin-bottom: 5px;
-    border-radius: 3px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-}
+   
 
 </style>
 </head>
@@ -1049,29 +1032,6 @@ function addMember(name){
         renderGroupMembers();
     }
 }
-function renderGroupMembers() {
-    const listContainer = document.getElementById("groupMembersList");
-    listContainer.innerHTML = "";
-
-    // Show up to first 5 members as a preview
-    const previewMembers = currentGroupMembers.slice(0, 5);
-
-    previewMembers.forEach(name => {
-        const memberDiv = document.createElement("div");
-        memberDiv.textContent = name;
-        memberDiv.style.padding = "5px 10px";
-        memberDiv.style.marginBottom = "5px";
-        memberDiv.style.border = "1px solid #ddd";
-        memberDiv.style.borderRadius = "3px";
-        memberDiv.style.backgroundColor = "#fff";
-        listContainer.appendChild(memberDiv);
-    });
-
-    // Update member count
-    document.getElementById("memberCount").textContent = `${currentGroupMembers.length} Members`;
-}
-
-
   
 // ===== NAVIGATION =====
 document.getElementById("groupName").onclick = ()=>openGroupInfo();
