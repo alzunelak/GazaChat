@@ -968,23 +968,62 @@ function renderGroupMembers() {
       div.textContent = name;
       div.style.position = "relative";
 
-     // This is a separate function
+      
+
+     // LIMIT
+function renderGroupMembers() {
+  const membersDiv = document.getElementById("groupMembersList");
+  if (!membersDiv) {
+    console.error("Element with ID 'groupMembersList' not found.");
+    return;
+  }
+
+  membersDiv.innerHTML = "";
+
+  // Make sure currentGroupMembers exists
+  const activeMembers = (currentGroupMembers || []).filter(
+    m => !blockedMembers.includes(m)
+  );
+
+  if (activeMembers.length === 0) {
+    const div = document.createElement("div");
+    div.textContent = "No active members";
+    div.style.fontStyle = "italic";
+    div.style.color = "#555";
+    membersDiv.appendChild(div);
+  } else {
+    activeMembers.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "memberBox";
+      div.textContent = name;
+      div.style.position = "relative";
+      membersDiv.appendChild(div);
+    });
+  }
+}
+
 function updateHeaderMembers() {
   const headerMembersDiv = document.getElementById("members");
-  const activeMembers = currentGroupMembers.filter(m => !blockedMembers.includes(m));
+  if (!headerMembersDiv) {
+    console.error("Element with ID 'members' not found.");
+    return;
+  }
 
-  // Show only first 3 members
-  const firstThree = activeMembers.slice(0, 3);
+  const activeMembers = (currentGroupMembers || []).filter(
+    m => !blockedMembers.includes(m)
+  );
+
+  const firstThree = activeMembers.slice(0, 3); // Only first 3
   let text = firstThree.join(", ");
 
   if (activeMembers.length > 3) {
     text += `, +${activeMembers.length - 3} more`;
   }
 
-  headerMembersDiv.textContent = text;
+  headerMembersDiv.textContent = text || "No members";
 }
 
-// Call these when loading the page or refreshing members
+// Call these after data is loaded
 renderGroupMembers();
 updateHeaderMembers();
 
