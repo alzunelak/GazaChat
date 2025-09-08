@@ -357,8 +357,6 @@ input:checked + .slider:before {transform:translateX(26px);}
       <h2 id="groupName">My Group</h2>
       <div id="members"></div>
     </div>
-  </div>
-    
     <div class="header-actions">
       <button id="callBtn"><i class="fa-solid fa-phone"></i></button>
       <button id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
@@ -950,7 +948,7 @@ function renderMessages(){
   });
   chatBox.scrollTop = chatBox.scrollHeight;
 }
- 
+
 function renderGroupMembers() {
   const membersDiv = document.getElementById("groupMembersList");
   membersDiv.innerHTML = "";
