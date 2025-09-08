@@ -946,13 +946,7 @@ function renderGroupMembers() {
 
 
 
-
-
-
-
-// ===== GROUP MEMBERS WITH VIEW ALL =====
-let showingAll = false; // Track if all members are shown
-const defaultLimit = 3; // Number of members to show initially
+// ===== GROUP MEMBERS =====
 const viewAllBtn = document.getElementById("viewAllMembersBtn");
 
 function renderGroupMembers() {
@@ -969,10 +963,7 @@ function renderGroupMembers() {
     div.style.color = "#555";
     membersDiv.appendChild(div);
   } else {
-    // Decide how many members to display
-    const membersToShow = showingAll ? activeMembers : activeMembers.slice(0, defaultLimit);
-
-    membersToShow.forEach(name => {
+    activeMembers.forEach(name => {
       const div = document.createElement("div");
       div.className = "memberBox";
       div.textContent = name;
@@ -1016,8 +1007,7 @@ function renderGroupMembers() {
   document.getElementById("members").textContent = activeMembers.join(", ");
 
   // Show/hide View All button
-  viewAllBtn.style.display = activeMembers.length > defaultLimit ? "inline-block" : "none";
-  viewAllBtn.textContent = showingAll ? "Show Less" : "View All";
+  viewAllBtn.style.display = activeMembers.length > 3 ? "inline-block" : "none";
 
   // Save to localStorage
   currentGroup.members = currentGroupMembers.map(n => ({ name: n, accepted: true }));
@@ -1026,12 +1016,10 @@ function renderGroupMembers() {
   localStorage.setItem("groups", JSON.stringify(groups));
 }
 
-// Attach click event to the existing button once
+// Redirect to another page when "View All" is clicked
 viewAllBtn.addEventListener("click", () => {
-  showingAll = !showingAll;
-  renderGroupMembers();
+  window.location.href = "allMembers.html"; // <-- change this to your target page
 });
-
 
 
   
