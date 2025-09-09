@@ -48,6 +48,17 @@ body {
 .fa-qrcode:hover,
 .three-dots:hover { color: #25d366; }
 
+/* ===== Connection List Container ===== */
+.connection-list {
+  background: #111;
+  padding: 15px;
+  margin: 10px 15px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+}
+  
 .main-content { padding:20px; min-height:70vh; }
 .no-msg { text-align:center; margin:50px 0; color:#888; font-size:18px; }
 
@@ -122,6 +133,10 @@ body {
   <a href="linkeddevices.html">Linked Devices </a>
 </div>
 
+  <!-- Connection list container -->
+<div class="connection-list" id="connectionList">
+  Connection List
+</div>
 <div class="main-content" id="mainContent">
   <div class="no-msg">No messages yet<br>Add a friend using the + button</div>
 </div>
@@ -141,6 +156,9 @@ body {
   </div>
 </div>
 
+  <!-- Scan Nearby Button near bottom -->
+<button id="scanNearby">Scan Nearby Devices</button>
+  
 <div class="tabs">
   <div id="tabChat">Chat</div>
   <a href="groups.html"><div>Group</div></a>
