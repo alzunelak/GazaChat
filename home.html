@@ -64,7 +64,7 @@ body {
 
 /* Scan Nearby Button near bottom */
 #scanNearby {
-
+  margin: 10px auto 15px; /* smaller space above bottom tabs */
   padding: 12px 25px;
   background: #25d366;
   color: #fff;
@@ -77,7 +77,7 @@ body {
 /* Bottom Tabs */
 .tabs {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   background: #111;
   padding: 10px 0;
   border-top: 1px solid #333;
@@ -162,6 +162,9 @@ body {
   <div class="no-msg">No messages yet<br>Add a friend using the + button</div>
 </div>
 
+   <!-- Scan Nearby Button near bottom -->
+<button id="scanNearby">Scan Nearby Devices</button>
+  
 <div id="qrContainer">
   <button id="closeQR">X</button>
   <canvas id="userQRCode"></canvas>
@@ -176,9 +179,6 @@ body {
     <a href="search.html">Search Friend</a>
   </div>
 </div>
-
-  <!-- Scan Nearby Button near bottom -->
-<button id="scanNearby">Scan Nearby Devices</button>
   
 <div class="tabs">
   <div id="tabChat">Chat</div>
@@ -228,6 +228,7 @@ closeQR.addEventListener('click', () => {
   qrContainer.style.display='none';
   noMsg.style.display='block';
 });
+  
 // --- Check URL parameter for auto-chat ---
 function getQueryParam(param) {
   const params = new URLSearchParams(window.location.search);
@@ -256,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-
   // --- QR Icon Click ---
 const qrIcon = document.querySelector('.fa-qrcode');
 qrIcon.addEventListener('click', () => {
@@ -269,9 +269,6 @@ qrIcon.addEventListener('click', () => {
   }
 });
 
-  
-
-  
 // --- Open chat function ---
 function openChat(name, profile){
   // You can customize this to open your chat.html
@@ -334,9 +331,6 @@ friends.forEach(f => {
     });
   }
 }
-
-
-
   
 // --- Three-dots menu ---
 const threeDots = document.querySelector('.three-dots');
