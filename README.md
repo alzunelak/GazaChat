@@ -1,7 +1,3 @@
-Here’s your updated **README.md** section rewritten to match your listed features (Peer-to-peer encrypted messaging, QR-code setup, Offline storage, PWA), while keeping the Bluetooth-first offline migration details.
-
----
-
 # GazaChat
 
 ## 🌐 Overview
@@ -17,11 +13,11 @@ Here’s your updated **README.md** section rewritten to match your listed featu
 
 ## 🔑 Core Features
 
-✅ **Peer-to-Peer Encrypted Messaging** – All messages and calls are sent directly between devices with end-to-end encryption.
-✅ **QR Code Connection Setup** – Devices can scan a QR code to establish a secure connection.
-✅ **Offline Support with Local Storage** – Chats, profiles, and preferences are stored locally using IndexedDB and work without internet.
-✅ **Progressive Web App (PWA)** – Installable on mobile or desktop, works completely offline.
-✅ **Bluetooth Messaging** – Full chat functionality over Web Bluetooth or Android Bluetooth APIs.
+**Peer-to-Peer Encrypted Messaging** – All messages and calls are sent directly between devices with end-to-end encryption.
+**QR Code Connection Setup** – Devices can scan a QR code to establish a secure connection.
+**Offline Support with Local Storage** – Chats, profiles, and preferences are stored locally using IndexedDB and work without internet.
+**Progressive Web App (PWA)** – Installable on mobile or desktop, works completely offline.
+**Bluetooth Messaging** – Full chat functionality over Web Bluetooth or Android Bluetooth APIs.
 
 ---
 
@@ -88,6 +84,23 @@ GazaChat/
 | `AndroidManifest.xml`                                         | Android permissions       | Add Bluetooth permissions                    | Required                                  |
 | `server.js`                                                   | WebSocket server          | Remove                                       | No server needed                          |
 
+
+bluetooth-chat  
+peer-to-peer  
+offline-messaging  
+p2p-chat  
+progressive-web-app  
+pwa  
+encrypted-chat  
+webrtc  
+indexeddb  
+offline-first  
+qr-code  
+bluetooth  
+mobile-app  
+privacy  
+secure-messaging
+
 ---
 
 ## 📦 Installation (Offline)
@@ -122,4 +135,4 @@ Licensed under the **MIT License** – see the [LICENSE](LICENSE) file for detai
 
 ---
 
-Would you also like me to **rewrite your repo description and tags on GitHub** so it’s easier for other developers to find (e.g., “Bluetooth P2P Messaging”, “Of
+
