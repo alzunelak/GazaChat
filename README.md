@@ -9,6 +9,9 @@ Visit the app: [GazaChat](https://alzunelak.github.io/GazaChat/index.html)
 
 ---
 
+
+GazaChat/ ├── index.html, welcome.html – Entry and greeting screens ├── permission.html – Permission requests (microphone, notifications) ├── phone-number.html – Onboarding via phone input ├── profile.html – User profile setup (name, picture) ├── home.html – Main dashboard (chat & nav hub) ├── chat.html/group-chat.html – One-on-one and group chats ├── settings: │ ├── settings.html – General preferences │ ├── privacy-settings.html – Privacy controls │ ├── chatsettings.html – Chat-specific options ├── call & invites: │ ├── calls.html, video-call.html, audio-call.html – Call interfaces ├── qrcode.html & scan.html – Device linking via QR codes ├── search.html – Message/contact search ├── blockuser.html – Block/unblock users ├── data-storage.html – Storage mechanisms overview ├── correction*.html – Correction/review flows └── Help & account: ├── help.html – App help/instructions ├── delete-account.html – Account removal ├── change-number.html – Update phone number
+
 ##  Features
 - Friendly, culturally mindful UI
 - Simple and intuitive navigation
