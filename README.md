@@ -35,17 +35,16 @@ GazaChat/
 │   ├── settings.html                       – General settings
 │   ├── privacy-settings.html               – Privacy controls
 │   └── chatsettings.html                   – Chat preferences
-├── call & invites/
-│   ├── calls.html, video-call.html, audio-call.html – Calling screens
-├── qrcode.html, scan.html                  – QR code pairing
-├── search.html                             – Search messages & contacts
-├── blockuser.html                          – Block/unblock users
-├── data-storage.html                       – Offline storage overview
-├── correction*.html                        – Corrections & flows
-└── Help & account/
     ├── help.html                           – App help
     ├── delete-account.html                 – Account removal
     └── change-number.html                  – Update phone number
+    ├── data-storage.html                   – Offline storage overview
+    ├── blockuser.html                      – Block/unblock users
+├── call 
+│   ├── calls.html, video-call.html, audio-call.html – Calling screens
+├── qrcode.html, scan.html                  – QR code pairing
+├── search.html                             – Search messages & contacts
+
 ```
 
 ---
