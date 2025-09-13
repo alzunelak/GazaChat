@@ -1,5 +1,4 @@
 
-
 # GazaChat
 
 ## 🌐 Overview
@@ -64,8 +63,6 @@ GazaChat/
 
 ---
 
-## 🔒 Offline & Bluetooth Migration Table
-
 | File / Folder                                                 | Original Role                | Offline Bluetooth Action                                            | Notes / Replacement                           |
 | ------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------- | --------------------------------------------- |
 | `index.html`, `welcome.html`                                  | Entry screens                | Keep                                                                | No changes, just load offline                 |
@@ -93,7 +90,6 @@ GazaChat/
 | `translations.json`                                           | Multi-language UI text       | Add strings like “Connected via Bluetooth”                          | Keep offline translations                     |
 | `AndroidManifest.xml`                                         | Android permissions          | Add Bluetooth + Bluetooth Admin permissions                         | Required for offline Bluetooth                |
 
----
 
 ## 🛠 Installation (Offline)
 
