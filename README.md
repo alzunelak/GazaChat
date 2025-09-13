@@ -5,6 +5,7 @@
 
 **GazaChat** is a privacy-focused chat application designed to keep conversations simple, secure, and culturally mindful:
 
+> *“A fully offline chat app using Bluetooth for messaging and calls, designed to work without servers or internet.”*
 > *“Take privacy with you, be yourself in every message.”*
 
 🔗 **Live Demo:** [GazaChat](https://alzunelak.github.io/GazaChat/index.html)
@@ -37,16 +38,23 @@ GazaChat/
     ├── delete-account.html                 – Account removal
     └── change-number.html                  – Update phone number
 ```
+## 🛠 Tech Stack
+- **Frontend:** HTML, CSS, JavaScript, Tailwind  
+- **Backend (Optional):** Node.js (for non-offline builds)  
+- **Mobile:** Android (Kotlin)  
+- **Bluetooth:** Web Bluetooth API & Android Bluetooth APIs  
+- **Storage:** IndexedDB & localStorage  
 
 ---
 
 ## 🚀 Features
 
-* Friendly, culturally mindful UI
-* Intuitive navigation and design
-* Built-in QR linking (optional)
-* Easy transition to Bluetooth-only offline mode
-* Clear privacy and data transparency
+* Bluetooth Messaging – Send and receive messages offline
+* Profile Setup – Store data locally
+* Offline Calls (Optional) – Audio/video over Bluetooth
+* Local Search & Block – Runs on local data storage
+* Fully Offline – Caches all assets and chat history
+* Multi-language Support – Uses translations.json
 
 ---
 
@@ -62,7 +70,7 @@ GazaChat/
 | Nuzlah  | Front End | [@nuzlah](https://github.com/yourusername)  |
 
 ---
-
+## 🔒File Structure & Bluetooth offline Migration Guide
 | File / Folder                                                 | Original Role                | Offline Bluetooth Action                                            | Notes / Replacement                           |
 | ------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------- | --------------------------------------------- |
 | `index.html`, `welcome.html`                                  | Entry screens                | Keep                                                                | No changes, just load offline                 |
