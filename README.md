@@ -1,36 +1,70 @@
-# GazaChat 
-
-##  Overview
-**GazaChat** is a privacy-focused chat application with a warm:
-
-> _“Take privacy with you, be yourself in every message.”_
-
-Visit the app: [GazaChat](https://alzunelak.github.io/GazaChat/index.html)
-
----
 
 
-GazaChat/ ├── index.html, welcome.html – Entry and greeting screens ├── permission.html – Permission requests (microphone, notifications) ├── phone-number.html – Onboarding via phone input ├── profile.html – User profile setup (name, picture) ├── home.html – Main dashboard (chat & nav hub) ├── chat.html/group-chat.html – One-on-one and group chats ├── settings: │ ├── settings.html – General preferences │ ├── privacy-settings.html – Privacy controls │ ├── chatsettings.html – Chat-specific options ├── call & invites: │ ├── calls.html, video-call.html, audio-call.html – Call interfaces ├── qrcode.html & scan.html – Device linking via QR codes ├── search.html – Message/contact search ├── blockuser.html – Block/unblock users ├── data-storage.html – Storage mechanisms overview ├── correction*.html – Correction/review flows └── Help & account: ├── help.html – App help/instructions ├── delete-account.html – Account removal ├── change-number.html – Update phone number
+# GazaChat
 
-##  Features
-- Friendly, culturally mindful UI
-- Simple and intuitive navigation
-- Clear Terms & Privacy for transparency
+## 🌐 Overview
+
+**GazaChat** is a privacy-focused chat application designed to keep conversations simple, secure, and culturally mindful:
+
+> *“Take privacy with you, be yourself in every message.”*
+
+🔗 **Live Demo:** [GazaChat](https://alzunelak.github.io/GazaChat/index.html)
 
 ---
 
-##  Team Members
-| Name                | Role                     | GitHub Profile                                              |
-|---------------------|--------------------------|-------------------------------------------------------------|
-| Rukhsar             | Back End                 | [@rukhsar](https://github.com/yourusername)                 |
-| Sophia              | Back End                 | [@sophia](https://github.com/yourusername)                  |
-| Maya                | Front End                | [@maya](https://github.com/yourusername)                    |
-| Amat                | Front End                | [@Amat](https://github.com/yourusername)                    |
-| Zainab              | Front End                | [@zainab](https://github.com/yourusername)                  |
-| Nuzlah              | Front End                | [@nuzlah](https://github.com/yourusername)                  |
+## 📂 Project Structure
+
+```
+GazaChat/
+├── index.html, welcome.html                – Entry and greeting screens
+├── permission.html                         – Permission requests (microphone, notifications)
+├── phone-number.html                       – Onboarding via phone input
+├── profile.html                            – User profile setup (name, picture)
+├── home.html                               – Main dashboard (chat & nav hub)
+├── chat.html, group-chat.html              – One-on-one and group chats
+├── settings/
+│   ├── settings.html                       – General preferences
+│   ├── privacy-settings.html               – Privacy controls
+│   └── chatsettings.html                   – Chat-specific options
+├── call & invites/
+│   ├── calls.html, video-call.html, audio-call.html – Call interfaces
+├── qrcode.html, scan.html                  – Device linking via QR codes
+├── search.html                             – Message/contact search
+├── blockuser.html                          – Block/unblock users
+├── data-storage.html                       – Storage mechanisms overview
+├── correction*.html                        – Correction/review flows
+└── Help & account/
+    ├── help.html                           – App help/instructions
+    ├── delete-account.html                 – Account removal
+    └── change-number.html                  – Update phone number
+```
 
 ---
 
+## 🚀 Features
+
+* Friendly, culturally mindful UI
+* Intuitive navigation and design
+* Built-in QR linking (optional)
+* Easy transition to Bluetooth-only offline mode
+* Clear privacy and data transparency
+
+---
+
+## 👩‍💻 Team Members
+
+| Name    | Role      | GitHub Profile                              |
+| ------- | --------- | ------------------------------------------- |
+| Rukhsar | Back End  | [@rukhsar](https://github.com/yourusername) |
+| Sophia  | Back End  | [@sophia](https://github.com/yourusername)  |
+| Maya    | Front End | [@maya](https://github.com/yourusername)    |
+| Amat    | Front End | [@Amat](https://github.com/yourusername)    |
+| Zainab  | Front End | [@zainab](https://github.com/yourusername)  |
+| Nuzlah  | Front End | [@nuzlah](https://github.com/yourusername)  |
+
+---
+
+## 🔒 Offline & Bluetooth Migration Table
 
 | File / Folder                                                 | Original Role                | Offline Bluetooth Action                                            | Notes / Replacement                           |
 | ------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------- | --------------------------------------------- |
@@ -60,16 +94,37 @@ GazaChat/ ├── index.html, welcome.html – Entry and greeting screens ├�
 | `translations.json`                                           | Multi-language UI text       | Add strings like “Connected via Bluetooth”                          | Keep offline translations                     |
 | `AndroidManifest.xml`                                         | Android permissions          | Add Bluetooth + Bluetooth Admin permissions                         | Required for offline Bluetooth                |
 
+---
 
+## 🛠 Installation (Offline)
 
+### Web
 
+```bash
+git clone https://github.com/alzunelak/GazaChat.git
+cd GazaChat
+# Open index.html in your browser
+```
 
-##  Usage
-1. Visit the [GazaChat](https://alzunelak.github.io/GazaChat/index.html).
-2. Click **Get Started** to begin chatting.
-3. Read our **Terms & Privacy** for details on how your data is handled.
+### Android
 
---
+1. Open the project in **Android Studio**.
+2. Connect a physical device or emulator.
+3. Add Bluetooth permissions to `AndroidManifest.xml`.
+4. Build and run the app.
 
-##  License
-Specify the license here (e.g., MIT, Apache 2.0), or link to your `LICENSE` file.
+---
+
+## 📸 Screenshots
+
+*(Add your images in `/docs/screenshots/` and link them here)*
+
+| Home Screen                        | Chat Screen                        | Settings                                   |
+| ---------------------------------- | ---------------------------------- | ------------------------------------------ |
+| ![Home](docs/screenshots/home.png) | ![Chat](docs/screenshots/chat.png) | ![Settings](docs/screenshots/settings.png) |
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
