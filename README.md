@@ -79,7 +79,6 @@ GazaChat/
 | `qrcode.html`, `scan.html`                                    | Device linking via QR        | Optional remove                                                     | Bluetooth replaces QR session linking         |
 | `search.html`, `blockuser.html`                               | Search + block users         | Keep, but only search/block local data                              | Runs on localStorage/IndexedDB                |
 | `data-storage.html`                                           | Storage overview             | Update with Bluetooth + localStorage                                | Document offline approach                     |
-| `correction*.html`                                            | Review/correction flows      | Keep                                                                | Minor/no change                               |
 | `help.html`, `delete-account.html`, `change-number.html`      | Help & account management    | Keep                                                                | Local only                                    |
 | `App.js`, `main.js`, `main.jsx`                               | Core chat logic + rendering  | Replace network calls with `bluetoothSend()` / `bluetoothReceive()` | Listen for Bluetooth events                   |
 | `chatscreen.kt`, `group-chatscreen.kt`                        | Android chat logic (Kotlin)  | Replace send/receive with `bluetoothManager.kt` calls               | Handles one-to-one & group chat               |
