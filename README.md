@@ -130,13 +130,17 @@ cd GazaChat
 ---
 
 
-## 👩‍💻 Contributors  
-- [@rukhsar](https://github.com/rukhsar) – Back End
-- [@sophia](https://github.com/sophia) – Back End 
-- [@maya](https://github.com/maya) – Front End
-- [@amat](https://github.com/amat) – Front End
-- [@zainab](https://github.com/zainab) – Front End
-- [@nuzlah](https://github.com/nuzlah) – Front End 
+## 👩‍💻 Contributors    
+
+| Contributor | Role        |
+| ----------- | ----------- |
+| [@rukhsar](https://github.com/rukhsar) | Back End    |
+| [@sophia](https://github.com/sophia)   | Back End    |
+| [@maya](https://github.com/maya)       | Front End   |
+| [@amat](https://github.com/amat)       | Front End   |
+| [@zainab](https://github.com/zainab)   | Front End   |
+| [@nuzlah](https://github.com/nuzlah)   | Front End   |
+
 
 
 ## 📜 License
