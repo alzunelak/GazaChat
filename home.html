@@ -276,50 +276,71 @@ qrIcon.addEventListener('click', () => {
 
 
 
-  <script>
+
+
+
 // --- Scan Nearby Devices ---
 const scanNearbyBtn = document.getElementById("scanNearby");
 const connectionList = document.getElementById("connectionList");
 
 scanNearbyBtn.addEventListener("click", async () => {
   try {
-    // Request nearby device (user will see a popup with device list)
+    // Let the user pick *multiple times* by calling inside loop if needed
     const device = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true, // or filter by services if you want
-      optionalServices: ['battery_service'] // example service
+      acceptAllDevices: true, // show all nearby devices
+      optionalServices: ['battery_service'] // add more services if needed
     });
 
-    connectionList.innerHTML = `
-      <p>Found: <strong>${device.name || 'Unnamed Device'}</strong></p>
-      <p>ID: ${device.id}</p>
-      <button id="connectBtn">Connect</button>
+    // Create a container for this device
+    const deviceDiv = document.createElement("div");
+    deviceDiv.style.padding = "10px";
+    deviceDiv.style.margin = "10px 0";
+    deviceDiv.style.border = "1px solid #25d366";
+    deviceDiv.style.borderRadius = "6px";
+    deviceDiv.style.textAlign = "left";
+
+    deviceDiv.innerHTML = `
+      <p><strong>${device.name || "Unnamed Device"}</strong></p>
+      <p style="font-size:12px; color:#aaa;">ID: ${device.id}</p>
+      <button style="padding:6px 12px; background:#25d366; border:none; border-radius:4px; cursor:pointer; font-weight:bold; color:#000;">
+        Connect
+      </button>
+      <div class="device-status" style="margin-top:8px; font-size:14px; color:#ccc;"></div>
     `;
 
-    document.getElementById("connectBtn").addEventListener("click", async () => {
+    // Append to connection list
+    connectionList.appendChild(deviceDiv);
+
+    const connectBtn = deviceDiv.querySelector("button");
+    const statusDiv = deviceDiv.querySelector(".device-status");
+
+    connectBtn.addEventListener("click", async () => {
       try {
         const server = await device.gatt.connect();
-        connectionList.innerHTML += `<p style="color:#25d366">✅ Connected to ${device.name || 'device'}!</p>`;
-        
-        // Example: read battery level if service available
-        if (device.gatt.connected) {
-          const service = await server.getPrimaryService('battery_service');
-          const characteristic = await service.getCharacteristic('battery_level');
+        statusDiv.innerHTML = `✅ Connected to ${device.name || "device"}`;
+
+        // Example: check battery level if supported
+        try {
+          const service = await server.getPrimaryService("battery_service");
+          const characteristic = await service.getCharacteristic("battery_level");
           const value = await characteristic.readValue();
           const batteryLevel = value.getUint8(0);
-          connectionList.innerHTML += `<p>🔋 Battery: ${batteryLevel}%</p>`;
+          statusDiv.innerHTML += `<br>🔋 Battery: ${batteryLevel}%`;
+        } catch {
+          statusDiv.innerHTML += `<br>⚡ No battery service found`;
         }
+
       } catch (err) {
-        console.error(err);
-        connectionList.innerHTML += `<p style="color:red">❌ Failed to connect: ${err.message}</p>`;
+        statusDiv.innerHTML = `❌ Failed: ${err.message}`;
       }
     });
 
   } catch (error) {
-    console.error(error);
     connectionList.innerHTML = `<p style="color:red">❌ ${error.message}</p>`;
+    console.error(error);
   }
 });
-</script>
+
 
 
 // --- Open chat function ---
