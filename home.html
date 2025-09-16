@@ -274,6 +274,54 @@ qrIcon.addEventListener('click', () => {
   }
 });
 
+
+
+  <script>
+// --- Scan Nearby Devices ---
+const scanNearbyBtn = document.getElementById("scanNearby");
+const connectionList = document.getElementById("connectionList");
+
+scanNearbyBtn.addEventListener("click", async () => {
+  try {
+    // Request nearby device (user will see a popup with device list)
+    const device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true, // or filter by services if you want
+      optionalServices: ['battery_service'] // example service
+    });
+
+    connectionList.innerHTML = `
+      <p>Found: <strong>${device.name || 'Unnamed Device'}</strong></p>
+      <p>ID: ${device.id}</p>
+      <button id="connectBtn">Connect</button>
+    `;
+
+    document.getElementById("connectBtn").addEventListener("click", async () => {
+      try {
+        const server = await device.gatt.connect();
+        connectionList.innerHTML += `<p style="color:#25d366">✅ Connected to ${device.name || 'device'}!</p>`;
+        
+        // Example: read battery level if service available
+        if (device.gatt.connected) {
+          const service = await server.getPrimaryService('battery_service');
+          const characteristic = await service.getCharacteristic('battery_level');
+          const value = await characteristic.readValue();
+          const batteryLevel = value.getUint8(0);
+          connectionList.innerHTML += `<p>🔋 Battery: ${batteryLevel}%</p>`;
+        }
+      } catch (err) {
+        console.error(err);
+        connectionList.innerHTML += `<p style="color:red">❌ Failed to connect: ${err.message}</p>`;
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    connectionList.innerHTML = `<p style="color:red">❌ ${error.message}</p>`;
+  }
+});
+</script>
+
+
 // --- Open chat function ---
 function openChat(name, profile){
   // You can customize this to open your chat.html
